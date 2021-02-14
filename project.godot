@@ -144,11 +144,6 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/src/asserts/DictonaryAssertImpl.gd"
 }, {
-"base": "CustomClassExtendsCustomClass",
-"class": "DoubledCustomClassExtendsCustomClass",
-"language": "GDScript",
-"path": "res://MockCustomClassExtendsCustomClass.gd"
-}, {
 "base": "GdUnitArgumentMatcher",
 "class": "EqualsArgumentMatcher",
 "language": "GDScript",
@@ -554,7 +549,7 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/src/core/event/SignalHandler.gd"
 }, {
-"base": "Reference",
+"base": "Resource",
 "class": "TimeUnit",
 "language": "GDScript",
 "path": "res://addons/GdCommons/DateTime/src/TimeUnit.gd"
@@ -602,7 +597,6 @@ _global_script_class_icons={
 "CustomResourceTestClass": "",
 "DeepStubTestClass": "",
 "DictonaryAssertImpl": "",
-"DoubledCustomClassExtendsCustomClass": "",
 "EqualsArgumentMatcher": "",
 "Fuzzer": "",
 "FuzzerTool": "",
@@ -698,10 +692,6 @@ config/icon="res://icon.png"
 [audio]
 
 default_bus_layout=""
-
-[editor_plugins]
-
-enabled=PoolStringArray( "gdUnit3" )
 
 [network]
 
