@@ -16,7 +16,10 @@ static func save_config(config:Dictionary) -> void:
 	
 static func load_config() -> Dictionary:
 	var file := File.new()
-	file.open(CONFIG_FILE, File.READ)
+	var err := file.open(CONFIG_FILE, File.READ)
+	if err != OK:
+		push_error("Can't find test runner config! Please select a test to run.")
+		return Dictionary()
 	var config := file.get_var() as Dictionary
 	file.close()
 	return config
