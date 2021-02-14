@@ -1,0 +1,425 @@
+extends GdUnitTestSuite
+
+func test_equals_string():
+	var a := ""
+	var b := ""
+	var c := "abc"
+	var d := "abC"
+	
+	assert_bool(GdObjects.equals("", "")).is_true()	
+	assert_bool(GdObjects.equals(a, "")).is_true()
+	assert_bool(GdObjects.equals("", a)).is_true()
+	assert_bool(GdObjects.equals(a, a)).is_true()
+	assert_bool(GdObjects.equals(a, b)).is_true()
+	assert_bool(GdObjects.equals(b, a)).is_true()
+	assert_bool(GdObjects.equals(c, c)).is_true()
+	assert_bool(GdObjects.equals(c, String(c))).is_true()
+	
+	assert_bool(GdObjects.equals(a, null)).is_false()
+	assert_bool(GdObjects.equals(null, a)).is_false()
+	assert_bool(GdObjects.equals("", c)).is_false()
+	assert_bool(GdObjects.equals(c, "")).is_false()
+	assert_bool(GdObjects.equals(c, d)).is_false()
+	assert_bool(GdObjects.equals(d, c)).is_false()
+	# against diverent type
+	assert_bool(GdObjects.equals(d, Array())).is_false()
+	assert_bool(GdObjects.equals(d, Dictionary())).is_false()
+	assert_bool(GdObjects.equals(d, Vector2.ONE)).is_false()
+	assert_bool(GdObjects.equals(d, Vector3.ONE)).is_false()
+
+func test_equals_array():
+	var a := []
+	var b := []
+	var c := Array()
+	var d := [1,2,3,4,5]
+	var e := [1,2,3,4,5]
+	var x := [1,2,3,6,4,5]
+	
+	assert_bool(GdObjects.equals(a, a)).is_true()
+	assert_bool(GdObjects.equals(a, b)).is_true()
+	assert_bool(GdObjects.equals(b, a)).is_true()
+	assert_bool(GdObjects.equals(a, c)).is_true()
+	assert_bool(GdObjects.equals(c, b)).is_true()
+	assert_bool(GdObjects.equals(d, d)).is_true()
+	assert_bool(GdObjects.equals(d, e)).is_true()
+	assert_bool(GdObjects.equals(e, d)).is_true()
+	
+	assert_bool(GdObjects.equals(a, null)).is_false()
+	assert_bool(GdObjects.equals(null, a)).is_false()
+	assert_bool(GdObjects.equals(a, d)).is_false()
+	assert_bool(GdObjects.equals(d, a)).is_false()
+	assert_bool(GdObjects.equals(d, x)).is_false()
+	assert_bool(GdObjects.equals(x, d)).is_false()
+	# against diverent type
+	assert_bool(GdObjects.equals(a, "")).is_false()
+	assert_bool(GdObjects.equals(a, Dictionary())).is_false()
+	assert_bool(GdObjects.equals(a, Vector2.ONE)).is_false()
+	assert_bool(GdObjects.equals(a, Vector3.ONE)).is_false()
+	
+	
+func test_equals_dictionary():
+	var a := {}
+	var b := {}
+	var c := {"a":"foo"}
+	var d := {"a":"foo"}
+	var e1 := {"a":"foo", "b":"bar"}
+	var e2 := {"b":"bar", "a":"foo"}
+	
+	assert_bool(GdObjects.equals(a, a)).is_true()
+	assert_bool(GdObjects.equals(a, b)).is_true()
+	assert_bool(GdObjects.equals(b, a)).is_true()
+	assert_bool(GdObjects.equals(c, c)).is_true()
+	assert_bool(GdObjects.equals(c, d)).is_true()
+	assert_bool(GdObjects.equals(e1, e2)).is_true()
+	assert_bool(GdObjects.equals(e2, e1)).is_true()
+	
+	assert_bool(GdObjects.equals(a, null)).is_false()
+	assert_bool(GdObjects.equals(null, a)).is_false()
+	assert_bool(GdObjects.equals(a, c)).is_false()
+	assert_bool(GdObjects.equals(c, a)).is_false()
+	assert_bool(GdObjects.equals(a, e1)).is_false()
+	assert_bool(GdObjects.equals(e1, a)).is_false()
+	assert_bool(GdObjects.equals(c, e1)).is_false()
+	assert_bool(GdObjects.equals(e1, c)).is_false()
+
+class TestClass extends Resource:
+	
+	enum {
+		A,
+		B
+	}
+	
+	var _type := A
+	var _a:int
+	var _b:String
+	var _c:Array
+	
+	func _init(a:int = 0, b:String = "", c:Array = []):
+		_a = a
+		_b = b
+		_c = c
+
+func test_equals_class():
+	var a := TestClass.new()
+	var b := TestClass.new()
+	var c := TestClass.new(1, "foo", ["bar", "xxx"])
+	var d := TestClass.new(1, "foo", ["bar", "xxx"])
+	var x := TestClass.new(1, "foo", ["bar", "xsxx"])
+	
+	assert_bool(GdObjects.equals(a, a)).is_true()
+	assert_bool(GdObjects.equals(a, b)).is_true()
+	assert_bool(GdObjects.equals(b, a)).is_true()
+	assert_bool(GdObjects.equals(c, d)).is_true()
+	assert_bool(GdObjects.equals(d, c)).is_true()
+	
+	
+	assert_bool(GdObjects.equals(a, null)).is_false()
+	assert_bool(GdObjects.equals(null, a)).is_false()
+	assert_bool(GdObjects.equals(a, c)).is_false()
+	assert_bool(GdObjects.equals(c, a)).is_false()
+	assert_bool(GdObjects.equals(d, x)).is_false()
+	assert_bool(GdObjects.equals(x, d)).is_false()
+	
+	# more extended version
+	var x2 := TestClass.new(1, "foo", [TestClass.new(22, "foo"), TestClass.new(22, "foo")])
+	var x3 := TestClass.new(1, "foo", [TestClass.new(22, "foo"), TestClass.new(23, "foo")])
+	assert_bool(GdObjects.equals(x2, x3)).is_false()
+
+func test_equals_Node_with_deep_check():
+	var nodeA = auto_free(Node.new())
+	var nodeB = auto_free(Node.new())
+	
+	# compares by default with deep ckeck on
+	assert_bool(GdObjects.equals(nodeA, nodeA)).is_true()
+	assert_bool(GdObjects.equals(nodeB, nodeB)).is_true()
+	assert_bool(GdObjects.equals(nodeA, nodeB)).is_true()
+	assert_bool(GdObjects.equals(nodeB, nodeA)).is_true()
+	# compares by default with deep ckeck off
+	assert_bool(GdObjects.equals(nodeA, nodeA, false, false)).is_true()
+	assert_bool(GdObjects.equals(nodeB, nodeB, false, false)).is_true()
+	assert_bool(GdObjects.equals(nodeA, nodeB, false, false)).is_false()
+	assert_bool(GdObjects.equals(nodeB, nodeA, false, false)).is_false()
+
+func test_is_primitive_type():
+	assert_bool(GdObjects.is_primitive_type(false)).is_true()
+	assert_bool(GdObjects.is_primitive_type(true)).is_true()
+	assert_bool(GdObjects.is_primitive_type(0)).is_true()
+	assert_bool(GdObjects.is_primitive_type(0.1)).is_true()
+	assert_bool(GdObjects.is_primitive_type("")).is_true()
+
+	assert_bool(GdObjects.is_primitive_type(Vector2.ONE)).is_false()
+
+func test_is_array_type():
+	assert_bool(GdObjects.is_array_type([])).is_true()
+	assert_bool(GdObjects.is_array_type(Array())).is_true()
+	assert_bool(GdObjects.is_array_type(PoolByteArray())).is_true()
+	assert_bool(GdObjects.is_array_type(PoolColorArray())).is_true()
+	assert_bool(GdObjects.is_array_type(PoolIntArray())).is_true()
+	assert_bool(GdObjects.is_array_type(PoolRealArray())).is_true()
+	assert_bool(GdObjects.is_array_type(PoolStringArray())).is_true()
+	assert_bool(GdObjects.is_array_type(PoolVector2Array())).is_true()
+	assert_bool(GdObjects.is_array_type(PoolVector3Array())).is_true()
+	
+	assert_bool(GdObjects.is_array_type(false)).is_false()
+
+func test_string_diff_empty():
+	assert_array(GdObjects.string_diff("", "")).is_equal(["", ""])
+	assert_array(GdObjects.string_diff("Abc", "Abc")).is_equal(["Abc", "Abc"])
+
+func test_string_diff():
+	assert_array(GdObjects.string_diff("Abc", "abc")).is_equal(["￵A￳abc", "￳A￵abc"])
+	
+func _test_longestCommonSubsequence():
+	assert_str("This is a test message").is_equal("This is a test Message")
+	var text1 := GdObjects.normalizeText("This is a test message")
+	var text2 := GdObjects.normalizeText("This is a gread test Message")
+	
+	prints(GdObjects.longestCommonSubsequence(text1, text2))
+	#prints(GdObjects.markTextDifferences(text1, text2, l, Color.green, Color.red))
+
+
+class TestClassForIsType:
+	var x
+
+func test_is_type():
+	# check build-in types
+	assert_bool(GdObjects.is_type(1)).is_false()
+	assert_bool(GdObjects.is_type(1.3)).is_false()
+	assert_bool(GdObjects.is_type(true)).is_false()
+	assert_bool(GdObjects.is_type(false)).is_false()
+	assert_bool(GdObjects.is_type([])).is_false()
+	assert_bool(GdObjects.is_type("abc")).is_false()
+	
+	
+	assert_bool(GdObjects.is_type(null)).is_false()
+	# an object type
+	assert_bool(GdObjects.is_type(Node)).is_true()
+	# an reference type
+	assert_bool(GdObjects.is_type(AStar)).is_true()
+	# an script type
+	assert_bool(GdObjects.is_type(GDScript)).is_true()
+	# an custom type
+	assert_bool(GdObjects.is_type(TestClassForIsType)).is_true()
+	# on inner class type
+	assert_bool(GdObjects.is_type(CustomClass.InnerClassA)).is_true()
+	assert_bool(GdObjects.is_type(CustomClass.InnerClassC)).is_true()
+	
+	
+	# for instances must allways endup with false
+	assert_bool(GdObjects.is_type(auto_free(Node.new()))).is_false()
+	assert_bool(GdObjects.is_type(AStar.new())).is_false()
+	assert_bool(GdObjects.is_type(Dictionary())).is_false()
+	assert_bool(GdObjects.is_type(PoolColorArray())).is_false()
+	assert_bool(GdObjects.is_type(GDScript.new())).is_false()
+	assert_bool(GdObjects.is_type(TestClassForIsType.new())).is_false()
+	assert_bool(GdObjects.is_type(auto_free(CustomClass.InnerClassC.new()))).is_false()
+
+func _is_instance(value) -> bool:
+	return GdObjects.is_instance(auto_free(value))
+
+func test_is_instance_true():
+	assert_bool(_is_instance(Node.new())).is_true()
+	assert_bool(_is_instance(AStar.new())).is_true()
+	assert_bool(_is_instance(PackedScene.new())).is_true()
+	assert_bool(_is_instance(PluginScript.new())).is_true()
+	assert_bool(_is_instance(GDScript.new())).is_true()
+	assert_bool(_is_instance(Person.new())).is_true()
+	assert_bool(_is_instance(CustomClass.new())).is_true()
+	assert_bool(_is_instance(CustomNodeTestClass.new())).is_true()
+	assert_bool(_is_instance(TestClassForIsType.new())).is_true()
+	assert_bool(_is_instance(CustomClass.InnerClassC.new())).is_true()
+
+func test_is_instance_false():
+	assert_bool(_is_instance(Node)).is_false()
+	assert_bool(_is_instance(AStar)).is_false()
+	assert_bool(_is_instance(PackedScene)).is_false()
+	assert_bool(_is_instance(PluginScript)).is_false()
+	assert_bool(_is_instance(GDScript)).is_false()
+	assert_bool(_is_instance(Dictionary())).is_false()
+	assert_bool(_is_instance(PoolColorArray())).is_false()
+	assert_bool(_is_instance(Person)).is_false()
+	assert_bool(_is_instance(CustomClass)).is_false()
+	assert_bool(_is_instance(CustomNodeTestClass)).is_false()
+	assert_bool(_is_instance(TestClassForIsType)).is_false()
+	assert_bool(_is_instance(CustomClass.InnerClassC)).is_false()
+
+func test_is_instanceof():
+	var obj = auto_free(Camera.new())
+	assert_bool(GdObjects.is_instanceof(obj, Node)).is_true()
+	assert_bool(GdObjects.is_instanceof(obj, AStar2D)).is_false()
+
+# shorter helper func to extract class name and using auto_free
+func extract_class_name(value) -> Result:
+	return GdObjects.extract_class_name(auto_free(value))
+
+func test_get_class_name_from_class_path():
+	# extract class name by resoure path
+	assert_result(extract_class_name("res://addons/gdUnit3/test/resources/core/Person.gd"))\
+		.is_success().is_value("Person")
+	assert_result(extract_class_name("res://addons/gdUnit3/test/resources/core/CustomClass.gd"))\
+		.is_success().is_value("CustomClass")
+	assert_result(extract_class_name("res://addons/gdUnit3/test/mocker/resources/CustomNodeTestClass.gd"))\
+		.is_success().is_value("CustomNodeTestClass")
+	assert_result(extract_class_name("res://addons/gdUnit3/test/mocker/resources/CustomResourceTestClass.gd"))\
+		.is_success().is_value("CustomResourceTestClass")
+	assert_result(extract_class_name("res://addons/gdUnit3/test/mocker/resources/OverridenGetClassTestClass.gd"))\
+		.is_success().is_value("OverridenGetClassTestClass")
+
+func test_get_class_name_from_type():
+	assert_result(extract_class_name(Animation)).is_success().is_value("Animation")
+	assert_result(extract_class_name(GDScript)).is_success().is_value("GDScript")
+	assert_result(extract_class_name(Camera)).is_success().is_value("Camera")
+	assert_result(extract_class_name(Node)).is_success().is_value("Node")
+	assert_result(extract_class_name(Tree)).is_success().is_value("Tree")
+	# extract class name from custom classes
+	assert_result(extract_class_name(Person)).is_success().is_value("Person")
+	assert_result(extract_class_name(CustomClass)).is_success().is_value("CustomClass")
+	assert_result(extract_class_name(CustomNodeTestClass)).is_success().is_value("CustomNodeTestClass")
+	assert_result(extract_class_name(CustomResourceTestClass)).is_success().is_value("CustomResourceTestClass")
+	assert_result(extract_class_name(OverridenGetClassTestClass)).is_success().is_value("OverridenGetClassTestClass")
+	assert_result(extract_class_name(AdvancedTestClass)).is_success().is_value("AdvancedTestClass")
+
+func test_get_class_name_from_inner_class():
+	assert_result(extract_class_name(CustomClass))\
+		.is_success().is_value("CustomClass")
+	assert_result(extract_class_name(CustomClass.InnerClassA))\
+		.is_success().is_value("CustomClass.InnerClassA")
+	assert_result(extract_class_name(CustomClass.InnerClassB))\
+		.is_success().is_value("CustomClass.InnerClassB")
+	assert_result(extract_class_name(CustomClass.InnerClassC))\
+		.is_success().is_value("CustomClass.InnerClassC")
+	assert_result(extract_class_name(CustomClass.InnerClassD))\
+		.is_success().is_value("CustomClass.InnerClassD")
+	assert_result(extract_class_name(AdvancedTestClass.SoundData))\
+		.is_success().is_value("AdvancedTestClass.SoundData")
+	assert_result(extract_class_name(AdvancedTestClass.AtmosphereData))\
+		.is_success().is_value("AdvancedTestClass.AtmosphereData")
+	assert_result(extract_class_name(AdvancedTestClass.Area4D))\
+		.is_success().is_value("AdvancedTestClass.Area4D")
+
+func test_extract_class_name_from_instance():
+	assert_result(extract_class_name(Camera.new())).is_equal("Camera")
+	assert_result(extract_class_name(GDScript.new())).is_equal("GDScript")
+	assert_result(extract_class_name(Node.new())).is_equal("Node")
+	
+	# extract class name from custom classes
+	assert_result(extract_class_name(Person.new())).is_equal("Person")
+	assert_result(extract_class_name(ClassWithNameA.new())).is_equal("ClassWithNameA")
+	assert_result(extract_class_name(ClassWithNameB.new())).is_equal("ClassWithNameB")
+	var classWithoutNameA = load("res://addons/gdUnit3/test/mocker/resources/ClassWithoutNameA.gd")
+	assert_result(extract_class_name(classWithoutNameA.new())).is_equal("ClassWithoutNameA")
+	assert_result(extract_class_name(CustomNodeTestClass.new())).is_equal("CustomNodeTestClass")
+	assert_result(extract_class_name(CustomResourceTestClass.new())).is_equal("CustomResourceTestClass")
+	assert_result(extract_class_name(OverridenGetClassTestClass.new())).is_equal("OverridenGetClassTestClass")
+	assert_result(extract_class_name(AdvancedTestClass.new())).is_equal("AdvancedTestClass")
+	# extract inner class name
+	assert_result(extract_class_name(AdvancedTestClass.SoundData.new())).is_equal("AdvancedTestClass.SoundData")
+	assert_result(extract_class_name(AdvancedTestClass.AtmosphereData.new())).is_equal("AdvancedTestClass.AtmosphereData")
+	# assert_result(extract_class_name(AdvancedTestClass.Area4D.new())).is_equal("AdvancedTestClass.Area4D")
+	assert_result(extract_class_name(CustomClass.InnerClassC.new())).is_equal("CustomClass.InnerClassC")
+
+func test_extract_class_name_godot_classes(fuzzer=GodotClassNameFuzzer.new(true, true)):
+	var extract_class_name := fuzzer.next_value() as String
+	# WebRTCPeerConnection has some issues so we exclude
+	if extract_class_name == "WebRTCPeerConnection":
+		return
+	var instance = ClassDB.instance(extract_class_name)
+	assert_result(extract_class_name(instance)).is_equal(extract_class_name)
+
+func test_extract_class_path_by_clazz():
+	# engine classes has no class path
+	assert_array(GdObjects.extract_class_path(Animation)).is_empty()
+	assert_array(GdObjects.extract_class_path(GDScript)).is_empty()
+	assert_array(GdObjects.extract_class_path(Camera)).is_empty()
+	assert_array(GdObjects.extract_class_path(Tree)).is_empty()
+	assert_array(GdObjects.extract_class_path(Node)).is_empty()
+	
+	# script classes
+	assert_array(GdObjects.extract_class_path(Person))\
+		.contains_exactly(["res://addons/gdUnit3/test/resources/core/Person.gd"])
+	assert_array(GdObjects.extract_class_path(CustomClass))\
+		.contains_exactly(["res://addons/gdUnit3/test/resources/core/CustomClass.gd"])
+	assert_array(GdObjects.extract_class_path(CustomNodeTestClass))\
+		.contains_exactly(["res://addons/gdUnit3/test/mocker/resources/CustomNodeTestClass.gd"])
+	assert_array(GdObjects.extract_class_path(CustomResourceTestClass))\
+		.contains_exactly(["res://addons/gdUnit3/test/mocker/resources/CustomResourceTestClass.gd"])
+	assert_array(GdObjects.extract_class_path(OverridenGetClassTestClass))\
+		.contains_exactly(["res://addons/gdUnit3/test/mocker/resources/OverridenGetClassTestClass.gd"])
+	
+	# script inner classes
+	assert_array(GdObjects.extract_class_path(CustomClass.InnerClassA))\
+		.contains_exactly(["res://addons/gdUnit3/test/resources/core/CustomClass.gd", "InnerClassA"])
+	assert_array(GdObjects.extract_class_path(CustomClass.InnerClassB))\
+		.contains_exactly(["res://addons/gdUnit3/test/resources/core/CustomClass.gd", "InnerClassB"])
+	assert_array(GdObjects.extract_class_path(CustomClass.InnerClassC))\
+		.contains_exactly(["res://addons/gdUnit3/test/resources/core/CustomClass.gd", "InnerClassC"])
+	assert_array(GdObjects.extract_class_path(AdvancedTestClass.SoundData))\
+		.contains_exactly(["res://addons/gdUnit3/test/mocker/resources/AdvancedTestClass.gd", "SoundData"])
+	assert_array(GdObjects.extract_class_path(AdvancedTestClass.AtmosphereData))\
+		.contains_exactly(["res://addons/gdUnit3/test/mocker/resources/AdvancedTestClass.gd", "AtmosphereData"])
+	assert_array(GdObjects.extract_class_path(AdvancedTestClass.Area4D))\
+	.contains_exactly(["res://addons/gdUnit3/test/mocker/resources/AdvancedTestClass.gd", "Area4D"])
+	
+	# inner inner class
+	assert_array(GdObjects.extract_class_path(CustomClass.InnerClassD.InnerInnerClassA))\
+		.contains_exactly(["res://addons/gdUnit3/test/resources/core/CustomClass.gd", "InnerClassD", "InnerInnerClassA"])
+
+func test_is_same():
+	assert_bool(GdObjects.is_same(1, 1)).is_true()
+	assert_bool(GdObjects.is_same(1, 2)).is_false()
+	assert_bool(GdObjects.is_same(1.0, 1.0)).is_true()
+	assert_bool(GdObjects.is_same(1, 1.0)).is_false()
+	
+	var obj1 = auto_free(Camera.new())
+	var obj2 = auto_free(Camera.new())
+	var obj3 = auto_free(obj2.duplicate())
+	assert_bool(GdObjects.is_same(obj1, obj1)).is_true()
+	assert_bool(GdObjects.is_same(obj1, obj2)).is_false()
+	assert_bool(GdObjects.is_same(obj1, obj3)).is_false()
+	assert_bool(GdObjects.is_same(obj2, obj1)).is_false()
+	assert_bool(GdObjects.is_same(obj2, obj2)).is_true()
+	assert_bool(GdObjects.is_same(obj2, obj3)).is_false()
+	assert_bool(GdObjects.is_same(obj3, obj1)).is_false()
+	assert_bool(GdObjects.is_same(obj3, obj2)).is_false()
+	assert_bool(GdObjects.is_same(obj3, obj3)).is_true()
+
+func test_can_instance():
+	assert_bool(GdObjects.can_instance(GDScript)).is_true()
+	assert_bool(GdObjects.can_instance(Node)).is_true()
+	assert_bool(GdObjects.can_instance(Tree)).is_true()
+	assert_bool(GdObjects.can_instance(Camera)).is_true()
+	assert_bool(GdObjects.can_instance(Person)).is_true()
+	assert_bool(GdObjects.can_instance(CustomClass.InnerClassA)).is_true()
+	
+	assert_bool(GdObjects.can_instance(TreeItem)).is_true()
+
+# creates a test instance by given class name or resource path
+# instances created with auto free
+func create_instance(clazz):
+	var result := GdObjects.create_instance(clazz)
+	if result.is_success():
+		return auto_free(result.value())
+	return null
+
+func test_create_instance_by_class_name():
+	# instance of engine classes
+	assert_object(create_instance(Node))\
+		.is_not_null()\
+		.is_instanceof(Node)
+	assert_object(create_instance(Camera))\
+		.is_not_null()\
+		.is_instanceof(Camera)
+	# instance of custom classes
+	assert_object(create_instance(Person))\
+		.is_not_null()\
+		.is_instanceof(Person)
+	# instance of inner classes
+	assert_object(create_instance(CustomClass.InnerClassA))\
+		.is_not_null()\
+		.is_instanceof(CustomClass.InnerClassA)
+
+func test_extract_class_name_on_null_value():
+	# we can't extract class name from a null value
+	assert_result(GdObjects.extract_class_name(null))\
+		.is_error()\
+		.contains_message("Can't extract class name form a null value.")

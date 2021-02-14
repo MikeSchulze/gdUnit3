@@ -1,0 +1,20 @@
+# Project-specific ignores
+.history
+
+# Godot-specific ignores
+.import/
+*.png.import
+*.jpg.import
+*.svg.import
+
+# Mono-specific ignores
+.mono/
+data_*/
+mono_crash.*.json
+
+# System/tool-specific ignores
+.directory
+*~
+
+# temporary generated files
+addons/gdUnit3/GdUnitRunner.cfg

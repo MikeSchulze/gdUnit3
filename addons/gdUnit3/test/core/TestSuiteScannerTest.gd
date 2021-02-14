@@ -1,0 +1,90 @@
+extends GdUnitTestSuite
+
+
+func after():
+	GdUnitTools.clear_tmp()
+
+
+func test_build_test_suite_path__path_contains_src_folder():
+	# from a project path
+	assert_str(_TestSuiteScanner.build_test_suite_path("res://project/src/models/events/ModelChangedEvent.gd"))\
+		.is_equal("res://project/test/models/events/ModelChangedEventTest.gd")
+	# from a plugin path
+	assert_str(_TestSuiteScanner.build_test_suite_path("res://addons/MyPlugin/src/models/events/ModelChangedEvent.gd"))\
+		.is_equal("res://addons/MyPlugin/test/models/events/ModelChangedEventTest.gd")
+	# located in user path
+	assert_str(_TestSuiteScanner.build_test_suite_path("user://project/src/models/events/ModelChangedEvent.gd"))\
+		.is_equal("user://project/test/models/events/ModelChangedEventTest.gd")
+		
+func test_build_test_suite_path__path_not_contains_src_folder():
+	# from a project path
+	assert_str(_TestSuiteScanner.build_test_suite_path("res://project/models/events/ModelChangedEvent.gd"))\
+		.is_equal("res://project/test/models/events/ModelChangedEventTest.gd")
+	# from a plugin path
+	assert_str(_TestSuiteScanner.build_test_suite_path("res://addons/MyPlugin/models/events/ModelChangedEvent.gd"))\
+		.is_equal("res://addons/MyPlugin/test/models/events/ModelChangedEventTest.gd")
+	# located in user path
+	assert_str(_TestSuiteScanner.build_test_suite_path("user://project/models/events/ModelChangedEvent.gd"))\
+		.is_equal("user://project/test/models/events/ModelChangedEventTest.gd")
+
+func test_test_suite_exists():
+	var path_exists := "res://addons/gdUnit3/test/resources/core/GeneratedPersonTest.gd"
+	var path_not_exists := "res://addons/gdUnit3/test/resources/core/FamilyTest.gd"
+	assert_that(_TestSuiteScanner.test_suite_exists(path_exists)).is_true()
+	assert_that(_TestSuiteScanner.test_suite_exists(path_not_exists)).is_false()
+
+func test_test_case_exists():
+	var test_suite_path := "res://addons/gdUnit3/test/resources/core/GeneratedPersonTest.gd"
+	assert_that(_TestSuiteScanner.test_case_exists(test_suite_path, "name")).is_true()
+	assert_that(_TestSuiteScanner.test_case_exists(test_suite_path, "last_name")).is_false()
+
+func test_save_test_suite():
+	var temp_dir := GdUnitTools.create_temp_dir("TestSuiteScannerTest")
+	var source_path := temp_dir + "/src/MyClass.gd"
+	var suite_path := temp_dir + "/test/MyClassTest.gd"
+	var result := _TestSuiteScanner.save_test_suite(suite_path, source_path)
+	assert_that(result.is_success()).is_true()
+	assert_file(result.value()).exists()\
+		.is_file()\
+		.is_script()\
+		.contains_exactly([
+			"# GdUnit generated TestSuite",
+			"class_name MyClassTest",
+			"extends GdUnitTestSuite",
+			"",
+			"# TestSuite generated from",
+			"const __source = '%s'" % source_path,
+			""])
+
+func test_create_test_case():
+	# store test class on temp dir
+	var tmp_path := GdUnitTools.create_temp_dir("project/entity")
+	var source_path := tmp_path + "/Person.gd"
+	# copy test class from resources to temp
+	if Directory.new().copy("res://addons/gdUnit3/test/resources/core/Person.gd", source_path) != OK:
+		push_error("can't copy resouces")
+	# generate new test suite with test 'test_last_name()'
+	var result := _TestSuiteScanner.create_test_case(source_path, "last_name")
+	assert_that(result.is_success()).is_true()
+	var info :Dictionary = result.value()
+	assert_int(info.get("line")).is_equal(8)
+	assert_file(info.get("path")).exists()\
+		.is_file()\
+		.is_script()\
+		.contains_exactly([
+			"# GdUnit generated TestSuite",
+			"class_name PersonTest",
+			"extends GdUnitTestSuite",
+			"",
+			"# TestSuite generated from",
+			"const __source = '%s'" % source_path,
+			"",
+			"func test_last_name():",
+			"	# remove this line and complete your test",
+			"	assert_not_yet_implemented()",
+			""])
+	# try to add again
+	result = _TestSuiteScanner.create_test_case(source_path, "last_name")
+	assert_that(result.is_warn()).is_true()
+	assert_that(result.warn_message()).is_equal("Test Case 'test_last_name' already exists in 'user://tmp/test/project/entity/PersonTest.gd'")
+
