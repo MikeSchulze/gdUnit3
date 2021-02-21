@@ -145,8 +145,8 @@ static func equals(obj_a, obj_b, case_sensitive :bool = false, deep_check :bool 
 			if dic_a.size() != dic_b.size():
 				return false
 			for key in dic_a.keys():
-				var value_a = dic_a[key]
-				var value_b = dic_b[key]
+				var value_a = dic_a[key] if dic_a.has(key) else null
+				var value_b = dic_b[key] if dic_b.has(key) else null
 				if not equals(value_a, value_b, case_sensitive):
 					return false
 			return true

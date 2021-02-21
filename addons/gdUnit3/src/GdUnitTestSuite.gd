@@ -162,8 +162,8 @@ func assert_float(current, expect_result: int = GdUnitAssert.EXPECT_SUCCESS) -> 
 func assert_array(current, expect_result: int = GdUnitAssert.EXPECT_SUCCESS) -> GdUnitArrayAssert:
 	return GdUnitArrayAssertImpl.new(current, expect_result)
 
-func assert_dict(current, expect_result: int = GdUnitAssert.EXPECT_SUCCESS) :
-	assert_not_yet_implemented()
+func assert_dict(current, expect_result: int = GdUnitAssert.EXPECT_SUCCESS) -> GdUnitDictionaryAssert:
+	return GdUnitDictionaryAssertImpl.new(current, expect_result)
 
 static func assert_file(current, expect_result: int = GdUnitAssert.EXPECT_SUCCESS) -> GdUnitFileAssert:
 	return GdUnitFileAssertImpl.new(current, expect_result)

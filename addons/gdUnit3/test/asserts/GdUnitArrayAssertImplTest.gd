@@ -10,7 +10,7 @@ func test_is_null():
 	# should fail because the array not null
 	assert_array([], GdUnitAssert.EXPECT_FAIL) \
 		.is_null()\
-		.has_error_message("Expecting: 'Null' but was 'empty'")
+		.has_error_message("Expecting: 'Null' but was empty")
 
 func test_is_not_null():
 	assert_array([]).is_not_null()
@@ -48,7 +48,7 @@ func test_is_empty():
 	# should fail because the array is not empty it has a size of one
 	assert_array([1], GdUnitAssert.EXPECT_FAIL) \
 		.is_empty()\
-		.has_error_message("Expecting:\n must be empty but was\n '1'")
+		.has_error_message("Expecting:\n must be empty but was\n 1")
 
 func test_is_not_empty():
 	assert_array([1]).is_not_empty()
@@ -70,14 +70,14 @@ func test_contains():
 	# should fail because the array not contains 7 and 6
 	assert_array([1, 2, 3, 4, 5], GdUnitAssert.EXPECT_FAIL) \
 		.contains([2, 7, 6])\
-		.has_error_message("Expecting:\n '1\n2\n3\n4\n5'\n do contains\n '2\n7\n6'\nbut could not find elements:\n '7\n6'")
+		.has_error_message("Expecting:\n 1\n2\n3\n4\n5\n do contains\n 2\n7\n6\nbut could not find elements:\n 7\n6")
 
 func test_contains_exactly():
 	assert_array([1, 2, 3, 4, 5]).contains_exactly([1, 2, 3, 4, 5])
 	# should fail because the array contains the same elements but in a different order
 	var expected_error_message := """Expecting to have same elements and in same order:
- '1\n2\n3\n4\n5'
- '1\n4\n3\n2\n5'
+ 1\n2\n3\n4\n5
+ 1\n4\n3\n2\n5
  but has different order at position '1'
  '2' vs '4'"""
 	assert_array([1, 2, 3, 4, 5], GdUnitAssert.EXPECT_FAIL) \

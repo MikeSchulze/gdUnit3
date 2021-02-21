@@ -289,6 +289,21 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/test/core/GdUnitClassDoublerTest.gd"
 }, {
+"base": "GdUnitAssert",
+"class": "GdUnitDictionaryAssert",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/src/GdUnitDictionaryAssert.gd"
+}, {
+"base": "GdUnitDictionaryAssert",
+"class": "GdUnitDictionaryAssertImpl",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/src/asserts/GdUnitDictionaryAssertImpl.gd"
+}, {
+"base": "GdUnitTestSuite",
+"class": "GdUnitDictionaryAssertImplTest",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/test/asserts/GdUnitDictionaryAssertImplTest.gd"
+}, {
 "base": "Resource",
 "class": "GdUnitEvent",
 "language": "GDScript",
@@ -626,6 +641,9 @@ _global_script_class_icons={
 "GdUnitBoolAssertImplTest": "",
 "GdUnitClassDoubler": "",
 "GdUnitClassDoublerTest": "",
+"GdUnitDictionaryAssert": "",
+"GdUnitDictionaryAssertImpl": "",
+"GdUnitDictionaryAssertImplTest": "",
 "GdUnitEvent": "",
 "GdUnitExecutor": "",
 "GdUnitFileAssert": "",
@@ -692,6 +710,10 @@ config/icon="res://icon.png"
 [audio]
 
 default_bus_layout=""
+
+[editor_plugins]
+
+enabled=PoolStringArray( "gdUnit3" )
 
 [network]
 

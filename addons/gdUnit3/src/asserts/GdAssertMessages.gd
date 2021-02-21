@@ -21,7 +21,7 @@ static func _nerror(number) -> String:
 		_:
 			return "[color=%s]%s[/color]" % [ERROR_COLOR, str(number)]
 
-static func _current(value) -> String:
+static func _current(value, delimiter ="\n") -> String:
 	match typeof(value):
 		TYPE_STRING:
 			return "'[color=%s]%s[/color]'" % [VALUE_COLOR, colorDiff(value)]
@@ -33,10 +33,10 @@ static func _current(value) -> String:
 			return "[color=%s]<%s>[/color]" % [VALUE_COLOR, value.get_class()]
 		_:
 			if GdObjects.is_array_type(value):
-				return "'[color=%s]%s[/color]'" % [VALUE_COLOR, GdObjects.array_to_string(value)]
+				return "[color=%s]%s[/color]" % [VALUE_COLOR, GdObjects.array_to_string(value, delimiter)]
 			return "'[color=%s]%s[/color]'" % [VALUE_COLOR, value]
 
-static func _expected(value) -> String:
+static func _expected(value, delimiter ="\n") -> String:
 	match typeof(value):
 		TYPE_STRING:
 			return "'[color=%s]%s[/color]'" % [VALUE_COLOR, colorDiff(value)]
@@ -48,7 +48,7 @@ static func _expected(value) -> String:
 			return "[color=%s]<%s>[/color]" % [VALUE_COLOR, value.get_class()]
 		_:
 			if GdObjects.is_array_type(value):
-				return "'[color=%s]%s[/color]'" % [VALUE_COLOR, GdObjects.array_to_string(value)]
+				return "[color=%s]%s[/color]" % [VALUE_COLOR, GdObjects.array_to_string(value, delimiter)]
 			return "'[color=%s]%s[/color]'" % [VALUE_COLOR, value]
 
 static func orphan_detected_on_before(count :int):
@@ -206,6 +206,17 @@ static func error_arr_contains(current :Array, expected :Array, not_expect :Arra
 		var prefix = "but" if not_expect.empty() else "and"
 		error += "\n%s could not find elements:\n %s" % [prefix, _expected(not_found)]
 	return error
+
+# - DictionaryAssert specific messages ----------------------------------------------
+static func error_contains_keys(current :Array, expected :Array, keys_not_found :Array) -> String:
+	return "%s\n %s\n to contains:\n %s\n but can't find key's:\n %s" % [_error("Expecting keys:"), _current(current, ", "), _current(expected, ", "), _expected(keys_not_found, ", ")]
+
+static func error_not_contains_keys(current :Array, expected :Array, keys_not_found :Array) -> String:
+	return "%s\n %s\n do not contains:\n %s\n but contains key's:\n %s" % [_error("Expecting keys:"), _current(current, ", "), _current(expected, ", "), _expected(keys_not_found, ", ")]
+
+static func error_contains_key_value(key, value, current_value) -> String:
+	return "%s\n %s : %s\n but contains\n %s : %s" % [_error("Expecting key and value:"), _expected(key), _expected(value), _current(key), _current(current_value)]
+
 
 # - ResultAssert specific errors ----------------------------------------------------
 static func error_result_is_success() -> String:
