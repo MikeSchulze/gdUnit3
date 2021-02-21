@@ -139,11 +139,6 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/test/mocker/resources/DeepStubTestClass.gd"
 }, {
-"base": "GdUnitAssertImpl",
-"class": "DictonaryAssertImpl",
-"language": "GDScript",
-"path": "res://addons/gdUnit3/src/asserts/DictonaryAssertImpl.gd"
-}, {
 "base": "GdUnitArgumentMatcher",
 "class": "EqualsArgumentMatcher",
 "language": "GDScript",
@@ -611,7 +606,6 @@ _global_script_class_icons={
 "CustomNodeTestClass": "",
 "CustomResourceTestClass": "",
 "DeepStubTestClass": "",
-"DictonaryAssertImpl": "",
 "EqualsArgumentMatcher": "",
 "Fuzzer": "",
 "FuzzerTool": "",
