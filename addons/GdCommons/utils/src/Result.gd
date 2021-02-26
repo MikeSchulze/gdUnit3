@@ -14,7 +14,7 @@ var _error_message := ""
 var _value = null
 
 static func __instance() -> Result:
-	return load("res://addons/GdCommons/utils/src/Result.gd").new() as Result
+	return load("res://addons/GdCommons/utils/src/Result.gd").new()
 
 static func success(value) -> Result:
 	assert(value != null, "The value must not be NULL")
@@ -91,4 +91,4 @@ static func deserialize(config :Dictionary) -> Result:
 	result._error_message = config.get("err_msg", null)
 	result._state = config.get("state")
 	return result
-	
+
