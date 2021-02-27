@@ -3,7 +3,7 @@ extends Reference
 
 
 var _name :String
-var _parent :GdClassDescriptor
+var _parent = null
 var _is_inner_class :bool
 var _functions
 
