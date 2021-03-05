@@ -119,6 +119,57 @@ static func delete_directory(path :String):
 			#prints("deleted ", next)
 			file_name = dir.get_next()
 
+
+static func copy_file(from_file :String, to_dir :String):
+	var dir := Directory.new()
+	if dir.open(to_dir) == OK:
+		var to_file := to_dir + "/" + from_file.get_file()
+		prints("Copy %s to %s" % [from_file, to_file])
+		var success = dir.copy(from_file, to_file)
+		if success != OK:
+			push_error("Can't copy file form '%s' to '%s'" % [from_file, to_file])
+	else:
+		push_error("Directory not found: " + to_dir)
+
+
+static func copy_directory(from_dir :String, to_dir :String, recursive :bool = false) -> bool:
+	var source_dir := Directory.new()
+	if not source_dir.dir_exists(from_dir):
+		push_error("Source directory not found '%s'" % from_dir)
+		return false
+		
+	# check if destination exists 
+	var sdir = to_dir + "/" + from_dir.get_base_dir().split("/")[-1]
+	var dest_dir := Directory.new()
+	if not dest_dir.dir_exists(sdir):
+		# create it
+		dest_dir.make_dir_recursive(sdir)
+	dest_dir.open(sdir)
+	
+	if source_dir.open(from_dir) == OK:
+		source_dir.list_dir_begin()
+		var next := "."
+		
+		while next != "":
+			next = source_dir.get_next()
+			if next == "" or next == "." or next == "..":
+				continue
+			var source := source_dir.get_current_dir() + "/" + next
+			var dest := dest_dir.get_current_dir() + "/" + next
+			if source_dir.current_is_dir():
+				if recursive:
+					copy_directory(source + "/", dest_dir.get_current_dir(), recursive)
+				continue
+			var err = source_dir.copy(source, dest)
+			if err != OK:
+				push_error("Error on copy file '%s' to '%s'" % [source, dest])
+				return false
+		
+		return true
+	else:
+		push_error("Directory not found: " + from_dir)
+		return false
+
 static func resource_as_array(resource_path :String) -> PoolStringArray:
 	var file := File.new()
 	var err := file.open(resource_path, File.READ)

@@ -11,7 +11,7 @@ var _error_info = null
 # Scans the current stack trace for the root cause to extract the line number
 static func _get_line_number() -> int:
 	var stack_trace := get_stack()
-	if stack_trace == null:
+	if stack_trace == null or stack_trace.empty():
 		return -1
 	
 	var failure_line := -1
