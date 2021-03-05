@@ -37,11 +37,11 @@ func parse(args :Array) -> int:
 		
 		if option:
 			if _parse_cmd_arguments(option, args) == -1:
-				print_error("The '%s' command requires an argument!" % option.short_command())
-				print_info(option.describe())
+				GdUnitTools.prints_error("The '%s' command requires an argument!" % option.short_command())
+				GdUnitTools.prints_info(option.describe())
 				return -1
 		else:
-			print_error("Unknown '%s' command!" % cmd)
+			GdUnitTools.prints_error("Unknown '%s' command!" % cmd)
 			return -1
 	_show_help = false
 	return 0
@@ -70,12 +70,3 @@ func _is_next_value_argument(args :Array) -> bool:
 	if args.empty():
 		return false
 	return _options.get_option(args[0]) == null
-
-
-static func print_error(message :String) -> void:
-	prints("[0;91m%s[0m" % message)
-
-static func print_info(message :String) -> void:
-	prints("[0;92m%s[0m" % message)
-
-

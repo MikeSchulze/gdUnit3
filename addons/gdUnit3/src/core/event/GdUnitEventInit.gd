@@ -2,6 +2,16 @@ class_name GdUnitInit
 extends GdUnitEvent
 
 
-func _init(total_count:int) -> void:
+var _total_testsuites :int
+
+func _init(total_testsuites :int, total_tests :int) -> void:
 	_event_type = INIT
-	_total_count = total_count
+	_total_testsuites = total_testsuites
+	_total_count = total_tests
+
+
+func total_test_suites() -> int:
+	return _total_testsuites
+
+func total_tests() -> int:
+	return _total_count

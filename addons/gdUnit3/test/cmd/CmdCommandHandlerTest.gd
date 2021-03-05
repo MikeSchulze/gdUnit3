@@ -100,6 +100,7 @@ func test_execute_commands_with_cb_registered():
 	
 	assert_result(cmd_handler.execute([CmdCommand.new("-a")])).is_success()
 	verify(cmd_spy).cmd_a()
+	verify_no_more_interactions(cmd_spy)
 	
 	reset(cmd_spy)
 	assert_result(cmd_handler.execute([

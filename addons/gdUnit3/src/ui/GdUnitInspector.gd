@@ -242,20 +242,17 @@ func _on_fscript_editor_context_menu_pressed(id :int, text_edit :TextEdit):
 func run_test_suites(test_suite_paths :Array, debug :bool, rerun :bool=false) -> void:
 	# create new runner config for fresh run otherwise use saved one
 	if not rerun:
-		var config := {
-			GdUnitRunnerConfig.SELECTED_TEST_SUITE_RESOURCES: test_suite_paths
-		}
-		GdUnitRunnerConfig.save_config(config)
+		var runner_conf := GdUnitRunnerConfig.new()
+		runner_conf.add_test_suites(test_suite_paths)
+		runner_conf.save()
 	_gdUnit_run(debug)
 
 func run_test_case(test_suite_resource_path :String, test_case :String, debug :bool, rerun :bool=false) -> void:
 	# create new runner config for fresh run otherwise use saved one
 	if not rerun:
-		var config := {
-			GdUnitRunnerConfig.SELECTED_TEST_SUITE_RESOURCES: [test_suite_resource_path],
-			GdUnitRunnerConfig.SELECTED_TEST_CASE: test_case
-		}
-		GdUnitRunnerConfig.save_config(config)
+		var runner_conf := GdUnitRunnerConfig.new()
+		runner_conf.add_test_case(test_suite_resource_path, test_case)
+		runner_conf.save()
 	_gdUnit_run(debug)
 
 func _gdUnit_run(debug :bool) -> void:
@@ -265,10 +262,7 @@ func _gdUnit_run(debug :bool) -> void:
 	_is_running = true
 	grab_focus()
 	show()
-	var runner_config := GdUnitRunnerConfig.load_config()
-	runner_config[GdUnitRunnerConfig.DEBUG_MODE] = debug
-	GdUnitRunnerConfig.save_config(runner_config)
-
+	
 	_running_debug_mode = debug
 	_current_runner_process_id = -1
 	# before start we have to save all changed test suites

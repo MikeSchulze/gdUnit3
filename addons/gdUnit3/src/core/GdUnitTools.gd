@@ -103,6 +103,11 @@ static func create_temp_file(relative_path :String, file_name :String, mode :=Fi
 	push_error("Error creating temporary file at: %s, %s" % [file_path, error_as_string(error)])
 	return null
 
+
+static func current_dir() -> String:
+	return ProjectSettings.globalize_path("res://")
+
+
 static func delete_directory(path :String):
 	var dir := Directory.new()
 	if dir.open(path) == OK:
@@ -118,6 +123,57 @@ static func delete_directory(path :String):
 			Directory.new().remove(next)
 			#prints("deleted ", next)
 			file_name = dir.get_next()
+
+
+static func copy_file(from_file :String, to_dir :String):
+	var dir := Directory.new()
+	if dir.open(to_dir) == OK:
+		var to_file := to_dir + "/" + from_file.get_file()
+		prints("Copy %s to %s" % [from_file, to_file])
+		var success = dir.copy(from_file, to_file)
+		if success != OK:
+			push_error("Can't copy file form '%s' to '%s'" % [from_file, to_file])
+	else:
+		push_error("Directory not found: " + to_dir)
+
+
+static func copy_directory(from_dir :String, to_dir :String, recursive :bool = false) -> bool:
+	var source_dir := Directory.new()
+	if not source_dir.dir_exists(from_dir):
+		push_error("Source directory not found '%s'" % from_dir)
+		return false
+		
+	# check if destination exists 
+	var sdir = to_dir + "/" + from_dir.get_base_dir().split("/")[-1]
+	var dest_dir := Directory.new()
+	if not dest_dir.dir_exists(sdir):
+		# create it
+		dest_dir.make_dir_recursive(sdir)
+	dest_dir.open(sdir)
+	
+	if source_dir.open(from_dir) == OK:
+		source_dir.list_dir_begin()
+		var next := "."
+		
+		while next != "":
+			next = source_dir.get_next()
+			if next == "" or next == "." or next == "..":
+				continue
+			var source := source_dir.get_current_dir() + "/" + next
+			var dest := dest_dir.get_current_dir() + "/" + next
+			if source_dir.current_is_dir():
+				if recursive:
+					copy_directory(source + "/", dest_dir.get_current_dir(), recursive)
+				continue
+			var err = source_dir.copy(source, dest)
+			if err != OK:
+				push_error("Error on copy file '%s' to '%s'" % [source, dest])
+				return false
+		
+		return true
+	else:
+		push_error("Directory not found: " + from_dir)
+		return false
 
 static func resource_as_array(resource_path :String) -> PoolStringArray:
 	var file := File.new()
@@ -197,3 +253,31 @@ static func clear_push_errors() -> void:
 	var runner = Engine.get_meta("GdUnitRunner")
 	if runner != null:
 		runner.clear_push_errors()
+
+static func printraw_error(message :String, stdout := true) -> String:
+	var formatend_message := "[0;91m%s[0m" % message
+	if stdout:
+		printraw(formatend_message)
+	return formatend_message
+
+static func prints_error(message :String) -> void:
+	prints("[0;91m%s[0m" % message)
+
+static func printraw_warn(message :String, stdout := true) -> String:
+	var formatend_message := "[0;93m%s[0m" % message
+	if stdout:
+		printraw(formatend_message)
+	return formatend_message
+
+static func prints_warn(message :String) -> void:
+	prints("[0;93m%s[0m" % message)
+
+static func printraw_info(message :String, stdout := true) -> String:
+	var formatend_message := "[0;92m%s[0m" % message
+	if stdout:
+		printraw(formatend_message)
+	return formatend_message
+
+static func prints_info(message :String) -> void:
+	prints("[0;92m%s[0m" % message)
+

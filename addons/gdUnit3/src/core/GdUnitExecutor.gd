@@ -23,6 +23,8 @@ var _reports :Array = Array()
 
 var _event_handler :SignalHandler
 var _test_run_state :GDScriptFunctionState
+var _with_yielding := true
+var _fail_fast := false
 
 var _x = GdUnitArgumentMatchers.new()
 
@@ -32,9 +34,17 @@ func _ready():
 		_event_handler.register_on_test_reports(self, "_event_test_report")
 	_report_errors_enabled = GdUnitSettings.is_report_push_errors()
 
+# disable yielding for CLI tool where results in unneccesary waits
+# the default yield is only set when the executer is runnung in context of client/server
+func disable_default_yield():
+	_with_yielding = false
+
+func fail_fast(enabled :bool) -> void:
+	_fail_fast = enabled
+
 func before(test_suite :GdUnitTestSuite, total_count :int) -> void:
 	emit_signal("send_event", GdUnitEvent.new()\
-		.before(test_suite.get_name(), total_count))
+		.before(test_suite.get_script().resource_path, test_suite.get_name(), total_count))
 	_testsuite_timer = LocalTime.now()
 	_total_test_orphan_nodes = 0
 	_total_test_failed = 0
@@ -67,16 +77,17 @@ func after(test_suite :GdUnitTestSuite) -> void:
 		GdUnitEvent.ELAPSED_TIME: _testsuite_timer.elapsed_since_ms(),
 		GdUnitEvent.WARNINGS: test_warnings,
 		GdUnitEvent.ERRORS: test_errors,
-		GdUnitEvent.FAILED: test_failed
+		GdUnitEvent.FAILED: test_failed,
+		GdUnitEvent.FAILED_COUNT: _total_test_failed,
 	}
-	emit_signal("send_event", GdUnitEvent.new().after(test_suite.get_name(), statistics, _reports.duplicate()))
+	emit_signal("send_event", GdUnitEvent.new().after(test_suite.get_script().resource_path, test_suite.get_name(), statistics, _reports.duplicate()))
 	_reports.clear()
 
 func before_test(test_suite :GdUnitTestSuite, test_case :_TestCase):
 	_testcase_timer = LocalTime.now()
 	_reports.clear()
 	emit_signal("send_event", GdUnitEvent.new()\
-		.beforeTest(test_suite.get_name(), test_case.get_name()))
+		.beforeTest(test_suite.get_script().resource_path, test_suite.get_name(), test_case.get_name()))
 	_set_memory_pool(test_suite, GdUnitTools.MEMORY_POOL_TESTCASE)
 	_mem_monitor_testcase.start()
 	test_suite.before_test()
@@ -109,8 +120,9 @@ func after_test(test_suite :GdUnitTestSuite, test_case :_TestCase):
 		GdUnitEvent.ERRORS: test_errors,
 		GdUnitEvent.FAILED: test_failed
 	}
+	
 	emit_signal("send_event", GdUnitEvent.new()\
-		.afterTest(test_suite.get_name(), test_case.get_name(), statistics, _reports.duplicate()))
+		.afterTest(test_suite.get_script().resource_path, test_suite.get_name(), test_case.get_name(), statistics, _reports.duplicate()))
 	_reports.clear()
 
 func _before_test_run(test_suite :GdUnitTestSuite, test_case :_TestCase):
@@ -148,7 +160,7 @@ func _after_test_run(test_suite :GdUnitTestSuite, test_case :_TestCase):
 		GdUnitEvent.FAILED: test_failed
 	}
 	emit_signal("send_event", GdUnitEvent.new()\
-		.testrun_after(test_suite.get_name(), test_case.get_name(), statistics, _reports.duplicate()))
+		.testrun_after(test_suite.get_script().resource_path, test_suite.get_name(), test_case.get_name(), statistics, _reports.duplicate()))
 	_reports.clear()
 
 func execute_test_case(test_suite :GdUnitTestSuite, test_case :_TestCase) -> GDScriptFunctionState:
@@ -157,14 +169,15 @@ func execute_test_case(test_suite :GdUnitTestSuite, test_case :_TestCase) -> GDS
 	
 	_before_test_run(test_suite, test_case)
 	if not fuzzer:
-		yield(get_tree(), "idle_frame")
 		_test_run_state = test_suite.call(test_case.get_name())
 		# is yielded than wait for completed
 		if _test_run_state is GDScriptFunctionState:
 			yield(_test_run_state, "completed")
 	else:
 		for iteration in fuzzer.iteration_limit():
-			yield(get_tree(), "idle_frame")
+			if _with_yielding:
+				# give main thread time to sync to prevent network timeouts
+				yield(get_tree(), "idle_frame")
 			# interrupt at first failure
 			if _reports.size() > 0:
 				var report :GdUnitReport = _reports.pop_front()
@@ -182,10 +195,18 @@ func execute_test_case(test_suite :GdUnitTestSuite, test_case :_TestCase) -> GDS
 	return null
 
 func execute(test_suite :GdUnitTestSuite) -> GDScriptFunctionState:
+	# stop on first error if fail fast enabled
+	if _fail_fast and _total_test_failed > 0:
+		test_suite.free()
+		return null
+	
 	add_child(test_suite)
 	before(test_suite, test_suite.get_child_count())
 	
 	for test_case in test_suite.get_children():
+		# stop on first error if fail fast enabled
+		if _fail_fast and _total_test_failed > 0:
+			break
 		var fs = execute_test_case(test_suite, test_case)
 		# is yielded than wait for completed
 		if fs is GDScriptFunctionState:

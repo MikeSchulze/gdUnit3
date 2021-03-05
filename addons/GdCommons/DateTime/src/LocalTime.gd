@@ -1,6 +1,6 @@
 # This class provides Date/Time functionallity to Godot
 class_name LocalTime
-extends Resource
+extends Reference
 
 const SCRIPT_PATH = "res://addons/GdCommons/DateTime/src/LocalTime.gd"
 
