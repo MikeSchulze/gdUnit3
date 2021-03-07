@@ -489,6 +489,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/src/GdUnitTestSuite.gd"
 }, {
+"base": "GdUnitReportSummary",
+"class": "GdUnitTestSuiteReport",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/src/report/GdUnitTestSuiteReport.gd"
+}, {
 "base": "Resource",
 "class": "GdUnitTools",
 "language": "GDScript",
@@ -514,7 +519,7 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/src/fuzzers/IntFuzzer.gd"
 }, {
-"base": "Resource",
+"base": "Reference",
 "class": "LocalTime",
 "language": "GDScript",
 "path": "res://addons/GdCommons/DateTime/src/LocalTime.gd"
@@ -681,6 +686,7 @@ _global_script_class_icons={
 "GdUnitStringAssertImplTest": "",
 "GdUnitTask": "",
 "GdUnitTestSuite": "",
+"GdUnitTestSuiteReport": "",
 "GdUnitTools": "",
 "GdUnitToolsTest": "",
 "GeneratedPersonTest": "",

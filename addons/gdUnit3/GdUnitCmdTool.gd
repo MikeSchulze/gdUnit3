@@ -1,9 +1,6 @@
 #!/usr/bin/env -S godot -s
 extends SceneTree
 
-
-const GD_CMD_SERVER_PORT :int = 31088
-
 enum {
 	INIT,
 	RUN,
@@ -41,7 +38,10 @@ func _idle(delta):
 				pass
 				# process next test suite
 				var test_suite := _test_suites_to_process.pop_front() as GdUnitTestSuite
-				yield(_executor.execute(test_suite), "completed")
+				var fs = _executor.execute(test_suite)
+				if fs is GDScriptFunctionState:
+					yield(fs, "completed")
+				
 			root.set_process(true)
 		STOP:
 			_state = EXIT
@@ -100,31 +100,39 @@ func gdUnitInit() -> void:
 	_on_executor_event(GdUnitInit.new(_test_suites_to_process.size(), total_test_count))
 
 var _report_summary :GdUnitReportSummary
-var _testsuite_timer :LocalTime
+
 
 func _on_executor_event(event :GdUnitEvent):
 	#prints("_on_Executor_send_event", event)
 	match event.type():
 		GdUnitEvent.INIT:
-			_testsuite_timer = LocalTime.now()
 			var summary := event as GdUnitInit
-			_report_summary = GdUnitReportSummary.new(summary.total_test_suites(), summary.total_tests())
+			_report_summary = GdUnitReportSummary.new(
+				summary.total_test_suites(), 
+				summary.total_tests())
 		
 		
 		GdUnitEvent.STOP:
-			_report_summary._duration = _testsuite_timer.elapsed_since()
-			
-			write_report(_report_summary)
+			var report_dir := GdUnitTools.current_dir() + "report"
+			_report_summary.stop_timer()
+			_report_summary.write_html_report(report_dir)
 		
 		
 		GdUnitEvent.TESTSUITE_BEFORE:
-			
-			pass
+			var report = GdUnitTestSuiteReport.new(
+				event.resource_path(), 
+				event.suite_name(), 
+				event.total_count())
+			_report_summary.add_report(report)
 			
 			
 		GdUnitEvent.TESTSUITE_AFTER:
-			#prints("%s" % "FINISHED | PASSED:" + str(event._success_count) + "| FAILED:" + str(event._failed_count))
-			pass
+			
+			_report_summary.set_summary(
+				event.suite_name(), 
+				0, #failures 
+				0, # errors
+				event.orphan_nodes())
 			
 			
 		GdUnitEvent.TESTCASE_BEFORE:
@@ -134,9 +142,9 @@ func _on_executor_event(event :GdUnitEvent):
 			
 			
 		GdUnitEvent.TESTCASE_AFTER:
-
 			
-			
+			if event.is_failed():
+				prints(event.suite_name(), event.test_name(), event.reports())
 			
 			pass
 			
@@ -148,31 +156,8 @@ func _on_executor_event(event :GdUnitEvent):
 		GdUnitEvent.TESTRUN_AFTER:
 			pass
 
-	
 
-func write_report(report_summary :GdUnitReportSummary):
-	var report_dir := GdUnitTools.create_temp_dir("report")
-	GdUnitTools.copy_file("res://addons/gdUnit3/src/report/template/index.html", report_dir)
-	GdUnitTools.copy_directory("res://addons/gdUnit3/src/report/template/css/", report_dir)
-	
-	var file = File.new()
-	file.open("%s/index.html" % report_dir, File.READ)
-	var content = file.get_as_text()
-	content = content.replace("${testsuites}", report_summary._testsiutes)
-	content = content.replace("${tests}", report_summary._tests)
-	content = content.replace("${failures}", report_summary._errors)
-	content = content.replace("${orphans}", report_summary._orphans)
-	content = content.replace("${duration}", report_summary._duration)
-	file.close()
 
-	
-	file.open("%s/index.html" % report_dir, File.WRITE)
-	file.store_string(content)
-	file.close()
-
-	
-	var report := OS.get_user_data_dir() + "/tmp/report/index.html"
-	prints("Open Report at:", "'start "+report+"'")
 
 
 func send_message(message :String):
