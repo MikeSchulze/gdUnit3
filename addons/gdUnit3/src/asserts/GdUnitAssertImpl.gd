@@ -13,14 +13,14 @@ static func _get_line_number() -> int:
 	var stack_trace := get_stack()
 	if stack_trace == null:
 		return -1
-	stack_trace.invert()
 	
+	var failure_line := -1
 	while not stack_trace.empty():
 		var stack_info = stack_trace.pop_front()
-		var source :String = stack_info.get("source")
-		if source == "res://addons/gdUnit3/src/core/GdUnitExecutor.gd":
-			stack_info = stack_trace.pop_front()
-			return stack_info.get("line")
+		var source :String = stack_info.get("function")
+		if source == "execute_test_case":
+			return failure_line
+		failure_line = stack_info.get("line")
 	# if no GdUnitExecutor in the stacktrace then is possible called in a yield stack
 	var stack_info = get_stack()[-1]
 	return stack_info.get("line")

@@ -59,7 +59,10 @@ func _process(delta):
 			else:
 				# process next test suite
 				var test_suite := _test_suites_to_process.pop_front() as GdUnitTestSuite
-				yield(_executor.execute(test_suite), "completed")
+				var fs = _executor.execute(test_suite)
+				# is yielded than wait for completed
+				if fs is GDScriptFunctionState:
+					yield(fs, "completed")
 			set_process(true)
 		STOP:
 			_state = EXIT

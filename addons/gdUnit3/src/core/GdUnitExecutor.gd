@@ -79,10 +79,6 @@ func before_test(test_suite :GdUnitTestSuite, test_case :_TestCase):
 		.beforeTest(test_suite.get_name(), test_case.get_name()))
 	_set_memory_pool(test_suite, GdUnitTools.MEMORY_POOL_TESTCASE)
 	_mem_monitor_testcase.start()
-	if _report_errors_enabled:
-		yield(_push_error_monitor.start(), "completed")
-	else:
-		yield(get_tree(), "idle_frame")
 	test_suite.before_test()
 	GdUnitTools.run_auto_close()
 
@@ -92,10 +88,7 @@ func after_test(test_suite :GdUnitTestSuite, test_case :_TestCase):
 	GdUnitTools.run_auto_free(GdUnitTools.MEMORY_POOL_TESTCASE)
 	_mem_monitor_testcase.stop()
 	_mem_monitor_testcase.subtract(_mem_monitor_testrun.orphan_nodes())
-	if _report_errors_enabled:
-		yield(_push_error_monitor.stop(), "completed")
-	else:
-		yield(get_tree(), "idle_frame")	
+
 	var test_warnings := false
 	var test_failed := not _reports.empty()
 	var test_errors := false
@@ -158,19 +151,19 @@ func _after_test_run(test_suite :GdUnitTestSuite, test_case :_TestCase):
 		.testrun_after(test_suite.get_name(), test_case.get_name(), statistics, _reports.duplicate()))
 	_reports.clear()
 
-func execute_yielded(test_suite :GdUnitTestSuite, test_case :_TestCase, fuzzer :Fuzzer = null) -> GDScriptFunctionState:
-	# install yield
-	yield(get_tree(), "idle_frame")
+func execute_test_case(test_suite :GdUnitTestSuite, test_case :_TestCase) -> GDScriptFunctionState:
+	before_test(test_suite, test_case)
+	var fuzzer := create_fuzzer(test_suite, test_case)
 	
 	_before_test_run(test_suite, test_case)
 	if not fuzzer:
+		yield(get_tree(), "idle_frame")
 		_test_run_state = test_suite.call(test_case.get_name())
+		# is yielded than wait for completed
 		if _test_run_state is GDScriptFunctionState:
-			# resume and wait to finish
 			yield(_test_run_state, "completed")
 	else:
 		for iteration in fuzzer.iteration_limit():
-			# give the client time to comunicate with the server to send updates
 			yield(get_tree(), "idle_frame")
 			# interrupt at first failure
 			if _reports.size() > 0:
@@ -178,31 +171,30 @@ func execute_yielded(test_suite :GdUnitTestSuite, test_case :_TestCase, fuzzer :
 				_reports.push_front(GdUnitReport.new() \
 						.create(GdUnitReport.INTERUPTED, report.line_number(), GdAssertMessages.fuzzer_interuped(iteration-1, report.message())))
 				break
-			fuzzer._iteration_index += 1		
+			fuzzer._iteration_index += 1
 			_test_run_state = test_suite.call(test_case.get_name(), fuzzer)
+			# is yielded than wait for completed
 			if _test_run_state is GDScriptFunctionState:
-				# resume and wait to finish
 				yield(_test_run_state, "completed")
 	
 	_after_test_run(test_suite, test_case)
-	return _test_run_state
+	after_test(test_suite, test_case)
+	return null
 
-func execute(test_suite :GdUnitTestSuite):
-	# install yield
-	yield(get_tree(), "idle_frame")
-	
+func execute(test_suite :GdUnitTestSuite) -> GDScriptFunctionState:
 	add_child(test_suite)
 	before(test_suite, test_suite.get_child_count())
 	
 	for test_case in test_suite.get_children():
-		yield(before_test(test_suite, test_case), "completed")
-		var fuzzer := create_fuzzer(test_suite, test_case)
-		yield(execute_yielded(test_suite, test_case, fuzzer), "completed")
-		yield(after_test(test_suite, test_case), "completed")
+		var fs = execute_test_case(test_suite, test_case)
+		# is yielded than wait for completed
+		if fs is GDScriptFunctionState:
+			yield(fs, "completed")
 	
 	after(test_suite)
 	remove_child(test_suite)
 	test_suite.free()
+	return null
 
 
 static func create_fuzzer(test_suite :GdUnitTestSuite, test_case :_TestCase) -> Fuzzer:
