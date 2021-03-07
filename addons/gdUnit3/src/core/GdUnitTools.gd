@@ -103,6 +103,11 @@ static func create_temp_file(relative_path :String, file_name :String, mode :=Fi
 	push_error("Error creating temporary file at: %s, %s" % [file_path, error_as_string(error)])
 	return null
 
+
+static func current_dir() -> String:
+	return ProjectSettings.globalize_path("res://")
+
+
 static func delete_directory(path :String):
 	var dir := Directory.new()
 	if dir.open(path) == OK:

@@ -1,6 +1,6 @@
 @echo off
 cls
-SET GODOT_BIN=D:\develop\Godot_v3.2.4-beta3_win64.exe
+SET GODOT_BIN=D:\develop\Godot.exe
 
 ECHO %GODOT_BIN%
 

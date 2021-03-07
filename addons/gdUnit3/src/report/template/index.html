@@ -18,19 +18,19 @@
 			<table>
 				<tr>
 					<td class="cell">TestSuits</td>
-					<td class="counter">${testsuites}</td>
+					<td class="counter">${suite_count}</td>
 				</tr>
 				<tr>
 					<td class="cell">Total Tests</td>
-					<td class="counter">${tests}</td>
+					<td class="counter">${test_count}</td>
 				</tr>
 				<tr>
 					<td class="cell">Failures</td>
-					<td class="counter">${failures}</td>
+					<td class="counter">${failure_count}</td>
 				</tr>
 				<tr>
 					<td class="cell">Orphans</td>
-					<td class="counter">${orphans}</td>
+					<td class="counter">${orphan_count}</td>
 				</tr>
 				<tr>
 					<td class="cell">Duration</td>
@@ -38,7 +38,7 @@
 				</tr>
 				<tr>
 					<td class="cell">Successful</td>
-					<td class="counter">100%</td>
+					<td class="counter">${success_percent}</td>
 				</tr>
 			</table>
 		</div>
@@ -65,14 +65,7 @@
 								</tr>
 							</thead>
 							<tbody>
-								<tr>
-									<td><a class="success" href="folders/addons.gdUnit3.test.asserts.html">addons.gdUnit3.test.asserts</a></td>
-									<td>3</td>
-									<td>0</td>
-									<td>0</td>
-									<td>30.218s</td>
-									<td class="success">100%</td>
-								</tr>
+								${testsuite_report_by_folders}
 							</tbody>
 						</table>
 					</div>

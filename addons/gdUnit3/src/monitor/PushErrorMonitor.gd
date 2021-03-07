@@ -7,10 +7,13 @@ var _last_error := Dictionary()
 
 func _init().("PushErrorMonitor"):
 	if not Engine.has_meta("GdUnitRunner"):
-		push_error("Can't find a GdUnit runner instance")
+		#push_error("Can't find a GdUnit runner instance")
+		return
 	_runner = Engine.get_meta("GdUnitRunner")
 
 func start():
+	if not _runner:
+		return
 	yield(Engine.get_main_loop().create_timer(0.100), "timeout")
 	_first_error = Dictionary()
 	_last_error = Dictionary()
@@ -21,6 +24,8 @@ func start():
 		prints(result)
 
 func stop():
+	if not _runner:
+		return
 	# give the engine time to complete the last push_error notification 
 	yield(Engine.get_main_loop().create_timer(0.100), "timeout")
 	var result = yield(_runner.get_last_push_error(), "completed")
@@ -28,6 +33,8 @@ func stop():
 		_last_error = result.value()
 
 func list_errors() -> Array:
+	if not _runner:
+		return
 	yield(Engine.get_main_loop(), "idle_frame")
 	var from = _first_error.get("item_id", -1)
 	var to = _last_error.get("item_id", -1)

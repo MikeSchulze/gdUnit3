@@ -3,7 +3,7 @@
 extends GdUnitTestSuite
 	
 func test_serde_before():
-	var event := GdUnitEvent.new().before("test_suite_a", 22)
+	var event := GdUnitEvent.new().before("path", "test_suite_a", 22)
 	var serialized := event.serialize()
 	var deserialized := GdUnitEvent.new().deserialize(serialized)
 	assert_that(deserialized).is_instanceof(GdUnitEvent)

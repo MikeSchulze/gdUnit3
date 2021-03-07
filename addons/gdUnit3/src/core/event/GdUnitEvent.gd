@@ -21,14 +21,16 @@ enum  {
 }
 
 var _event_type
+var _resource_path :String
 var _suite_name :String
 var _test_name :String
 var _total_count :int = 0
 var _statisics := Dictionary()
 var _reports := Array()
 
-func before(suite_name :String, total_count) -> GdUnitEvent:
+func before(resource_path :String, suite_name :String, total_count) -> GdUnitEvent:
 	_event_type = TESTSUITE_BEFORE
+	_resource_path = resource_path
 	_suite_name = suite_name
 	_total_count = total_count
 	return self
@@ -86,18 +88,13 @@ func orphan_nodes() -> int:
 	return statistic(ORPHAN_NODES)
 
 func statistic(type :String) -> int:
-	if _statisics.has(type):
-		return _statisics[type]
-	return 0
+	return _statisics.get(type, 0)
 
 func total_count() -> int:
 	return _total_count
 
-func error_count() -> int:
-	if _statisics.has(ERRORS):
-		return _statisics[ERRORS]
-	return 0
-
+func resource_path() -> String:
+	return _resource_path
 
 func is_success() -> bool:
 	return not is_warning() and not is_failed() and not is_error()
