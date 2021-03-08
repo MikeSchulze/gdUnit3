@@ -3,12 +3,12 @@ extends Reference
 
 const FOLDER_REPORT_TEMPLATE = """
 								<tr>
-									<td><a class="success" href="folders/${path}.html">${path}</a></td>
+									<td><a class="${report_state}" href="folders/${path}.html">${path}</a></td>
 									<td>${test_count}</td>
 									<td>${failure_count}</td>
 									<td>${orphan_count}</td>
 									<td>${duration}</td>
-									<td class="success">${success_percent}</td>
+									<td class="${report_state}">${success_percent}</td>
 								</tr>
 """
 const REPORT_BY_FOLDER = "${testsuite_report_by_folders}"
@@ -58,11 +58,23 @@ func orphan_count() -> int:
 func duration() -> int:
 	return _duration
 
-func report_state() -> String:
-	if _failure_count > 0:
+func calculate_state(failure_count :int, orphan_count :int) -> String:
+	if failure_count > 0:
 		return "failure"
-	
+	if orphan_count > 0:
+		return "warning"
 	return "success"
+
+func report_state() -> String:
+	return calculate_state(_failure_count, _orphan_count)
+
+func succes_rate() -> String:
+	return calculate_succes_rate(_test_count, _failure_count)
+
+func calculate_succes_rate(test_count :int, failure_count: int) -> String:
+	if failure_count == 0:
+		return "100%"
+	return "%d" % ((test_count-failure_count) * 100 / test_count) + "%"
 
 func add_report(report) -> void:
 	_reports[report.name()] = report
@@ -74,7 +86,6 @@ func add_testsuite_summary(suite_name :String, failures :int, errors :int, orpha
 func add_testcase_report(suite_name :String, test_name :String, is_failed :bool, orphans :int, reports :Array, duration :int):
 	var suite_report = _reports[suite_name]
 	suite_report.add_test_report(test_name, is_failed, orphans, reports, duration)
-
 
 func write_html_report(report_dir :String) -> String:
 	var template := load_template("res://addons/gdUnit3/src/report/template/index.html")
@@ -92,7 +103,6 @@ func write_html_report(report_dir :String) -> String:
 	GdUnitTools.copy_directory("res://addons/gdUnit3/src/report/template/css/", report_dir)
 	return "%s/index.html" % report_dir
 
-
 func fill_summary(template :String, report :GdUnitReportSummary) -> String:
 	return template\
 		.replace(PATTERN_TESTSUITE_COUNT, str(report.suite_count()))\
@@ -100,10 +110,8 @@ func fill_summary(template :String, report :GdUnitReportSummary) -> String:
 		.replace(PATTERN_FAILURE_COUNT, str(report.failure_count()))\
 		.replace(PATTERN_ORPHAN_COUNT, str(report.orphan_count()))\
 		.replace(PATTERN_DURATION, LocalTime.elapsed(report.duration()))\
-		.replace(PATTERN_SUCCESS_PERCENT, calculate_succes_rate())\
+		.replace(PATTERN_SUCCESS_PERCENT, calculate_succes_rate(report.test_count(), report.failure_count()))\
 		.replace(PATTERN_REPORT_STATE, report_state())
-		
-
 
 func fill_folder_reports(template :String) -> String:
 	var report_rows := PoolStringArray()
@@ -122,19 +130,17 @@ func fill_folder_reports(template :String) -> String:
 			duration += report.duration()
 		
 		var folder_report := FOLDER_REPORT_TEMPLATE\
+			.replace(PATTERN_REPORT_STATE, calculate_state(failure_count, orphan_count))\
 			.replace(PATTERN_PATH, path)\
 			.replace(PATTERN_TEST_COUNT, str(test_count))\
 			.replace(PATTERN_FAILURE_COUNT, str(failure_count))\
 			.replace(PATTERN_ORPHAN_COUNT, str(orphan_count))\
 			.replace(PATTERN_DURATION, LocalTime.elapsed(duration))\
-			.replace(PATTERN_SUCCESS_PERCENT, calculate_succes_rate())
+			.replace(PATTERN_SUCCESS_PERCENT, calculate_succes_rate(test_count, failure_count))
 		
 		report_rows.append(folder_report)
 	by_paths.clear()
 	return template.replace(REPORT_BY_FOLDER, report_rows.join("\n"))
-	
-	
-	
 
 func fill_suite_reports(template :String, report_dir :String) -> String:
 	var report_rows := PoolStringArray()
@@ -142,8 +148,6 @@ func fill_suite_reports(template :String, report_dir :String) -> String:
 		report_rows.append(report.create_summary(report_dir))
 		
 	return template.replace(REPORT_BY_SUITES, report_rows.join("\n"))
-
-
 
 static func merged_report_by_path(reports :Array) -> Dictionary:
 	
@@ -154,12 +158,6 @@ static func merged_report_by_path(reports :Array) -> Dictionary:
 		suite_report.append(report)
 		by_path[suite_path] = suite_report
 	return by_path
-
-
-
-func calculate_succes_rate() -> String:
-	return "100%"
-
 
 func load_template(template_name :String) -> String:
 	var file := File.new()

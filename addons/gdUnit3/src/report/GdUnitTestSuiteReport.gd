@@ -8,7 +8,7 @@ const SUITE_REPORT_TEMPLATE = """
 									<td>${failure_count}</td>
 									<td>${orphan_count}</td>
 									<td>${duration}</td>
-									<td class="success">${success_percent}</td>
+									<td class="${report_state}">${success_percent}</td>
 								</tr>
 """
 
@@ -79,19 +79,8 @@ func write_html_suite_report(report_output_path :String) -> String:
 	if not dest_dir.dir_exists(dir):
 		dest_dir.make_dir_recursive(dir)
 	
-
 	var file := File.new()
 	file.open(report_output_path, File.WRITE)
 	file.store_string(template)
 	file.close()
-	
-	
 	return report_output_path
-	
-
-func report_state() -> String:
-	if _failure_count:
-		return "failure"
-	if _orphan_count > 0:
-		return "warning"
-	return "success"
