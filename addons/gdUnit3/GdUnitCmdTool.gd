@@ -20,6 +20,8 @@ class CLIRunner extends Node:
 		_signal_handler = GdUnitSingleton.get_or_create_singleton(SignalHandler.SINGLETON_NAME, "res://addons/gdUnit3/src/core/event/SignalHandler.gd")
 		
 		_executor = GdUnitExecutor.new()
+		# needs to disable the default yielding, it is only need when run in client/server context 
+		_executor.disable_default_yield()
 		_executor.connect("send_event", self, "_on_executor_event")
 		add_child(_executor)
 	

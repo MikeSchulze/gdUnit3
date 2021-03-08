@@ -217,16 +217,16 @@ div.tab td.numeric, div.tab {
 	text-align: right;
 }
 
-div.tab td.success, div.tab {
+div.tab td.success, div.tab a.success {
 	color: #03a606;
 }
 
-div.tab td.failure, div.tab {
+div.tab td.failure, div.tab a.failure {
 	color: #bf3600;
 	font-weight: bold;
 }
 
-div.tab td.warning, div.tab {
+div.tab td.warning, div.tab a.warning {
 	color: #e8e807;
 	font-weight: bold;
 }
@@ -252,13 +252,4 @@ div.tab th {
 .border_failure {
 	border: solid 3px #bf3600;
 	background-image: repeating-linear-gradient(45deg, white, white 20%, #bf3600);
-}
-
-.success {
-	color: #03a606;
-}
-
-.failure {
-	color: #bf3600;
-	font-weight: bold;
 }

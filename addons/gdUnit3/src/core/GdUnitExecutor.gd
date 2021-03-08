@@ -23,6 +23,7 @@ var _reports :Array = Array()
 
 var _event_handler :SignalHandler
 var _test_run_state :GDScriptFunctionState
+var _with_yielding := true
 
 var _x = GdUnitArgumentMatchers.new()
 
@@ -31,6 +32,11 @@ func _ready():
 	if _event_handler != null:
 		_event_handler.register_on_test_reports(self, "_event_test_report")
 	_report_errors_enabled = GdUnitSettings.is_report_push_errors()
+
+# disable yielding for CLI tool where results in unneccesary waits
+# the default yield is only set when the executer is runnung in context of client/server
+func disable_default_yield():
+	_with_yielding = false
 
 func before(test_suite :GdUnitTestSuite, total_count :int) -> void:
 	emit_signal("send_event", GdUnitEvent.new()\
@@ -159,14 +165,15 @@ func execute_test_case(test_suite :GdUnitTestSuite, test_case :_TestCase) -> GDS
 	
 	_before_test_run(test_suite, test_case)
 	if not fuzzer:
-		yield(get_tree(), "idle_frame")
 		_test_run_state = test_suite.call(test_case.get_name())
 		# is yielded than wait for completed
 		if _test_run_state is GDScriptFunctionState:
 			yield(_test_run_state, "completed")
 	else:
 		for iteration in fuzzer.iteration_limit():
-			yield(get_tree(), "idle_frame")
+			if _with_yielding:
+				# give main thread time to sync to prevent network timeouts
+				yield(get_tree(), "idle_frame")
 			# interrupt at first failure
 			if _reports.size() > 0:
 				var report :GdUnitReport = _reports.pop_front()
