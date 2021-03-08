@@ -14,7 +14,9 @@ mono_crash.*.json
 
 # System/tool-specific ignores
 .directory
+.DS_Store
 *~
+
 
 # temporary generated files
 addons/gdUnit3/GdUnitRunner.cfg
