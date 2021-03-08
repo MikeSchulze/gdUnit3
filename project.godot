@@ -489,6 +489,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/src/network/GdUnitTask.gd"
 }, {
+"base": "Reference",
+"class": "GdUnitTestCaseReport",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/src/report/GdUnitTestCaseReport.gd"
+}, {
 "base": "Node",
 "class": "GdUnitTestSuite",
 "language": "GDScript",
@@ -691,6 +696,7 @@ _global_script_class_icons={
 "GdUnitStringAssertImpl": "",
 "GdUnitStringAssertImplTest": "",
 "GdUnitTask": "",
+"GdUnitTestCaseReport": "",
 "GdUnitTestSuite": "",
 "GdUnitTestSuiteReport": "",
 "GdUnitTools": "",

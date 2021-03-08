@@ -34,7 +34,7 @@ func _ready():
 
 func before(test_suite :GdUnitTestSuite, total_count :int) -> void:
 	emit_signal("send_event", GdUnitEvent.new()\
-		.before(test_suite.get_name(), total_count))
+		.before(test_suite.get_script().resource_path, test_suite.get_name(), total_count))
 	_testsuite_timer = LocalTime.now()
 	_total_test_orphan_nodes = 0
 	_total_test_failed = 0
@@ -67,7 +67,8 @@ func after(test_suite :GdUnitTestSuite) -> void:
 		GdUnitEvent.ELAPSED_TIME: _testsuite_timer.elapsed_since_ms(),
 		GdUnitEvent.WARNINGS: test_warnings,
 		GdUnitEvent.ERRORS: test_errors,
-		GdUnitEvent.FAILED: test_failed
+		GdUnitEvent.FAILED: test_failed,
+		GdUnitEvent.FAILED_COUNT: _total_test_failed,
 	}
 	emit_signal("send_event", GdUnitEvent.new().after(test_suite.get_name(), statistics, _reports.duplicate()))
 	_reports.clear()
@@ -109,6 +110,7 @@ func after_test(test_suite :GdUnitTestSuite, test_case :_TestCase):
 		GdUnitEvent.ERRORS: test_errors,
 		GdUnitEvent.FAILED: test_failed
 	}
+	
 	emit_signal("send_event", GdUnitEvent.new()\
 		.afterTest(test_suite.get_name(), test_case.get_name(), statistics, _reports.duplicate()))
 	_reports.clear()
