@@ -7,6 +7,7 @@ const FAILED = "failed"
 const ERRORS = "errors"
 const ELAPSED_TIME = "elapsed_time"
 const ORPHAN_NODES = "orphan_nodes"
+const FAILED_COUNT = "failed_count"
 
 
 enum  {
@@ -85,13 +86,16 @@ func elapsed_time() -> int:
 	return _statisics[ELAPSED_TIME]
 
 func orphan_nodes() -> int:
-	return statistic(ORPHAN_NODES)
+	return  _statisics.get(ORPHAN_NODES, 0)
 
 func statistic(type :String) -> int:
 	return _statisics.get(type, 0)
 
 func total_count() -> int:
 	return _total_count
+
+func failed_count() -> int:
+	return _statisics.get(FAILED_COUNT, 0)
 
 func resource_path() -> String:
 	return _resource_path

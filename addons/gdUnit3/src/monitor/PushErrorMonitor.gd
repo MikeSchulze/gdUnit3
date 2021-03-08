@@ -8,6 +8,7 @@ var _last_error := Dictionary()
 func _init().("PushErrorMonitor"):
 	if not Engine.has_meta("GdUnitRunner"):
 		#push_error("Can't find a GdUnit runner instance")
+		_runner = null
 		return
 	_runner = Engine.get_meta("GdUnitRunner")
 

@@ -16,35 +16,35 @@
 	<div class="content">
 		<div class="breadcrumb">
 			<a href="../index.html"><span>All</span></a>
-			<a class="active" href="#"><span>addons.gdUnit3.test.asserts</span></a>
+			<a class="active" href="#"><span>${path}</span></a>
 		</div>
 
 		<h1>Summary</h1>
-		<div class="summary border_failure">
+		<div class="summary border_${report_state}">
 			<table>
 				<tr>
 					<td  class="cell">TestSuits</td>
-					<td  class="counter">3</td>
+					<td  class="counter">${suite_count}</td>
 				</tr>
 				<tr>
 					<td class="cell">Total Tests</td>
-					<td class="counter">300</td>
+					<td class="counter">${test_count}</td>
 				</tr>
 				<tr>
 					<td class="cell">Failures</td>
-					<td class="counter">3</td>
+					<td class="counter">${failure_count}</td>
 				</tr>
 				<tr>
 					<td class="cell">Orphans</td>
-					<td class="counter">3</td>
+					<td class="counter">${orphan_count}</td>
 				</tr>
 				<tr>
 					<td class="cell">Duration</td>
-					<td class="counter">30.218s</td>
+					<td class="counter">${duration}</td>
 				</tr>
 				<tr>
 					<td class="cell">Successful</td>
-					<td class="counter">100%</td>
+					<td class="counter"${success_percent}</td>
 				</tr>
 			</table>
 		</div>
@@ -69,12 +69,12 @@
 							</thead>
 							<tbody>
 								<tr>
-									<td><a class="success" href="../testsuites/addons.gdUnit3.test.asserts.GdUnitArrayAssertImplTest.html">GdUnitArrayAssertImplTest</a></td>
-									<td>3</td>
-									<td>0</td>
-									<td>0</td>
-									<td>30.218s</td>
-									<td class="success">100%</td>
+									<td><a class="success" href=${testsuite_report_path}>${testsuite_name}</a></td>
+									<td>${test_count}</td>
+									<td>${failure_count}</td>
+									<td>${orphan_count}</td>
+									<td>${duration}</td>
+									<td class="success">${success_percent}</td>
 								</tr>
 								<tr>
 									<td><a class="failure" href="../testsuites/addons.gdUnit3.test.asserts.GdUnitArrayAssertImpl_PoolByteArrayTest.html">GdUnitArrayAssertImpl_PoolByteArrayTest</a></td>

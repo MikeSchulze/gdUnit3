@@ -12,6 +12,6 @@ if not defined GODOT_BIN (
 
 echo "test"
 
-%GODOT_BIN% -s .\addons\gdUnit3\GdUnitCmdTool.gd --verbose
+%GODOT_BIN% -s -d .\addons\gdUnit3\GdUnitCmdTool.gd --verbose
 
 exit /b

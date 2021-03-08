@@ -226,6 +226,11 @@ div.tab td.failure, div.tab {
 	font-weight: bold;
 }
 
+div.tab td.warning, div.tab {
+	color: #e8e807;
+	font-weight: bold;
+}
+
 div.tab tr:hover {
 	background-color: #d9e7fa;
 	box-shadow: 0 0 5px black;
