@@ -4,6 +4,7 @@ body {
 	padding: 0;
 	font-family: sans-serif;
 	font-size: 12pt;
+	background: #dbf1ff;
 }
 
 footer {
@@ -14,7 +15,8 @@ footer {
 	height: 30px;
 	font-size: 14px;
 	white-space: nowrap;
-	background-image: linear-gradient(to bottom right, #5c9aff, #587ca6);
+	background-image: linear-gradient(to bottom right, #347bad, #055d9c);
+	background-image: linear-gradient(to bottom right, #347bad, #055d9c);
 }
 
 footer a  {
@@ -31,7 +33,8 @@ footer p  {
 	width: 100%;
 	height: 100px;
 	text-align: left;
-	background-image: linear-gradient(to bottom right, #5c9aff, #587ca6);
+	background-image: linear-gradient(to bottom right, #347bad, #055d9c);
+	background-image: linear-gradient(to bottom right, #347bad, #055d9c);
 }
 
 .header h1 {
@@ -145,7 +148,7 @@ label {
 	-moz-border-radius: 7px;
 	border-radius: 8px 4px 0px 0px;
 	text-decoration: none;
-	background-color: #587ca6
+	background-color: #055d9c
 }
 
 label:hover {
@@ -163,9 +166,8 @@ input:checked + label {
 	border-right: 1px solid #9887c4;
 	border-left: 1px solid #9887c4;
 	border-bottom-color: transparent;
-	background-color: #5c9aff;
+	background-color: #347bad;
 	box-shadow: -2px -2px 2px #9887c4;
-
 }
 
 div.tab {
@@ -186,7 +188,7 @@ div.tab table {
 }
 
 div.tab th, div.tab table {
-	border-bottom: solid 1px #587ca6;
+	border-bottom: solid 1px #055d9c;
 }
 
 div.tab th {
@@ -203,6 +205,7 @@ div.tab th:first-child {
 div.tab td {
 	white-space: nowrap;
 	padding-left: 6em;
+	padding-right: 10px;
 	padding-top: 5px;
 	padding-bottom: 5px;
 	color: black;
@@ -223,12 +226,10 @@ div.tab td.success, div.tab a.success {
 
 div.tab td.failure, div.tab a.failure {
 	color: #bf3600;
-	font-weight: bold;
 }
 
 div.tab td.warning, div.tab a.warning {
 	color: #e8e807;
-	font-weight: bold;
 }
 
 div.tab tr:hover {
@@ -239,17 +240,23 @@ div.tab tr:hover {
 div.tab th {
 	width: 100%;
 	height: 40px;
-	background-color: #5c9aff;
+	background-color: #347bad;
 	color: white;
 	font-weight: bold;
 }
 
 .border_success {
+	margin-left: 100px;
+	padding-left: 50px;
+	font-size: 850%;
 	border: solid 3px #03a606;
 	background-image: repeating-linear-gradient(45deg, white, white 20%,  #03a606);
 }
 
 .border_failure {
-	border: solid 3px #bf3600;
-	background-image: repeating-linear-gradient(45deg, white, white 20%, #bf3600);
+	margin-left: 100px;
+	padding-left: 50px;
+    font-size: 850%;
+    border: solid 3px #bf3600;
+    background-image: repeating-linear-gradient(45deg, #e86363, white 0%, #bf3600);
 }
