@@ -36,21 +36,24 @@ func before(resource_path :String, suite_name :String, total_count) -> GdUnitEve
 	_total_count = total_count
 	return self
 
-func after(suite_name :String, statisics :Dictionary = {}, reports :Array = []) -> GdUnitEvent:
+func after(resource_path :String, suite_name :String, statisics :Dictionary = {}, reports :Array = []) -> GdUnitEvent:
 	_event_type = TESTSUITE_AFTER
+	_resource_path = resource_path
 	_suite_name  = suite_name
 	_statisics = statisics
 	_reports = reports
 	return self
 
-func beforeTest(suite_name:String, test_name:String) -> GdUnitEvent:
+func beforeTest(resource_path :String, suite_name:String, test_name:String) -> GdUnitEvent:
 	_event_type = TESTCASE_BEFORE
+	_resource_path = resource_path
 	_suite_name  = suite_name
 	_test_name = test_name
 	return self
 
-func afterTest(suite_name :String, test_name :String, statisics :Dictionary = {}, reports :Array = []) -> GdUnitEvent:
+func afterTest(resource_path :String, suite_name :String, test_name :String, statisics :Dictionary = {}, reports :Array = []) -> GdUnitEvent:
 	_event_type = TESTCASE_AFTER
+	_resource_path = resource_path
 	_suite_name  = suite_name
 	_test_name = test_name
 	_statisics = statisics
@@ -127,6 +130,7 @@ func _to_string():
 func serialize() -> Dictionary:
 	var serialized := {
 		"type"         : _event_type,
+		"resource_path": _resource_path,
 		"suite_name"   : _suite_name,
 		"test_name"    : _test_name,
 		"total_count"  : _total_count,
@@ -137,6 +141,7 @@ func serialize() -> Dictionary:
 
 func deserialize(serialized:Dictionary) -> GdUnitEvent:
 	_event_type    = serialized["type"]
+	_resource_path = serialized["resource_path"]
 	_suite_name    = serialized["suite_name"]
 	_test_name     = serialized["test_name"]
 	_total_count   = serialized["total_count"]

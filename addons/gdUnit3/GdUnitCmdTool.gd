@@ -82,31 +82,28 @@ class CLIRunner extends Node:
 			total += (test_suite as Node).get_child_count()
 		return total
 
-	var _report_summary :GdUnitReportSummary
+	var _report :GdUnitHtmlReport
 	
 	func _on_executor_event(event :GdUnitEvent):
 		match event.type():
 			GdUnitEvent.INIT:
 				var summary := event as GdUnitInit
-				_report_summary = GdUnitReportSummary.new(
-					summary.total_test_suites(), 
-					summary.total_tests())
+				_report = GdUnitHtmlReport.new()
 			
 			
 			GdUnitEvent.STOP:
 				var report_dir := GdUnitTools.current_dir() + "report"
-				_report_summary.stop_timer()
-				var report_path := _report_summary.write_html_report(report_dir)
-				prints("Open Report at:", report_path)
+				var report_path := _report.write(report_dir)
+				prints("Open Report at:", "file://%s" % report_path)
 			
 			
 			GdUnitEvent.TESTSUITE_BEFORE:
 				prints("Run Test Suite", event.resource_path())
-				var report = GdUnitTestSuiteReport.new(
-					event.resource_path(), 
-					event.suite_name(), 
-					event.total_count())
-				_report_summary.add_report(report)
+				var suite_report := GdUnitTestSuiteReport.new(
+					event.resource_path(),
+					event.suite_name())
+				_report.add_testsuite_report(suite_report)
+				
 				
 				
 			GdUnitEvent.TESTSUITE_AFTER:
@@ -114,47 +111,35 @@ class CLIRunner extends Node:
 					prints("failed", LocalTime.elapsed(event.elapsed_time()))
 				else:
 					prints("success", LocalTime.elapsed(event.elapsed_time()))
-				_report_summary.add_testsuite_summary(
-					event.suite_name(), 
-					event.failed_count(),
-					0, # errors
-					event.orphan_nodes(),
-					event.elapsed_time())
-				
+				_report.set_testsuite_duration(event.suite_name(), event.elapsed_time())
 				
 			GdUnitEvent.TESTCASE_BEFORE:
-				printraw("	Run Test: %s:%s" % [event.suite_name(), event.test_name()])
-				pass
+				prints("	Run Test: %s > %s STARTED" % [event.resource_path(), event.test_name()])
 				
 				
 			GdUnitEvent.TESTCASE_AFTER:
-				pass
-				
+				if event.is_failed():
+					prints("	Run Test: %s > %s FAILED" % [event.resource_path(), event.test_name()], LocalTime.elapsed(event.elapsed_time()))
+				else:
+					prints("	Run Test: %s > %s PASSED" % [event.resource_path(), event.test_name()], LocalTime.elapsed(event.elapsed_time()))
 				
 			GdUnitEvent.TESTRUN_BEFORE:
 				pass
 				
 				
 			GdUnitEvent.TESTRUN_AFTER:
-				_report_summary.add_testcase_report(
-					event.suite_name(), 
+				var test_report := GdUnitTestCaseReport.new(
 					event.test_name(),
 					event.is_failed(),
 					event.orphan_nodes(),
 					event.reports(),
 					event.elapsed_time())
-				if event.is_failed():
-					prints("	failed", LocalTime.elapsed(event.elapsed_time()))
-				else:
-					prints("	passed", LocalTime.elapsed(event.elapsed_time()))
-				
-				pass
-
+				_report.add_testcase_report(event.suite_name(), test_report)
+	
 	
 	func _notification(what):
 		#prints("_notification", self, GdObjects.notification_as_string(what))
 		pass
-
 
 func _initialize():
 	root.add_child(CLIRunner.new())

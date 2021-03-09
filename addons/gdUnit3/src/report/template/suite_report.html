@@ -16,32 +16,45 @@
 	<div class="content">
 		<div class="breadcrumb">
 			<a href="../index.html"><span>All</span></a>
-			<a href="../folders/addons.gdUnit3.test.asserts.html"><span>${path}</span></a>
+			<a href="${breadcrumb_path_link}"><span>${path}</span></a>
 			<a class="active" href="#"><span>${testsuite_name}</span></a>
 		</div>
 
 		<h1>Summary</h1>
-		<div class="summary border_${report_state}">
+		<div>
 			<table>
 				<tr>
-					<td class="cell">Total Tests</td>
-					<td class="counter">${test_count}</td>
-				</tr>
-				<tr>
-					<td class="cell">Failures</td>
-					<td class="counter">${failure_count}</td>
-				</tr>
-				<tr>
-					<td class="cell">Orphans</td>
-					<td class="counter">${orphan_count}</td>
-				</tr>
-				<tr>
-					<td class="cell">Duration</td>
-					<td class="counter">${duration}</td>
-				</tr>
-				<tr>
-					<td class="cell">Successful</td>
-					<td class="counter">${success_percent}</td>
+					<td>
+						<div class="summary">
+							<table>
+								<tr>
+									<td class="cell">Total Tests</td>
+									<td class="counter">${test_count}</td>
+								</tr>
+								<tr>
+									<td class="cell">Failures</td>
+									<td class="counter">${failure_count}</td>
+								</tr>
+								<tr>
+									<td class="cell">Orphans</td>
+									<td class="counter">${orphan_count}</td>
+								</tr>
+								<tr>
+									<td class="cell">Duration</td>
+									<td class="counter">${duration}</td>
+								</tr>
+							</table>
+						</div>
+					</td>
+					<td>
+						<div class="summary border_${report_state}">
+							<table>
+								<tr>
+									<td class="cell">${success_percent}</td>
+								</tr>
+							</table>
+						</div>
+					</td>
 				</tr>
 			</table>
 		</div>
@@ -64,7 +77,7 @@
 								</tr>
 							</thead>
 							<tbody>
-								${testcase_report_table}
+								${report_table_tests}
 							</tbody>
 						</table>
 					</div>

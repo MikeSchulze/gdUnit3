@@ -14,31 +14,44 @@
 
 	<div class="content">
 		<h1>Summary</h1>
-		<div class="summary border_${report_state}">
+		<div>
 			<table>
 				<tr>
-					<td class="cell">TestSuits</td>
-					<td class="counter">${suite_count}</td>
-				</tr>
-				<tr>
-					<td class="cell">Total Tests</td>
-					<td class="counter">${test_count}</td>
-				</tr>
-				<tr>
-					<td class="cell">Failures</td>
-					<td class="counter">${failure_count}</td>
-				</tr>
-				<tr>
-					<td class="cell">Orphans</td>
-					<td class="counter">${orphan_count}</td>
-				</tr>
-				<tr>
-					<td class="cell">Duration</td>
-					<td class="counter">${duration}</td>
-				</tr>
-				<tr>
-					<td class="cell">Successful</td>
-					<td class="counter">${success_percent}</td>
+					<td>
+						<div class="summary">
+							<table>
+								<tr>
+									<td class="cell">TestSuites</td>
+									<td class="counter">${suite_count}</td>
+								</tr>
+								<tr>
+									<td class="cell">Tests</td>
+									<td class="counter">${test_count}</td>
+								</tr>
+								<tr>
+									<td class="cell">Failures</td>
+									<td class="counter">${failure_count}</td>
+								</tr>
+								<tr>
+									<td class="cell">Orphans</td>
+									<td class="counter">${orphan_count}</td>
+								</tr>
+								<tr>
+									<td class="cell">Duration</td>
+									<td class="counter">${duration}</td>
+								</tr>
+							</table>
+						</div>
+					</td>
+					<td>
+						<div class="summary border_${report_state}">
+							<table>
+								<tr>
+									<td class="cell">${success_percent}</td>
+								</tr>
+							</table>
+						</div>
+					</td>
 				</tr>
 			</table>
 		</div>
@@ -47,9 +60,9 @@
 			<h1>Reports</h1>
 			<div class="report">
 				<input id="tab1" type="radio" name="tabs" checked>
-				<label for="tab1">Folders</label>
+				<label for="tab1">TestSuites</label>
 				<input id="tab2" type="radio" name="tabs">
-				<label for="tab2">TestSuites</label>
+				<label for="tab2">Paths</label>
 
 				<section id="content1">
 					<div class="tab">
@@ -65,7 +78,7 @@
 								</tr>
 							</thead>
 							<tbody>
-								${testsuite_report_by_folders}
+								${report_table_testsuites}
 							</tbody>
 						</table>
 					</div>
@@ -84,7 +97,7 @@
 								</tr>
 							</thead>
 							<tbody>
-								${testsuite_report_by_suites}
+								${report_table_paths}
 							</tbody>
 						</table>
 					</div>

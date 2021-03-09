@@ -274,6 +274,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/test/asserts/GdUnitBoolAssertImplTest.gd"
 }, {
+"base": "GdUnitReportSummary",
+"class": "GdUnitByPathReport",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/src/report/GdUnitByPathReport.gd"
+}, {
 "base": "Reference",
 "class": "GdUnitClassDoubler",
 "language": "GDScript",
@@ -333,6 +338,16 @@ _global_script_classes=[ {
 "class": "GdUnitFloatAssertImplTest",
 "language": "GDScript",
 "path": "res://addons/gdUnit3/test/asserts/GdUnitFloatAssertImplTest.gd"
+}, {
+"base": "Reference",
+"class": "GdUnitHtmlPatterns",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/src/report/GdUnitHtmlPatterns.gd"
+}, {
+"base": "GdUnitReportSummary",
+"class": "GdUnitHtmlReport",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/src/report/GdUnitHtmlReport.gd"
 }, {
 "base": "GdUnitEvent",
 "class": "GdUnitInit",
@@ -484,7 +499,7 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/src/network/GdUnitTask.gd"
 }, {
-"base": "Reference",
+"base": "GdUnitReportSummary",
 "class": "GdUnitTestCaseReport",
 "language": "GDScript",
 "path": "res://addons/gdUnit3/src/report/GdUnitTestCaseReport.gd"
@@ -648,6 +663,7 @@ _global_script_class_icons={
 "GdUnitBoolAssert": "",
 "GdUnitBoolAssertImpl": "",
 "GdUnitBoolAssertImplTest": "",
+"GdUnitByPathReport": "",
 "GdUnitClassDoubler": "",
 "GdUnitClassDoublerTest": "",
 "GdUnitDictionaryAssert": "",
@@ -660,6 +676,8 @@ _global_script_class_icons={
 "GdUnitFloatAssert": "",
 "GdUnitFloatAssertImpl": "",
 "GdUnitFloatAssertImplTest": "",
+"GdUnitHtmlPatterns": "",
+"GdUnitHtmlReport": "",
 "GdUnitInit": "",
 "GdUnitInspecor": "",
 "GdUnitIntAssert": "",

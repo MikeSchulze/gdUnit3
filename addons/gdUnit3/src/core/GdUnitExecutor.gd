@@ -76,14 +76,14 @@ func after(test_suite :GdUnitTestSuite) -> void:
 		GdUnitEvent.FAILED: test_failed,
 		GdUnitEvent.FAILED_COUNT: _total_test_failed,
 	}
-	emit_signal("send_event", GdUnitEvent.new().after(test_suite.get_name(), statistics, _reports.duplicate()))
+	emit_signal("send_event", GdUnitEvent.new().after(test_suite.get_script().resource_path, test_suite.get_name(), statistics, _reports.duplicate()))
 	_reports.clear()
 
 func before_test(test_suite :GdUnitTestSuite, test_case :_TestCase):
 	_testcase_timer = LocalTime.now()
 	_reports.clear()
 	emit_signal("send_event", GdUnitEvent.new()\
-		.beforeTest(test_suite.get_name(), test_case.get_name()))
+		.beforeTest(test_suite.get_script().resource_path, test_suite.get_name(), test_case.get_name()))
 	_set_memory_pool(test_suite, GdUnitTools.MEMORY_POOL_TESTCASE)
 	_mem_monitor_testcase.start()
 	test_suite.before_test()
@@ -118,7 +118,7 @@ func after_test(test_suite :GdUnitTestSuite, test_case :_TestCase):
 	}
 	
 	emit_signal("send_event", GdUnitEvent.new()\
-		.afterTest(test_suite.get_name(), test_case.get_name(), statistics, _reports.duplicate()))
+		.afterTest(test_suite.get_script().resource_path, test_suite.get_name(), test_case.get_name(), statistics, _reports.duplicate()))
 	_reports.clear()
 
 func _before_test_run(test_suite :GdUnitTestSuite, test_case :_TestCase):
