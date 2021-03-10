@@ -40,3 +40,7 @@ static func any_string() -> GdUnitArgumentMatcher:
 
 static func any_class(clazz) -> GdUnitArgumentMatcher:
 	return AnyClazzArgumentMatcher.new(clazz)
+
+func _notification(what):
+	if what == NOTIFICATION_PREDELETE:
+		_instances.clear()
