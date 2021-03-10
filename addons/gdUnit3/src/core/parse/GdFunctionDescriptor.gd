@@ -41,12 +41,12 @@ func args() -> Array:
 	return _args
 
 func typeless() -> String:
+	var func_signature := ""
 	if _return_type == TYPE_NIL:
-		return "func %s(%s):" % [name(), typeless_args()]
-	var func_template := "func %s(%s) -> %s:"
-	if is_static():
-		func_template= "static func %s(%s) -> %s:"
-	return func_template % [name(), typeless_args(), return_type_as_string()]
+		func_signature = "func %s(%s):" % [name(), typeless_args()]
+	else:
+		func_signature = "func %s(%s) -> %s:" % [name(), typeless_args(), return_type_as_string()]
+	return "static " + func_signature if is_static() else func_signature
 
 func typeless_args() -> String:
 	var collect := PoolStringArray()
