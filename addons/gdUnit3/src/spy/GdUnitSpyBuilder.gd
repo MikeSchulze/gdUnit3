@@ -12,6 +12,18 @@ const SPY_TEMPLATE = \
 	return $(instance)_instance_delegator.$(func_name)($(func_arg))
 """
 
+const SPY_VOID_TEMPLATE = \
+"""	var args = $(args)
+	
+	#prints("--->", args)
+	if $(instance)__is_verify():
+		$(instance)__verify(args)
+		return
+	else:
+		$(instance)__save_function_call(args)
+	$(instance)_instance_delegator.$(func_name)($(func_arg))
+"""
+
 class SpyFunctionDoubler extends GdFunctionDoubler:
 	
 	
@@ -32,7 +44,8 @@ class SpyFunctionDoubler extends GdFunctionDoubler:
 		var full_args := Array(arg_names)
 		full_args.push_front("\"%s\"" % func_name)
 		var double := func_signature + "\n"
-		double += SPY_TEMPLATE.replace("$(args)", str(full_args)) \
+		double += get_template(default_return_value)\
+			.replace("$(args)", str(full_args))\
 			.replace("$(func_name)", func_name )\
 			.replace("$(func_arg)", arg_names.join(","))
 		if is_static:
@@ -40,6 +53,11 @@ class SpyFunctionDoubler extends GdFunctionDoubler:
 		else:
 			double = double.replace("$(instance)", "")
 		return double.split("\n")
+		
+	func get_template(return_type) -> String:
+		if return_type == "void":
+			return SPY_VOID_TEMPLATE
+		return SPY_TEMPLATE
 
 
 static func build(instance, memory_pool :int, push_errors :bool = true, debug_write = false):

@@ -172,7 +172,9 @@ func test_is_static_func():
 	assert_bool(_parser.is_static_func("")).is_false()
 	assert_bool(_parser.is_static_func("var a=0")).is_false()
 	assert_bool(_parser.is_static_func("func foo():")).is_false()
+	assert_bool(_parser.is_static_func("func foo() -> void:")).is_false()
 	assert_bool(_parser.is_static_func("static func foo():")).is_true()
+	assert_bool(_parser.is_static_func("static func foo() -> void:")).is_true()
 
 func test_parse_func_description():
 	var fd := _parser.parse_func_description("func foo():", "clazz_name")
@@ -192,6 +194,17 @@ func test_parse_func_description():
 		GdFunctionArgument.new("arg2", "", "false")
 	])
 	assert_str(fd.typeless()).is_equal("static func foo(arg1, arg2=false) -> String:")
+	
+	# static function without return type
+	fd = _parser.parse_func_description("static func foo(arg1 :int, arg2:=false):", "clazz_name")
+	assert_str(fd.name()).is_equal("foo")
+	assert_bool(fd.is_static()).is_true()
+	assert_int(fd.return_type()).is_equal(TYPE_NIL)
+	assert_array(fd.args()).contains_exactly([
+		GdFunctionArgument.new("arg1", "int"),
+		GdFunctionArgument.new("arg2", "", "false")
+	])
+	assert_str(fd.typeless()).is_equal("static func foo(arg1, arg2=false):")
 
 func test_parse_class_inherits():
 	var clazz_path := GdObjects.extract_class_path(CustomClassExtendsCustomClass)
