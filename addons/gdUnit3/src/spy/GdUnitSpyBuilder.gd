@@ -60,7 +60,7 @@ class SpyFunctionDoubler extends GdFunctionDoubler:
 		return SPY_TEMPLATE
 
 
-static func build(instance, memory_pool :int, push_errors :bool = true, debug_write = true):
+static func build(instance, memory_pool :int, push_errors :bool = true, debug_write = false):
 	var result := GdObjects.extract_class_name(instance)
 	if result.is_error():
 		push_error("Internal ERROR: %s" % result.error_message())
