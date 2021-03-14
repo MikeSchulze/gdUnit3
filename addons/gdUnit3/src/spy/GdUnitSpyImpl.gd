@@ -8,13 +8,19 @@ var _assert_function_call_times :int = -1
 var _saved_function_calls = Dictionary()
 
 
-# singleton holder
+# self reference holder, use this kind of hack to store static function calls 
+# it is important to manually free by '__release_double' otherwise it ends up in orphan instance
 const _self := []
 
 func __set_singleton(instance):
 	# store self need to mock static functions
 	_self.append(self)
 	_instance_delegator = instance
+
+func __release_double():
+	# we need to release the self reference manually to prevent orphan nodes
+	_self.clear()
+	_instance_delegator = null
 
 func __save_function_call(args :Array):
 	_saved_function_calls[args] = _saved_function_calls.get(args, 0) + 1

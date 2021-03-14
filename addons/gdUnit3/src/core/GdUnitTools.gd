@@ -199,6 +199,7 @@ static func resource_as_string(resource_path :String) -> String:
 
 static func free_instance(instance :Object):
 	if instance != null:
+		release_double(instance)
 		if not instance is Reference:
 			instance.free()
 			return
@@ -206,6 +207,12 @@ static func free_instance(instance :Object):
 		# see https://github.com/godotengine/godot/issues/44932
 		if not JavaClass:
 			instance.notification(Object.NOTIFICATION_PREDELETE)
+ 
+# if instance an mock or spy we need manually freeing the self reference
+static func release_double(instance :Object):
+	var fr := funcref(instance, "__release_double")
+	if fr.is_valid():
+		fr.call_func()
 
 # register an instance to be freed when a test suite is finished
 static func register_auto_free(obj, pool :int):

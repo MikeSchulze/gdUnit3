@@ -1,3 +1,4 @@
+class_name GdUnitSpyTest
 extends GdUnitTestSuite
 
 
@@ -104,3 +105,15 @@ func test_example_verify():
 	# verify total sum by using an argument matcher 
 	verify(spy_node, 3).set_process(any_bool())
 	
+	
+class ClassWithStaticFunctions:
+	
+	static func foo() -> void:
+		pass
+	
+	static func bar():
+		pass
+	
+func test_create_spy_static_func_untyped():
+	var instance = spy(ClassWithStaticFunctions.new())
+	assert_object(instance).is_not_null()

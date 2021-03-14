@@ -12,12 +12,17 @@ var _saved_return_values := Dictionary()
 var _saved_function_calls := Dictionary()
 
 
-# singleton holder
+# self reference holder, use this kind of hack to store static function calls 
+# it is important to manually free by '__release_double' otherwise it ends up in orphan instance
 const _self := []
 
 func __set_singleton():
 	# store self need to mock static functions
 	_self.append(self)
+
+func __release_double():
+	# we need to release the self reference manually to prevent orphan nodes
+	_self.clear()
 
 func __is_prepare_return_value() -> bool:
 	return _do_return_value != null

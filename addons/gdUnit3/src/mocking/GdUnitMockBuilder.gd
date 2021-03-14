@@ -31,11 +31,9 @@ const MOCK_VOID_TEMPLATE =\
 		return
 	if $(instance)__is_verify():
 		$(instance)__verify(args, null)
+		return
 	else:
 		$(instance)__save_function_call_times(args)
-	
-	if $(instance)_saved_return_values.has(args):
-		$(instance)_saved_return_values.get(args)
 	
 	if $(instance)_working_mode == GdUnitMock.CALL_REAL_FUNC:
 		.$(func_name)($(func_arg))
