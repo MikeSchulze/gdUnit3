@@ -156,7 +156,7 @@ func _after_test_run(test_suite :GdUnitTestSuite, test_case :_TestCase):
 		GdUnitEvent.FAILED: test_failed
 	}
 	emit_signal("send_event", GdUnitEvent.new()\
-		.testrun_after(test_suite.get_name(), test_case.get_name(), statistics, _reports.duplicate()))
+		.testrun_after(test_suite.get_script().resource_path, test_suite.get_name(), test_case.get_name(), statistics, _reports.duplicate()))
 	_reports.clear()
 
 func execute_test_case(test_suite :GdUnitTestSuite, test_case :_TestCase) -> GDScriptFunctionState:

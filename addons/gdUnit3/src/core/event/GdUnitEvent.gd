@@ -66,8 +66,9 @@ func testrun_before(suite_name:String, test_name:String) -> GdUnitEvent:
 	_test_name = test_name
 	return self
 	
-func testrun_after(suite_name :String, test_name :String, statisics :Dictionary = {}, reports :Array = []) -> GdUnitEvent:
+func testrun_after(resource_path :String, suite_name :String, test_name :String, statisics :Dictionary = {}, reports :Array = []) -> GdUnitEvent:
 	_event_type = TESTRUN_AFTER
+	_resource_path = resource_path
 	_suite_name  = suite_name
 	_test_name = test_name
 	_statisics = statisics

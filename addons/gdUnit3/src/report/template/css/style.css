@@ -170,10 +170,6 @@ input:checked + label {
 	box-shadow: -2px -2px 2px #9887c4;
 }
 
-div.tab {
-	box-shadow: 0 0 10px black;
-}
-
 div.selected {
 	display: block;
 }
@@ -181,9 +177,19 @@ div.selected {
 div.deselected {
 	display: none;
 }
+.tab-report-grid {
+	display: grid;
+	grid-template-columns: 50% 50%;
+}
+
+.grid-item {
+}
+
+
 
 div.tab table {
-	min-width: 350px;
+	width: 100%;
+	height: 100%;
 	border-collapse: collapse;
 }
 
@@ -220,6 +226,10 @@ div.tab td.numeric, div.tab {
 	text-align: right;
 }
 
+div.tab td.report-column, th.report-column {
+	 display:none;
+}
+
 div.tab td.success, div.tab a.success {
 	color: #03a606;
 }
@@ -235,6 +245,10 @@ div.tab td.warning, div.tab a.warning {
 div.tab tr:hover {
 	background-color: #d9e7fa;
 	box-shadow: 0 0 5px black;
+}
+
+div.tab tr.selected {
+    background-color: #347bad;
 }
 
 div.tab th {

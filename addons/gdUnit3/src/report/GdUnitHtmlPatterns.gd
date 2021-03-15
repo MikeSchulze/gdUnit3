@@ -28,6 +28,7 @@ const TABLE_RECORD_TESTCASE = """
 									<td class="${report_state}">${testcase_name}</td>
 									<td>${orphan_count}</td>
 									<td>${duration}</td>
+									<td class="report-column">${failure-report}</td>
 								</tr>
 """
 
@@ -43,6 +44,7 @@ const TESTCASE_COUNT = "${test_count}"
 const FAILURE_COUNT = "${failure_count}"
 const ORPHAN_COUNT = "${orphan_count}"
 const DURATION = "${duration}"
+const FAILURE_REPORT = "${failure-report}"
 const SUCCESS_PERCENT = "${success_percent}"
 
 const TESTSUITE_NAME = "${testsuite_name}"

@@ -6,6 +6,20 @@
 	<title>Testsuite results</title>
 	<link href="../css/style.css" rel="stylesheet" type="text/css"/>
 	<link href="../css/breadcrumb.css" rel="stylesheet" type="text/css"/>
+
+	<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+	<script>
+		$(document).ready(function () {
+			var report_view = $('#report-view tr').find('.report-column')
+
+			$('#report-table tr').click(function () {
+				var report = $(this).find('.report-column').html();
+				report_view.text(report)
+				$('.selected').removeClass('selected');
+				$(this).addClass('selected');
+			});
+		});
+	</script>
 </head>
 
 <body>
@@ -67,19 +81,38 @@
 				<label for="tab2">Output</label>
 
 				<section id="content1">
-					<div class="tab">
-						<table>
-							<thead>
-								<tr>
-									<th></th>
-									<th>Orphans</th>
-									<th>Duration</th>
-								</tr>
-							</thead>
-							<tbody>
-								${report_table_tests}
-							</tbody>
-						</table>
+					<div class="tab-report-grid">
+						<div class="grid-item tab">
+							<table id="report-table">
+								<thead>
+									<tr>
+										<th></th>
+										<th>Orphans</th>
+										<th>Duration</th>
+										<th class="report-column">Report</th>
+									</tr>
+								</thead>
+								<tbody>
+									${report_table_tests}
+								</tbody>
+							</table>
+						</div>
+						<div class="grid-item tab">
+							<table id="report-view">
+								<thead>
+									<tr>
+										<th>Failure</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td class="failure">
+											<div class="report-column"></div>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
 					</div>
 				</section>
 				<section id="content2">
