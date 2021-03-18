@@ -25,3 +25,9 @@ static func verify(mock :Object, times):
 
 static func verify_no_interactions(mock :Object):
 	mock.__verify_no_interactions()
+
+static func reset(mock :Object) -> void:
+	if mock is GDScript and not mock.get_script().has_script_method("__reset"):
+		push_error("Error: You try to reset a non mocked object.")
+		return
+	mock.__reset()

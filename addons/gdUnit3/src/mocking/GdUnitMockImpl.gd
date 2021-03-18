@@ -36,6 +36,9 @@ func __save_function_call_times(args :Array):
 	var times :int = _saved_function_calls.get(args, 0)
 	_saved_function_calls[args] = times + 1
 
+func __reset() -> void:
+	_saved_function_calls.clear()
+
 func __is_verify() -> bool:
 	return _assert_function_call_times != -1
 

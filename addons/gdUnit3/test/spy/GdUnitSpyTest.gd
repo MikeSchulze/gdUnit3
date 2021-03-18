@@ -101,11 +101,28 @@ func test_example_verify():
 	# verify how often we called the function with different argument 
 	verify(spy_node, 2).set_process(true) # in sum two times with true
 	verify(spy_node, 1).set_process(false)# in sum one time with false
-
+	
 	# verify total sum by using an argument matcher 
 	verify(spy_node, 3).set_process(any_bool())
+
+func test_reset():
+	var instance :Node = auto_free(Node.new())
+	var spy_node = spy(instance)
 	
+	# call with different arguments
+	spy_node.set_process(false) # 1 times
+	spy_node.set_process(true) # 1 times
+	spy_node.set_process(true) # 2 times
 	
+	verify(spy_node, 2).set_process(true)
+	verify(spy_node, 1).set_process(false)
+	
+	# now reset the spy
+	reset(spy_node)
+	# verify all counters are rested
+	verify_no_interactions(spy_node)
+
+
 class ClassWithStaticFunctions:
 	
 	static func foo() -> void:
