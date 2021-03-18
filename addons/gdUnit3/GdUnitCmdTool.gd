@@ -31,7 +31,7 @@ class CLIRunner extends Node:
 		_executor.connect("send_event", self, "_on_executor_event")
 		add_child(_executor)
 	
-	func _process(delta):
+	func _process(_delta):
 		match _state:
 			INIT:
 				gdUnitInit()
@@ -54,6 +54,47 @@ class CLIRunner extends Node:
 				get_tree().quit(report_exit_code(_report))
 	
 	func gdUnitInit() -> void:
+		prints("-- GdUnit3 Comandline Tool -----")
+		var options: = CmdOptions.new([
+			CmdOption.new("-ets, --execute-test-suite", "-ets <suite name>", "Executes a single test-suite by given name.", TYPE_STRING),
+			CmdOption.new("-it, --ignore-test", "-it <suite-name:test-name>", "Ignores the test on test execution.", TYPE_STRING),
+			CmdOption.new("-its, --ignore-test-suite", "-its <suite-name>", "Ignores the test-suite on test execution.", TYPE_STRING),
+			CmdOption.new("-sd, --scan-dir", "-sd <directory>", "Scans a directory for test-suited and adds to execution list.", TYPE_STRING),
+			CmdOption.new("-sdr, --scan-dir-recursive", "-sdr <directory>", "Scans a directory recusive for test-suited and adds to execution list", TYPE_STRING),
+			CmdOption.new("-c, --continue", "", "By default GdUnit will abort on first failure to fail fast, instead of stop after first failure you can use this option to run the complete test set."),
+			CmdOption.new("-wr, --write-report", "-wr [report directory]", "Writes an HTML report to specified directory. If no directory specified the project root is used.", TYPE_STRING, true)
+		], [
+			# advanced options
+			CmdOption.new("-lts, --list-suites", "-lts [directory]", "Lists all test-suites in the given directory.", TYPE_STRING),
+			CmdOption.new("-lts, --list-suites-recursive", "-lsr <directory>", "Lists all test-suites in the given directory recusive.", TYPE_STRING),
+			CmdOption.new("-lt, --list-tests", "-lt <suite name>", "Lists all test of given test-suite.", TYPE_STRING),
+			CmdOption.new("-pv, --print-version", "", "Prints the tool version"),
+		])
+		var cmd_parser := CmdArgumentParser.new(options, "GdUnitCmdTool.gd")
+		if cmd_parser.parse(OS.get_cmdline_args()) != 0:
+			options.print_options()
+			CmdArgumentParser.print_error("Abnormal exit with -1")
+			get_tree().quit(-1)
+			return
+
+		for cmd in cmd_parser.commands():
+			prints(cmd)
+			
+		var cmd_handler := CmdCommandHandler.new(options)
+		#cmd_handler.register_cb("-ets", funcref(self, "execute_testsuite"))
+		var result := cmd_handler.execute(cmd_parser.commands())
+		if result.is_error():
+			prints(color_string(result.error_message(), RED_BRIGHT))
+			_state = STOP
+			get_tree().quit(0)
+			
+			
+		if true:
+			_state = STOP
+			get_tree().quit(0)
+			return
+			
+
 		_test_suites_to_process = load_test_suits()
 		var total_test_count = _collect_test_case_count(_test_suites_to_process)
 		_on_executor_event(GdUnitInit.new(_test_suites_to_process.size(), total_test_count))
@@ -93,7 +134,6 @@ class CLIRunner extends Node:
 		
 		match event.type():
 			GdUnitEvent.INIT:
-				var summary := event as GdUnitInit
 				_report = GdUnitHtmlReport.new()
 			
 			
@@ -165,9 +205,9 @@ class CLIRunner extends Node:
 		return "%s%s[0m" % [color, value]
 	
 	
-	func _notification(what):
+	#func _notification(what):
 		#prints("_notification", self, GdObjects.notification_as_string(what))
-		pass
+	#	pass
 
 func _initialize():
 	root.add_child(CLIRunner.new())
