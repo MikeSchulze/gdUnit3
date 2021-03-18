@@ -560,5 +560,5 @@ func test_reset():
 	
 	# now reset the mock
 	reset(mocked_node)
-	# verify all counters are rested
+	# verify all counters have been reset
 	verify_no_interactions(mocked_node)
