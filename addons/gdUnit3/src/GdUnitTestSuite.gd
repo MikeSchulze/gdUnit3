@@ -101,8 +101,12 @@ func verify(obj, times := 1):
 	return GdUnitMock.verify(obj, times)
 
 # Verifies no interactions is happen on this mock or spy
-func verify_no_interactions(mock):
-	return GdUnitMock.verify_no_interactions(mock)
+func verify_no_interactions(obj):
+	return GdUnitMock.verify_no_interactions(obj)
+
+# Resets the saved function call counters on a mock or spy
+func reset(obj) -> void:
+	GdUnitMock.reset(obj)
 
 # === Argument matchers ========================================================
 # Argument matcher to match any argument

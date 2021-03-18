@@ -25,6 +25,9 @@ func __release_double():
 func __save_function_call(args :Array):
 	_saved_function_calls[args] = _saved_function_calls.get(args, 0) + 1
 
+func __reset() -> void:
+	_saved_function_calls.clear()
+
 func __is_verify() -> bool:
 	return _assert_function_call_times != -1
 

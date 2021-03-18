@@ -545,3 +545,20 @@ func test_example_verify():
 
 	# verify total sum by using an argument matcher 
 	verify(mocked_node, 3).set_process(any_bool())
+
+func test_reset():
+	var instance :Node = auto_free(Node.new())
+	var mocked_node = mock(Node)
+	
+	# call with different arguments
+	mocked_node.set_process(false) # 1 times
+	mocked_node.set_process(true) # 1 times
+	mocked_node.set_process(true) # 2 times
+	
+	verify(mocked_node, 2).set_process(true)
+	verify(mocked_node, 1).set_process(false)
+	
+	# now reset the mock
+	reset(mocked_node)
+	# verify all counters have been reset
+	verify_no_interactions(mocked_node)
