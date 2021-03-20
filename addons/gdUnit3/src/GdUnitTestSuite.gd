@@ -104,6 +104,10 @@ func verify(obj, times := 1):
 func verify_no_interactions(obj):
 	return GdUnitMock.verify_no_interactions(obj)
 
+# Verifies the given mock or spy has any unverified interaction.
+func verify_no_more_interactions(obj, expect_result :int = GdUnitAssert.EXPECT_SUCCESS) -> GdUnitAssert:
+	return GdUnitMock.verify_no_more_interactions(obj, expect_result)
+
 # Resets the saved function call counters on a mock or spy
 func reset(obj) -> void:
 	GdUnitMock.reset(obj)
