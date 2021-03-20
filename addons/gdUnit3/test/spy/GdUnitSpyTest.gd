@@ -122,6 +122,54 @@ func test_reset():
 	# verify all counters have been reset
 	verify_no_interactions(spy_node)
 
+func test_verify_no_more_interactions():
+	var instance :Node = auto_free(Node.new())
+	var spy_node :Node = spy(instance)
+	
+	spy_node.is_a_parent_of(instance)
+	spy_node.set_process(false)
+	spy_node.set_process(true)
+	spy_node.set_process(true)
+	
+	# verify for called functions
+	verify(spy_node, 1).is_a_parent_of(instance)
+	verify(spy_node, 2).set_process(true)
+	verify(spy_node, 1).set_process(false)
+	
+	# There should be no more interactions on this mock
+	verify_no_more_interactions(spy_node)
+
+func test_verify_no_more_interactions_but_has():
+	var instance :Node = auto_free(Node.new())
+	var spy_node :Node = spy(instance)
+	
+	spy_node.is_a_parent_of(instance)
+	spy_node.set_process(false)
+	spy_node.set_process(true)
+	spy_node.set_process(true)
+	
+	# now we simulate extra calls that we are not explicit verify
+	spy_node.is_inside_tree()
+	spy_node.is_inside_tree()
+	# a function with default agrs
+	spy_node.find_node("mask")
+	# same function again with custom agrs
+	spy_node.find_node("mask", false, false)
+	
+	# verify 'all' exclusive the 'extra calls' functions
+	verify(spy_node, 1).is_a_parent_of(instance)
+	verify(spy_node, 2).set_process(true)
+	verify(spy_node, 1).set_process(false)
+	
+	# now use 'verify_no_more_interactions' to check we have no more interactions on this mock
+	# but should fail with a collecion of all not validated interactions
+	var expected_error ="""Expecting no more interacions!
+But found interactions on:
+	'is_inside_tree()'	2 time's
+	'find_node(mask, True, True)'	1 time's
+	'find_node(mask, False, False)'	1 time's"""
+	verify_no_more_interactions(spy_node, GdUnitAssert.EXPECT_FAIL)\
+		.has_error_message(expected_error)
 
 class ClassWithStaticFunctions:
 	

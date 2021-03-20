@@ -10,6 +10,7 @@ var _assert_function_call_times :int = -1
 var _do_return_value = null
 var _saved_return_values := Dictionary()
 var _saved_function_calls := Dictionary()
+var _verified_functions := Array()
 
 
 # self reference holder, use this kind of hack to store static function calls 
@@ -48,6 +49,8 @@ func __verify(args :Array, default_return_value):
 	for key in _saved_function_calls.keys():
 		if matcher.is_match(key):
 			times += _saved_function_calls.get(key, 0)
+			# add as verified
+			_verified_functions.append(key)
 	
 	GdUnitIntAssertImpl.new(times, GdUnitAssert.EXPECT_SUCCESS).is_equal(_assert_function_call_times)
 	_assert_function_call_times = -1
@@ -69,3 +72,15 @@ func __verify_no_interactions():
 	if not _saved_function_calls.empty():
 		GdUnitArrayAssertImpl.new([], GdUnitAssert.EXPECT_SUCCESS).contains(_saved_function_calls.keys())
 
+func __verify_no_more_interactions() -> Dictionary:
+	var summary := Dictionary()
+	var called_functions :Array = _saved_function_calls.keys()
+	if called_functions != _verified_functions:
+		# collect the not verified functions
+		var called_but_not_verified := called_functions.duplicate()
+		for verified_function in _verified_functions:
+			called_but_not_verified.erase(verified_function)
+		
+		for not_verified in called_but_not_verified:
+			summary[not_verified] = _saved_function_calls[not_verified]
+	return summary

@@ -372,7 +372,7 @@ _global_script_classes=[ {
 "base": "Reference",
 "class": "GdUnitMock",
 "language": "GDScript",
-"path": "res://addons/gdUnit3/src/GdUnitMock.gd"
+"path": "res://addons/gdUnit3/src/mocking/GdUnitMock.gd"
 }, {
 "base": "GdUnitClassDoubler",
 "class": "GdUnitMockBuilder",

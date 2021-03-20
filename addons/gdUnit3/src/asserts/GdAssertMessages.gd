@@ -238,6 +238,18 @@ static func error_result_is_value(current, expected) -> String:
 	return "%s\n %s\n but was\n %s." % [_error("Expecting to contain same value:"), _expected(expected), _current(current)]
 # -----------------------------------------------------------------------------------
 
+# - Spy|Mock specific errors ----------------------------------------------------
+static func error_no_more_interactions(summary :Dictionary) -> String:
+	var interactions := PoolStringArray()
+	for info in summary.keys():
+		var fname :String = info[0]
+		var fargs := PoolStringArray(info.slice(1, -1))
+		var times :int = summary[info]
+		var fsignature := _current("%s(%s)" % [fname, fargs.join(", ")])
+		interactions.append("	%s	%d time's" % [fsignature, times])
+	return "%s\n%s\n%s" % [_error("Expecting no more interacions!"), _error("But found interactions on:"), interactions.join("\n")] 
+
+
 static func _find_first_diff( left :Array, right :Array) -> String:
 	for index in left.size():
 		var l = left[index]

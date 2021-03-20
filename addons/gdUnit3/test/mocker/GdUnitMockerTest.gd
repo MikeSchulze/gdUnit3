@@ -547,7 +547,6 @@ func test_example_verify():
 	verify(mocked_node, 3).set_process(any_bool())
 
 func test_reset():
-	var instance :Node = auto_free(Node.new())
 	var mocked_node = mock(Node)
 	
 	# call with different arguments
@@ -562,3 +561,50 @@ func test_reset():
 	reset(mocked_node)
 	# verify all counters have been reset
 	verify_no_interactions(mocked_node)
+
+func test_verify_no_more_interactions():
+	var mocked_node :Node = mock(Node)
+	
+	mocked_node.is_a_parent_of(null)
+	mocked_node.set_process(false)
+	mocked_node.set_process(true)
+	mocked_node.set_process(true)
+	
+	# verify for called functions
+	verify(mocked_node, 1).is_a_parent_of(null)
+	verify(mocked_node, 2).set_process(true)
+	verify(mocked_node, 1).set_process(false)
+	
+	# There should be no more interactions on this mock
+	verify_no_more_interactions(mocked_node)
+
+func test_verify_no_more_interactions_but_has():
+	var mocked_node :Node = mock(Node)
+	
+	mocked_node.is_a_parent_of(null)
+	mocked_node.set_process(false)
+	mocked_node.set_process(true)
+	mocked_node.set_process(true)
+	
+	# now we simulate extra calls that we are not explicit verify
+	mocked_node.is_inside_tree()
+	mocked_node.is_inside_tree()
+	# a function with default agrs
+	mocked_node.find_node("mask")
+	# same function again with custom agrs
+	mocked_node.find_node("mask", false, false)
+	
+	# verify 'all' exclusive the 'extra calls' functions
+	verify(mocked_node, 1).is_a_parent_of(null)
+	verify(mocked_node, 2).set_process(true)
+	verify(mocked_node, 1).set_process(false)
+	
+	# now use 'verify_no_more_interactions' to check we have no more interactions on this mock
+	# but should fail with a collecion of all not validated interactions
+	var expected_error ="""Expecting no more interacions!
+But found interactions on:
+	'is_inside_tree()'	2 time's
+	'find_node(mask, True, True)'	1 time's
+	'find_node(mask, False, False)'	1 time's"""
+	verify_no_more_interactions(mocked_node, GdUnitAssert.EXPECT_FAIL)\
+		.has_error_message(expected_error)
