@@ -98,19 +98,19 @@ func do_return(value) -> GdUnitMock:
 
 # Verifies certain behavior happened at least once or exact number of times
 func verify(obj, times := 1):
-	return GdUnitMock.verify(obj, times)
+	return GdUnitObjectInteractions.verify(obj, times)
 
 # Verifies no interactions is happen on this mock or spy
 func verify_no_interactions(obj, expect_result :int = GdUnitAssert.EXPECT_SUCCESS) -> GdUnitAssert:
-	return GdUnitMock.verify_no_interactions(obj, expect_result)
+	return GdUnitObjectInteractions.verify_no_interactions(obj, expect_result)
 
 # Verifies the given mock or spy has any unverified interaction.
 func verify_no_more_interactions(obj, expect_result :int = GdUnitAssert.EXPECT_SUCCESS) -> GdUnitAssert:
-	return GdUnitMock.verify_no_more_interactions(obj, expect_result)
+	return GdUnitObjectInteractions.verify_no_more_interactions(obj, expect_result)
 
 # Resets the saved function call counters on a mock or spy
 func reset(obj) -> void:
-	GdUnitMock.reset(obj)
+	GdUnitObjectInteractions.reset(obj)
 
 # === Argument matchers ========================================================
 # Argument matcher to match any argument

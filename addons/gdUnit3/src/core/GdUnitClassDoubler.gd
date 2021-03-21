@@ -30,12 +30,19 @@ static func extract_class_functions(clazz_name :String, script_path :PoolStringA
 # loads the doubler template
 static func load_template(template :Object, clazz :String) -> PoolStringArray:
 	var source_code = template.new().get_script().source_code
-	var lines := Array(GdScriptParser.to_unix_format(source_code).split("\n"))
+	var lines := GdScriptParser.to_unix_format(source_code).split("\n")
 	# replace template class_name with Doubled<class> name and extends form source class
 	lines.remove(2)
 	lines.insert(2, "class_name Doubled%s" % clazz.replace(".", "_"))
 	lines.insert(3, "extends %s" % clazz)
-	return PoolStringArray(lines)
+	
+	var eol := lines.size()
+	# append Object interactions stuff
+	source_code = GdUnitObjectInteractionsTemplate.new().get_script().source_code
+	lines += GdScriptParser.to_unix_format(source_code).split("\n")
+	# remove the class header from GdUnitObjectInteractionsTemplate
+	lines.remove(eol)
+	return lines
 
 # double all functions of given instance
 static func double_functions(clazz_name :String, clazz_path :PoolStringArray, func_doubler: GdFunctionDoubler) -> PoolStringArray:
