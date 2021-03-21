@@ -49,8 +49,11 @@ func __do_verify(times :int = 1):
 	return self 
 
 func __verify_no_interactions():
+	var summary := Dictionary()
 	if not _saved_function_calls.empty():
-		GdUnitArrayAssertImpl.new([], GdUnitAssert.EXPECT_SUCCESS).contains(_saved_function_calls.keys())
+		for func_call in _saved_function_calls.keys():
+			summary[func_call] = _saved_function_calls[func_call]
+	return summary
 
 func __verify_no_more_interactions() -> Dictionary:
 	var summary := Dictionary()

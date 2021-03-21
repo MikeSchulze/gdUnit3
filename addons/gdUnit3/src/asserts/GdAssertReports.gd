@@ -3,13 +3,14 @@ extends Reference
 
 
 # if a test success but we expect to fail map to an error
-static func report_success(gd_assert :GdUnitAssert) -> void:
+static func report_success(gd_assert :GdUnitAssert) -> GdUnitAssert:
 	if not gd_assert._expect_fail || gd_assert._is_failed:
-		return
-	send_report(GdAssertMessages._error("Expecting to fail!"), -1, GdUnitReport.SUCCESS)
+		return gd_assert
+	send_report(GdAssertMessages._error("Expecting to fail!"), gd_assert._get_line_number(), GdUnitReport.SUCCESS)
+	return gd_assert
 
 
-static func report_error(message:String, gd_assert :GdUnitAssert, line_number :int):
+static func report_error(message:String, gd_assert :GdUnitAssert, line_number :int) -> GdUnitAssert:
 	if gd_assert != null:
 		gd_assert._is_failed = true
 		gd_assert._current_error_message = message

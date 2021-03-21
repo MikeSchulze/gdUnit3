@@ -122,6 +122,30 @@ func test_reset():
 	# verify all counters have been reset
 	verify_no_interactions(spy_node)
 
+func test_verify_no_interactions():
+	var instance :Node = auto_free(Node.new())
+	var spy_node = spy(instance)
+	
+	# verify we have no interactions on this mock
+	verify_no_interactions(spy_node)
+
+func test_verify_no_interactions_fails():
+	var instance :Node = auto_free(Node.new())
+	var spy_node = spy(instance)
+	
+	# interact
+	spy_node.set_process(false) # 1 times
+	spy_node.set_process(true) # 1 times
+	spy_node.set_process(true) # 2 times
+	
+	var expected_error ="""Expecting no more interacions!
+But found interactions on:
+	'set_process(False)'	1 time's
+	'set_process(True)'	2 time's"""
+	# it should fail because we have interactions 
+	verify_no_interactions(spy_node, GdUnitAssert.EXPECT_FAIL)\
+		.has_error_message(expected_error)
+
 func test_verify_no_more_interactions():
 	var instance :Node = auto_free(Node.new())
 	var spy_node :Node = spy(instance)

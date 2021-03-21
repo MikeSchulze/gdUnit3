@@ -24,11 +24,14 @@ static func verify(obj :Object, times):
 		return obj
 	return obj.__do_verify(times)
 
-static func verify_no_interactions(obj :Object) -> Object:
+static func verify_no_interactions(obj :Object, expect_result :int) -> GdUnitAssert:
+	var gd_assert := GdUnitAssertImpl.new("", expect_result)
 	if not _is_mock_or_spy( obj, "__verify"):
-		return obj
-	obj.__verify_no_interactions()
-	return obj
+		return gd_assert.report_success()
+	var summary :Dictionary = obj.__verify_no_interactions()
+	if summary.empty():
+		return gd_assert.report_success()
+	return gd_assert.report_error(GdAssertMessages.error_no_more_interactions(summary))
 
 static func verify_no_more_interactions(obj :Object, expect_result :int) -> GdUnitAssert:
 	var gd_assert := GdUnitAssertImpl.new("", expect_result)
@@ -37,8 +40,7 @@ static func verify_no_more_interactions(obj :Object, expect_result :int) -> GdUn
 	var summary :Dictionary = obj.__verify_no_more_interactions()
 	if summary.empty():
 		return gd_assert
-	gd_assert.report_error(GdAssertMessages.error_no_more_interactions(summary))
-	return gd_assert
+	return gd_assert.report_error(GdAssertMessages.error_no_more_interactions(summary))
 
 static func reset(obj :Object) -> Object:
 	if not _is_mock_or_spy( obj, "__reset"):

@@ -31,8 +31,8 @@ func _init(current, expect_result :int = EXPECT_SUCCESS):
 	if expect_result == EXPECT_FAIL:
 		_expect_fail = true
 
-func report_success() -> void:
-	GdAssertReports.report_success(self)
+func report_success() -> GdUnitAssert:
+	return GdAssertReports.report_success(self)
 
 func report_error(error_message :String) -> GdUnitAssert:
 	var line_number := _get_line_number()
