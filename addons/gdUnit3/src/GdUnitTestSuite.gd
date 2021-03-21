@@ -97,8 +97,8 @@ func do_return(value) -> GdUnitMock:
 	return GdUnitMock.new(value)
 
 # Verifies certain behavior happened at least once or exact number of times
-func verify(obj, times := 1):
-	return GdUnitObjectInteractions.verify(obj, times)
+func verify(obj, times := 1, expect_result :int = GdUnitAssert.EXPECT_SUCCESS):
+	return GdUnitObjectInteractions.verify(obj, times, expect_result)
 
 # Verifies no interactions is happen on this mock or spy
 func verify_no_interactions(obj, expect_result :int = GdUnitAssert.EXPECT_SUCCESS) -> GdUnitAssert:

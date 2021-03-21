@@ -105,6 +105,20 @@ func test_example_verify():
 	# verify total sum by using an argument matcher 
 	verify(spy_node, 3).set_process(any_bool())
 
+func test_verify_fail():
+	var instance :Node = auto_free(Node.new())
+	var spy_node = spy(instance)
+	
+	# interact two time
+	spy_node.set_process(true) # 1 times
+	spy_node.set_process(true) # 2 times
+	
+	# verify we interacts two times
+	verify(spy_node, 2).set_process(true)
+	
+	# verify should fail because we interacts two times and not one
+	verify(spy_node, 1, GdUnitAssert.EXPECT_FAIL).set_process(true)
+
 func test_reset():
 	var instance :Node = auto_free(Node.new())
 	var spy_node = spy(instance)

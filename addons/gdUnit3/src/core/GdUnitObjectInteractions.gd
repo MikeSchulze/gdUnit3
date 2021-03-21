@@ -1,10 +1,10 @@
 class_name GdUnitObjectInteractions
 extends Reference
 
-static func verify(obj :Object, times):
+static func verify(obj :Object, times, expect_result :int):
 	if not _is_mock_or_spy( obj, "__verify"):
 		return obj
-	return obj.__do_verify_interactions(times)
+	return obj.__do_verify_interactions(times, expect_result)
 
 static func verify_no_interactions(obj :Object, expect_result :int) -> GdUnitAssert:
 	var gd_assert := GdUnitAssertImpl.new("", expect_result)

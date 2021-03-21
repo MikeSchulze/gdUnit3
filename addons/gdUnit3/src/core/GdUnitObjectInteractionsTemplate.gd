@@ -1,6 +1,7 @@
 class_name GdUnitObjectInteractionsTemplate
 
 var __expected_interactions :int = -1
+var __expect_result :int
 var __saved_interactions := Dictionary()
 var __verified_interactions := Array()
 
@@ -10,8 +11,9 @@ func __save_function_interaction(args :Array) -> void:
 func __is_verify_interactions() -> bool:
 	return __expected_interactions != -1
 
-func __do_verify_interactions(times :int = 1) -> Object:
+func __do_verify_interactions(times :int = 1, expect_result :int = GdUnitAssert.EXPECT_SUCCESS) -> Object:
 	__expected_interactions = times
+	__expect_result = expect_result
 	return self
 
 func __verify_interactions(args :Array):
@@ -26,7 +28,7 @@ func __verify_interactions(args :Array):
 			# add as verified
 			__verified_interactions.append(key)
 	
-	var gd_assert := GdUnitAssertImpl.new("", GdUnitAssert.EXPECT_SUCCESS)
+	var gd_assert := GdUnitAssertImpl.new("", __expect_result)
 	if summary.empty():
 		gd_assert.report_success()
 	elif total_interactions != __expected_interactions:
