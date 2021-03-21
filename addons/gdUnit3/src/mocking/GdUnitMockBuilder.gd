@@ -8,15 +8,16 @@ const MOCK_TEMPLATE =\
 	#prints("--->", args)
 	if $(instance)__is_prepare_return_value():
 		return $(instance)__save_function_return_value(args)
-	if $(instance)__is_verify():
-		return $(instance)__verify(args, ${default_return_value})
+	if $(instance)__is_verify_interactions():
+		$(instance)__verify_interactions(args)
+		return ${default_return_value}
 	else:
-		$(instance)__save_function_call_times(args)
+		$(instance)__save_function_interaction(args)
 
-	if $(instance)_saved_return_values.has(args):
-		return $(instance)_saved_return_values.get(args)
+	if $(instance)__saved_return_values.has(args):
+		return $(instance)__saved_return_values.get(args)
 
-	if $(instance)_working_mode == GdUnitMock.CALL_REAL_FUNC:
+	if $(instance)__working_mode == GdUnitMock.CALL_REAL_FUNC:
 		return .$(func_name)($(func_arg))
 	return ${default_return_value}
 """
@@ -29,13 +30,13 @@ const MOCK_VOID_TEMPLATE =\
 		if $(push_errors):
 			push_error(\"Mocking a void function '$(func_name)(<args>) -> void:' is not allowed.\")
 		return
-	if $(instance)__is_verify():
-		$(instance)__verify(args, null)
+	if $(instance)__is_verify_interactions():
+		$(instance)__verify_interactions(args)
 		return
 	else:
-		$(instance)__save_function_call_times(args)
+		$(instance)__save_function_interaction(args)
 	
-	if $(instance)_working_mode == GdUnitMock.CALL_REAL_FUNC:
+	if $(instance)__working_mode == GdUnitMock.CALL_REAL_FUNC:
 		.$(func_name)($(func_arg))
 """
 
@@ -69,7 +70,7 @@ class MockFunctionDoubler extends GdFunctionDoubler:
 			.replace("${default_return_value}", default_return_value)\
 			.replace("$(push_errors)", _push_errors)
 		if is_static:
-			double = double.replace("$(instance)", "_self[0].")
+			double = double.replace("$(instance)", "__self[0].")
 		else:
 			double = double.replace("$(instance)", "")
 		return double.split("\n")

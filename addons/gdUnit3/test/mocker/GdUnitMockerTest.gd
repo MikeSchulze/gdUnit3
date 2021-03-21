@@ -546,6 +546,19 @@ func test_example_verify():
 	# verify total sum by using an argument matcher 
 	verify(mocked_node, 3).set_process(any_bool())
 
+func test_verify_fail():
+	var mocked_node :Node = mock(Node)
+	
+	# interact two time
+	mocked_node.set_process(true) # 1 times
+	mocked_node.set_process(true) # 2 times
+	
+	# verify we interacts two times
+	verify(mocked_node, 2).set_process(true)
+	
+	# verify should fail because we interacts two times and not one
+	verify(mocked_node, 1, GdUnitAssert.EXPECT_FAIL).set_process(true)
+
 func test_reset():
 	var mocked_node = mock(Node)
 	
@@ -561,6 +574,28 @@ func test_reset():
 	reset(mocked_node)
 	# verify all counters have been reset
 	verify_no_interactions(mocked_node)
+
+func test_verify_no_interactions():
+	var mocked_node = mock(Node)
+	
+	# verify we have no interactions on this mock
+	verify_no_interactions(mocked_node)
+
+func test_verify_no_interactions_fails():
+	var mocked_node = mock(Node)
+	
+	# interact
+	mocked_node.set_process(false) # 1 times
+	mocked_node.set_process(true) # 1 times
+	mocked_node.set_process(true) # 2 times
+	
+	var expected_error ="""Expecting no more interacions!
+But found interactions on:
+	'set_process(False)'	1 time's
+	'set_process(True)'	2 time's"""
+	# it should fail because we have interactions 
+	verify_no_interactions(mocked_node, GdUnitAssert.EXPECT_FAIL)\
+		.has_error_message(expected_error)
 
 func test_verify_no_more_interactions():
 	var mocked_node :Node = mock(Node)

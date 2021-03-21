@@ -5,23 +5,23 @@ const SPY_TEMPLATE = \
 """	var args = $(args)
 	
 	#prints("--->", args)
-	if $(instance)__is_verify():
-		return $(instance)__verify(args)
+	if $(instance)__is_verify_interactions():
+		return $(instance)__verify_interactions(args)
 	else:
-		$(instance)__save_function_call(args)
-	return $(instance)_instance_delegator.$(func_name)($(func_arg))
+		$(instance)__save_function_interaction(args)
+	return $(instance)__instance_delegator.$(func_name)($(func_arg))
 """
 
 const SPY_VOID_TEMPLATE = \
 """	var args = $(args)
 	
 	#prints("--->", args)
-	if $(instance)__is_verify():
-		$(instance)__verify(args)
+	if $(instance)__is_verify_interactions():
+		$(instance)__verify_interactions(args)
 		return
 	else:
-		$(instance)__save_function_call(args)
-	$(instance)_instance_delegator.$(func_name)($(func_arg))
+		$(instance)__save_function_interaction(args)
+	$(instance)__instance_delegator.$(func_name)($(func_arg))
 """
 
 class SpyFunctionDoubler extends GdFunctionDoubler:
@@ -49,7 +49,7 @@ class SpyFunctionDoubler extends GdFunctionDoubler:
 			.replace("$(func_name)", func_name )\
 			.replace("$(func_arg)", arg_names.join(","))
 		if is_static:
-			double = double.replace("$(instance)", "_self[0].")
+			double = double.replace("$(instance)", "__self[0].")
 		else:
 			double = double.replace("$(instance)", "")
 		return double.split("\n")

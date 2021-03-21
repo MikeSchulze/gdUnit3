@@ -404,6 +404,16 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/test/asserts/GdUnitObjectAssertImplTest.gd"
 }, {
+"base": "Reference",
+"class": "GdUnitObjectInteractions",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/src/core/GdUnitObjectInteractions.gd"
+}, {
+"base": "Reference",
+"class": "GdUnitObjectInteractionsTemplate",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/src/core/GdUnitObjectInteractionsTemplate.gd"
+}, {
 "base": "Node",
 "class": "GdUnitPushErrorHandler",
 "language": "GDScript",
@@ -664,6 +674,8 @@ _global_script_class_icons={
 "GdUnitObjectAssert": "",
 "GdUnitObjectAssertImpl": "",
 "GdUnitObjectAssertImplTest": "",
+"GdUnitObjectInteractions": "",
+"GdUnitObjectInteractionsTemplate": "",
 "GdUnitPushErrorHandler": "",
 "GdUnitReport": "",
 "GdUnitResultAssert": "",
