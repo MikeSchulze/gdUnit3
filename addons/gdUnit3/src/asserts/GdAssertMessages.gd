@@ -241,14 +241,31 @@ static func error_result_is_value(current, expected) -> String:
 # - Spy|Mock specific errors ----------------------------------------------------
 static func error_no_more_interactions(summary :Dictionary) -> String:
 	var interactions := PoolStringArray()
-	for info in summary.keys():
-		var fname :String = info[0]
-		var fargs := PoolStringArray(info.slice(1, -1))
-		var times :int = summary[info]
-		var fsignature := _current("%s(%s)" % [fname, fargs.join(", ")])
-		interactions.append("	%s	%d time's" % [fsignature, times])
+	for args in summary.keys():
+		var times :int = summary[args]
+		interactions.append(_format_arguments(args, times))
 	return "%s\n%s\n%s" % [_error("Expecting no more interacions!"), _error("But found interactions on:"), interactions.join("\n")] 
 
+static func error_validate_interactions(current_interactions :Dictionary, expected_interactions :Dictionary) -> String:
+	var interactions := PoolStringArray()
+	for args in current_interactions.keys():
+		var times :int = current_interactions[args]
+		interactions.append(_format_arguments(args, times))
+	var expected_interaction := _format_arguments(expected_interactions.keys()[0], expected_interactions.values()[0])
+	return "%s\n%s\n%s\n%s" % [_error("Expecting interacion on:"), expected_interaction, _error("But found interactions on:"), interactions.join("\n")]
+
+static func _format_arguments(args :Array, times :int) -> String:
+	var fname :String = args[0]
+	var fargs := args.slice(1, -1) as Array
+	var typed_args := _to_typed_args(fargs)
+	var fsignature := _current("%s(%s)" % [fname, typed_args.join(", ")])
+	return "	%s	%d time's" % [fsignature, times]
+
+static func _to_typed_args(args :Array) -> PoolStringArray:
+	var typed := PoolStringArray()
+	for arg in args:
+		typed.append( str(arg) + " :" + GdObjects.type_as_string(typeof(arg)))
+	return typed
 
 static func _find_first_diff( left :Array, right :Array) -> String:
 	for index in left.size():

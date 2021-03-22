@@ -29,10 +29,18 @@ func __verify_interactions(args :Array):
 			__verified_interactions.append(key)
 	
 	var gd_assert := GdUnitAssertImpl.new("", __expect_result)
-	if summary.empty():
+	if total_interactions != __expected_interactions:
+		var expected_summary = {args : __expected_interactions}
+		var error_message :String
+		# if no interactions macht collect not verified interactions for failure report
+		if summary.empty():
+			var current_summary = __verify_no_more_interactions()
+			error_message = GdAssertMessages.error_validate_interactions(current_summary, expected_summary)
+		else:
+			error_message = GdAssertMessages.error_validate_interactions(summary, expected_summary)
+		gd_assert.report_error(error_message)
+	else:
 		gd_assert.report_success()
-	elif total_interactions != __expected_interactions:
-		gd_assert.report_error(GdAssertMessages.error_no_more_interactions(summary))
 	__expected_interactions = -1
 
 func __verify_no_interactions() -> Dictionary:

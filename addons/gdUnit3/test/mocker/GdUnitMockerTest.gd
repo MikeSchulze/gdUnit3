@@ -9,6 +9,13 @@ func before():
 func after():
 	GdUnitMockBuilder.do_push_errors(true)
 
+# small helper to verify last assert error
+static func assert_last_error(expected :String):
+	var gd_assert := GdUnitAssertImpl.new("")
+	if Engine.has_meta(GdAssertReports.LAST_ERROR):
+		gd_assert._current_error_message = Engine.get_meta(GdAssertReports.LAST_ERROR)
+	gd_assert.has_error_message(expected)
+
 func test_is_mockable_godot_classes():
 	# verify enigne classes
 	for clazz_name in ClassDB.get_class_list():
@@ -558,6 +565,46 @@ func test_verify_fail():
 	
 	# verify should fail because we interacts two times and not one
 	verify(mocked_node, 1, GdUnitAssert.EXPECT_FAIL).set_process(true)
+	var expexted_error := """Expecting interacion on:
+	'set_process(True :bool)'	1 time's
+But found interactions on:
+	'set_process(True :bool)'	2 time's"""
+	assert_last_error(expexted_error)
+
+func test_verify_func_interaction_wiht_PoolStringArray():
+	var mocked :ClassWithPoolStringArrayFunc = mock(ClassWithPoolStringArrayFunc)
+	
+	mocked.set_values(PoolStringArray())
+	
+	verify(mocked).set_values(PoolStringArray())
+	verify_no_more_interactions(mocked)
+
+func test_verify_func_interaction_wiht_PoolStringArray_fail():
+	var mocked :ClassWithPoolStringArrayFunc = mock(ClassWithPoolStringArrayFunc)
+	
+	mocked.set_values(PoolStringArray())
+	
+	# try to verify with default array type instead of PoolStringArray type
+	verify(mocked, 1, GdUnitAssert.EXPECT_FAIL).set_values([])
+	var expected_error := """Expecting interacion on:
+	'set_values([] :Array)'	1 time's
+But found interactions on:
+	'set_values([] :PoolStringArray)'	1 time's"""
+	assert_last_error(expected_error)
+	
+	reset(mocked)
+	# try again with called two times and different args
+	mocked.set_values(PoolStringArray())
+	mocked.set_values(PoolStringArray(["a", "b"]))
+	mocked.set_values([1, 2])
+	verify(mocked, 1, GdUnitAssert.EXPECT_FAIL).set_values([])
+	expected_error = """Expecting interacion on:
+	'set_values([] :Array)'	1 time's
+But found interactions on:
+	'set_values([] :PoolStringArray)'	1 time's
+	'set_values([a, b] :PoolStringArray)'	1 time's
+	'set_values([1, 2] :Array)'	1 time's"""
+	assert_last_error(expected_error)
 
 func test_reset():
 	var mocked_node = mock(Node)
@@ -591,8 +638,8 @@ func test_verify_no_interactions_fails():
 	
 	var expected_error ="""Expecting no more interacions!
 But found interactions on:
-	'set_process(False)'	1 time's
-	'set_process(True)'	2 time's"""
+	'set_process(False :bool)'	1 time's
+	'set_process(True :bool)'	2 time's"""
 	# it should fail because we have interactions 
 	verify_no_interactions(mocked_node, GdUnitAssert.EXPECT_FAIL)\
 		.has_error_message(expected_error)
@@ -639,7 +686,7 @@ func test_verify_no_more_interactions_but_has():
 	var expected_error ="""Expecting no more interacions!
 But found interactions on:
 	'is_inside_tree()'	2 time's
-	'find_node(mask, True, True)'	1 time's
-	'find_node(mask, False, False)'	1 time's"""
+	'find_node(mask :String, True :bool, True :bool)'	1 time's
+	'find_node(mask :String, False :bool, False :bool)'	1 time's"""
 	verify_no_more_interactions(mocked_node, GdUnitAssert.EXPECT_FAIL)\
 		.has_error_message(expected_error)
