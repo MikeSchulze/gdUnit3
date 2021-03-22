@@ -99,6 +99,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/test/mocker/resources/ClassWithNameB.gd"
 }, {
+"base": "Reference",
+"class": "ClassWithPoolStringArrayFunc",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/test/mocker/resources/ClassWithPoolStringArrayFunc.gd"
+}, {
 "base": "Resource",
 "class": "ClassWithVariables",
 "language": "GDScript",
@@ -613,6 +618,7 @@ _global_script_class_icons={
 "City": "",
 "ClassWithNameA": "",
 "ClassWithNameB": "",
+"ClassWithPoolStringArrayFunc": "",
 "ClassWithVariables": "",
 "Comparator": "",
 "CustomArgumentMatcherTestClass": "",
