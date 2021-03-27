@@ -7,6 +7,7 @@ signal server_message
 signal client_connected
 signal client_disconnected
 
+const DEFAULT_SERVER_START_RETRY_TIMES = 5
 const GD_TEST_SERVER_PORT :int = 31002
 const CLIENT_MAX_COUNT :int = 5
 
@@ -19,34 +20,42 @@ var _peer := NetworkedMultiplayerENet.new()
 func _exit_tree():
 	close()
 
-func start_server() -> void:
+func start_server() -> Result:
 	_peer.connect("peer_connected",    self, "_peer_connected"   )
 	_peer.connect("peer_disconnected", self, "_peer_disconnected")
 	_peer.allow_object_decoding = true
 	
-	var err := _peer.create_server(GD_TEST_SERVER_PORT, CLIENT_MAX_COUNT)
+	var err := OK
+	var server_port := GD_TEST_SERVER_PORT
+	for retry in DEFAULT_SERVER_START_RETRY_TIMES:
+		err = _peer.create_server(server_port, CLIENT_MAX_COUNT)
+		if err != OK:
+			prints("GdUnit3: Can't establish server on port %d, error code: %s" % [server_port, err])
+			server_port += 1
+			prints("GdUnit3: Retry (%d) ..." % retry)
+		else:
+			break
 	if err != OK:
 		if err == ERR_ALREADY_IN_USE:
-			push_error("Can't establish server, error code: %s, The server is already in use" % err)
-			return
-		push_error("Can't establish server, error code: %s" % err)
-		return
+			return Result.error("GdUnit3: Can't establish server, error code: %s, The server is already in use" % err)
+		return Result.error("GdUnit3: Can't establish server, error code: %s" % err)
 	get_tree().set_network_peer(_peer)
+	print_debug("GdUnit3: Server successfully started on port %d" % server_port)
+	return Result.success(server_port)
 
-func connect_client() -> void:
+func connect_client(port :int) -> Result:
 	_context = "Client"
 	_peer.connect("connection_succeeded",    self, "_on_connection_succeeded"   )
 	_peer.connect("connection_failed", self, "_on_connection_failed")
 	_peer.allow_object_decoding = true
 
-	var err :=  _peer.create_client("127.0.0.1", GD_TEST_SERVER_PORT)
+	var err :=  _peer.create_client("127.0.0.1", port)
 	if err != OK:
 		if err == ERR_ALREADY_IN_USE:
-			push_error("Can't establish server, error code: %s, The server is already in use" % err)
-			return
-		push_error("Can't establish server, error code: %s" % err)
-		return
+			return Result.error("GdUnit3: Can't establish server, error code: %s, The server is already in use" % err)
+		return Result.error("GdUnit3: Can't establish server, error code: %s" % err)
 	get_tree().set_network_peer(_peer)
+	return Result.success("GdUnit3: Client connected on port %d" % port)
 
 func close():
 	if is_client_connected():
