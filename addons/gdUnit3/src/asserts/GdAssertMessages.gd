@@ -219,14 +219,14 @@ static func error_contains_key_value(key, value, current_value) -> String:
 
 
 # - ResultAssert specific errors ----------------------------------------------------
-static func error_result_is_success() -> String:
-	return _error("Expecting: The result must be a success.")
+static func error_result_is_success(current :Result) -> String:
+	return _result_error_message(current, Result.SUCCESS)
 
-static func error_result_is_warning() -> String:
-	return _error("Expecting: The result must be a warning.")
+static func error_result_is_warning(current :Result) -> String:
+	return _result_error_message(current, Result.WARN)
 
-static func error_result_is_error() -> String:
-	return _error("Expecting: The result must be a error.")
+static func error_result_is_error(current :Result) -> String:
+	return _result_error_message(current, Result.ERROR)
 
 static func error_result_has_message(current :String, expected :String) -> String:
 	return "%s\n %s\n but was\n %s." % [_error("Expecting:"), _expected(expected), _current(current)]
@@ -236,6 +236,28 @@ static func error_result_has_message_on_success(expected :String) -> String:
 
 static func error_result_is_value(current, expected) -> String:
 	return "%s\n %s\n but was\n %s." % [_error("Expecting to contain same value:"), _expected(expected), _current(current)]
+
+static func _result_error_message(current :Result, expected_type :int) -> String:
+	if current.is_success():
+		return _error("Expecting the result must be a %s but was SUCCESS." % result_type(expected_type))
+	var error = "Expecting the result must be a %s but was %s:" % [result_type(expected_type), result_type(current._state)]
+	return "%s\n %s" % [_error(error), _current(result_message(current))]
+
+static func result_type(type :int) -> String:
+	match type:
+		Result.SUCCESS: return "SUCCESS"
+		Result.WARN: return "WARNING"
+		Result.ERROR: return "ERROR"
+		Result.EMPTY: return "SUCCESS_EMPTY"
+	return "UNKNOWN"
+
+static func result_message(result :Result) -> String:
+	match result._state:
+		Result.SUCCESS: return ""
+		Result.WARN: return result.warn_message()
+		Result.ERROR: return result.error_message()
+		Result.EMPTY: return ""
+	return "UNKNOWN"
 # -----------------------------------------------------------------------------------
 
 # - Spy|Mock specific errors ----------------------------------------------------
