@@ -1,15 +1,16 @@
 class_name GdUnitRunnerConfig
 extends Resource
 
-const SELECTED_TEST_SUITE_RESOURCES = "test_suites"
-const SELECTED_TEST_CASE = "test_case"
+const VERSION = "version"
+const SELECTED = "selected"
 const IGNORED = "ignored"
 const EXIT_FAIL_FAST ="exit_on_first_fail"
 const CONFIG_FILE = "res://addons/gdUnit3/GdUnitRunner.cfg"
 
 var _config := {
+		VERSION : "1.0",
 		# a set of directories or testsuite paths as key and a optional set of testcases as values
-		SELECTED_TEST_SUITE_RESOURCES : Dictionary(),
+		SELECTED : Dictionary(),
 		IGNORED : Dictionary(),
 	}
 
@@ -37,7 +38,7 @@ func ignore_test_case(resource_path :String, test_name :String) -> void:
 	to_ignore().get(resource_path,  Array()).append(test_name)
 
 func to_execute() -> Dictionary:
-	return _config.get(SELECTED_TEST_SUITE_RESOURCES, {"res://addons/gdUnit3/test/" : []})
+	return _config.get(SELECTED, {"res://addons/gdUnit3/test/" : []})
 
 func to_ignore() -> Dictionary:
 	return _config.get(IGNORED, [])
@@ -48,12 +49,14 @@ func save(path :String = CONFIG_FILE) -> void:
 	file.store_var(_config)
 	file.close()
 
-func load(path :String = CONFIG_FILE) -> void:
+func load(path :String = CONFIG_FILE) -> Result:
 	var file := File.new()
 	var err := file.open(path, File.READ)
 	if err != OK:
-		push_error("Can't find test runner configuration '%s'! Please select a test to run." % path)
-		return
+		return Result.error("Can't find test runner configuration '%s'! Please select a test to run." % path)
 	_config = file.get_var() as Dictionary
+	# if old file format than convert into new format
+	if not _config.has("VERSION"):
+		return Result.error("The runner configuration '%s' is invalid! The format is changed please delete it manually and start a new test run." % path)
 	file.close()
-
+	return Result.success(true)
