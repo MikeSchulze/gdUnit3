@@ -22,23 +22,35 @@ func test_is_not_null():
 func test_is_success():
 	assert_result(Result.success("")).is_success()
 	
+	assert_result(Result.warn("a warning"), GdUnitAssert.EXPECT_FAIL) \
+		.is_success() \
+		.has_error_message("Expecting the result must be a SUCCESS but was WARNING:\n 'a warning'")
+	
 	assert_result(Result.error("a error"), GdUnitAssert.EXPECT_FAIL) \
 		.is_success() \
-		.has_error_message("Expecting: The result must be a success.")
+		.has_error_message("Expecting the result must be a SUCCESS but was ERROR:\n 'a error'")
 
 func test_is_warning():
 	assert_result(Result.warn("a warning")).is_warning()
 	
+	assert_result(Result.success("value"), GdUnitAssert.EXPECT_FAIL) \
+		.is_warning() \
+		.has_error_message("Expecting the result must be a WARNING but was SUCCESS.")
+	
 	assert_result(Result.error("a error"), GdUnitAssert.EXPECT_FAIL) \
 		.is_warning() \
-		.has_error_message("Expecting: The result must be a warning.")
+		.has_error_message("Expecting the result must be a WARNING but was ERROR:\n 'a error'")
 
 func test_is_error():
 	assert_result(Result.error("a error")).is_error()
 	
-	assert_result(Result.warn("a warn"), GdUnitAssert.EXPECT_FAIL) \
+	assert_result(Result.success(""), GdUnitAssert.EXPECT_FAIL) \
 		.is_error() \
-		.has_error_message("Expecting: The result must be a error.")
+		.has_error_message("Expecting the result must be a ERROR but was SUCCESS.")
+	
+	assert_result(Result.warn("a warning"), GdUnitAssert.EXPECT_FAIL) \
+		.is_error() \
+		.has_error_message("Expecting the result must be a ERROR but was WARNING:\n 'a warning'")
 
 func test_contains_message():
 	assert_result(Result.error("a error")).contains_message("a error")

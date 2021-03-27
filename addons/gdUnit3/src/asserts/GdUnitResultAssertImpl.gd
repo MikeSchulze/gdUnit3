@@ -8,7 +8,7 @@ var _memory_pool :int
 func _init(current, memory_pool :int, expect_result :int):
 	_memory_pool = memory_pool
 	_base = GdUnitAssertImpl.new(current, expect_result)
-	if current != null and typeof(current) != TYPE_OBJECT:
+	if current != null and not (current is Result):
 		report_error("GdUnitObjectAssert inital error, unexpected type <%s>" % GdObjects.typeof_as_string(current))
 
 func __current() -> Result:
@@ -55,7 +55,7 @@ func is_not_null() -> GdUnitResultAssert:
 # Verifies that the result is ends up with success
 func is_success() -> GdUnitResultAssert:
 	if not __current().is_success():
-		report_error(GdAssertMessages.error_result_is_success())
+		report_error(GdAssertMessages.error_result_is_success(__current()))
 	else:
 		report_success()
 	return self
@@ -63,7 +63,7 @@ func is_success() -> GdUnitResultAssert:
 # Verifies that the result is ends up with warning
 func is_warning() -> GdUnitResultAssert:
 	if not __current().is_warn():
-		report_error(GdAssertMessages.error_result_is_warning())
+		report_error(GdAssertMessages.error_result_is_warning(__current()))
 	else:
 		report_success()
 	return self
@@ -71,7 +71,7 @@ func is_warning() -> GdUnitResultAssert:
 # Verifies that the result is ends up with error
 func is_error() -> GdUnitResultAssert:
 	if not __current().is_error():
-		report_error(GdAssertMessages.error_result_is_error())
+		report_error(GdAssertMessages.error_result_is_error(__current()))
 	else:
 		report_success()
 	return self
