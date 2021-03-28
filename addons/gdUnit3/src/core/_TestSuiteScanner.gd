@@ -185,7 +185,7 @@ static func add_test_case(resource_path :String, func_name :String)  -> Result:
 	var script := load(resource_path) as GDScript
 	script.source_code +=\
 """
-func test_${func_name}():
+func test_${func_name}() -> void:
 	# remove this line and complete your test
 	assert_not_yet_implemented()
 """.replace("${func_name}", func_name)

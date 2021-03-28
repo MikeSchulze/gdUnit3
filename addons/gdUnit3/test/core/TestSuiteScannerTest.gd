@@ -79,7 +79,7 @@ func test_create_test_case():
 			"# TestSuite generated from",
 			"const __source = '%s'" % source_path,
 			"",
-			"func test_last_name():",
+			"func test_last_name() -> void:",
 			"	# remove this line and complete your test",
 			"	assert_not_yet_implemented()",
 			""])
