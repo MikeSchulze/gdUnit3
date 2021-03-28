@@ -603,6 +603,11 @@ _global_script_classes=[ {
 "class": "_TestSuiteScanner",
 "language": "GDScript",
 "path": "res://addons/gdUnit3/src/core/_TestSuiteScanner.gd"
+}, {
+"base": "GdUnitTestSuite",
+"class": "_TestSuiteScannerTest",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/test/core/_TestSuiteScannerTest.gd"
 } ]
 _global_script_class_icons={
 "AdvancedTestClass": "",
@@ -723,7 +728,8 @@ _global_script_class_icons={
 "TimeUnit": "",
 "Udo": "",
 "_TestCase": "",
-"_TestSuiteScanner": ""
+"_TestSuiteScanner": "",
+"_TestSuiteScannerTest": ""
 }
 
 [application]
