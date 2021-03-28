@@ -609,6 +609,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/test/core/_TestSuiteScannerTest.gd"
 }, {
+"base": "Resource",
+"class": "script_with_class_name",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/test/core/resources/script_with_class_name.gd"
+}, {
 "base": "Reference",
 "class": "snake_case_class_name",
 "language": "GDScript",
@@ -735,6 +740,7 @@ _global_script_class_icons={
 "_TestCase": "",
 "_TestSuiteScanner": "",
 "_TestSuiteScannerTest": "",
+"script_with_class_name": "",
 "snake_case_class_name": ""
 }
 

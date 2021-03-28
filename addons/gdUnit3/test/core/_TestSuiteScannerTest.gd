@@ -117,6 +117,5 @@ func test_build_test_suite_path() -> void:
 	# on user temp folder
 	var tmp_path := GdUnitTools.create_temp_dir("projectX/entity")
 	var source_path := tmp_path + "/Person.gd"
-	prints(source_path)
 	assert_str(_TestSuiteScanner.build_test_suite_path(source_path)).is_equal("user://tmp/test/projectX/entity/PersonTest.gd")
 

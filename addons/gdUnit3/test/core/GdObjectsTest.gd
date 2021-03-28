@@ -423,3 +423,12 @@ func test_extract_class_name_on_null_value():
 	assert_result(GdObjects.extract_class_name(null))\
 		.is_error()\
 		.contains_message("Can't extract class name form a null value.")
+
+func test_is_public_script_class() -> void:
+	# snake case format class names
+	assert_bool(GdObjects.is_public_script_class("script_with_class_name")).is_true()
+	assert_bool(GdObjects.is_public_script_class("script_without_class_name")).is_false()
+	assert_bool(GdObjects.is_public_script_class("CustomClass")).is_true()
+	# inner classes not listed as public classes
+	assert_bool(GdObjects.is_public_script_class("CustomClass.InnerClassA")).is_false()
+	

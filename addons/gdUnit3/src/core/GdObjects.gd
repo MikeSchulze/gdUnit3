@@ -380,6 +380,19 @@ static func extract_inner_clazz_names(clazz_name :String, script_path :PoolStrin
 			inner_classes.append(class_path[1])
 	return inner_classes
 
+# scans all registert script classes for given <clazz_name>
+# if the class is public in the global space than return true otherwise false
+# public class means the script class is defined by 'class_name <name>'
+static func is_public_script_class(clazz_name) -> bool:
+	if ProjectSettings.has_setting("_global_script_classes"):
+		var script_classes:Array = ProjectSettings.get_setting("_global_script_classes") as Array
+		for element in script_classes:
+			var class_info :Dictionary = element
+			if class_info.has("class"):
+				if element["class"] == clazz_name:
+					return true
+	return false
+
 static func build_function_default_arguments(script :GDScript, func_name :String) -> Array:
 	assert(DEFAULT_VALUES_BY_TYPE.size() == TYPE_MAX)
 	

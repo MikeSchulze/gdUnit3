@@ -45,8 +45,17 @@ static func load_template(template :Object, clazz_name :String, clazz_path :Pool
 	return lines
 
 static func get_extends_clazz(clazz_name :String, clazz_path :PoolStringArray) -> String:
-	# handle snake_case class names, only if clazz path available and is a GdScript
-	if "_" in clazz_name and not clazz_path.empty() and (clazz_path[0].find(".gd") != -1):
+	# is godot class use original class name
+	if ClassDB.class_exists(clazz_name):
+		return clazz_name
+	# if class publc (defined by class_name <clazz_name>)
+	if GdObjects.is_public_script_class(clazz_name):
+		return clazz_name
+	# is inner class use inner class name
+	if "." in clazz_name:
+		return clazz_name
+	# for not public script classes use the full class path
+	if not clazz_path.empty():
 		return "'%s'" % clazz_path[0]
 	return clazz_name
 
