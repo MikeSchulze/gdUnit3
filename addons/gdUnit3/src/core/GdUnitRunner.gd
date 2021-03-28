@@ -14,7 +14,7 @@ enum {
 	STOP,
 	EXIT
 }
-var _config :Dictionary
+var _config := GdUnitRunnerConfig.new()
 var _test_suites_to_process :Array
 var _state = INIT
 var _signal_handler :SignalHandler
@@ -23,19 +23,21 @@ var _signal_handler :SignalHandler
 var _result :Result
 
 func _init():
-	_config = GdUnitRunnerConfig.load_config()
+		# minimize scene window on debug mode
+	if OS.get_cmdline_args().size() == 1:
+		OS.set_window_title("GdUnit3 Runner (Debug)")
+		OS.set_window_minimized(true)
 	_signal_handler = GdUnitSingleton.get_or_create_singleton(SignalHandler.SINGLETON_NAME, "res://addons/gdUnit3/src/core/event/SignalHandler.gd")
 	_signal_handler.register_on_gdunit_events(self, "_on_send_event")
 	# store current runner instance to engine meta data to can be access in as a singleton
 	Engine.set_meta(GDUNIT_RUNNER, self)
 
 func _ready():
-	# minimize scene window on debug mode
-	if _config[GdUnitRunnerConfig.DEBUG_MODE]:
-		OS.set_window_title("GdUnit3 Runner (Debug)")
-		OS.set_window_minimized(true)
-
-	_client.connect_client()
+	_config.load()
+	var result := _client.connect_client(_config.server_port())
+	if result.is_error():
+		push_error(result.error_message())
+		return
 	_test_suites_to_process = load_test_suits()
 	_state = INIT
 
@@ -71,20 +73,25 @@ func _process(delta):
 			_on_Executor_send_event(GdUnitStop.new())
 
 func load_test_suits() -> Array:
-	var test_suite_resources :Array = _config.get(GdUnitRunnerConfig.SELECTED_TEST_SUITE_RESOURCES, ["res://addons/gdUnit3/test/"])
-	var selected_test_case :String = _config.get(GdUnitRunnerConfig.SELECTED_TEST_CASE, "")
-
+	var result := _config.load()
+	if result.is_error():
+		push_error(result.error_message())
+		_state = EXIT
+		return []
+	var to_execute := _config.to_execute()
+	if to_execute.empty():
+		prints("No tests selected to execute!")
+		_state = EXIT
+		return []
 	# scan for the requested test suites
 	var test_suites := Array()
 	var _scanner := _TestSuiteScanner.new()
-	for resource_path in test_suite_resources:
-		test_suites += _scanner.scan(resource_path)
+	for resource_path in to_execute.keys():
+		var selected_tests :Array = to_execute.get(resource_path)
+		var scaned_suites := _scanner.scan(resource_path)
+		_filter_test_case(scaned_suites, selected_tests)
+		test_suites += scaned_suites
 	_scanner.free()
-	
-	# only a single test case run is requested, filter out all others
-	if not selected_test_case.empty():
-		_filter_test_case(test_suites, selected_test_case)
-
 	return test_suites
 
 func gdUnitInit() -> void:
@@ -96,10 +103,12 @@ func gdUnitInit() -> void:
 		var test_suite := t as GdUnitTestSuite
 		send_test_suite(test_suite)
 
-func _filter_test_case(test_suites :Array, test_case_name :String) -> void:
+func _filter_test_case(test_suites :Array, test_case_names :Array) -> void:
+	if test_case_names.empty():
+		return
 	for test_suite in test_suites:
 		for test_case in test_suite.get_children():
-			if test_case.get_name() != test_case_name:
+			if not test_case_names.has(test_case.get_name()):
 				test_suite.remove_child(test_case)
 				test_case.free()
 

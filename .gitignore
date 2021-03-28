@@ -17,4 +17,4 @@ mono_crash.*.json
 *~
 
 # temporary generated files
-addons/gdUnit3/GdUnitRunner.cfg
+GdUnitRunner.cfg
