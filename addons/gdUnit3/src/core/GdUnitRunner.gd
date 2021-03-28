@@ -23,7 +23,7 @@ var _signal_handler :SignalHandler
 var _result :Result
 
 func _init():
-		# minimize scene window on debug mode
+	# minimize scene window on debug mode
 	if OS.get_cmdline_args().size() == 1:
 		OS.set_window_title("GdUnit3 Runner (Debug)")
 		OS.set_window_minimized(true)

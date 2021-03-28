@@ -52,8 +52,6 @@ func connect_client(port :int) -> Result:
 	prints("GdUnit3: Connect to test server 127.0.0.1:%d" % port)
 	var err :=  _peer.create_client("127.0.0.1", port)
 	if err != OK:
-		if err == ERR_ALREADY_IN_USE:
-			return Result.error("GdUnit3: Can't establish client, error code: %s" % err)
 		return Result.error("GdUnit3: Can't establish client, error code: %s" % err)
 	get_tree().set_network_peer(_peer)
 	return Result.success("GdUnit3: Client connected on port %d" % port)
