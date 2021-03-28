@@ -10,7 +10,13 @@ var _tasks := Dictionary()
 
 func _ready():
 	_signal_handler = GdUnitSingleton.get_or_create_singleton(SignalHandler.SINGLETON_NAME, "res://addons/gdUnit3/src/core/event/SignalHandler.gd")
-	_server.start_server()
+	var result := _server.start_server()
+	if result.is_error():
+		push_error(result.error_message())
+		return
+	var server_port :int = result.value()
+	Engine.set_meta("gdunit_server_port", server_port)
+	
 	_server.connect("client_connected", self, "_on_client_connected")
 	_server.connect("client_disconnected", self, "_on_client_disconnected")
 	_server.connect("server_message", self, "_on_server_message")

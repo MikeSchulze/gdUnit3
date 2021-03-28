@@ -67,6 +67,9 @@ var _client_id
 
 var _editor_interface :EditorInterface
 
+# the current test runner config
+var runner_config := GdUnitRunnerConfig.new()
+
 func _ready():
 	if not Engine.editor_hint:
 		_signal_handler = GdUnitSingleton.add_singleton(SignalHandler.SINGLETON_NAME, "res://addons/gdUnit3/src/core/event/SignalHandler.gd")
@@ -78,6 +81,8 @@ func _ready():
 		_getEditorThemes(_editor_interface)
 		add_file_system_dock_context_menu()
 		add_script_editor_context_menu()
+	# preload previous test execution
+	runner_config.load()
 
 func set_editor_interface(editor_interface :EditorInterface) -> void:
 	_editor_interface = editor_interface
@@ -240,22 +245,25 @@ func _on_fscript_editor_context_menu_pressed(id :int, text_edit :TextEdit):
 # ------------------------------------------------------------------------------------
 
 func run_test_suites(test_suite_paths :Array, debug :bool, rerun :bool=false) -> void:
-	# create new runner config for fresh run otherwise use saved one
+	# create new runner runner_config for fresh run otherwise use saved one
 	if not rerun:
-		var config := {
-			GdUnitRunnerConfig.SELECTED_TEST_SUITE_RESOURCES: test_suite_paths
-		}
-		GdUnitRunnerConfig.save_config(config)
+		var result := runner_config.clear()\
+			.add_test_suites(test_suite_paths)\
+			.save()
+		if result.is_error():
+			push_error(result.error_message())
+			return
 	_gdUnit_run(debug)
 
 func run_test_case(test_suite_resource_path :String, test_case :String, debug :bool, rerun :bool=false) -> void:
 	# create new runner config for fresh run otherwise use saved one
 	if not rerun:
-		var config := {
-			GdUnitRunnerConfig.SELECTED_TEST_SUITE_RESOURCES: [test_suite_resource_path],
-			GdUnitRunnerConfig.SELECTED_TEST_CASE: test_case
-		}
-		GdUnitRunnerConfig.save_config(config)
+		var result := runner_config.clear()\
+			.add_test_case(test_suite_resource_path, test_case)\
+			.save()
+		if result.is_error():
+			push_error(result.error_message())
+			return
 	_gdUnit_run(debug)
 
 func _gdUnit_run(debug :bool) -> void:
@@ -265,10 +273,11 @@ func _gdUnit_run(debug :bool) -> void:
 	_is_running = true
 	grab_focus()
 	show()
-	var runner_config := GdUnitRunnerConfig.load_config()
-	runner_config[GdUnitRunnerConfig.DEBUG_MODE] = debug
-	GdUnitRunnerConfig.save_config(runner_config)
-
+	# save current selected excution config
+	var result := runner_config.set_server_port(Engine.get_meta("gdunit_server_port")).save()
+	if result.is_error():
+		push_error(result.error_message())
+		return
 	_running_debug_mode = debug
 	_current_runner_process_id = -1
 	# before start we have to save all changed test suites
