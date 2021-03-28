@@ -129,9 +129,9 @@ static func build_test_suite_path(resource_path :String) -> String:
 	var file_name = resource_path.get_file().replace("." + file_extension, "")
 	var test_suite_path :String
 	# at first look up is the script under a "src" folder located
-	var src_folder = resource_path.find("src")
+	var src_folder = resource_path.find("/src/")
 	if src_folder != -1:
-		test_suite_path = resource_path.replace("src", "test")
+		test_suite_path = resource_path.replace("/src/", "/test/")
 	else:
 		var paths = resource_path.split("/", false)
 		# is a plugin script?
@@ -141,8 +141,8 @@ static func build_test_suite_path(resource_path :String) -> String:
 			for index in range(3, paths.size()):
 				test_suite_path += "/" + paths[index]
 		else:
-			test_suite_path = paths[0] + "//" + paths[1] + "/test"
-			for index in range(2, paths.size()):
+			test_suite_path = paths[0] + "//" + "test"
+			for index in range(1, paths.size()):
 				test_suite_path += "/" + paths[index]
 	return test_suite_path.replace(file_name, "%sTest" % file_name)
 

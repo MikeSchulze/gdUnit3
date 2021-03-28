@@ -1,5 +1,9 @@
+# GdUnit generated TestSuite
+class_name _TestSuiteScannerTest
 extends GdUnitTestSuite
 
+# TestSuite generated from
+const __source = 'res://addons/gdUnit3/src/core/_TestSuiteScanner.gd'
 
 func after():
 	GdUnitTools.clear_tmp()
@@ -88,3 +92,21 @@ func test_create_test_case():
 	assert_that(result.is_warn()).is_true()
 	assert_that(result.warn_message()).is_equal("Test Case 'test_last_name' already exists in 'user://tmp/test/project/entity/PersonTest.gd'")
 
+func test_build_test_suite_path() -> void:
+	# on project root
+	assert_str(_TestSuiteScanner.build_test_suite_path("res://new_script.gd")).is_equal("res://test/new_scriptTest.gd")
+	
+	# on project without src folder
+	assert_str(_TestSuiteScanner.build_test_suite_path("res://foo/bar/new_script.gd")).is_equal("res://test/foo/bar/new_scriptTest.gd")
+	
+	# project code structured by 'src'
+	assert_str(_TestSuiteScanner.build_test_suite_path("res://src/new_script.gd")).is_equal("res://test/new_scriptTest.gd")
+	assert_str(_TestSuiteScanner.build_test_suite_path("res://src/foo/bar/new_script.gd")).is_equal("res://test/foo/bar/new_scriptTest.gd")
+	# folder name contains 'src' in name
+	assert_str(_TestSuiteScanner.build_test_suite_path("res://foo/srcare/new_script.gd")).is_equal("res://test/foo/srcare/new_scriptTest.gd")
+	
+	
+	# on plugins without src folder
+	assert_str(_TestSuiteScanner.build_test_suite_path("res://addons/plugin/foo/bar/new_script.gd")).is_equal("res://addons/plugin/test/foo/bar/new_scriptTest.gd")
+	# plugin code structured by 'src'
+	assert_str(_TestSuiteScanner.build_test_suite_path("res://addons/plugin/src/foo/bar/new_script.gd")).is_equal("res://addons/plugin/test/foo/bar/new_scriptTest.gd")
