@@ -28,13 +28,13 @@ static func extract_class_functions(clazz_name :String, script_path :PoolStringA
 	return clazz_functions
 
 # loads the doubler template
-static func load_template(template :Object, clazz :String) -> PoolStringArray:
+static func load_template(template :Object, clazz_name :String, clazz_path :PoolStringArray) -> PoolStringArray:
 	var source_code = template.new().get_script().source_code
 	var lines := GdScriptParser.to_unix_format(source_code).split("\n")
 	# replace template class_name with Doubled<class> name and extends form source class
 	lines.remove(2)
-	lines.insert(2, "class_name Doubled%s" % clazz.replace(".", "_"))
-	lines.insert(3, "extends %s" % clazz)
+	lines.insert(2, "class_name Doubled%s" % clazz_name.replace(".", "_"))
+	lines.insert(3, "extends %s" % get_extends_clazz(clazz_name, clazz_path))
 	
 	var eol := lines.size()
 	# append Object interactions stuff
@@ -43,6 +43,12 @@ static func load_template(template :Object, clazz :String) -> PoolStringArray:
 	# remove the class header from GdUnitObjectInteractionsTemplate
 	lines.remove(eol)
 	return lines
+
+static func get_extends_clazz(clazz_name :String, clazz_path :PoolStringArray) -> String:
+	# handle snake_case class names, only if clazz path available and is a GdScript
+	if "_" in clazz_name and not clazz_path.empty() and (clazz_path[0].find(".gd") != -1):
+		return "'%s'" % clazz_path[0]
+	return clazz_name
 
 # double all functions of given instance
 static func double_functions(clazz_name :String, clazz_path :PoolStringArray, func_doubler: GdFunctionDoubler) -> PoolStringArray:

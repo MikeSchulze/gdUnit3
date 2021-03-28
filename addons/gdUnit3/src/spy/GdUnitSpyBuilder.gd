@@ -75,8 +75,8 @@ static func build(instance, memory_pool :int, push_errors :bool = true, debug_wr
 		push_error("Can't build spy for class type '%s'! Using an instance instead e.g. 'spy(<instance>)'" % [extends_clazz])
 		return null
 	
-	var lines := load_template(GdUnitSpyImpl, extends_clazz)
 	var clazz_path := GdObjects.extract_class_path(instance)
+	var lines := load_template(GdUnitSpyImpl, extends_clazz, clazz_path)
 	lines += double_functions(extends_clazz, clazz_path, SpyFunctionDoubler.new())
 
 	var spy := GDScript.new()

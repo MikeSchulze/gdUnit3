@@ -105,7 +105,7 @@ static func build(clazz, mock_mode :String, memory_pool :int, debug_write = fals
 		clazz_name = GdObjects.extract_class_name_from_class_path(clazz_path)
 	
 	var function_doubler := MockFunctionDoubler.new(push_errors)
-	var lines := load_template(GdUnitMockImpl, clazz_name)
+	var lines := load_template(GdUnitMockImpl, clazz_name, clazz_path)
 	lines += double_functions(clazz_name, clazz_path, function_doubler)
 	
 	var mock := GDScript.new()

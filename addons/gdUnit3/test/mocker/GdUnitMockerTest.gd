@@ -690,3 +690,47 @@ But found interactions on:
 	'find_node(mask :String, False :bool, False :bool)'	1 time's"""
 	verify_no_more_interactions(mocked_node, GdUnitAssert.EXPECT_FAIL)\
 		.has_error_message(expected_error)
+
+func test_mock_snake_case_named_class_by_resource_path():
+	var mock_a = mock("res://addons/gdUnit3/test/mocker/resources/snake_case.gd")
+	assert_object(mock_a).is_not_null()
+	
+	mock_a._ready()
+	verify(mock_a)._ready()
+	verify_no_more_interactions(mock_a)
+	
+	var mock_b = mock("res://addons/gdUnit3/test/mocker/resources/snake_case_class_name.gd")
+	assert_object(mock_b).is_not_null()
+	
+	mock_b._ready()
+	verify(mock_b)._ready()
+	verify_no_more_interactions(mock_b)
+	
+func test_mock_snake_case_named_godot_class_by_name():
+	# try on Godot class
+	var mocked_tcp_server :TCP_Server = mock("TCP_Server")
+	assert_object(mocked_tcp_server).is_not_null()
+	
+	mocked_tcp_server.is_listening()
+	mocked_tcp_server.is_connection_available()
+	verify(mocked_tcp_server).is_listening()
+	verify(mocked_tcp_server).is_connection_available()
+	verify_no_more_interactions(mocked_tcp_server)
+
+func test_mock_snake_case_named_class_by_class():
+	var mock = mock(snake_case_class_name)
+	assert_object(mock).is_not_null()
+	
+	mock._ready()
+	verify(mock)._ready()
+	verify_no_more_interactions(mock)
+	
+	# try on Godot class
+	var mocked_tcp_server :TCP_Server = mock(TCP_Server)
+	assert_object(mocked_tcp_server).is_not_null()
+	
+	mocked_tcp_server.is_listening()
+	mocked_tcp_server.is_connection_available()
+	verify(mocked_tcp_server).is_listening()
+	verify(mocked_tcp_server).is_connection_available()
+	verify_no_more_interactions(mocked_tcp_server)
