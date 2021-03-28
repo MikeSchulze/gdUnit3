@@ -608,6 +608,11 @@ _global_script_classes=[ {
 "class": "_TestSuiteScannerTest",
 "language": "GDScript",
 "path": "res://addons/gdUnit3/test/core/_TestSuiteScannerTest.gd"
+}, {
+"base": "Reference",
+"class": "snake_case_class_name",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/test/mocker/resources/snake_case_class_name.gd"
 } ]
 _global_script_class_icons={
 "AdvancedTestClass": "",
@@ -729,7 +734,8 @@ _global_script_class_icons={
 "Udo": "",
 "_TestCase": "",
 "_TestSuiteScanner": "",
-"_TestSuiteScannerTest": ""
+"_TestSuiteScannerTest": "",
+"snake_case_class_name": ""
 }
 
 [application]

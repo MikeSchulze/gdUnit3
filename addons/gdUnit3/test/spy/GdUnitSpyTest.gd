@@ -266,3 +266,38 @@ class ClassWithStaticFunctions:
 func test_create_spy_static_func_untyped():
 	var instance = spy(ClassWithStaticFunctions.new())
 	assert_object(instance).is_not_null()
+
+func test_spy_snake_case_named_class_by_resource_path():
+	var instance_a = load("res://addons/gdUnit3/test/mocker/resources/snake_case.gd").new()
+	var spy_a = spy(instance_a)
+	assert_object(spy_a).is_not_null()
+	
+	spy_a._ready()
+	verify(spy_a)._ready()
+	verify_no_more_interactions(spy_a)
+	
+	var instance_b = load("res://addons/gdUnit3/test/mocker/resources/snake_case_class_name.gd").new()
+	var spy_b = spy(instance_b)
+	assert_object(spy_b).is_not_null()
+	
+	spy_b._ready()
+	verify(spy_b)._ready()
+	verify_no_more_interactions(spy_b)
+
+func test_spy_snake_case_named_class_by_class():
+	var spy = spy(snake_case_class_name.new())
+	assert_object(spy).is_not_null()
+	
+	spy._ready()
+	verify(spy)._ready()
+	verify_no_more_interactions(spy)
+	
+		# try on Godot class
+	var spy_tcp_server :TCP_Server = spy(TCP_Server.new())
+	assert_object(spy_tcp_server).is_not_null()
+	
+	spy_tcp_server.is_listening()
+	spy_tcp_server.is_connection_available()
+	verify(spy_tcp_server).is_listening()
+	verify(spy_tcp_server).is_connection_available()
+	verify_no_more_interactions(spy_tcp_server)
