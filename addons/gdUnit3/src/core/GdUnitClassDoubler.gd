@@ -45,7 +45,7 @@ static func load_template(template :Object, clazz_name :String, clazz_path :Pool
 	return lines
 
 static func get_extends_clazz(clazz_name :String, clazz_path :PoolStringArray) -> String:
-	# handle snake_case class names, onyl if clazz path available and is an GdScript
+	# handle snake_case class names, only if clazz path available and is a GdScript
 	if "_" in clazz_name and not clazz_path.empty() and (clazz_path[0].find(".gd") != -1):
 		return "'%s'" % clazz_path[0]
 	return clazz_name

@@ -292,7 +292,7 @@ func test_spy_snake_case_named_class_by_class():
 	verify(spy)._ready()
 	verify_no_more_interactions(spy)
 	
-		# try on Godot class
+	# try on Godot class
 	var spy_tcp_server :TCP_Server = spy(TCP_Server.new())
 	assert_object(spy_tcp_server).is_not_null()
 	

@@ -707,7 +707,7 @@ func test_mock_snake_case_named_class_by_resource_path():
 	verify_no_more_interactions(mock_b)
 	
 func test_mock_snake_case_named_godot_class_by_name():
-		# try on Godot class
+	# try on Godot class
 	var mocked_tcp_server :TCP_Server = mock("TCP_Server")
 	assert_object(mocked_tcp_server).is_not_null()
 	
