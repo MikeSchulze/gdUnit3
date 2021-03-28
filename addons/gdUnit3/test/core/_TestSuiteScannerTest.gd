@@ -5,9 +5,12 @@ extends GdUnitTestSuite
 # TestSuite generated from
 const __source = 'res://addons/gdUnit3/src/core/_TestSuiteScanner.gd'
 
+func before_test():
+	GdUnitTools.clear_tmp()
+	
+
 func after():
 	GdUnitTools.clear_tmp()
-
 
 func test_build_test_suite_path__path_contains_src_folder():
 	# from a project path
@@ -23,13 +26,13 @@ func test_build_test_suite_path__path_contains_src_folder():
 func test_build_test_suite_path__path_not_contains_src_folder():
 	# from a project path
 	assert_str(_TestSuiteScanner.build_test_suite_path("res://project/models/events/ModelChangedEvent.gd"))\
-		.is_equal("res://project/test/models/events/ModelChangedEventTest.gd")
+		.is_equal("res://test/project/models/events/ModelChangedEventTest.gd")
 	# from a plugin path
 	assert_str(_TestSuiteScanner.build_test_suite_path("res://addons/MyPlugin/models/events/ModelChangedEvent.gd"))\
 		.is_equal("res://addons/MyPlugin/test/models/events/ModelChangedEventTest.gd")
 	# located in user path
 	assert_str(_TestSuiteScanner.build_test_suite_path("user://project/models/events/ModelChangedEvent.gd"))\
-		.is_equal("user://project/test/models/events/ModelChangedEventTest.gd")
+		.is_equal("user://test/project/models/events/ModelChangedEventTest.gd")
 
 func test_test_suite_exists():
 	var path_exists := "res://addons/gdUnit3/test/resources/core/GeneratedPersonTest.gd"
@@ -92,6 +95,7 @@ func test_create_test_case():
 	assert_that(result.is_warn()).is_true()
 	assert_that(result.warn_message()).is_equal("Test Case 'test_last_name' already exists in 'user://tmp/test/project/entity/PersonTest.gd'")
 
+# https://github.com/MikeSchulze/gdUnit3/issues/25
 func test_build_test_suite_path() -> void:
 	# on project root
 	assert_str(_TestSuiteScanner.build_test_suite_path("res://new_script.gd")).is_equal("res://test/new_scriptTest.gd")
@@ -105,8 +109,14 @@ func test_build_test_suite_path() -> void:
 	# folder name contains 'src' in name
 	assert_str(_TestSuiteScanner.build_test_suite_path("res://foo/srcare/new_script.gd")).is_equal("res://test/foo/srcare/new_scriptTest.gd")
 	
-	
 	# on plugins without src folder
 	assert_str(_TestSuiteScanner.build_test_suite_path("res://addons/plugin/foo/bar/new_script.gd")).is_equal("res://addons/plugin/test/foo/bar/new_scriptTest.gd")
 	# plugin code structured by 'src'
 	assert_str(_TestSuiteScanner.build_test_suite_path("res://addons/plugin/src/foo/bar/new_script.gd")).is_equal("res://addons/plugin/test/foo/bar/new_scriptTest.gd")
+	
+	# on user temp folder
+	var tmp_path := GdUnitTools.create_temp_dir("projectX/entity")
+	var source_path := tmp_path + "/Person.gd"
+	prints(source_path)
+	assert_str(_TestSuiteScanner.build_test_suite_path(source_path)).is_equal("user://tmp/test/projectX/entity/PersonTest.gd")
+

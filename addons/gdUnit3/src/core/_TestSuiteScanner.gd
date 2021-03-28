@@ -128,6 +128,11 @@ static func build_test_suite_path(resource_path :String) -> String:
 	var file_extension := resource_path.get_extension()
 	var file_name = resource_path.get_file().replace("." + file_extension, "")
 	var test_suite_path :String
+	
+	# is user tmp
+	if resource_path.begins_with("user://tmp"):
+		return resource_path.replace("user://tmp", "user://tmp/test").replace(file_name, "%sTest" % file_name)
+	
 	# at first look up is the script under a "src" folder located
 	var src_folder = resource_path.find("/src/")
 	if src_folder != -1:
