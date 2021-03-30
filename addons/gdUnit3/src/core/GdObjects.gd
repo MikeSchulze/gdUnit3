@@ -2,11 +2,15 @@
 class_name GdObjects
 extends Object
 
-const TYPE_VOID = -1
+const TYPE_VOID = TYPE_MAX + 1000
+const TYPE_VARARG = TYPE_MAX + 1001
+
+# used as default value for varargs
+const TYPE_VARARG_PLACEHOLDER_VALUE = "__null__"
 
 const TYPE_AS_STRING_MAPPINGS := {
-	TYPE_NIL:"null",
-	TYPE_BOOL:"bool",
+	TYPE_NIL: "null",
+	TYPE_BOOL: "bool",
 	TYPE_INT: "int",
 	TYPE_REAL: "float",
 	TYPE_STRING: "String",
@@ -33,6 +37,11 @@ const TYPE_AS_STRING_MAPPINGS := {
 	TYPE_VECTOR3_ARRAY: "PoolVector3Array",
 	TYPE_COLOR_ARRAY: "PoolColorArray",
 	TYPE_VOID: "void",
+	TYPE_VARARG: "VarArg",
+}
+
+# holds flipped copy of TYPE_AS_STRING_MAPPINGS initalisized by func 'string_as_typeof'
+const STRING_AS_TYPE_MAPPINGS := {
 }
 
 const DEFAULT_VALUES_BY_TYPE := {
@@ -172,6 +181,14 @@ static func type_as_string(type :int) -> String:
 
 static func typeof_as_string(value) -> String:
 	return TYPE_AS_STRING_MAPPINGS.get(typeof(value), "Unknown type")
+
+static func string_as_typeof(type :String) -> int:
+	# init STRING_AS_TYPE_MAPPINGS if empty by build a flipped copy
+	if STRING_AS_TYPE_MAPPINGS.empty():
+		for key in TYPE_AS_STRING_MAPPINGS.keys():
+			var value = TYPE_AS_STRING_MAPPINGS[key]
+			STRING_AS_TYPE_MAPPINGS[value] = key
+	return STRING_AS_TYPE_MAPPINGS.get(type, -1)
 
 static func is_primitive_type(value) -> bool:
 	match typeof(value):

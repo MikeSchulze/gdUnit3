@@ -2,10 +2,9 @@ class_name GdUnitMockBuilder
 extends GdUnitClassDoubler
 
 const MOCK_TEMPLATE =\
-"""	var args = $(args)
+"""	var args :Array = ["$(func_name)"] + $(args)
 	var default_return_value = ${default_return_value}
 	
-	#prints("--->", args)
 	if $(instance)__is_prepare_return_value():
 		return $(instance)__save_function_return_value(args)
 	if $(instance)__is_verify_interactions():
@@ -13,19 +12,18 @@ const MOCK_TEMPLATE =\
 		return ${default_return_value}
 	else:
 		$(instance)__save_function_interaction(args)
-
+	
 	if $(instance)__saved_return_values.has(args):
 		return $(instance)__saved_return_values.get(args)
-
+	
 	if $(instance)__working_mode == GdUnitMock.CALL_REAL_FUNC:
 		return .$(func_name)($(func_arg))
 	return ${default_return_value}
 """
 
 const MOCK_VOID_TEMPLATE =\
-"""	var args = $(args)
+"""	var args :Array = ["$(func_name)"] + $(args)
 	
-	#prints("--->", args)
 	if $(instance)__is_prepare_return_value():
 		if $(push_errors):
 			push_error(\"Mocking a void function '$(func_name)(<args>) -> void:' is not allowed.\")
@@ -40,6 +38,64 @@ const MOCK_VOID_TEMPLATE =\
 		.$(func_name)($(func_arg))
 """
 
+const MOCK_VOID_TEMPLATE_VARARG =\
+"""	var varargs :Array = __filter_vargs($(varargs))
+	var args :Array = ["$(func_name)"] + $(args) + varargs
+	
+	if $(instance)__is_prepare_return_value():
+		if $(push_errors):
+			push_error(\"Mocking a void function '$(func_name)(<args>) -> void:' is not allowed.\")
+		return
+	if $(instance)__is_verify_interactions():
+		$(instance)__verify_interactions(args)
+		return
+	else:
+		$(instance)__save_function_interaction(args)
+	
+	if $(instance)__working_mode == GdUnitMock.CALL_REAL_FUNC:
+		match varargs.size():
+			0: .$(func_name)($(func_arg))
+			1: .$(func_name)($(func_arg), varargs[0])
+			2: .$(func_name)($(func_arg), varargs[0], varargs[1])
+			3: .$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2])
+			4: .$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3])
+			5: .$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4])
+			6: .$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5])
+			7: .$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6])
+			8: .$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7])
+			9: .$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7], varargs[8])
+			10: .$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7], varargs[8], varargs[9])
+"""
+
+const MOCK_VOID_TEMPLATE_VARARG_ONLY =\
+"""	var varargs :Array = __filter_vargs($(varargs))
+	var args :Array = ["$(func_name)"] + varargs
+	
+	if $(instance)__is_prepare_return_value():
+		if $(push_errors):
+			push_error(\"Mocking a void function '$(func_name)(<args>) -> void:' is not allowed.\")
+		return
+	if $(instance)__is_verify_interactions():
+		$(instance)__verify_interactions(args)
+		return
+	else:
+		$(instance)__save_function_interaction(args)
+	
+	if $(instance)__working_mode == GdUnitMock.CALL_REAL_FUNC:
+		match varargs.size():
+			0: .$(func_name)()
+			1: .$(func_name)(varargs[0])
+			2: .$(func_name)(varargs[0], varargs[1])
+			3: .$(func_name)(varargs[0], varargs[1], varargs[2])
+			4: .$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3])
+			5: .$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4])
+			6: .$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5])
+			7: .$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6])
+			8: .$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7])
+			9: .$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7], varargs[8])
+			10: .$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7], varargs[8], varargs[9])
+"""
+
 class MockFunctionDoubler extends GdFunctionDoubler:
 	var _push_errors :String
 	
@@ -49,24 +105,29 @@ class MockFunctionDoubler extends GdFunctionDoubler:
 	func double(func_descriptor :GdFunctionDescriptor) -> PoolStringArray:
 		var func_signature := func_descriptor.typeless()
 		var is_static := func_descriptor.is_static()
+		var is_vararg := func_descriptor.is_vararg()
 		var func_name := func_descriptor.name()
 		var args := func_descriptor.args()
+		var varargs := func_descriptor.varargs()
 		var default_return_value = return_value(func_descriptor.return_type())
 		var arg_names := extract_arg_names(args)
+		var vararg_names := extract_arg_names(varargs)
+		
 		# save original constructor arguments
 		if func_name == "_init":
 			var constructor_args := extract_constructor_args(args).join(",")
 			var constructor := "func _init(%s).(%s):\n	pass\n" % [constructor_args, arg_names.join(",")]
 			return PoolStringArray([constructor])
 		
-		var full_args := Array(arg_names)
-		full_args.push_front("\"%s\"" % func_name)
 		var double := func_signature + "\n"
-		
-		double += get_template(default_return_value)\
-			.replace("$(args)", str(full_args)) \
+		var func_template := get_template(default_return_value, is_vararg, not arg_names.empty())
+		# fix to  unix format, this is need when the template is edited under windows than the template is stored with \r\n
+		func_template = GdScriptParser.to_unix_format(func_template)
+		double += func_template\
+			.replace("$(args)", str(arg_names)) \
+			.replace("$(varargs)", str(vararg_names)) \
 			.replace("$(func_name)", func_name )\
-			.replace("$(func_arg)", arg_names.join(","))\
+			.replace("$(func_arg)", arg_names.join(", "))\
 			.replace("${default_return_value}", default_return_value)\
 			.replace("$(push_errors)", _push_errors)
 		if is_static:
@@ -75,11 +136,14 @@ class MockFunctionDoubler extends GdFunctionDoubler:
 			double = double.replace("$(instance)", "")
 		return double.split("\n")
 	
-	func get_template(return_type) -> String:
+	func get_template(return_type, is_vararg :bool, has_args :bool) -> String:
+		if is_vararg and has_args:
+			return MOCK_VOID_TEMPLATE_VARARG
+		if is_vararg and not has_args:
+			return MOCK_VOID_TEMPLATE_VARARG_ONLY
 		if return_type == "void":
 			return MOCK_VOID_TEMPLATE
 		return MOCK_TEMPLATE
-
 
 # holds mocker runtime configuration
 const _config = {

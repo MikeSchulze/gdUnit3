@@ -1,26 +1,35 @@
 class_name GdFunctionDescriptor
 extends Reference
 
+# https://github.com/godotengine/godot/issues/47449
+const METHOD_FLAG_VARARG = 128
+
 var _is_static :bool
+var _is_engine :bool
 var _name :String
 var _return_type :int
 var _return_class :String
 var _args : Array
+var _varargs :Array
 
-func _init(name :String, is_static :bool, return_type :int, return_class :String, args : Array):
+func _init(name :String, is_static :bool, is_engine :bool, return_type :int, return_class :String, args : Array, varargs :Array = []):
 	_name = name
 	_return_type = return_type
 	_return_class = return_class
 	_is_static = is_static
+	_is_engine = is_engine
 	_args = args
+	_varargs = varargs
 
-static func of(name :String, is_static :bool, return_type :int, return_class :String, args :Array) -> GdFunctionDescriptor:
+static func of(name :String, is_static :bool, is_engine :bool, return_type :int, return_class :String, args :Array, varargs :Array) -> GdFunctionDescriptor:
 	return load("res://addons/gdUnit3/src/core/parse/GdFunctionDescriptor.gd").new(
 		name,
 		is_static,
+		is_engine,
 		return_type,
 		return_class,
-		args
+		args,
+		varargs
 	)
 
 func name() -> String:
@@ -28,6 +37,12 @@ func name() -> String:
 
 func is_static() -> bool:
 	return _is_static
+
+func is_engine() -> bool:
+	return _is_engine
+
+func is_vararg() -> bool:
+	return not _varargs.empty()
 
 func return_type() -> int:
 	return _return_type
@@ -39,6 +54,9 @@ func return_type_as_string() -> String:
 
 func args() -> Array:
 	return _args
+
+func varargs() -> Array:
+	return _varargs
 
 func typeless() -> String:
 	var func_signature := ""
@@ -55,12 +73,15 @@ func typeless_args() -> String:
 			collect.push_back(arg.name() + "=" + arg.default())
 		else:
 			collect.push_back(arg.name())
+	for arg in varargs():
+		collect.push_back(arg.name() + "=" + arg.default())
 	return collect.join(", ")
 
 func typed_args() -> String:
 	var collect := PoolStringArray()
 	for arg in args():
-		prints(arg)
+		collect.push_back(arg._to_string())
+	for arg in varargs():
 		collect.push_back(arg._to_string())
 	return collect.join(", ")
 
@@ -74,12 +95,15 @@ func _to_string() -> String:
 
 # extract function description given by Object.get_method_list()
 static func extract_from(method_descriptor :Dictionary) -> GdFunctionDescriptor:
+	var is_vararg :bool = method_descriptor["flags"] & METHOD_FLAG_VARARG
 	return of(
 		method_descriptor["name"],
 		false,
+		true,
 		method_descriptor["return"]["type"],
 		method_descriptor["return"]["class_name"],
-		_extract_args(method_descriptor)
+		_extract_args(method_descriptor),
+		_build_varargs(is_vararg)
 	)
 
 static func _extract_args(method_descriptor :Dictionary) -> Array:
@@ -96,6 +120,16 @@ static func _extract_args(method_descriptor :Dictionary) -> Array:
 			arg_default = _argument_default_value(arg, defaults.pop_back())
 		args.push_front(GdFunctionArgument.new(arg_name, arg_type, arg_default))
 	return args
+
+static func _build_varargs(is_vararg :bool) -> Array:
+	var varargs := Array()
+	if not is_vararg:
+		return varargs
+	# if function has vararg we need to handle this manually by adding 10 default arguments
+	var type := GdObjects.type_as_string(GdObjects.TYPE_VARARG)
+	for index in 10:
+		varargs.push_back(GdFunctionArgument.new("vararg%d_" % index, type, "\"%s\"" % GdObjects.TYPE_VARARG_PLACEHOLDER_VALUE))
+	return varargs
 
 static func _argument_name(arg :Dictionary) -> String:
 	# add suffix to the name to prevent clash with reserved names

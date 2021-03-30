@@ -431,4 +431,10 @@ func test_is_public_script_class() -> void:
 	assert_bool(GdObjects.is_public_script_class("CustomClass")).is_true()
 	# inner classes not listed as public classes
 	assert_bool(GdObjects.is_public_script_class("CustomClass.InnerClassA")).is_false()
-	
+
+func test_build_string_as_typeof_mapping():
+	for type in GdObjects.TYPE_AS_STRING_MAPPINGS.keys():
+		var type_as_string :String = GdObjects.TYPE_AS_STRING_MAPPINGS[type]
+		assert_int(GdObjects.string_as_typeof(type_as_string)).is_equal(type)
+	# check finally it has build a full fliped copy
+	assert_dict(GdObjects.STRING_AS_TYPE_MAPPINGS).has_size(GdObjects.TYPE_AS_STRING_MAPPINGS.size())
