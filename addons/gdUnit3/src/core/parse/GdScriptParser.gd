@@ -529,6 +529,7 @@ func parse_func_description(func_signature :String, clazz_name :String) -> GdFun
 	return GdFunctionDescriptor.new(
 		name,
 		is_static_func(func_signature),
+		false,
 		return_type,
 		return_clazz,
 		parse_arguments(func_signature)
@@ -567,7 +568,7 @@ func parse(clazz_name :String, clazz_path :PoolStringArray) -> Result:
 	var function_descriptors := extract_functions(script, clazz_name, clazz_path)
 	var gd_class := GdClassDescriptor.new(clazz_name, is_inner_class, function_descriptors)
 		
-		# iterate over class dependencies
+	# iterate over class dependencies
 	script = script.get_base_script()
 	while script != null:
 		clazz_name = GdObjects.extract_class_name_from_class_path([script.resource_path])

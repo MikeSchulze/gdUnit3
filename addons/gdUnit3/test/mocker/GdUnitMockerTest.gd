@@ -1,3 +1,4 @@
+class_name GdUnitMockerTest
 extends GdUnitTestSuite
 
 var resource_path := "res://addons/gdUnit3/test/mocker/resources/"
@@ -109,6 +110,65 @@ func test_mock_Node():
 	do_return(24).on(mocked_node).get_child_count()
 	# verify the return value is overwritten
 	assert_that(mocked_node.get_child_count()).is_equal(24)
+
+
+var _test_signal_is_emited := false
+func _emit_ready(a, b, c):
+	prints("_emit_ready", a, b, c)
+	_test_signal_is_emited = true
+
+# https://github.com/MikeSchulze/gdUnit3/issues/38
+func test_mock_Node_use_real_func_vararg():
+	var mocked_node :Node = mock(Node, CALL_REAL_FUNC)
+	assert_that(mocked_node).is_not_null()
+	
+	assert_bool(_test_signal_is_emited).is_false()
+	mocked_node.connect("ready", self, "_emit_ready")
+	mocked_node.emit_signal("ready", "aa", "bb", "cc")
+	
+	# sync signal is emited
+	yield(get_tree(), "idle_frame")
+	assert_bool(_test_signal_is_emited).is_true()
+
+class ClassWithSignal:
+	signal test_signal_a
+	signal test_signal_b
+	
+	func foo(arg :int) -> void:
+		if arg == 0:
+			emit_signal("test_signal_a", "aa")
+		else:
+			emit_signal("test_signal_b", "bb", true)
+	
+	func bar(arg :int) -> bool:
+		if arg == 0:
+			emit_signal("test_signal_a", "aa")
+		else:
+			emit_signal("test_signal_b", "bb", true)
+		return true
+
+func test_mock_verify_emit_signal():
+	var mocked_node :ClassWithSignal = mock(ClassWithSignal, CALL_REAL_FUNC)
+	assert_that(mocked_node).is_not_null()
+	
+	mocked_node.foo(0)
+	verify(mocked_node, 1).emit_signal("test_signal_a", "aa")
+	verify(mocked_node, 0).emit_signal("test_signal_b", "bb", true)
+	reset(mocked_node)
+
+	mocked_node.foo(1)
+	verify(mocked_node, 0).emit_signal("test_signal_a", "aa")
+	verify(mocked_node, 1).emit_signal("test_signal_b", "bb", true)
+	reset(mocked_node)
+	
+	mocked_node.bar(0)
+	verify(mocked_node, 1).emit_signal("test_signal_a", "aa")
+	verify(mocked_node, 0).emit_signal("test_signal_b", "bb", true)
+	reset(mocked_node)
+	
+	mocked_node.bar(1)
+	verify(mocked_node, 0).emit_signal("test_signal_a", "aa")
+	verify(mocked_node, 1).emit_signal("test_signal_b", "bb", true)
 
 func test_mock_custom_class_by_class_name():
 	var mock = mock(CustomResourceTestClass)
@@ -565,11 +625,12 @@ func test_verify_fail():
 	
 	# verify should fail because we interacts two times and not one
 	verify(mocked_node, 1, GdUnitAssert.EXPECT_FAIL).set_process(true)
-	var expexted_error := """Expecting interacion on:
+	var expected_error := """Expecting interacion on:
 	'set_process(True :bool)'	1 time's
 But found interactions on:
 	'set_process(True :bool)'	2 time's"""
-	assert_last_error(expexted_error)
+	expected_error = GdScriptParser.to_unix_format(expected_error)
+	assert_last_error(expected_error)
 
 func test_verify_func_interaction_wiht_PoolStringArray():
 	var mocked :ClassWithPoolStringArrayFunc = mock(ClassWithPoolStringArrayFunc)
@@ -590,6 +651,7 @@ func test_verify_func_interaction_wiht_PoolStringArray_fail():
 	'set_values([] :Array)'	1 time's
 But found interactions on:
 	'set_values([] :PoolStringArray)'	1 time's"""
+	expected_error = GdScriptParser.to_unix_format(expected_error)
 	assert_last_error(expected_error)
 	
 	reset(mocked)
@@ -604,6 +666,7 @@ But found interactions on:
 	'set_values([] :PoolStringArray)'	1 time's
 	'set_values([a, b] :PoolStringArray)'	1 time's
 	'set_values([1, 2] :Array)'	1 time's"""
+	expected_error = GdScriptParser.to_unix_format(expected_error)
 	assert_last_error(expected_error)
 
 func test_reset():
@@ -640,6 +703,7 @@ func test_verify_no_interactions_fails():
 But found interactions on:
 	'set_process(False :bool)'	1 time's
 	'set_process(True :bool)'	2 time's"""
+	expected_error = GdScriptParser.to_unix_format(expected_error)
 	# it should fail because we have interactions 
 	verify_no_interactions(mocked_node, GdUnitAssert.EXPECT_FAIL)\
 		.has_error_message(expected_error)
@@ -688,6 +752,7 @@ But found interactions on:
 	'is_inside_tree()'	2 time's
 	'find_node(mask :String, True :bool, True :bool)'	1 time's
 	'find_node(mask :String, False :bool, False :bool)'	1 time's"""
+	expected_error = GdScriptParser.to_unix_format(expected_error)
 	verify_no_more_interactions(mocked_node, GdUnitAssert.EXPECT_FAIL)\
 		.has_error_message(expected_error)
 

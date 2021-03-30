@@ -301,3 +301,61 @@ func test_spy_snake_case_named_class_by_class():
 	verify(spy_tcp_server).is_listening()
 	verify(spy_tcp_server).is_connection_available()
 	verify_no_more_interactions(spy_tcp_server)
+
+var _test_signal_is_emited := false
+func _emit_ready(a, b, c):
+	prints("_emit_ready", a, b, c)
+	_test_signal_is_emited = true
+
+# https://github.com/MikeSchulze/gdUnit3/issues/38
+func test_spy_Node_use_real_func_vararg():
+	var spy_node :Node = spy(auto_free(Node.new()))
+	assert_that(spy_node).is_not_null()
+	
+	assert_bool(_test_signal_is_emited).is_false()
+	spy_node.connect("ready", self, "_emit_ready")
+	spy_node.emit_signal("ready", "aa", "bb", "cc")
+	
+	# sync signal is emited
+	yield(get_tree(), "idle_frame")
+	assert_bool(_test_signal_is_emited).is_true()
+
+class ClassWithSignal:
+	signal test_signal_a
+	signal test_signal_b
+	
+	func foo(arg :int) -> void:
+		if arg == 0:
+			emit_signal("test_signal_a", "aa")
+		else:
+			emit_signal("test_signal_b", "bb", true)
+	
+	func bar(arg :int) -> bool:
+		if arg == 0:
+			emit_signal("test_signal_a", "aa")
+		else:
+			emit_signal("test_signal_b", "bb", true)
+		return true
+
+func test_spy_verify_emit_signal():
+	var spy_instance :ClassWithSignal = spy(ClassWithSignal.new())
+	assert_that(spy_instance).is_not_null()
+	
+	spy_instance.foo(0)
+	verify(spy_instance, 1).emit_signal("test_signal_a", "aa")
+	verify(spy_instance, 0).emit_signal("test_signal_b", "bb", true)
+	reset(spy_instance)
+
+	spy_instance.foo(1)
+	verify(spy_instance, 0).emit_signal("test_signal_a", "aa")
+	verify(spy_instance, 1).emit_signal("test_signal_b", "bb", true)
+	reset(spy_instance)
+	
+	spy_instance.bar(0)
+	verify(spy_instance, 1).emit_signal("test_signal_a", "aa")
+	verify(spy_instance, 0).emit_signal("test_signal_b", "bb", true)
+	reset(spy_instance)
+	
+	spy_instance.bar(1)
+	verify(spy_instance, 0).emit_signal("test_signal_a", "aa")
+	verify(spy_instance, 1).emit_signal("test_signal_b", "bb", true)

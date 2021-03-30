@@ -218,8 +218,8 @@ func test_parse_class_inherits():
 	assert_str(clazz_desccriptor.name()).is_equal("CustomClassExtendsCustomClass")
 	assert_bool(clazz_desccriptor.is_inner_class()).is_false()
 	assert_array(clazz_desccriptor.functions()).contains_exactly([
-		GdFunctionDescriptor.new("foo2", false, TYPE_NIL, "", []),
-		GdFunctionDescriptor.new("bar2", false, TYPE_STRING, "", [])
+		GdFunctionDescriptor.new("foo2", false, false, TYPE_NIL, "", []),
+		GdFunctionDescriptor.new("bar2", false, false, TYPE_STRING, "", [])
 	])
 	
 	# extends from CustomResourceTestClass
@@ -228,15 +228,15 @@ func test_parse_class_inherits():
 	assert_str(clazz_desccriptor.name()).is_equal("CustomResourceTestClass")
 	assert_bool(clazz_desccriptor.is_inner_class()).is_false()
 	assert_array(clazz_desccriptor.functions()).contains_exactly([
-		GdFunctionDescriptor.new("foo", false, TYPE_STRING, "", []),
-		GdFunctionDescriptor.new("foo2", false, TYPE_NIL, "", []),
-		GdFunctionDescriptor.new("foo_void", false, GdObjects.TYPE_VOID, "", []),
-		GdFunctionDescriptor.new("bar", false, TYPE_STRING, "", [
+		GdFunctionDescriptor.new("foo", false, false, TYPE_STRING, "", []),
+		GdFunctionDescriptor.new("foo2", false, false, TYPE_NIL, "", []),
+		GdFunctionDescriptor.new("foo_void", false, false, GdObjects.TYPE_VOID, "", []),
+		GdFunctionDescriptor.new("bar", false, false, TYPE_STRING, "", [
 			GdFunctionArgument.new("arg1", "int"),
 			GdFunctionArgument.new("arg2", "int", "23"),
 			GdFunctionArgument.new("name", "String", "\"test\""),
 		]),
-		GdFunctionDescriptor.new("foo5", false, TYPE_NIL, "", []),
+		GdFunctionDescriptor.new("foo5", false, false, TYPE_NIL, "", []),
 	])
 	
 	# no other class extends
