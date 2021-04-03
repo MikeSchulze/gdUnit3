@@ -319,14 +319,11 @@ func _gdUnit_stop(client_id :int) -> void:
 	_current_runner_process_id = -1
 
 func save_test_suites_before_run() -> void:
-	var open_scripts := _editor_interface.get_script_editor().get_open_scripts()
-	for script in open_scripts:
-		var path :String = script.resource_path
-		if path.find("/test/") != -1:
-			prints("Save test script:", script, path)
-			var result := ResourceSaver.save(path, script)
-			if result != OK:
-				prints("Save test script failed:", path)
+	var script_editor :ScriptEditor = _editor_interface.get_script_editor()
+	for open_script in script_editor.get_open_scripts():
+		prints("Save %s" % open_script.resource_path)
+	# TODO find a way to detect only modified files to save
+	script_editor._menu_option(EDITOR_ACTIONS.FILE_SAVE_ALL)
 
 func close_script(script_path :String):
 	var script_editor :ScriptEditor = _editor_interface.get_script_editor()
