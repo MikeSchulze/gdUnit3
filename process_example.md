@@ -1,5 +1,6 @@
- think this may already be possible. Although a dev would have to confirm that this code does indeed run on a background thread. Here is how I do just this. I have created an AutoLoad Singleton called "Threaded"
+I think this may already be possible. Although a dev would have to confirm that this code does indeed run on a background thread. Here is how I do just this. I have created an AutoLoad Singleton called "Threaded"
 
+```gdscript
 extends Node
 
 var thread_for_execute = null
@@ -48,10 +49,15 @@ func _clean_up_execute_thread():
     elif queue_for_execute.size() == 0:
         thread_for_execute = null
 ######## End # OS.execute() Threaded ########
+```
+
 I then call the code like below where I am getting the branch name of a git repository.
 
+```gdscript
 var cmd = ['-c', 'cd ' + str(configuration.Settings.Project.Path) + ' && git rev-parse --abbrev-ref HEAD']
 Threaded.execute(cmd, '/root/ProjectScene', 'callback_branch')
-Now it would be nice if OS.execute had an option for this bultin, but at least there is a way to work around the current limitation.
+```
+
+Now it would be nice if OS.execute had an option for this builtin, but at least there is a way to work around the current limitation.
 
 Killing a thread would be nice in case of hanging, and I do not currently know a way to do that.
