@@ -119,12 +119,14 @@ class Operator extends Token:
 		pass
 
 class Variable extends Token:
-	var _value
+	var _plain_value
+	var _typed_value
 	var _type := TYPE_NIL
 	
 	func _init(value: String).(value) -> void:
 		_type = _scan_type(value)
-		_value = _cast_to_type(value, _type)
+		_plain_value = value
+		_typed_value = _cast_to_type(value, _type)
 		
 	func _scan_type(value: String) -> int:
 		if value.begins_with("\"") and value.ends_with("\""):
@@ -157,10 +159,13 @@ class Variable extends Token:
 		return _type
 	
 	func value():
-		return _value
+		return _typed_value
+		
+	func plain_value():
+		return _plain_value
 	
 	func _to_string():
-		return "{%s:%s}" % [_value, GdObjects.type_as_string(_type)]
+		return "{%s:%s}" % [_plain_value, GdObjects.type_as_string(_type)]
 
 class TokenInnerClass extends Token:
 	var _clazz_name
@@ -342,7 +347,7 @@ func parse_arguments(row: String) -> Array:
 			continue
 		# is argument
 		if bracket == 1 and token.is_variable():
-			var arg_name = token.value()
+			var arg_name = token.plain_value()
 			var arg_type = ""
 			var arg_value = ""
 			# parse type and default value
@@ -354,11 +359,11 @@ func parse_arguments(row: String) -> Array:
 						token = next_token(input, current_index)
 						arg_type = token._token
 					TOKEN_ARGUMENT_TYPE_ASIGNMENT:
-						token = tokenize_value(input, current_index, token)
-						arg_value = token._token
+						arg_value = _parse_end_function(input.substr(current_index), true)
+						current_index += arg_value.length()
 					TOKEN_ARGUMENT_ASIGNMENT:
-						token = tokenize_value(input, current_index, token)
-						arg_value = str(token.value())
+						arg_value = _parse_end_function(input.substr(current_index), true)
+						current_index += arg_value.length()
 					TOKEN_BRACKET_OPEN:
 						bracket += 1
 						# if value a function?
@@ -377,7 +382,6 @@ func parse_arguments(row: String) -> Array:
 					TOKEN_ARGUMENT_SEPARATOR:
 						if bracket <= 1:
 							break
-			
 			args.append(GdFunctionArgument.new(arg_name, arg_type, arg_value))
 	return args
 
@@ -425,24 +429,35 @@ func parse_fuzzer(row: String) -> String:
 		current_index += token._consumed
 	return ""
 
-func _parse_end_function(input: String) -> String:
+func _parse_end_function(input: String, remove_trailing_char := false) -> String:
 	# find end of function
 	var current_index := 0
 	var bracket_count := 0
+	var is_array := false
 	var end_of_func = false
+	
 	while current_index < len(input) and not end_of_func:
 		var character = input[current_index]
 		match character:
-			"(":
-				bracket_count += 1
+			# count if inside an array
+			"[": is_array = true
+			"]": is_array = false
+			# count if inside a function
+			"(": bracket_count += 1
 			")":
 				bracket_count -= 1
-				if bracket_count == 0:
+				if bracket_count <= 0:
 					end_of_func = true
 			",":
-				if bracket_count == 0:
+				if bracket_count == 0 and not is_array:
 					end_of_func = true
 		current_index += 1
+	if remove_trailing_char:
+		# check if the parsed value ends with comma or end of doubled breaked
+		# `<value>,` or `<function>())`
+		var trailing_char := input[current_index-1]
+		if trailing_char == ',' or (bracket_count < 0 and trailing_char == ')'):
+			return input.substr(0, current_index-1)
 	return input.substr(0, current_index)
 
 func extract_inner_class(source_rows: PoolStringArray, clazz_name :String) -> PoolStringArray:

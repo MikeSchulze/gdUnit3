@@ -799,3 +799,20 @@ func test_mock_snake_case_named_class_by_class():
 	verify(mocked_tcp_server).is_listening()
 	verify(mocked_tcp_server).is_connection_available()
 	verify_no_more_interactions(mocked_tcp_server)
+
+func test_mock_func_with_default_build_in_type():
+	var mock :ClassWithDefaultBuildIntTypes = mock(ClassWithDefaultBuildIntTypes)
+	assert_object(mock).is_not_null()
+	# call with default arg
+	mock.foo("abc")
+	mock.bar("def")
+	verify(mock).foo("abc", Color.red)
+	verify(mock).bar("def", Vector3.FORWARD, AABB())
+	verify_no_more_interactions(mock)
+	
+	# call with custom color arg
+	mock.foo("abc", Color.blue)
+	mock.bar("def", Vector3.DOWN, AABB(Vector3.ONE, Vector3.ZERO))
+	verify(mock).foo("abc", Color.blue)
+	verify(mock).bar("def", Vector3.DOWN, AABB(Vector3.ONE, Vector3.ZERO))
+	verify_no_more_interactions(mock)
