@@ -365,7 +365,7 @@ func test_spy_verify_emit_signal():
 	verify(spy_instance, 0).emit_signal("test_signal_a", "aa")
 	verify(spy_instance, 1).emit_signal("test_signal_b", "bb", true)
 
-func test_spy_func_with_default_place_in_type():
+func test_spy_func_with_default_build_in_type():
 	var spy_instance :ClassWithDefaultBuildIntTypes = spy(ClassWithDefaultBuildIntTypes.new())
 	assert_object(spy_instance).is_not_null()
 	# call with default arg
