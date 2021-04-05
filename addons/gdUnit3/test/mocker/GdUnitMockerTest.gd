@@ -800,7 +800,7 @@ func test_mock_snake_case_named_class_by_class():
 	verify(mocked_tcp_server).is_connection_available()
 	verify_no_more_interactions(mocked_tcp_server)
 
-func test_mock_func_with_default_place_in_type():
+func test_mock_func_with_default_build_in_type():
 	var mock :ClassWithDefaultBuildIntTypes = mock(ClassWithDefaultBuildIntTypes)
 	assert_object(mock).is_not_null()
 	# call with default arg
