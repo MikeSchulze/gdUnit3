@@ -364,3 +364,20 @@ func test_spy_verify_emit_signal():
 	spy_instance.bar(1)
 	verify(spy_instance, 0).emit_signal("test_signal_a", "aa")
 	verify(spy_instance, 1).emit_signal("test_signal_b", "bb", true)
+
+func test_spy_func_with_default_place_in_type():
+	var spy_instance :ClassWithDefaultBuildIntTypes = spy(ClassWithDefaultBuildIntTypes.new())
+	assert_object(spy_instance).is_not_null()
+	# call with default arg
+	spy_instance.foo("abc")
+	spy_instance.bar("def")
+	verify(spy_instance).foo("abc", Color.red)
+	verify(spy_instance).bar("def", Vector3.FORWARD, AABB())
+	verify_no_more_interactions(spy_instance)
+	
+	# call with custom args
+	spy_instance.foo("abc", Color.blue)
+	spy_instance.bar("def", Vector3.DOWN, AABB(Vector3.ONE, Vector3.ZERO))
+	verify(spy_instance).foo("abc", Color.blue)
+	verify(spy_instance).bar("def", Vector3.DOWN, AABB(Vector3.ONE, Vector3.ZERO))
+	verify_no_more_interactions(spy_instance)

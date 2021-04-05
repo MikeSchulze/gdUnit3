@@ -89,6 +89,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/test/resources/core/City.gd"
 }, {
+"base": "Reference",
+"class": "ClassWithDefaultBuildIntTypes",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/test/mocker/resources/ClassWithDefaultBuildIntTypes.gd"
+}, {
 "base": "Resource",
 "class": "ClassWithNameA",
 "language": "GDScript",
@@ -656,6 +661,7 @@ _global_script_class_icons={
 "ChainedArgumentMatcher": "",
 "ChainedArgumentMatcherTest": "",
 "City": "",
+"ClassWithDefaultBuildIntTypes": "",
 "ClassWithNameA": "",
 "ClassWithNameB": "",
 "ClassWithPoolStringArrayFunc": "",

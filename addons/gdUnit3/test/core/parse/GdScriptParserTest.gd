@@ -83,6 +83,135 @@ func test_parse_arguments():
 	assert_array(_parser.parse_arguments("func get_value( type := ENUM_A) -> int:"))\
 		.contains_exactly([GdFunctionArgument.new("type", "", "ENUM_A")])
 
+func test_parse_arguments_default_build_in_type_String():
+	assert_array(_parser.parse_arguments("func foo(arg1 :String, arg2=\"default\"):")) \
+		.contains_exactly([
+			GdFunctionArgument.new("arg1", "String"),
+			GdFunctionArgument.new("arg2", "", "\"default\"")])
+	
+	assert_array(_parser.parse_arguments("func foo(arg1 :String, arg2 :=\"default\"):")) \
+		.contains_exactly([
+			GdFunctionArgument.new("arg1", "String"),
+			GdFunctionArgument.new("arg2", "", "\"default\"")])
+	
+	assert_array(_parser.parse_arguments("func foo(arg1 :String, arg2 :String =\"default\"):")) \
+		.contains_exactly([
+			GdFunctionArgument.new("arg1", "String"),
+			GdFunctionArgument.new("arg2", "String", "\"default\"")])
+
+func test_parse_arguments_default_build_in_type_Boolean():
+	assert_array(_parser.parse_arguments("func foo(arg1 :String, arg2=false):")) \
+		.contains_exactly([
+			GdFunctionArgument.new("arg1", "String"),
+			GdFunctionArgument.new("arg2", "", "false")])
+	
+	assert_array(_parser.parse_arguments("func foo(arg1 :String, arg2 :=false):")) \
+		.contains_exactly([
+			GdFunctionArgument.new("arg1", "String"),
+			GdFunctionArgument.new("arg2", "", "false")])
+	
+	assert_array(_parser.parse_arguments("func foo(arg1 :String, arg2 :bool=false):")) \
+		.contains_exactly([
+			GdFunctionArgument.new("arg1", "String"),
+			GdFunctionArgument.new("arg2", "bool", "false")])
+
+func test_parse_arguments_default_build_in_type_Real():
+	assert_array(_parser.parse_arguments("func foo(arg1 :String, arg2=3.14):")) \
+		.contains_exactly([
+			GdFunctionArgument.new("arg1", "String"),
+			GdFunctionArgument.new("arg2", "", "3.14")])
+	
+	assert_array(_parser.parse_arguments("func foo(arg1 :String, arg2 :=3.14):")) \
+		.contains_exactly([
+			GdFunctionArgument.new("arg1", "String"),
+			GdFunctionArgument.new("arg2", "", "3.14")])
+	
+	assert_array(_parser.parse_arguments("func foo(arg1 :String, arg2 :float=3.14):")) \
+		.contains_exactly([
+			GdFunctionArgument.new("arg1", "String"),
+			GdFunctionArgument.new("arg2", "float", "3.14")])
+
+func test_parse_arguments_default_build_in_type_Array():
+	assert_array(_parser.parse_arguments("func foo(arg1 :String, arg2 :Array=[]):")) \
+		.contains_exactly([
+			GdFunctionArgument.new("arg1", "String"),
+			GdFunctionArgument.new("arg2", "Array", "[]")])
+	
+	assert_array(_parser.parse_arguments("func foo(arg1 :String, arg2 :Array=Array()):")) \
+		.contains_exactly([
+			GdFunctionArgument.new("arg1", "String"),
+			GdFunctionArgument.new("arg2", "Array", "Array()")])
+	
+	assert_array(_parser.parse_arguments("func foo(arg1 :String, arg2 :Array=[1, 2, 3]):")) \
+		.contains_exactly([
+			GdFunctionArgument.new("arg1", "String"),
+			GdFunctionArgument.new("arg2", "Array", "[1,2,3]")])
+	
+	assert_array(_parser.parse_arguments("func foo(arg1 :String, arg2 :=[1, 2, 3]):")) \
+		.contains_exactly([
+			GdFunctionArgument.new("arg1", "String"),
+			GdFunctionArgument.new("arg2", "", "[1,2,3]")])
+	
+	assert_array(_parser.parse_arguments("func foo(arg1 :String, arg2=[]):")) \
+		.contains_exactly([
+			GdFunctionArgument.new("arg1", "String"),
+			GdFunctionArgument.new("arg2", "", "[]")])
+	
+	assert_array(_parser.parse_arguments("func foo(arg1 :String, arg2 :Array=[1, 2, 3], arg3 := false):")) \
+		.contains_exactly([
+			GdFunctionArgument.new("arg1", "String"),
+			GdFunctionArgument.new("arg2", "Array", "[1,2,3]"),
+			GdFunctionArgument.new("arg3", "", "false")])
+
+func test_parse_arguments_default_build_in_type_Color():
+	assert_array(_parser.parse_arguments("func foo(arg1 :String, arg2=Color.red):")) \
+		.contains_exactly([
+			GdFunctionArgument.new("arg1", "String"),
+			GdFunctionArgument.new("arg2", "", "Color.red")])
+	
+	assert_array(_parser.parse_arguments("func foo(arg1 :String, arg2 :=Color.red):")) \
+		.contains_exactly([
+			GdFunctionArgument.new("arg1", "String"),
+			GdFunctionArgument.new("arg2", "", "Color.red")])
+	
+	assert_array(_parser.parse_arguments("func foo(arg1 :String, arg2 :Color=Color.red):")) \
+		.contains_exactly([
+			GdFunctionArgument.new("arg1", "String"),
+			GdFunctionArgument.new("arg2", "Color", "Color.red")])
+
+func test_parse_arguments_default_build_in_type_Vector():
+	assert_array(_parser.parse_arguments("func bar(arg1 :String, arg2 =Vector3.FORWARD):")) \
+		.contains_exactly([
+			GdFunctionArgument.new("arg1", "String"),
+			GdFunctionArgument.new("arg2", "", "Vector3.FORWARD")])
+	
+	assert_array(_parser.parse_arguments("func bar(arg1 :String, arg2 :=Vector3.FORWARD):")) \
+		.contains_exactly([
+			GdFunctionArgument.new("arg1", "String"),
+			GdFunctionArgument.new("arg2", "", "Vector3.FORWARD")])
+	
+	assert_array(_parser.parse_arguments("func bar(arg1 :String, arg2 :Vector3=Vector3.FORWARD):")) \
+		.contains_exactly([
+			GdFunctionArgument.new("arg1", "String"),
+			GdFunctionArgument.new("arg2", "Vector3", "Vector3.FORWARD")])
+
+func test_parse_arguments_default_build_in_type_AABB():
+	assert_array(_parser.parse_arguments("func bar(arg1 :String, arg2 := AABB()):")) \
+		.contains_exactly([
+			GdFunctionArgument.new("arg1", "String"),
+			GdFunctionArgument.new("arg2", "", "AABB()")])
+	
+	assert_array(_parser.parse_arguments("func bar(arg1 :String, arg2 :AABB=AABB()):")) \
+		.contains_exactly([
+			GdFunctionArgument.new("arg1", "String"),
+			GdFunctionArgument.new("arg2", "AABB", "AABB()")])
+
+func test_parse_arguments_default_build_in_types():
+	assert_array(_parser.parse_arguments("func bar(arg1 :String, arg2 := Vector3.FORWARD, aabb := AABB()):")) \
+		.contains_exactly([
+			GdFunctionArgument.new("arg1", "String"),
+			GdFunctionArgument.new("arg2", "", "Vector3.FORWARD"),
+			GdFunctionArgument.new("aabb", "", "AABB()")])
 
 func test_parse_arguments_no_function():
 	assert_array(_parser.parse_arguments("var x:=10")) \
