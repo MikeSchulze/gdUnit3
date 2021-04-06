@@ -14,7 +14,7 @@ func after():
 	Engine.set_meta("gdUnit_push_error_monitor_enabled", false)
 	#clear_push_errors()
 
-func test_start_no_errors():
+func _test_start_no_errors():
 	var monitor = PushErrorMonitor.new()
 	# no errors after initalized monitor
 	var errors = yield(monitor.list_errors(), "completed")
@@ -27,7 +27,7 @@ func test_start_no_errors():
 	errors = yield(monitor.list_errors(), "completed")
 	assert_array(errors).is_empty()
 
-func test_start_with_errors():
+func _test_start_with_errors():
 	push_error("this is a test error 1")
 	push_error("this is a test error 2")
 	push_error("this is a test error 3")
