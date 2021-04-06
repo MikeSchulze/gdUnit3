@@ -5,9 +5,11 @@ extends Resource
 const WARNINGS = "warnings"
 const FAILED = "failed"
 const ERRORS = "errors"
+const SKIPPED = "skipped"
 const ELAPSED_TIME = "elapsed_time"
 const ORPHAN_NODES = "orphan_nodes"
-
+const FAILED_COUNT = "failed_count"
+const SKIPPED_COUNT = "skipped_count"
 
 enum  {
 	INIT,
@@ -21,33 +23,38 @@ enum  {
 }
 
 var _event_type
+var _resource_path :String
 var _suite_name :String
 var _test_name :String
 var _total_count :int = 0
 var _statisics := Dictionary()
 var _reports := Array()
 
-func before(suite_name :String, total_count) -> GdUnitEvent:
+func before(resource_path :String, suite_name :String, total_count) -> GdUnitEvent:
 	_event_type = TESTSUITE_BEFORE
+	_resource_path = resource_path
 	_suite_name = suite_name
 	_total_count = total_count
 	return self
 
-func after(suite_name :String, statisics :Dictionary = {}, reports :Array = []) -> GdUnitEvent:
+func after(resource_path :String, suite_name :String, statisics :Dictionary = {}, reports :Array = []) -> GdUnitEvent:
 	_event_type = TESTSUITE_AFTER
+	_resource_path = resource_path
 	_suite_name  = suite_name
 	_statisics = statisics
 	_reports = reports
 	return self
 
-func beforeTest(suite_name:String, test_name:String) -> GdUnitEvent:
+func beforeTest(resource_path :String, suite_name:String, test_name:String) -> GdUnitEvent:
 	_event_type = TESTCASE_BEFORE
+	_resource_path = resource_path
 	_suite_name  = suite_name
 	_test_name = test_name
 	return self
 
-func afterTest(suite_name :String, test_name :String, statisics :Dictionary = {}, reports :Array = []) -> GdUnitEvent:
+func afterTest(resource_path :String, suite_name :String, test_name :String, statisics :Dictionary = {}, reports :Array = []) -> GdUnitEvent:
 	_event_type = TESTCASE_AFTER
+	_resource_path = resource_path
 	_suite_name  = suite_name
 	_test_name = test_name
 	_statisics = statisics
@@ -60,15 +67,14 @@ func testrun_before(suite_name:String, test_name:String) -> GdUnitEvent:
 	_test_name = test_name
 	return self
 	
-func testrun_after(suite_name :String, test_name :String, statisics :Dictionary = {}, reports :Array = []) -> GdUnitEvent:
+func testrun_after(resource_path :String, suite_name :String, test_name :String, statisics :Dictionary = {}, reports :Array = []) -> GdUnitEvent:
 	_event_type = TESTRUN_AFTER
+	_resource_path = resource_path
 	_suite_name  = suite_name
 	_test_name = test_name
 	_statisics = statisics
 	_reports = reports
 	return self
-
-
 
 func type():
 	return _event_type
@@ -80,42 +86,40 @@ func test_name() -> String:
 	return _test_name
 
 func elapsed_time() -> int:
-	return _statisics[ELAPSED_TIME]
+	return _statisics.get(ELAPSED_TIME, 0)
 
 func orphan_nodes() -> int:
-	return statistic(ORPHAN_NODES)
+	return  _statisics.get(ORPHAN_NODES, 0)
 
 func statistic(type :String) -> int:
-	if _statisics.has(type):
-		return _statisics[type]
-	return 0
+	return _statisics.get(type, 0)
 
 func total_count() -> int:
 	return _total_count
 
-func error_count() -> int:
-	if _statisics.has(ERRORS):
-		return _statisics[ERRORS]
-	return 0
+func failed_count() -> int:
+	return _statisics.get(FAILED_COUNT, 0)
+	
+func skipped_count() -> int:
+	return _statisics.get(SKIPPED_COUNT, 0)
 
+func resource_path() -> String:
+	return _resource_path
 
 func is_success() -> bool:
 	return not is_warning() and not is_failed() and not is_error()
 
 func is_warning() -> bool:
-	if _statisics.has(WARNINGS):
-		return _statisics[WARNINGS]
-	return false
+	return _statisics.get(WARNINGS, false)
 
 func is_failed() -> bool:
-	if _statisics.has(FAILED):
-		return _statisics[FAILED]
-	return false
-	
+	return _statisics.get(FAILED, false)
+
 func is_error() -> bool:
-	if _statisics.has(ERRORS):
-		return _statisics[ERRORS]
-	return false
+	return _statisics.get(ERRORS, false)
+
+func is_skipped() -> bool:
+	return _statisics.get(SKIPPED, false)
 
 func reports() -> Array:
 	return _reports
@@ -126,6 +130,7 @@ func _to_string():
 func serialize() -> Dictionary:
 	var serialized := {
 		"type"         : _event_type,
+		"resource_path": _resource_path,
 		"suite_name"   : _suite_name,
 		"test_name"    : _test_name,
 		"total_count"  : _total_count,
@@ -136,6 +141,7 @@ func serialize() -> Dictionary:
 
 func deserialize(serialized:Dictionary) -> GdUnitEvent:
 	_event_type    = serialized["type"]
+	_resource_path = serialized["resource_path"]
 	_suite_name    = serialized["suite_name"]
 	_test_name     = serialized["test_name"]
 	_total_count   = serialized["total_count"]

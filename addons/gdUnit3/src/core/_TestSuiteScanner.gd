@@ -23,7 +23,7 @@ func scan(resource_path:String) -> Array:
 			return [_parse_test_suite(resource_path)]
 
 	if base_dir.open(resource_path) != OK:
-			prints("An error occurred when trying to access the path.", resource_path)
+			prints("Given directory or file does not exists:", resource_path)
 			return []
 	return _scan_test_suites(base_dir, [])
 
@@ -70,7 +70,7 @@ func _is_test_suite(file_name:String) -> bool:
 
 func _parse_test_suite(resource_path:String) -> GdUnitTestSuite:
 	var test_suite := load(resource_path).new() as GdUnitTestSuite
-	test_suite.set_name(_parse_test_suite_name(resource_path))
+	test_suite.set_name(parse_test_suite_name(resource_path))
 	# find all test cases as array of names
 	var test_case_names := _extract_test_case_names(test_suite)
 	# add test cases to test suite and parse test case line nummber
@@ -92,7 +92,7 @@ func _extract_test_case_names(test_suite :GdUnitTestSuite) -> PoolStringArray:
 			names.append(funcName)
 	return names
 
-func _parse_test_suite_name(resource_path :String) -> String:
+static func parse_test_suite_name(resource_path :String) -> String:
 	var start := resource_path.find_last("/")
 	var end := resource_path.find_last(".gd")
 	return resource_path.substr(start, end-start)

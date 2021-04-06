@@ -98,7 +98,7 @@ func gdUnitInit() -> void:
 	#enable_manuall_polling()
 	send_message("Scaned %d test suites" % _test_suites_to_process.size())
 	var total_count = _collect_test_case_count(_test_suites_to_process)
-	_on_Executor_send_event(GdUnitInit.new(total_count))
+	_on_Executor_send_event(GdUnitInit.new(_test_suites_to_process.size(), total_count))
 	for t in _test_suites_to_process:
 		var test_suite := t as GdUnitTestSuite
 		send_test_suite(test_suite)
@@ -207,4 +207,3 @@ class PollTread extends Node:
 		#		multiplayer.poll()
 		#		#prints("poll network", self, multiplayer, multiplayer.network_peer.get_connection_status())
 		#		time = LocalTime.now()
-

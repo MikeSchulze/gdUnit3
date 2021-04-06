@@ -103,21 +103,135 @@ static func create_temp_file(relative_path :String, file_name :String, mode :=Fi
 	push_error("Error creating temporary file at: %s, %s" % [file_path, error_as_string(error)])
 	return null
 
+
+static func current_dir() -> String:
+	return ProjectSettings.globalize_path("res://")
+
+
 static func delete_directory(path :String):
 	var dir := Directory.new()
 	if dir.open(path) == OK:
 		dir.list_dir_begin()
-		var file_name := dir.get_next()
+		var file_name := "."
 		while file_name != "":
-			if file_name == "." or file_name == "..":
-				file_name = dir.get_next()
+			file_name = dir.get_next()
+			if file_name.empty() or file_name == "." or file_name == "..":
 				continue
 			var next := path + "/" +file_name
 			if dir.current_is_dir():
 				delete_directory(next)
-			Directory.new().remove(next)
-			#prints("deleted ", next)
-			file_name = dir.get_next()
+			else:
+				# delete file
+				Directory.new().remove(next)
+		Directory.new().remove(path)
+
+
+static func copy_file(from_file :String, to_dir :String) -> Result:
+	var dir := Directory.new()
+	if dir.open(to_dir) == OK:
+		var to_file := to_dir + "/" + from_file.get_file()
+		prints("Copy %s to %s" % [from_file, to_file])
+		var error = dir.copy(from_file, to_file)
+		if error != OK:
+			return Result.error("Can't copy file form '%s' to '%s'. Error: '%s'" % [from_file, to_file, error_as_string(error)])
+		return Result.success(to_file)
+	return Result.error("Directory not found: " + to_dir)
+
+
+static func copy_directory(from_dir :String, to_dir :String, recursive :bool = false) -> bool:
+	var source_dir := Directory.new()
+	if not source_dir.dir_exists(from_dir):
+		push_error("Source directory not found '%s'" % from_dir)
+		return false
+		
+	# check if destination exists 
+	var sdir = to_dir + "/" + from_dir.get_base_dir().split("/")[-1]
+	var dest_dir := Directory.new()
+	if not dest_dir.dir_exists(sdir):
+		# create it
+		var err := dest_dir.make_dir_recursive(sdir)
+		if err != OK:
+			push_error("Can't create directory '%s'. Error: %s" % [sdir, error_as_string(err)])
+			return false
+	dest_dir.open(sdir)
+	
+	if source_dir.open(from_dir) == OK:
+		source_dir.list_dir_begin()
+		var next := "."
+		
+		while next != "":
+			next = source_dir.get_next()
+			if next == "" or next == "." or next == "..":
+				continue
+			var source := source_dir.get_current_dir() + "/" + next
+			var dest := dest_dir.get_current_dir() + "/" + next
+			if source_dir.current_is_dir():
+				if recursive:
+					copy_directory(source + "/", dest_dir.get_current_dir(), recursive)
+				continue
+			var err = source_dir.copy(source, dest)
+			if err != OK:
+				push_error("Error on copy file '%s' to '%s'" % [source, dest])
+				return false
+		
+		return true
+	else:
+		push_error("Directory not found: " + from_dir)
+		return false
+
+# scans given path for sub directories by given prefix and returns the highest index numer
+# e.g. <prefix_%d>
+static func find_last_path_index(path :String, prefix :String) -> int:
+	var dir := Directory.new()
+	if not dir.dir_exists(path):
+		return 0
+	var last_iteration := 0
+	if dir.open(path) == OK:
+		dir.list_dir_begin()
+		var next := "."
+		while next != "":
+			next = dir.get_next()
+			if next.empty() or next == "." or next == "..":
+				continue
+			if next.begins_with(prefix):
+				var iteration := int(next.split("_")[1])
+				if iteration > last_iteration:
+					last_iteration = iteration
+	return last_iteration
+
+static func delete_path_index_lower_equals_than(path :String, prefix :String, index :int) -> int:
+	var dir := Directory.new()
+	if not dir.dir_exists(path):
+		return 0
+	var deleted := 0
+	if dir.open(path) == OK:
+		dir.list_dir_begin()
+		var next := "."
+		while next != "":
+			next = dir.get_next()
+			if next.empty() or next == "." or next == "..":
+				continue
+			if next.begins_with(prefix):
+				var current_index := int(next.split("_")[1])
+				if current_index <= index:
+					deleted += 1
+					delete_directory(path + "/" + next)
+	return deleted
+
+static func scan_dir(path :String) -> PoolStringArray:
+	var dir := Directory.new()
+	if not dir.dir_exists(path):
+		return PoolStringArray()
+	var content := PoolStringArray()
+	if dir.open(path) == OK:
+		dir.list_dir_begin()
+		var next := "."
+		while next != "":
+			next = dir.get_next()
+			if next.empty() or next == "." or next == "..":
+				continue
+			content.append(next)
+	return content
 
 static func resource_as_array(resource_path :String) -> PoolStringArray:
 	var file := File.new()
@@ -183,6 +297,14 @@ static func run_auto_close():
 		if file != null and file.is_open():
 			#prints("auto close %s" % file.get_path_absolute())
 			file.close()
+
+static func make_qualified_path(path :String) -> String:
+	if not path.begins_with("res://"):
+		if path.begins_with("//"):
+			return path.replace("//", "res://")
+		if path.begins_with("/"):
+			return "res:/" + path
+	return path
 
 static func error_as_string(error_number :int) -> String:
 	if ENGINE_ENUM_MAPPINGS[ERRORS] == null:

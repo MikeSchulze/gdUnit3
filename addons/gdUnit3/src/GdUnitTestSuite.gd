@@ -34,6 +34,13 @@ func before_test() -> void:
 func after_test() -> void:
 	pass
 
+# Skip the test-suite from execution, it will be ignored
+func skip(skipped :bool) -> void:
+	set_meta("gd_skipped", skipped)
+
+func is_skipped() -> bool:
+	return get_meta("gd_skipped") if has_meta("gd_skipped") else false
+
 # === Tools ====================================================================
 # Mapps Godot error number to a readable error message. See at ERROR
 # https://docs.godotengine.org/de/stable/classes/class_@globalscope.html#enum-globalscope-error
