@@ -6,6 +6,11 @@ const CATEGORY = "gdunit3"
 const REPORT_ERROR_NOTIFICATIONS = CATEGORY + "/report/error_notification"
 const REPORT_ERROR_INFO = CATEGORY + "/report/info"
 
+# Godot stdout/logging settings
+const CATEGORY_LOGGING := "logging/file_logging/"
+const STDOUT_ENABLE_TO_FILE = CATEGORY_LOGGING + "enable_file_logging"
+const STDOUT_WITE_TO_FILE = CATEGORY_LOGGING + "log_path"
+
 static func load_settings():
 	var is_settings_changed := false
 	
@@ -37,3 +42,14 @@ static func is_report_push_errors() -> bool:
 	if ProjectSettings.has_setting(REPORT_ERROR_NOTIFICATIONS):
 		return ProjectSettings.get_setting(REPORT_ERROR_NOTIFICATIONS)
 	return false
+
+static func is_log_enabled() -> bool:
+	return ProjectSettings.get_setting(STDOUT_ENABLE_TO_FILE)
+
+static func get_log_path() -> String:
+	return ProjectSettings.get_setting(STDOUT_WITE_TO_FILE)
+
+static func set_log_path(path :String) -> void:
+	ProjectSettings.set_setting(STDOUT_ENABLE_TO_FILE, true)
+	ProjectSettings.set_setting(STDOUT_WITE_TO_FILE, path)
+	ProjectSettings.save()

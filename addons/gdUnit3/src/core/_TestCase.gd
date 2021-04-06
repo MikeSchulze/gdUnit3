@@ -7,8 +7,9 @@ var _fuzzer_func: String = ""
 var _line_number: int = -1
 var _script_path: String
 var _annotations: Dictionary = {}
+var _skipped := false
 
-func _init(name: String, line_number: int, script_path: String, fuzzer: String = "", iterations: int = 1, seed_ :int = -1) -> void:
+func _init(name: String, line_number: int, script_path: String, fuzzer: String = "", iterations: int = 1, seed_ :int = -1, skipped := false) -> void:
 	set_name(name)
 	_line_number = line_number
 	if not fuzzer.empty():
@@ -16,6 +17,7 @@ func _init(name: String, line_number: int, script_path: String, fuzzer: String =
 		_iterations = iterations
 	_seed = seed_
 	_script_path = script_path
+	_skipped = skipped
 
 func line_number() -> int:
 	return _line_number
@@ -39,6 +41,12 @@ func generate_seed() -> void:
 	if _seed != -1:
 		seed(_seed)
 
+func skip(skipped :bool) -> void:
+	_skipped = skipped
+
+func is_skipped() -> bool:
+	return _skipped
+
 static func serialize(test_case: _TestCase) -> Dictionary:
 	var serialized := Dictionary()
 	serialized["name"] = test_case.get_name()
@@ -47,6 +55,7 @@ static func serialize(test_case: _TestCase) -> Dictionary:
 	serialized["fuzzer"] = test_case.fuzzer_func()
 	serialized["iterations"] = test_case.iterations()
 	serialized["seed"] = test_case.seed_value()
+	serialized["skipped"] = test_case.is_skipped()
 	return serialized
 
 static func deserialize(serialized: Dictionary) -> _TestCase:
@@ -57,4 +66,5 @@ static func deserialize(serialized: Dictionary) -> _TestCase:
 		serialized["script_path"],
 		serialized["fuzzer"],
 		serialized["iterations"],
-		serialized["seed"])
+		serialized["seed"],
+		serialized["skipped"])

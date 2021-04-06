@@ -68,7 +68,7 @@ var _client_id
 var _editor_interface :EditorInterface
 
 # the current test runner config
-var runner_config := GdUnitRunnerConfig.new()
+var _runner_config := GdUnitRunnerConfig.new()
 
 func _ready():
 	if not Engine.editor_hint:
@@ -82,7 +82,7 @@ func _ready():
 		add_file_system_dock_context_menu()
 		add_script_editor_context_menu()
 	# preload previous test execution
-	runner_config.load()
+	_runner_config.load()
 
 func set_editor_interface(editor_interface :EditorInterface) -> void:
 	_editor_interface = editor_interface
@@ -247,7 +247,7 @@ func _on_fscript_editor_context_menu_pressed(id :int, text_edit :TextEdit):
 func run_test_suites(test_suite_paths :Array, debug :bool, rerun :bool=false) -> void:
 	# create new runner runner_config for fresh run otherwise use saved one
 	if not rerun:
-		var result := runner_config.clear()\
+		var result := _runner_config.clear()\
 			.add_test_suites(test_suite_paths)\
 			.save()
 		if result.is_error():
@@ -258,7 +258,7 @@ func run_test_suites(test_suite_paths :Array, debug :bool, rerun :bool=false) ->
 func run_test_case(test_suite_resource_path :String, test_case :String, debug :bool, rerun :bool=false) -> void:
 	# create new runner config for fresh run otherwise use saved one
 	if not rerun:
-		var result := runner_config.clear()\
+		var result := _runner_config.clear()\
 			.add_test_case(test_suite_resource_path, test_case)\
 			.save()
 		if result.is_error():
@@ -274,7 +274,7 @@ func _gdUnit_run(debug :bool) -> void:
 	grab_focus()
 	show()
 	# save current selected excution config
-	var result := runner_config.set_server_port(Engine.get_meta("gdunit_server_port")).save()
+	var result := _runner_config.set_server_port(Engine.get_meta("gdunit_server_port")).save()
 	if result.is_error():
 		push_error(result.error_message())
 		return
