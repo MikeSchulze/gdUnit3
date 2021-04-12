@@ -14,5 +14,6 @@ Please notice the plugin is still in beta phase and has current no acceptance to
 * Test Fuzzing support
 * Mocking a class to simulate the implementation which you define the output of certain function
 * Spy on a instance to verify that a function has been called with certain parameters
+* Command Line Tool to execute test via command line
 
 [Documentation](https://github.com/MikeSchulze/gdUnit3/wiki)
