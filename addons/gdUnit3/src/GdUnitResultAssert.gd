@@ -10,6 +10,10 @@ func is_null() -> GdUnitResultAssert:
 func is_not_null() -> GdUnitResultAssert:
 	return self
 
+# Verifies that the result is ends up with empty 
+func is_empty() -> GdUnitResultAssert:
+	return self
+
 # Verifies that the result is ends up with success
 func is_success() -> GdUnitResultAssert:
 	return self

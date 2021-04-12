@@ -19,6 +19,17 @@ func test_is_not_null():
 		.is_not_null() \
 		.has_error_message("Expecting: not to be 'Null'")
 
+func test_is_empty():
+	assert_result(Result.empty()).is_empty()
+	
+	assert_result(Result.warn("a warning"), GdUnitAssert.EXPECT_FAIL) \
+		.is_empty() \
+		.has_error_message("Expecting the result must be a EMPTY but was WARNING:\n 'a warning'")
+	
+	assert_result(Result.error("a error"), GdUnitAssert.EXPECT_FAIL) \
+		.is_empty() \
+		.has_error_message("Expecting the result must be a EMPTY but was ERROR:\n 'a error'")
+
 func test_is_success():
 	assert_result(Result.success("")).is_success()
 	

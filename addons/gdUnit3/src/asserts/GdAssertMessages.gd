@@ -219,6 +219,9 @@ static func error_contains_key_value(key, value, current_value) -> String:
 
 
 # - ResultAssert specific errors ----------------------------------------------------
+static func error_result_is_empty(current :Result) -> String:
+	return _result_error_message(current, Result.EMPTY)
+
 static func error_result_is_success(current :Result) -> String:
 	return _result_error_message(current, Result.SUCCESS)
 
@@ -248,7 +251,7 @@ static func result_type(type :int) -> String:
 		Result.SUCCESS: return "SUCCESS"
 		Result.WARN: return "WARNING"
 		Result.ERROR: return "ERROR"
-		Result.EMPTY: return "SUCCESS_EMPTY"
+		Result.EMPTY: return "EMPTY"
 	return "UNKNOWN"
 
 static func result_message(result :Result) -> String:

@@ -52,6 +52,14 @@ func is_not_null() -> GdUnitResultAssert:
 	_base.is_not_null()
 	return self
 
+# Verifies that the result is ends up with empty 
+func is_empty() -> GdUnitResultAssert:
+	if not __current().is_empty():
+		report_error(GdAssertMessages.error_result_is_empty(__current()))
+	else:
+		report_success()
+	return self
+
 # Verifies that the result is ends up with success
 func is_success() -> GdUnitResultAssert:
 	if not __current().is_success():
