@@ -73,6 +73,10 @@ func is_client_connected() -> bool:
 func _peer_connected(peer_id :int):
 	_connected = true
 	_connected_clients[peer_id] = true
+	# first available since Godot 3.2.4 RC 4
+	if _peer.has_method("set_peer_timeout"):
+		print_debug("Increase network peer timeout to 5min")
+		_peer.set_peer_timeout(peer_id, 60000, 60000*5, 60000*5)
 	emit_signal("client_connected", peer_id)
 
 func _peer_disconnected(peer_id :int):
