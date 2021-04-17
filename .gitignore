@@ -3,9 +3,7 @@
 
 # Godot-specific ignores
 .import/
-*.png.import
-*.jpg.import
-*.svg.import
+*.*.import
 
 # Mono-specific ignores
 .mono/

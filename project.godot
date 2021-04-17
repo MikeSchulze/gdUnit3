@@ -559,6 +559,16 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/test/core/GdUnitRunnerConfigTest.gd"
 }, {
+"base": "Node",
+"class": "GdUnitSceneRunner",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/src/core/GdUnitSceneRunner.gd"
+}, {
+"base": "GdUnitTestSuite",
+"class": "GdUnitSceneRunnerTest",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/test/core/GdUnitSceneRunnerTest.gd"
+}, {
 "base": "Reference",
 "class": "GdUnitSettings",
 "language": "GDScript",
@@ -714,6 +724,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/src/core/event/SignalHandler.gd"
 }, {
+"base": "Node",
+"class": "Spell",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/test/mocker/resources/scenes/Spell.gd"
+}, {
 "base": "Resource",
 "class": "TimeUnit",
 "language": "GDScript",
@@ -860,6 +875,8 @@ _global_script_class_icons={
 "GdUnitResultAssertImplTest": "",
 "GdUnitRunnerConfig": "",
 "GdUnitRunnerConfigTest": "",
+"GdUnitSceneRunner": "",
+"GdUnitSceneRunnerTest": "",
 "GdUnitSettings": "",
 "GdUnitSingleton": "",
 "GdUnitSpyBuilder": "",
@@ -891,6 +908,7 @@ _global_script_class_icons={
 "Result": "",
 "ResultTest": "",
 "SignalHandler": "",
+"Spell": "",
 "TimeUnit": "",
 "Udo": "",
 "_TestCase": "",

@@ -468,3 +468,15 @@ func test_array_erase_value() -> void:
 	GdObjects.array_erase_value(current, null)
 	# verify the source is affected
 	assert_array(current).contains_exactly(["a", "b", "c"])
+
+func test_is_instance_scene() -> void:
+	# on none scene objects
+	assert_bool(GdObjects.is_instance_scene(Reference.new())).is_false()
+	assert_bool(GdObjects.is_instance_scene(CustomClass.new())).is_false()
+	assert_bool(GdObjects.is_instance_scene(auto_free(Control.new()))).is_false()
+	
+	# now check on a loaded scene
+	var resource = load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
+	assert_bool(GdObjects.is_instance_scene(resource)).is_false()
+	# on a instance of a scene
+	assert_bool(GdObjects.is_instance_scene(auto_free(resource.instance()))).is_true()

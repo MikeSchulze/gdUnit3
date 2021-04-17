@@ -381,3 +381,61 @@ func test_spy_func_with_default_build_in_type():
 	verify(spy_instance).foo("abc", Color.blue)
 	verify(spy_instance).bar("def", Vector3.DOWN, AABB(Vector3.ONE, Vector3.ZERO))
 	verify_no_more_interactions(spy_instance)
+
+func test_spy_scene_by_path():
+	var spy_scene = spy("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
+	# must fail spy is only allowed on a instance
+	assert_object(spy_scene).is_null()
+
+func test_spy_on_PackedScene():
+	var resource := load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
+	assert_object(resource).is_instanceof(PackedScene)
+	
+	var spy_scene = spy(resource)
+	assert_object(spy_scene)\
+		.is_not_null()\
+		.is_instanceof(PackedScene)\
+		.is_not_same(resource)
+
+func test_spy_scene_by_instance():
+	var resource := load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
+	var instance :Control = auto_free(resource.instance())
+	var spy_scene = spy(instance)
+	
+	assert_object(spy_scene)\
+		.is_not_null()\
+		.is_instanceof(Control)\
+		.is_not_same(instance)
+	assert_object(spy_scene.get_script())\
+		.is_not_null()\
+		.is_instanceof(GDScript)\
+		.is_not_same(instance.get_script())
+	assert_str(spy_scene.get_script().resource_name).is_equal("SpyTestScene.gd")
+	# check is mocked scene registered for auto freeing
+	assert_bool(GdUnitTools.is_auto_free_registered(spy_scene, get_meta("MEMORY_POOL"))).is_true()
+
+func test_spy_scene_by_path_fail_has_no_script_attached():
+	var resource := load("res://addons/gdUnit3/test/mocker/resources/scenes/TestSceneWithoutScript.tscn")
+	var instance :Control = auto_free(resource.instance())
+	
+	# has to fail and return null
+	var spy_scene = spy(instance)
+	assert_object(spy_scene).is_null()
+
+func test_spy_scene_initalize():
+	var resource := load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
+	var instance :Control = auto_free(resource.instance())
+	var spy_scene = spy(instance)
+	assert_object(spy_scene).is_not_null()
+	
+	# Add as child to a scene tree to trigger _ready to initalize all variables
+	add_child(spy_scene)
+	assert_object(spy_scene._box1).is_not_null()
+	assert_object(spy_scene._box2).is_not_null()
+	assert_object(spy_scene._box3).is_not_null()
+	
+	# check signals are connected
+	assert_bool(spy_scene.is_connected("panel_color_change", spy_scene, "_on_panel_color_changed"))
+	
+	# check exports
+	assert_str(spy_scene._initial_color.to_html()).is_equal(Color.red.to_html())

@@ -816,3 +816,61 @@ func test_mock_func_with_default_build_in_type():
 	verify(mock).foo("abc", Color.blue)
 	verify(mock).bar("def", Vector3.DOWN, AABB(Vector3.ONE, Vector3.ZERO))
 	verify_no_more_interactions(mock)
+
+func test_mock_scene_by_path():
+	var mocked_scene = mock("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
+	assert_object(mocked_scene).is_not_null()
+	assert_object(mocked_scene.get_script()).is_not_null()
+	assert_str(mocked_scene.get_script().resource_name).is_equal("MockTestScene.gd")
+	# check is mocked scene registered for auto freeing
+	assert_bool(GdUnitTools.is_auto_free_registered(mocked_scene, get_meta("MEMORY_POOL"))).is_true()
+
+func test_mock_scene_by_resource():
+	var resource := load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
+	var mocked_scene = mock(resource)
+	assert_object(mocked_scene).is_not_null()
+	assert_object(mocked_scene.get_script()).is_not_null()
+	assert_str(mocked_scene.get_script().resource_name).is_equal("MockTestScene.gd")
+	# check is mocked scene registered for auto freeing
+	assert_bool(GdUnitTools.is_auto_free_registered(mocked_scene, get_meta("MEMORY_POOL"))).is_true()
+
+func test_mock_scene_by_instance():
+	var resource := load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
+	var instance :Control = auto_free(resource.instance())
+	var mocked_scene = mock(instance)
+	# must fail mock an instance is not allowed
+	assert_object(mocked_scene).is_null()
+
+func test_mock_scene_by_path_fail_has_no_script_attached():
+	var mocked_scene = mock("res://addons/gdUnit3/test/mocker/resources/scenes/TestSceneWithoutScript.tscn")
+	assert_object(mocked_scene).is_null()
+
+func test_mock_scene_variables_is_set():
+	var mocked_scene :Control = mock("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
+	assert_object(mocked_scene).is_not_null()
+	
+	# Add as child to a node to trigger _ready to initalize all variables
+	add_child(mocked_scene)
+	assert_object(mocked_scene._box1).is_not_null()
+	assert_object(mocked_scene._box2).is_not_null()
+	assert_object(mocked_scene._box3).is_not_null()
+	
+	# check signals are connected
+	assert_bool(mocked_scene.is_connected("panel_color_change", mocked_scene, "_on_panel_color_changed"))
+	
+	# check exports
+	assert_str(mocked_scene._initial_color.to_html()).is_equal(Color.red.to_html())
+
+func test_mock_scene_execute_func_yielded() -> void:
+	var mocked_scene :Control = mock("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
+	assert_object(mocked_scene).is_not_null()
+	add_child(mocked_scene)
+	# execute the 'color_cycle' func where emits three signals
+	# using yield to wait for function is completed
+	var result = yield(mocked_scene.color_cycle(), "completed")
+	# verify the return value of 'color_cycle'
+	assert_str(result).is_equal("black")
+	
+	verify(mocked_scene).emit_signal("panel_color_change", mocked_scene._box1, Color.red)
+	verify(mocked_scene).emit_signal("panel_color_change", mocked_scene._box1, Color.blue)
+	verify(mocked_scene).emit_signal("panel_color_change", mocked_scene._box1, Color.green)

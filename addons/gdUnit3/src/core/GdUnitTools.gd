@@ -256,15 +256,15 @@ static func resource_as_string(resource_path :String) -> String:
 	return file_content
 
 static func free_instance(instance :Object):
-	if instance != null:
-		release_double(instance)
+	# needs to manually exculde JavaClass
+	# see https://github.com/godotengine/godot/issues/44932
+	if is_instance_valid(instance) and not(instance is JavaClass):
 		if not instance is Reference:
+			release_double(instance)
 			instance.free()
-			return
-		# needs to manually exculde JavaClass
-		# see https://github.com/godotengine/godot/issues/44932
-		if not JavaClass:
+		else:
 			instance.notification(Object.NOTIFICATION_PREDELETE)
+			release_double(instance)
  
 # if instance an mock or spy we need manually freeing the self reference
 static func release_double(instance :Object):
@@ -289,6 +289,14 @@ static func run_auto_free(pool :int):
 	while not obj_pool.empty():
 		var obj = obj_pool.pop_front()
 		free_instance(obj)
+
+# tests if given object is registered for auto freeing
+static func is_auto_free_registered(obj, pool :int) -> bool:
+	# only register real object values
+	if not obj is Object:
+		return false
+	var obj_pool := _objects_to_delete[pool] as Array
+	return obj_pool.has(obj)
 
 # runs over all registered files and closes it
 static func run_auto_close():
