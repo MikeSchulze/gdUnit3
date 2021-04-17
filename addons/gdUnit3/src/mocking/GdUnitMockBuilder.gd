@@ -161,6 +161,43 @@ static func build(clazz, mock_mode :String, memory_pool :int, debug_write = fals
 	if not is_mockable(clazz, push_errors):
 		return null
 	
+	if GdObjects.is_scene(clazz):
+		return mock_on_scene(clazz as PackedScene, memory_pool, debug_write)
+	elif typeof(clazz) == TYPE_STRING and clazz.ends_with(".tscn"):
+		return mock_on_scene(load(clazz), memory_pool, debug_write)
+	
+	var mock = mock_on_script(clazz, mock_mode, memory_pool, [], debug_write)
+	if mock == null:
+		return null
+	var mock_instance = mock.new()
+	mock_instance.__set_singleton()
+	mock_instance.__set_mode(mock_mode)
+	return GdUnitTools.register_auto_free(mock_instance, memory_pool)
+
+static func mock_on_scene(scene :PackedScene, memory_pool :int, debug_write :bool) -> Object:
+	var push_errors := is_push_error_enabled()
+	if not scene.can_instance():
+		if push_errors:
+			push_error("Can't instanciate scene '%s'" % scene.resource_path)
+		return null
+	var scene_instance = scene.instance()
+	# we can only mock on a scene with attached script
+	if scene_instance.get_script() == null:
+		if push_errors:
+			push_error("Can't create a mockable instance for a scene without script '%s'" % scene.resource_path)
+		GdUnitTools.free_instance(scene_instance)
+		return null
+	
+	var script_path = scene_instance.get_script().get_path()
+	var mock = mock_on_script(script_path, GdUnitMock.CALL_REAL_FUNC, memory_pool, GdUnitClassDoubler.EXLCUDE_SCENE_FUNCTIONS, debug_write)
+	if mock == null:
+		return null
+	scene_instance.set_script(mock)
+	scene_instance.__set_singleton()
+	scene_instance.__set_mode(GdUnitMock.CALL_REAL_FUNC)
+	return GdUnitTools.register_auto_free(scene_instance, memory_pool)
+
+static func mock_on_script(clazz, mock_mode :String, memory_pool :int, function_excludes :PoolStringArray, debug_write :bool) -> GDScript:
 	var clazz_name :String
 	var clazz_path := GdObjects.extract_class_path(clazz)
 	if clazz_path.empty():
@@ -168,12 +205,14 @@ static func build(clazz, mock_mode :String, memory_pool :int, debug_write = fals
 	else:
 		clazz_name = GdObjects.extract_class_name_from_class_path(clazz_path)
 	
+	var push_errors := is_push_error_enabled()
 	var function_doubler := MockFunctionDoubler.new(push_errors)
 	var lines := load_template(GdUnitMockImpl, clazz_name, clazz_path)
-	lines += double_functions(clazz_name, clazz_path, function_doubler)
+	lines += double_functions(clazz_name, clazz_path, function_doubler, function_excludes)
 	
 	var mock := GDScript.new()
 	mock.source_code = lines.join("\n")
+	mock.resource_name = "Mock%s.gd" % clazz_name
 	
 	if debug_write:
 		mock.resource_path = GdUnitTools.create_temp_dir("mock") + "/Mock%s.gd" % clazz_name
@@ -183,17 +222,16 @@ static func build(clazz, mock_mode :String, memory_pool :int, debug_write = fals
 	if error != OK:
 		push_error("Critical!!!, MockBuilder error, please contact the developer.")
 		return null
-		
-	var mock_instance = mock.new()
-	mock_instance.__set_singleton()
-	mock_instance.__set_mode(mock_mode)
-	return GdUnitTools.register_auto_free(mock_instance, memory_pool)
+	return mock
 
 static func is_mockable(clazz, push_errors :bool=false) -> bool:
 	var clazz_type := typeof(clazz)
 	if clazz_type != TYPE_OBJECT and clazz_type != TYPE_STRING:
 		push_error("Invalid clazz type is used")
 		return false
+	# is PackedScene
+	if GdObjects.is_scene(clazz):
+		return true
 	# verify class type
 	if GdObjects.is_object(clazz):
 		var mockable := false
@@ -237,6 +275,4 @@ static func is_mockable(clazz, push_errors :bool=false) -> bool:
 			push_error("'%s' cannot be mocked the script cannot be loaded." % clazz_name)
 			return false
 	# finally check is extending from script
-	if resource is Script:
-		return true
-	return false
+	return GdObjects.is_script(resource) or GdObjects.is_scene(resource)

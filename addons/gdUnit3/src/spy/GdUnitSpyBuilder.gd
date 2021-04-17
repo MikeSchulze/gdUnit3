@@ -118,8 +118,18 @@ class SpyFunctionDoubler extends GdFunctionDoubler:
 			return SPY_VOID_TEMPLATE
 		return SPY_TEMPLATE
 
-
 static func build(instance, memory_pool :int, push_errors :bool = true, debug_write = false):
+	if GdObjects.is_instance_scene(instance):
+		return spy_on_scene(instance, memory_pool, debug_write)
+	
+	var spy := spy_on_script(instance, memory_pool, [], debug_write)
+	if spy == null:
+		return null
+	var spy_instance = spy.new()
+	spy_instance.__set_singleton(instance)
+	return GdUnitTools.register_auto_free(spy_instance, memory_pool)
+
+static func spy_on_script(instance, memory_pool, function_excludes :PoolStringArray, debug_write) -> GDScript:
 	var result := GdObjects.extract_class_name(instance)
 	if result.is_error():
 		push_error("Internal ERROR: %s" % result.error_message())
@@ -136,10 +146,11 @@ static func build(instance, memory_pool :int, push_errors :bool = true, debug_wr
 	
 	var clazz_path := GdObjects.extract_class_path(instance)
 	var lines := load_template(GdUnitSpyImpl, extends_clazz, clazz_path)
-	lines += double_functions(extends_clazz, clazz_path, SpyFunctionDoubler.new())
-
+	lines += double_functions(extends_clazz, clazz_path, SpyFunctionDoubler.new(), function_excludes)
+	
 	var spy := GDScript.new()
 	spy.source_code = lines.join("\n")
+	spy.resource_name = "Spy%s.gd" % extends_clazz
 	
 	if debug_write:
 		GdUnitTools.create_temp_dir("mocked")
@@ -150,7 +161,20 @@ static func build(instance, memory_pool :int, push_errors :bool = true, debug_wr
 	if error != OK:
 		push_error("Unexpected Error!, SpyBuilder error, please contact the developer.")
 		return null
-	var spy_instance = spy.new()
-	spy_instance.__set_singleton(instance)
-		
-	return GdUnitTools.register_auto_free(spy_instance, memory_pool)
+	return spy
+
+static func spy_on_scene(scene :Node, memory_pool, debug_write) -> Object:
+	if scene.get_script() == null:
+		push_error("Can't create a spy on a scene without script '%s'" % scene.get_filename())
+		return null
+	# buils spy on original script
+	var scene_script = scene.get_script().new()
+	var spy := spy_on_script(scene_script, memory_pool, GdUnitClassDoubler.EXLCUDE_SCENE_FUNCTIONS, debug_write)
+	scene_script.free()
+	if spy == null:
+		return null
+	# build new spy instance to original scene
+	var scene_instance = load(scene.get_filename()).instance()
+	scene_instance.set_script(spy)
+	scene_instance.__set_singleton(scene)
+	return GdUnitTools.register_auto_free(scene_instance, memory_pool)

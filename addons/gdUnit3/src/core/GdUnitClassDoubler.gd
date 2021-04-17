@@ -7,12 +7,41 @@ const EXCLUDE_VIRTUAL_FUNCTIONS = [
 	"_get", 
 	"_get_property_list", 
 	#"_init", 
+	"_enter_tree",
+	"_exit_tree",
+	"_unhandled_key_input",
+	"_unhandled_input",
 	"_notification", 
+	"_process",
+	"_physics_process",
 	"_set", 
 	"_to_string",
 	# Resource
 	"_setup_local_to_scene"]
-const EXCLUDE_FUNCTIONS = ["new", "free", "get_instance_id"]
+
+# define functions to be exclude when spy or mock on a scene
+const EXLCUDE_SCENE_FUNCTIONS = [
+	# needs to exclude get/set script functions otherwise it endsup in recursive endless loop
+	"set_script",
+	"get_script",
+	"get_class",
+	# exclude virtual functions where used by initalizise the scene
+	"_enter_tree",
+	"_exit_tree",
+	"_ready",
+	"_get_minimum_size",
+	"_override_changed",
+	"_theme_changed",
+	"_draw",
+	"_input",
+	"_physics_process",
+	#"_process",
+	"_unhandled_key_input",
+	"_unhandled_input",
+	#"_gui_input"
+]
+
+const EXCLUDE_FUNCTIONS = ["new", "free", "get_instance_id", "get_tree"]
 
 static func extract_class_functions(clazz_name :String, script_path :PoolStringArray) -> Array:
 	#prints("extract_class_functions", clazz_name)
@@ -60,13 +89,11 @@ static func get_extends_clazz(clazz_name :String, clazz_path :PoolStringArray) -
 	return clazz_name
 
 # double all functions of given instance
-static func double_functions(clazz_name :String, clazz_path :PoolStringArray, func_doubler: GdFunctionDoubler) -> PoolStringArray:
+static func double_functions(clazz_name :String, clazz_path :PoolStringArray, func_doubler: GdFunctionDoubler, exclude_functions :Array) -> PoolStringArray:
 	var doubled_source := PoolStringArray()
 	var parser := GdScriptParser.new()
-	
-	var exclude_override_functions := EXCLUDE_VIRTUAL_FUNCTIONS + EXCLUDE_FUNCTIONS
+	var exclude_override_functions := EXCLUDE_VIRTUAL_FUNCTIONS + EXCLUDE_FUNCTIONS + exclude_functions
 	var functions := Array()
-
 	# double script functions
 	if not ClassDB.class_exists(clazz_name):
 		var result := parser.parse(clazz_name, clazz_path)

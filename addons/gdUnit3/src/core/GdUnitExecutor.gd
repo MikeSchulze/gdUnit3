@@ -42,7 +42,10 @@ func disable_default_yield():
 func fail_fast(enabled :bool) -> void:
 	_fail_fast = enabled
 
-func before(test_suite :GdUnitTestSuite, total_count :int) -> void:
+func is_yielded(state) -> bool:
+	return state is GDScriptFunctionState and state.is_valid()
+
+func before(test_suite :GdUnitTestSuite, total_count :int) -> GDScriptFunctionState:
 	emit_signal("send_event", GdUnitEvent.new()\
 		.before(test_suite.get_script().resource_path, test_suite.get_name(), total_count))
 	_testsuite_timer = LocalTime.now()
@@ -52,16 +55,21 @@ func before(test_suite :GdUnitTestSuite, total_count :int) -> void:
 	_set_memory_pool(test_suite, GdUnitTools.MEMORY_POOL_TESTSUITE)
 	_mem_monitor_testsuite.start()
 	if not test_suite.is_skipped():
-		test_suite.before()
+		var fstate = test_suite.before()
+		if is_yielded(fstate):
+			yield(fstate, "completed")
 	GdUnitTools.run_auto_close()
+	return null
 
-func after(test_suite :GdUnitTestSuite) -> void:
+func after(test_suite :GdUnitTestSuite) -> GDScriptFunctionState:
 	_set_memory_pool(test_suite, GdUnitTools.MEMORY_POOL_TESTSUITE)
 	var is_skipped := test_suite.is_skipped()
 	var skip_count := test_suite.get_child_count()
 	if not is_skipped:
 		skip_count = 0
-		test_suite.after()
+		var fstate = test_suite.after()
+		if is_yielded(fstate):
+			yield(fstate, "completed")
 	GdUnitTools.run_auto_free(GdUnitTools.MEMORY_POOL_TESTSUITE)
 	GdUnitTools.run_auto_close()
 	GdUnitTools.clear_tmp()
@@ -89,8 +97,9 @@ func after(test_suite :GdUnitTestSuite) -> void:
 	}
 	emit_signal("send_event", GdUnitEvent.new().after(test_suite.get_script().resource_path, test_suite.get_name(), statistics, _reports.duplicate()))
 	_reports.clear()
+	return null
 
-func before_test(test_suite :GdUnitTestSuite, test_case :_TestCase):
+func before_test(test_suite :GdUnitTestSuite, test_case :_TestCase) -> GDScriptFunctionState:
 	_testcase_timer = LocalTime.now()
 	_reports.clear()
 	emit_signal("send_event", GdUnitEvent.new()\
@@ -98,13 +107,18 @@ func before_test(test_suite :GdUnitTestSuite, test_case :_TestCase):
 	_set_memory_pool(test_suite, GdUnitTools.MEMORY_POOL_TESTCASE)
 	_mem_monitor_testcase.start()
 	if not test_case.is_skipped():
-		test_suite.before_test()
+		var fstate = test_suite.before_test()
+		if is_yielded(fstate):
+			yield(fstate, "completed")
 	GdUnitTools.run_auto_close()
+	return null
 
-func after_test(test_suite :GdUnitTestSuite, test_case :_TestCase):
+func after_test(test_suite :GdUnitTestSuite, test_case :_TestCase) -> GDScriptFunctionState:
 	_set_memory_pool(test_suite, GdUnitTools.MEMORY_POOL_TESTCASE)
 	if not test_case.is_skipped():
-		test_suite.after_test()
+		var fstate = test_suite.after_test()
+		if is_yielded(fstate):
+			yield(fstate, "completed")
 	GdUnitTools.run_auto_free(GdUnitTools.MEMORY_POOL_TESTCASE)
 	_mem_monitor_testcase.stop()
 	_mem_monitor_testcase.subtract(_mem_monitor_testrun.orphan_nodes())
@@ -135,6 +149,7 @@ func after_test(test_suite :GdUnitTestSuite, test_case :_TestCase):
 	emit_signal("send_event", GdUnitEvent.new()\
 		.afterTest(test_suite.get_script().resource_path, test_suite.get_name(), test_case.get_name(), statistics, _reports.duplicate()))
 	_reports.clear()
+	return null
 
 func _before_test_run(test_suite :GdUnitTestSuite, test_case :_TestCase):
 	_testrun_timer = LocalTime.now()
@@ -176,7 +191,10 @@ func _after_test_run(test_suite :GdUnitTestSuite, test_case :_TestCase):
 	_reports.clear()
 
 func execute_test_case(test_suite :GdUnitTestSuite, test_case :_TestCase) -> GDScriptFunctionState:
-	before_test(test_suite, test_case)
+	_test_run_state = before_test(test_suite, test_case)
+	if is_yielded(_test_run_state):
+		yield(_test_run_state, "completed")
+		_test_run_state = null
 	var fuzzer := create_fuzzer(test_suite, test_case)
 	
 	_before_test_run(test_suite, test_case)
@@ -184,8 +202,9 @@ func execute_test_case(test_suite :GdUnitTestSuite, test_case :_TestCase) -> GDS
 		if not fuzzer:
 			_test_run_state = test_suite.call(test_case.get_name())
 			# is yielded than wait for completed
-			if _test_run_state is GDScriptFunctionState:
+			if is_yielded(_test_run_state):
 				yield(_test_run_state, "completed")
+				_test_run_state = null
 		else:
 			for iteration in fuzzer.iteration_limit():
 				if _with_yielding:
@@ -200,12 +219,25 @@ func execute_test_case(test_suite :GdUnitTestSuite, test_case :_TestCase) -> GDS
 				fuzzer._iteration_index += 1
 				_test_run_state = test_suite.call(test_case.get_name(), fuzzer)
 				# is yielded than wait for completed
-				if _test_run_state is GDScriptFunctionState:
+				if is_yielded(_test_run_state):
 					yield(_test_run_state, "completed")
+					_test_run_state = null
 	
-	_after_test_run(test_suite, test_case)
-	after_test(test_suite, test_case)
-	return null
+	if is_instance_valid(test_suite.__scene_runner):
+		test_suite.__scene_runner.free()
+		# give runner time to finallize
+		yield(get_tree(), "idle_frame")
+		test_suite.__scene_runner = null
+	
+	_test_run_state = _after_test_run(test_suite, test_case)
+	if is_yielded(_test_run_state):
+		yield(_test_run_state, "completed")
+		_test_run_state = null
+	_test_run_state = after_test(test_suite, test_case)
+	if is_yielded(_test_run_state):
+		yield(_test_run_state, "completed")
+		_test_run_state = null
+	return _test_run_state
 
 func execute(test_suite :GdUnitTestSuite) -> GDScriptFunctionState:
 	# stop on first error if fail fast enabled
@@ -214,23 +246,26 @@ func execute(test_suite :GdUnitTestSuite) -> GDScriptFunctionState:
 		return null
 	
 	add_child(test_suite)
-	before(test_suite, test_suite.get_child_count())
-	
+	var fs = before(test_suite, test_suite.get_child_count())
+	if is_yielded(fs):
+		yield(fs, "completed")
+		
 	if not test_suite.is_skipped():
 		for test_case in test_suite.get_children():
 			# stop on first error if fail fast enabled
 			if _fail_fast and _total_test_failed > 0:
 				break
-			var fs = execute_test_case(test_suite, test_case)
+			fs = execute_test_case(test_suite, test_case)
 			# is yielded than wait for completed
-			if fs is GDScriptFunctionState:
+			if is_yielded(fs):
 				yield(fs, "completed")
 	
-	after(test_suite)
+	fs = after(test_suite)
+	if is_yielded(fs):
+		yield(fs, "completed")
 	remove_child(test_suite)
 	test_suite.free()
 	return null
-
 
 static func create_fuzzer(test_suite :GdUnitTestSuite, test_case :_TestCase) -> Fuzzer:
 	if not test_case.has_fuzzer():

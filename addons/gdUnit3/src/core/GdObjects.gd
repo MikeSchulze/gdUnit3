@@ -108,6 +108,43 @@ const NOTIFICATION_AS_STRING_MAPPINGS := {
 	Node.NOTIFICATION_OS_IME_UPDATE: "OS_IME_UPDATE",
 	Node.NOTIFICATION_APP_RESUMED: "APP_RESUMED",
 	Node.NOTIFICATION_APP_PAUSED: "APP_PAUSED",
+	Container.NOTIFICATION_SORT_CHILDREN: "SORT_CHILDREN",
+	Popup.NOTIFICATION_POST_POPUP: "POST_POPUP",
+	Popup.NOTIFICATION_POPUP_HIDE: "POPUP_HIDE",
+	Control.NOTIFICATION_RESIZED: "RESIZED",
+	Control.NOTIFICATION_MOUSE_ENTER: "MOUSE_ENTER",
+	Control.NOTIFICATION_MOUSE_EXIT: "MOUSE_EXIT",
+	Control.NOTIFICATION_FOCUS_ENTER: "FOCUS_ENTER",
+	Control.NOTIFICATION_FOCUS_EXIT: "FOCUS_EXIT",
+	Control.NOTIFICATION_THEME_CHANGED: "THEME_CHANGED",
+	Control.NOTIFICATION_MODAL_CLOSE: "MODAL_CLOSE",
+	Control.NOTIFICATION_SCROLL_BEGIN: "SCROLL_BEGIN",
+	Control.NOTIFICATION_SCROLL_END: "SCROLL_END",
+	CanvasItem.NOTIFICATION_TRANSFORM_CHANGED: "TRANSFORM_CHANGED",
+	CanvasItem.NOTIFICATION_DRAW: "DRAW",
+	CanvasItem.NOTIFICATION_VISIBILITY_CHANGED: "VISIBILITY_CHANGED",
+	CanvasItem.NOTIFICATION_ENTER_CANVAS: "ENTER_CANVAS",
+	CanvasItem.NOTIFICATION_EXIT_CANVAS: "EXIT_CANVAS",
+	Skeleton.NOTIFICATION_UPDATE_SKELETON: "UPDATE_SKELETON",
+	Spatial.NOTIFICATION_TRANSFORM_CHANGED: "TRANSFORM_CHANGED",
+	Spatial.NOTIFICATION_ENTER_WORLD: "ENTER_WORLD",
+	Spatial.NOTIFICATION_EXIT_WORLD: "EXIT_WORLD",
+	Spatial.NOTIFICATION_VISIBILITY_CHANGED: "VISIBILITY_CHANGED",
+	MainLoop.NOTIFICATION_WM_MOUSE_ENTER: "WM_MOUSE_ENTER",
+	MainLoop.NOTIFICATION_WM_MOUSE_EXIT: "WM_MOUSE_EXIT",
+	MainLoop.NOTIFICATION_WM_FOCUS_IN: "WM_FOCUS_IN",
+	MainLoop.NOTIFICATION_WM_FOCUS_OUT: "WM_FOCUS_OUT",
+	MainLoop.NOTIFICATION_WM_QUIT_REQUEST: "WM_QUIT_REQUEST",
+	MainLoop.NOTIFICATION_WM_GO_BACK_REQUEST: "WM_GO_BACK_REQUEST",
+	MainLoop.NOTIFICATION_WM_UNFOCUS_REQUEST: "WM_UNFOCUS_REQUEST",
+	MainLoop.NOTIFICATION_OS_MEMORY_WARNING: "OS_MEMORY_WARNING",
+	MainLoop.NOTIFICATION_TRANSLATION_CHANGED: "TRANSLATION_CHANGED",
+	MainLoop.NOTIFICATION_WM_ABOUT: "WM_ABOUT",
+	MainLoop.NOTIFICATION_CRASH: "CRASH",
+	MainLoop.NOTIFICATION_OS_IME_UPDATE: "OS_IME_UPDATE",
+	MainLoop.NOTIFICATION_APP_RESUMED: "APP_RESUMED",
+	MainLoop.NOTIFICATION_APP_PAUSED: "APP_PAUSED",
+	EditorSettings.NOTIFICATION_EDITOR_SETTINGS_CHANGED: "EDITOR_SETTINGS_CHANGED",
 }
 
 static func equals_sorted(obj_a :Array, obj_b :Array, case_sensitive :bool = false ) -> bool:
@@ -245,8 +282,8 @@ static func is_type(value) -> bool:
 
 
 static func is_same(left, right) -> bool:
-	var left_type := typeof(left)
-	var right_type := typeof(right)
+	var left_type := -1 if left == null else typeof(left)
+	var right_type := -1 if right == null else typeof(right)
 
 	# if typ different can't be the same
 	if left_type != right_type:
@@ -262,7 +299,7 @@ static func is_script(value) -> bool:
 	return is_object(value) and value is Script
 
 static func is_native_class(value) -> bool:
-	return is_object(value) and value.to_string().find("GDScriptNativeClass") != -1
+	return is_object(value) and value.to_string() != null and value.to_string().find("GDScriptNativeClass") != -1
 
 static func is_scene(value) -> bool:
 	return is_object(value) and value is PackedScene
@@ -280,6 +317,13 @@ static func is_instance(value) -> bool:
 	if is_scene(value):
 		return true
 	return not value.has_method('new') and not value.has_method('instance')
+
+# only object form type Node and attached filename 
+static func is_instance_scene(instance) -> bool:
+	if instance is Node:
+		var node := instance as Node
+		return node.get_filename() != null and not node.get_filename().empty()
+	return false
 
 static func is_instanceof(obj :Object, type) -> bool:
 	return is_type(type) and obj is type
