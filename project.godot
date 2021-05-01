@@ -913,6 +913,11 @@ default_bus_layout=""
 
 enabled=PoolStringArray( "gdUnit3" )
 
+[gdunit3]
+
+report/assert/verbose_warnings=false
+report/assert/verbose_errors=false
+
 [network]
 
 limits/tcp/connect_timeout_seconds=300
