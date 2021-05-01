@@ -168,8 +168,9 @@ func is_instanceof(expected) -> GdUnitAssert:
 # extracts all values by given function name or null if not exists
 func extract(func_name :String, args := Array()) -> GdUnitArrayAssert:
 	var extracted_elements: = Array()
+	var extractor := GdUnitValueExtractor.new(func_name, args)
 	for element in __current():
-		extracted_elements.append(_base._extract_value(element, func_name, args))
+		extracted_elements.append(extractor.extract_value(element))
 	_base._current = extracted_elements
 	return self
 
@@ -191,7 +192,7 @@ func extractv(
 		var ev : = [GdUnitTuple.NO_ARG, GdUnitTuple.NO_ARG, GdUnitTuple.NO_ARG, GdUnitTuple.NO_ARG, GdUnitTuple.NO_ARG, GdUnitTuple.NO_ARG, GdUnitTuple.NO_ARG, GdUnitTuple.NO_ARG, GdUnitTuple.NO_ARG, GdUnitTuple.NO_ARG]
 		for index in extractors.size():
 			var extractor :GdUnitValueExtractor = extractors[index]
-			ev[index] = _base._extract_value(element, extractor.func_name(), extractor.args())
+			ev[index] = extractor.extract_value(element)
 		
 		if extractors.size() > 1:
 			extracted_elements.append(GdUnitTuple.new(ev[0], ev[1], ev[2], ev[3], ev[4], ev[5], ev[6], ev[6], ev[8], ev[9]))

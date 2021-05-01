@@ -449,7 +449,7 @@ static func array_filter_value(array :Array, filter_value) -> Array:
 	return filtered_array
 
 # Erases a value from given array by using equals(l,r) to find the element to erase
-static func array_erase_value(array :Array, value):
+static func array_erase_value(array :Array, value) -> void:
 	for element in array:
 		if equals(element, value):
 			array.erase(element)

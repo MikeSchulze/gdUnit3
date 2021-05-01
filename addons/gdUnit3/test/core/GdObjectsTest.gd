@@ -443,7 +443,28 @@ func test_array_filter_value() -> void:
 	assert_array(GdObjects.array_filter_value([], null)).is_empty()
 	assert_array(GdObjects.array_filter_value([], "")).is_empty()
 	
-	assert_array(GdObjects.array_filter_value([null, "a", "b", null, "c", null], null))\
-		.contains_exactly(["a", "b", "c"])
-	assert_array(GdObjects.array_filter_value([null, "a", "xxx", null, "xx", null], "xxx"))\
-		.contains_exactly([null, "a", null, "xx", null])
+	var current := [null, "a", "b", null, "c", null]
+	var filtered := GdObjects.array_filter_value(current, null)
+	assert_array(filtered).contains_exactly(["a", "b", "c"])
+	# verify the source is not affected
+	assert_array(current).contains_exactly([null, "a", "b", null, "c", null])
+	
+	current = [null, "a", "xxx", null, "xx", null]
+	filtered = GdObjects.array_filter_value(current, "xxx")
+	assert_array(filtered).contains_exactly([null, "a", null, "xx", null])
+	# verify the source is not affected
+	assert_array(current).contains_exactly([null, "a", "xxx", null, "xx", null])
+
+func test_array_erase_value() -> void:
+	var current := []
+	GdObjects.array_erase_value(current, null)
+	assert_array(current).is_empty()
+	
+	current = [null]
+	GdObjects.array_erase_value(current, null)
+	assert_array(current).is_empty()
+	
+	current = [null, "a", "b", null, "c", null]
+	GdObjects.array_erase_value(current, null)
+	# verify the source is affected
+	assert_array(current).contains_exactly(["a", "b", "c"])
