@@ -52,7 +52,7 @@ func contains_exactly(expected) -> GdUnitArrayAssert:
 func extract(func_name: String, args := Array()) -> GdUnitArrayAssert:
 	return self
 
-# Extracts all values by given extractor into a new ArrayAssert
+# Extracts all values by given extractor's into a new ArrayAssert
 # If the elements not extractable than the value is converted to `"n.a"`, expecting null values
 func extractv(
 	extractor0 :GdUnitValueExtractor,
