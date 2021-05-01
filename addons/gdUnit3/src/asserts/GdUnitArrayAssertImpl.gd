@@ -2,7 +2,6 @@ class_name GdUnitArrayAssertImpl
 extends GdUnitArrayAssert
 
 var _base :GdUnitAssert
-var _extract :FuncRef = null
 
 func _init(current, expect_result: int):
 	_base = GdUnitAssertImpl.new(current, expect_result)
@@ -121,8 +120,8 @@ func array_div(left :Array, right :Array, same_order := false) -> Array:
 		for index_e in right.size():
 			var e = right[index_e]
 			if GdObjects.equals(c, e):
-				not_expect.erase(e)
-				not_found.erase(c)
+				GdObjects.array_erase_value(not_expect, e)
+				GdObjects.array_erase_value(not_found, c)
 				break
 	return [not_expect, not_found]
 
@@ -154,7 +153,6 @@ func contains_exactly(expected) -> GdUnitArrayAssert:
 	var not_found := diffs[1] as Array
 	return report_error(GdAssertMessages.error_arr_contains_exactly(current_, expected_, not_expect, not_found))
 
-
 func is_same(expected) -> GdUnitAssert:
 	_base.is_same(expected)
 	return self
@@ -167,41 +165,38 @@ func is_instanceof(expected) -> GdUnitAssert:
 	_base.is_instanceof(expected)
 	return self
 
-#-------------------------------------------------------------------------------
-
-
-
-
-
-
-# --------------------------------------------------------------------------------------
-# TODO convert to new API
-# saved func
-var _extract_func_name:String = ""
-func _extract(func_name:String) -> GdUnitAssert:
-	#_extract_func_name = func_name
-	#var extract = funcref(__current[0], func_name)
-	#if not extract.is_valid():
-	#	_extract_func_name = ""
-	#	GdAssertReports.report_error("exctract function name faild! '" + func_name + "' not exists", self, get_stack())
+# extracts all values by given function name or null if not exists
+func extract(func_name :String, args := Array()) -> GdUnitArrayAssert:
+	var extracted_elements: = Array()
+	var extractor := GdUnitValueExtractor.new(func_name, args)
+	for element in __current():
+		extracted_elements.append(extractor.extract_value(element))
+	_base._current = extracted_elements
 	return self
 
-
-# extracts the value by function name
-func extract(func_name :String) -> GdUnitArrayAssert:
-	var current_ = __current()[0]
-	_extract = funcref(current_, func_name)
-	if not _extract.is_valid():
-		return report_error("exctract function name faild! '" + func_name + "' not exists")
+# Extracts all values by given extractors into a new ArrayAssert
+func extractv(
+	extr0 :GdUnitValueExtractor, 
+	extr1 :GdUnitValueExtractor = null, 
+	extr2 :GdUnitValueExtractor = null,
+	extr3 :GdUnitValueExtractor = null,
+	extr4 :GdUnitValueExtractor = null,
+	extr5 :GdUnitValueExtractor = null,
+	extr6 :GdUnitValueExtractor = null,
+	extr7 :GdUnitValueExtractor = null,
+	extr8 :GdUnitValueExtractor = null,
+	extr9 :GdUnitValueExtractor = null) -> GdUnitArrayAssert:
+	var extractors := GdObjects.array_filter_value([extr0, extr1, extr2], null)
+	var extracted_elements: = Array()
+	for element in __current():
+		var ev : = [GdUnitTuple.NO_ARG, GdUnitTuple.NO_ARG, GdUnitTuple.NO_ARG, GdUnitTuple.NO_ARG, GdUnitTuple.NO_ARG, GdUnitTuple.NO_ARG, GdUnitTuple.NO_ARG, GdUnitTuple.NO_ARG, GdUnitTuple.NO_ARG, GdUnitTuple.NO_ARG]
+		for index in extractors.size():
+			var extractor :GdUnitValueExtractor = extractors[index]
+			ev[index] = extractor.extract_value(element)
 		
-	# switch to extracted assert type
-	for method_signature in current_.get_method_list():
-		var flags :int = method_signature["flags"]
-		var funcName :String = method_signature["name"]
-		if flags == METHOD_FLAG_FROM_SCRIPT|METHOD_FLAGS_DEFAULT and funcName == func_name:
-			var return_desc :Dictionary = method_signature["return"]
-			var return_type :int = return_desc["type"]
-			#GdUnitAssertImpl.assert_that(_current)
-			# issue https://github.com/godotengine/godot/issues/33624
-			# can't switch by retrun type
+		if extractors.size() > 1:
+			extracted_elements.append(GdUnitTuple.new(ev[0], ev[1], ev[2], ev[3], ev[4], ev[5], ev[6], ev[6], ev[8], ev[9]))
+		else:
+			extracted_elements.append(ev[0])
+	_base._current = extracted_elements
 	return self

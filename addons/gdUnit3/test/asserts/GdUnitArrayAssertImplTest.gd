@@ -101,3 +101,54 @@ func test_must_fail_has_invlalid_type():
 		.has_error_message("GdUnitArrayAssert inital error, unexpected type <bool>")
 	assert_array(Resource.new(), GdUnitAssert.EXPECT_FAIL) \
 		.has_error_message("GdUnitArrayAssert inital error, unexpected type <Object>")
+
+func test_extract() -> void:
+	# try to extract on base types
+	assert_array([1, false, 3.14, null, Color.aliceblue]).extract("get_class")\
+		.contains_exactly(["n.a.", "n.a.", "n.a.", null, "n.a."])
+	# extracting by a func without arguments
+	assert_array([Reference.new(), 2, AStar.new(), auto_free(Node.new())]).extract("get_class")\
+		.contains_exactly(["Reference", "n.a.", "AStar", "Node"])
+	# extracting by a func with arguments
+	assert_array([Reference.new(), 2, AStar.new(), auto_free(Node.new())]).extract("has_signal", ["tree_entered"])\
+		.contains_exactly([false, "n.a.", false, true])
+		
+	# try extract on object via a func that not exists
+	assert_array([Reference.new(), 2, AStar.new(), auto_free(Node.new())]).extract("invalid_func")\
+		.contains_exactly(["n.a.", "n.a.", "n.a.", "n.a."])
+	# try extract on object via a func that has no return value
+	assert_array([Reference.new(), 2, AStar.new(), auto_free(Node.new())]).extract("remove_meta", [""])\
+		.contains_exactly([null, "n.a.", null, null])
+
+class TestObj:
+	var _name :String
+	var _value
+	var _x
+	
+	func _init(name :String, value, x = null):
+		_name = name
+		_value = value
+		_x = x
+	
+	func get_name() -> String:
+		return _name
+	
+	func get_value():
+		return _value
+	
+	func get_x():
+		return _x
+
+func test_extractv() -> void:
+	# single extract
+	assert_array([1, false, 3.14, null, Color.aliceblue])\
+		.extractv(extr("get_class"))\
+		.contains_exactly(["n.a.", "n.a.", "n.a.", null, "n.a."])
+	# tuple of two
+	assert_array([TestObj.new("A", 10), TestObj.new("B", "foo"), Color.aliceblue, TestObj.new("C", 11)])\
+		.extractv(extr("get_name"), extr("get_value"))\
+		.contains_exactly([tuple("A", 10), tuple("B", "foo"), tuple("n.a.", "n.a."), tuple("C", 11)])
+	# tuple of three
+	assert_array([TestObj.new("A", 10), TestObj.new("B", "foo", "bar"), TestObj.new("C", 11, 42)])\
+		.extractv(extr("get_name"), extr("get_value"), extr("get_x"))\
+		.contains_exactly([tuple("A", 10, null), tuple("B", "foo", "bar"), tuple("C", 11, 42)])

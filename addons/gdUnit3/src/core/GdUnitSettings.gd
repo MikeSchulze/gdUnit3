@@ -4,7 +4,8 @@ extends Reference
 
 const CATEGORY = "gdunit3"
 const REPORT_ERROR_NOTIFICATIONS = CATEGORY + "/report/error_notification"
-const REPORT_ERROR_INFO = CATEGORY + "/report/info"
+const REPORT_ASSERT_WARNINGS = CATEGORY + "/report/assert/verbose_warnings"
+const REPORT_ASSERT_ERRORS = CATEGORY + "/report/assert/verbose_errors"
 
 # Godot stdout/logging settings
 const CATEGORY_LOGGING := "logging/file_logging/"
@@ -22,10 +23,21 @@ static func load_settings():
 			"hint": PROPERTY_HINT_NONE,
 			"hint_string": "Enable to report push error notifications"
 		}
-		ProjectSettings.set(REPORT_ERROR_NOTIFICATIONS, false)
-		ProjectSettings.add_property_info(error_notification)
-		ProjectSettings.set_initial_value(REPORT_ERROR_NOTIFICATIONS, false)
 		ProjectSettings.set_setting(REPORT_ERROR_NOTIFICATIONS, false)
+		ProjectSettings.set_initial_value(REPORT_ERROR_NOTIFICATIONS, false)
+		ProjectSettings.add_property_info(error_notification)
+		is_settings_changed = true
+	
+	if not ProjectSettings.has_setting(REPORT_ASSERT_WARNINGS):
+		prints("GdUnit3: Set inital settings", REPORT_ASSERT_WARNINGS)
+		ProjectSettings.set_setting(REPORT_ASSERT_WARNINGS, false)
+		ProjectSettings.set_initial_value(REPORT_ASSERT_WARNINGS, false)
+		is_settings_changed = true
+	
+	if not ProjectSettings.has_setting(REPORT_ASSERT_ERRORS):
+		prints("GdUnit3: Set inital settings", REPORT_ASSERT_ERRORS)
+		ProjectSettings.set_setting(REPORT_ASSERT_ERRORS, true)
+		ProjectSettings.set_initial_value(REPORT_ASSERT_ERRORS, true)
 		is_settings_changed = true
 	
 	if is_settings_changed: 
@@ -53,3 +65,9 @@ static func set_log_path(path :String) -> void:
 	ProjectSettings.set_setting(STDOUT_ENABLE_TO_FILE, true)
 	ProjectSettings.set_setting(STDOUT_WITE_TO_FILE, path)
 	ProjectSettings.save()
+
+static func is_verbose_assert_warnings() -> bool:
+	return ProjectSettings.get_setting(REPORT_ASSERT_WARNINGS)
+
+static func is_verbose_assert_errors() -> bool:
+	return ProjectSettings.get_setting(REPORT_ASSERT_ERRORS)

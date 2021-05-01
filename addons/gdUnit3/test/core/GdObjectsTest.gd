@@ -438,3 +438,33 @@ func test_build_string_as_typeof_mapping():
 		assert_int(GdObjects.string_as_typeof(type_as_string)).is_equal(type)
 	# check finally it has build a full fliped copy
 	assert_dict(GdObjects.STRING_AS_TYPE_MAPPINGS).has_size(GdObjects.TYPE_AS_STRING_MAPPINGS.size())
+
+func test_array_filter_value() -> void:
+	assert_array(GdObjects.array_filter_value([], null)).is_empty()
+	assert_array(GdObjects.array_filter_value([], "")).is_empty()
+	
+	var current := [null, "a", "b", null, "c", null]
+	var filtered := GdObjects.array_filter_value(current, null)
+	assert_array(filtered).contains_exactly(["a", "b", "c"])
+	# verify the source is not affected
+	assert_array(current).contains_exactly([null, "a", "b", null, "c", null])
+	
+	current = [null, "a", "xxx", null, "xx", null]
+	filtered = GdObjects.array_filter_value(current, "xxx")
+	assert_array(filtered).contains_exactly([null, "a", null, "xx", null])
+	# verify the source is not affected
+	assert_array(current).contains_exactly([null, "a", "xxx", null, "xx", null])
+
+func test_array_erase_value() -> void:
+	var current := []
+	GdObjects.array_erase_value(current, null)
+	assert_array(current).is_empty()
+	
+	current = [null]
+	GdObjects.array_erase_value(current, null)
+	assert_array(current).is_empty()
+	
+	current = [null, "a", "b", null, "c", null]
+	GdObjects.array_erase_value(current, null)
+	# verify the source is affected
+	assert_array(current).contains_exactly(["a", "b", "c"])

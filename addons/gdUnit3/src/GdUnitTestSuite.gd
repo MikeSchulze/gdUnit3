@@ -144,6 +144,16 @@ static func any_string() -> GdUnitArgumentMatcher:
 static func any_class(clazz :Object) -> GdUnitArgumentMatcher:
 	return GdUnitArgumentMatchers.any_class(clazz)
 
+
+# === value extract utils ======================================================
+# Builds an extractor by given function name and optional arguments
+static func extr(func_name :String, args := Array()) -> GdUnitValueExtractor:
+	return GdUnitValueExtractor.new(func_name, args)
+
+# Constructs a tuple by given arguments
+static func tuple(arg0, arg1=GdUnitTuple.NO_ARG, arg2=GdUnitTuple.NO_ARG, arg3=GdUnitTuple.NO_ARG, arg4=GdUnitTuple.NO_ARG, arg5=GdUnitTuple.NO_ARG, arg6=GdUnitTuple.NO_ARG, arg7=GdUnitTuple.NO_ARG, arg8=GdUnitTuple.NO_ARG, arg9=GdUnitTuple.NO_ARG) -> GdUnitTuple:
+	return GdUnitTuple.new(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)
+
 # === Asserts ==================================================================
 func assert_that(current, expect_result: int = GdUnitAssert.EXPECT_SUCCESS) -> GdUnitAssert:
 	match typeof(current):

@@ -440,6 +440,20 @@ static func array_to_string(elements, delimiter := "\n") -> String:
 		formatted += str(element)
 	return formatted
 
+# Filters an array by given value
+static func array_filter_value(array :Array, filter_value) -> Array:
+	var filtered_array := Array()
+	for element in array:
+		if not equals(element, filter_value):
+			filtered_array.append(element)
+	return filtered_array
+
+# Erases a value from given array by using equals(l,r) to find the element to erase
+static func array_erase_value(array :Array, value) -> void:
+	for element in array:
+		if equals(element, value):
+			array.erase(element)
+
 # lookup[i][j] stores the length of LCS of substring X[0..i-1], Y[0..j-1]
 static func _createLookUp(lb: PoolByteArray, rb: PoolByteArray) -> Array:
 	var lookup:Array = Array()
@@ -609,5 +623,3 @@ static func normalizeText(text :String) -> String:
 	text = text.replace("\n", " ");
 	text = text.replace("\t", " ");
 	return text.replace("  ", " ");
-
-
