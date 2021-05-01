@@ -448,7 +448,7 @@ static func array_filter_value(array :Array, filter_value) -> Array:
 			filtered_array.append(element)
 	return filtered_array
 
-# Erases a value from given array by equals(l,r) and not by instance_id
+# Erases a value from given array by using equals(l,r) to find the element to erase
 static func array_erase_value(array :Array, value):
 	for element in array:
 		if equals(element, value):
