@@ -173,7 +173,7 @@ func extract(func_name :String, args := Array()) -> GdUnitArrayAssert:
 	_base._current = extracted_elements
 	return self
 
-# Extracts all values by given extractor into a new ArrayAssert
+# Extracts all values by given extractors into a new ArrayAssert
 func extractv(
 	extr0 :GdUnitValueExtractor, 
 	extr1 :GdUnitValueExtractor = null, 
