@@ -438,3 +438,12 @@ func test_build_string_as_typeof_mapping():
 		assert_int(GdObjects.string_as_typeof(type_as_string)).is_equal(type)
 	# check finally it has build a full fliped copy
 	assert_dict(GdObjects.STRING_AS_TYPE_MAPPINGS).has_size(GdObjects.TYPE_AS_STRING_MAPPINGS.size())
+
+func test_array_filter_value() -> void:
+	assert_array(GdObjects.array_filter_value([], null)).is_empty()
+	assert_array(GdObjects.array_filter_value([], "")).is_empty()
+	
+	assert_array(GdObjects.array_filter_value([null, "a", "b", null, "c", null], null))\
+		.contains_exactly(["a", "b", "c"])
+	assert_array(GdObjects.array_filter_value([null, "a", "xxx", null, "xx", null], "xxx"))\
+		.contains_exactly([null, "a", null, "xx", null])

@@ -25,6 +25,22 @@ static func _get_line_number() -> int:
 	var stack_info = get_stack()[-1]
 	return stack_info.get("line")
 
+# extracts a value by given `func_name` and `args`,
+# if the value not a Object or not accesible be `func_name` the value is converted to `"n.a."`
+# expecing null values
+func _extract_value(value, func_name :String, args :Array = Array()):
+	if value == null:
+		return null
+	if not (value is Object):
+		push_warning("Extracting value from element '%s' by func '%s' failed! Converting to \"n.a.\"" % [value, func_name])
+		return "n.a."
+	var extract := funcref(value, func_name)
+	if extract.is_valid():
+		return value.call(func_name) if args.empty() else value.callv(func_name, args)
+	else:
+		push_warning("Extracting value from element '%s' by func '%s' failed! Converting to \"n.a.\"" % [value, func_name])
+		return "n.a."
+
 func _init(current, expect_result :int = EXPECT_SUCCESS):
 	_current = current
 	# we expect the test will fail

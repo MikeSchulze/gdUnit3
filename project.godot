@@ -374,7 +374,7 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/test/asserts/GdUnitDictionaryAssertImplTest.gd"
 }, {
-"base": "Resource",
+"base": "Reference",
 "class": "GdUnitEvent",
 "language": "GDScript",
 "path": "res://addons/gdUnit3/src/core/event/GdUnitEvent.gd"
@@ -424,7 +424,7 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/src/report/GdUnitHtmlReport.gd"
 }, {
-"base": "GdUnitEvent",
+"base": "Reference",
 "class": "GdUnitInit",
 "language": "GDScript",
 "path": "res://addons/gdUnit3/src/core/event/GdUnitEventInit.gd"
@@ -524,7 +524,7 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/src/network/GdUnitPushErrorHandler.gd"
 }, {
-"base": "Resource",
+"base": "Reference",
 "class": "GdUnitReport",
 "language": "GDScript",
 "path": "res://addons/gdUnit3/src/core/GdUnitReport.gd"
@@ -549,7 +549,7 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/test/asserts/GdUnitResultAssertImplTest.gd"
 }, {
-"base": "Resource",
+"base": "Reference",
 "class": "GdUnitRunnerConfig",
 "language": "GDScript",
 "path": "res://addons/gdUnit3/src/core/GdUnitRunnerConfig.gd"
@@ -564,7 +564,7 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/src/core/GdUnitSettings.gd"
 }, {
-"base": "Resource",
+"base": "Reference",
 "class": "GdUnitSingleton",
 "language": "GDScript",
 "path": "res://addons/gdUnit3/src/core/GdUnitSingleton.gd"
@@ -589,7 +589,7 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/test/spy/GdUnitSpyTest.gd"
 }, {
-"base": "GdUnitEvent",
+"base": "Reference",
 "class": "GdUnitStop",
 "language": "GDScript",
 "path": "res://addons/gdUnit3/src/core/event/GdUnitEventStop.gd"
@@ -638,6 +638,16 @@ _global_script_classes=[ {
 "class": "GdUnitToolsTest",
 "language": "GDScript",
 "path": "res://addons/gdUnit3/test/core/GdUnitToolsTest.gd"
+}, {
+"base": "Reference",
+"class": "GdUnitTuple",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/src/GdUnitTuple.gd"
+}, {
+"base": "Reference",
+"class": "GdUnitValueExtractor",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/src/GdUnitValueExtractor.gd"
 }, {
 "base": "GdUnitTestSuite",
 "class": "GeneratedPersonTest",
@@ -699,7 +709,7 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/GdCommons/utils/test/ResultTest.gd"
 }, {
-"base": "Resource",
+"base": "Reference",
 "class": "SignalHandler",
 "language": "GDScript",
 "path": "res://addons/gdUnit3/src/core/event/SignalHandler.gd"
@@ -714,12 +724,12 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/test/resources/core/Udo.gd"
 }, {
-"base": "Node",
+"base": "Reference",
 "class": "_TestCase",
 "language": "GDScript",
 "path": "res://addons/gdUnit3/src/core/_TestCase.gd"
 }, {
-"base": "Node",
+"base": "Reference",
 "class": "_TestSuiteScanner",
 "language": "GDScript",
 "path": "res://addons/gdUnit3/src/core/_TestSuiteScanner.gd"
@@ -866,6 +876,8 @@ _global_script_class_icons={
 "GdUnitTestSuiteReport": "",
 "GdUnitTools": "",
 "GdUnitToolsTest": "",
+"GdUnitTuple": "",
+"GdUnitValueExtractor": "",
 "GeneratedPersonTest": "",
 "GodotClassNameFuzzer": "",
 "IntFuzzer": "",

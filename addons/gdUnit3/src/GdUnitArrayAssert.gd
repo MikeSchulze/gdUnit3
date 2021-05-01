@@ -47,5 +47,21 @@ func contains(expected) -> GdUnitArrayAssert:
 func contains_exactly(expected) -> GdUnitArrayAssert:
 	return self
 
-func extract(func_name: String) -> GdUnitArrayAssert:
+# Extracts all values by given function name and args into a new ArrayAssert
+# If the elements not accessible by `func_name` the value is converted to `"n.a"`, expecting null values
+func extract(func_name: String, args := Array()) -> GdUnitArrayAssert:
+	return self
+
+# Extracts all values by given extractor into a new ArrayAssert
+# If the elements not extractable than the value is converted to `"n.a"`, expecting null values
+func extractv(
+	extractor0 :GdUnitValueExtractor,
+	extractor1 :GdUnitValueExtractor = null,
+	extractor2 :GdUnitValueExtractor = null,
+	extractor3 :GdUnitValueExtractor = null,
+	extractor4 :GdUnitValueExtractor = null,
+	extractor5 :GdUnitValueExtractor = null,
+	extractor6 :GdUnitValueExtractor = null,
+	extractor7 :GdUnitValueExtractor = null,
+	extractor9 :GdUnitValueExtractor = null) -> GdUnitArrayAssert:
 	return self
