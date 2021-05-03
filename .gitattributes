@@ -9,3 +9,7 @@
 /project.godot         export-ignore
 /process_example.txt   export-ignore
 /README.md             export-ignore
+
+# exclude examples from AssetLib
+
+/examples
