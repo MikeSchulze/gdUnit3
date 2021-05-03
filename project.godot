@@ -229,6 +229,16 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/src/Fuzzers.gd"
 }, {
+"base": "Reference",
+"class": "GameRepository",
+"language": "GDScript",
+"path": "res://examples/MenuDemo2D/src/GameRepository.gd"
+}, {
+"base": "GdUnitTestSuite",
+"class": "GameTest",
+"language": "GDScript",
+"path": "res://examples/MenuDemo2D/test/GameTest.gd"
+}, {
 "base": "Resource",
 "class": "GdAssertMessages",
 "language": "GDScript",
@@ -684,6 +694,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/GdCommons/DateTime/test/LocalTimeTest.gd"
 }, {
+"base": "Control",
+"class": "MenuDialog",
+"language": "GDScript",
+"path": "res://examples/MenuDemo2D/src/menu/MenuDialog.gd"
+}, {
 "base": "Node",
 "class": "Network",
 "language": "GDScript",
@@ -809,6 +824,8 @@ _global_script_class_icons={
 "Fuzzer": "",
 "FuzzerTool": "",
 "Fuzzers": "",
+"GameRepository": "",
+"GameTest": "",
 "GdAssertMessages": "",
 "GdAssertReports": "",
 "GdClassDescriptor": "",
@@ -900,6 +917,7 @@ _global_script_class_icons={
 "IntFuzzer": "",
 "LocalTime": "",
 "LocalTimeTest": "",
+"MenuDialog": "",
 "Network": "",
 "OverridenGetClassTestClass": "",
 "Person": "",
@@ -926,6 +944,11 @@ config/icon="res://icon.png"
 [audio]
 
 default_bus_layout=""
+
+[debug]
+
+gdscript/warnings/unused_signal=false
+gdscript/warnings/return_value_discarded=false
 
 [editor_plugins]
 

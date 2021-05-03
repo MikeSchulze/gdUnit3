@@ -1,0 +1,258 @@
+[gd_scene load_steps=13 format=2]
+
+[ext_resource path="res://examples/MenuDemo2D/src/menu/new_shortcut.tres" type="ShortCut" id=1]
+[ext_resource path="res://examples/MenuDemo2D/assets/menu/background.jpg" type="Texture" id=2]
+[ext_resource path="res://examples/MenuDemo2D/assets/menu/GameMenu-font.tres" type="DynamicFont" id=5]
+[ext_resource path="res://examples/MenuDemo2D/src/menu/GameMenu.gd" type="Script" id=6]
+[ext_resource path="res://examples/MenuDemo2D/assets/menu/exit_clear.png" type="Texture" id=7]
+[ext_resource path="res://examples/MenuDemo2D/assets/menu/exit_clear_hovered.png" type="Texture" id=8]
+[ext_resource path="res://examples/MenuDemo2D/assets/menu/border.tga" type="Texture" id=9]
+[ext_resource path="res://examples/MenuDemo2D/assets/menu/buttonStock-normal.png" type="Texture" id=10]
+[ext_resource path="res://examples/MenuDemo2D/assets/menu/buttonStock-d.png" type="Texture" id=11]
+[ext_resource path="res://examples/MenuDemo2D/assets/menu/buttonStock-disabled.png" type="Texture" id=12]
+[ext_resource path="res://examples/MenuDemo2D/assets/menu/buttonStock-hover.png" type="Texture" id=13]
+
+[sub_resource type="StreamTexture" id=1]
+flags = 4
+load_path = "res://.import/exit_clear_hovered.png-3f1f911cc1254dd113cbc3924aa3bf6d.stex"
+
+[node name="GameMenu" type="Panel"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -200.0
+margin_top = -300.0
+margin_right = 200.0
+margin_bottom = 300.0
+rect_min_size = Vector2( 400, 600 )
+focus_mode = 2
+script = ExtResource( 6 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="NinePatchRect" type="NinePatchRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+texture = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="border" type="TextureRect" parent="NinePatchRect"]
+anchor_right = 1.0
+rect_min_size = Vector2( 0, 80 )
+texture = ExtResource( 9 )
+expand = true
+stretch_mode = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ExitButton" type="TextureButton" parent="NinePatchRect/border"]
+margin_left = 347.446
+margin_top = -12.4448
+margin_right = 410.446
+margin_bottom = 47.5552
+size_flags_horizontal = 0
+size_flags_vertical = 0
+texture_normal = ExtResource( 8 )
+texture_pressed = ExtResource( 7 )
+texture_hover = SubResource( 1 )
+expand = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 40.0
+margin_top = 23.0
+margin_right = -40.0
+margin_bottom = -40.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="VBoxContainer"]
+margin_right = 320.0
+margin_bottom = 32.0
+rect_min_size = Vector2( 300, 30 )
+custom_fonts/font = ExtResource( 5 )
+custom_colors/font_color = Color( 0.964706, 0.0862745, 0.352941, 1 )
+custom_colors/font_outline_modulate = Color( 0.905882, 0.956863, 0.298039, 1 )
+custom_colors/font_color_shadow = Color( 0.996078, 0.960784, 0.960784, 1 )
+custom_constants/shadow_offset_x = 2
+custom_constants/line_spacing = 0
+custom_constants/shadow_offset_y = 2
+custom_constants/shadow_as_outline = 3
+text = "Game Menu"
+align = 1
+valign = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer"]
+margin_top = 36.0
+margin_right = 320.0
+margin_bottom = 66.0
+rect_min_size = Vector2( 0, 30 )
+
+[node name="NewGame" type="TextureButton" parent="VBoxContainer"]
+margin_top = 70.0
+margin_right = 320.0
+margin_bottom = 160.0
+rect_pivot_offset = Vector2( 170, 0 )
+focus_neighbour_top = NodePath("../Quit")
+focus_neighbour_bottom = NodePath("../LoadGame")
+size_flags_horizontal = 3
+size_flags_vertical = 3
+shortcut = ExtResource( 1 )
+texture_normal = ExtResource( 10 )
+texture_pressed = ExtResource( 11 )
+texture_hover = ExtResource( 13 )
+texture_disabled = ExtResource( 12 )
+texture_focused = ExtResource( 13 )
+expand = true
+
+[node name="Label" type="Label" parent="VBoxContainer/NewGame"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+focus_mode = 2
+custom_fonts/font = ExtResource( 5 )
+text = "New Game"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="LoadGame" type="TextureButton" parent="VBoxContainer"]
+margin_top = 164.0
+margin_right = 320.0
+margin_bottom = 254.0
+rect_pivot_offset = Vector2( 170, 0 )
+rect_clip_content = true
+focus_neighbour_top = NodePath("../NewGame")
+focus_neighbour_bottom = NodePath("../SaveGame")
+size_flags_horizontal = 3
+size_flags_vertical = 3
+texture_normal = ExtResource( 10 )
+texture_pressed = ExtResource( 11 )
+texture_hover = ExtResource( 13 )
+texture_disabled = ExtResource( 12 )
+texture_focused = ExtResource( 13 )
+expand = true
+
+[node name="Label" type="Label" parent="VBoxContainer/LoadGame"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_fonts/font = ExtResource( 5 )
+text = "Load Game"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="SaveGame" type="TextureButton" parent="VBoxContainer"]
+margin_top = 258.0
+margin_right = 320.0
+margin_bottom = 348.0
+rect_pivot_offset = Vector2( 170, 0 )
+focus_neighbour_top = NodePath("../LoadGame")
+focus_neighbour_bottom = NodePath("../Options")
+size_flags_horizontal = 3
+size_flags_vertical = 3
+texture_normal = ExtResource( 10 )
+texture_pressed = ExtResource( 11 )
+texture_hover = ExtResource( 13 )
+texture_disabled = ExtResource( 12 )
+texture_focused = ExtResource( 13 )
+expand = true
+
+[node name="Label" type="Label" parent="VBoxContainer/SaveGame"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_fonts/font = ExtResource( 5 )
+text = "Save Game"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Options" type="TextureButton" parent="VBoxContainer"]
+margin_top = 352.0
+margin_right = 320.0
+margin_bottom = 442.0
+rect_pivot_offset = Vector2( 170, 0 )
+focus_neighbour_top = NodePath("../SaveGame")
+focus_neighbour_bottom = NodePath("../Quit")
+size_flags_horizontal = 3
+size_flags_vertical = 3
+texture_normal = ExtResource( 10 )
+texture_pressed = ExtResource( 11 )
+texture_hover = ExtResource( 13 )
+texture_disabled = ExtResource( 12 )
+texture_focused = ExtResource( 13 )
+expand = true
+
+[node name="Label" type="Label" parent="VBoxContainer/Options"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_fonts/font = ExtResource( 5 )
+text = "Options"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Quit" type="TextureButton" parent="VBoxContainer"]
+margin_top = 446.0
+margin_right = 320.0
+margin_bottom = 537.0
+rect_pivot_offset = Vector2( 170, 0 )
+focus_neighbour_top = NodePath("../Options")
+focus_neighbour_bottom = NodePath("../NewGame")
+size_flags_horizontal = 3
+size_flags_vertical = 3
+texture_normal = ExtResource( 10 )
+texture_pressed = ExtResource( 11 )
+texture_hover = ExtResource( 13 )
+texture_disabled = ExtResource( 12 )
+texture_focused = ExtResource( 13 )
+expand = true
+
+[node name="Label" type="Label" parent="VBoxContainer/Quit"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_fonts/font = ExtResource( 5 )
+text = "Quit"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[connection signal="pressed" from="NinePatchRect/border/ExitButton" to="." method="_on_ExitButton_pressed"]
+[connection signal="focus_entered" from="VBoxContainer/NewGame" to="." method="_on_focus_entered"]
+[connection signal="focus_exited" from="VBoxContainer/NewGame" to="." method="_on_focus_exited"]
+[connection signal="pressed" from="VBoxContainer/NewGame" to="." method="_on_NewGame_pressed"]
+[connection signal="focus_entered" from="VBoxContainer/NewGame/Label" to="VBoxContainer/NewGame/Label" method="_on_Label_focus_entered"]
+[connection signal="focus_exited" from="VBoxContainer/NewGame/Label" to="VBoxContainer/NewGame/Label" method="_on_Label_focus_exited"]
+[connection signal="focus_entered" from="VBoxContainer/LoadGame" to="." method="_on_focus_entered"]
+[connection signal="focus_exited" from="VBoxContainer/LoadGame" to="." method="_on_focus_exited"]
+[connection signal="pressed" from="VBoxContainer/LoadGame" to="." method="_on_LoadGame_pressed"]
+[connection signal="focus_entered" from="VBoxContainer/SaveGame" to="." method="_on_focus_entered"]
+[connection signal="focus_exited" from="VBoxContainer/SaveGame" to="." method="_on_focus_exited"]
+[connection signal="pressed" from="VBoxContainer/SaveGame" to="." method="_on_SaveGame_pressed"]
+[connection signal="focus_entered" from="VBoxContainer/Options" to="." method="_on_focus_entered"]
+[connection signal="focus_exited" from="VBoxContainer/Options" to="." method="_on_focus_exited"]
+[connection signal="pressed" from="VBoxContainer/Options" to="." method="_on_Options_pressed"]
+[connection signal="focus_entered" from="VBoxContainer/Quit" to="." method="_on_focus_entered"]
+[connection signal="focus_exited" from="VBoxContainer/Quit" to="." method="_on_focus_exited"]
+[connection signal="pressed" from="VBoxContainer/Quit" to="." method="_on_Quit_pressed"]

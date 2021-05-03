@@ -1,0 +1,138 @@
+[gd_scene load_steps=11 format=2]
+
+[ext_resource path="res://examples/MenuDemo2D/assets/menu/buttonStock-normal.png" type="Texture" id=1]
+[ext_resource path="res://examples/MenuDemo2D/assets/menu/border.tga" type="Texture" id=2]
+[ext_resource path="res://examples/MenuDemo2D/assets/menu/exit_clear.png" type="Texture" id=3]
+[ext_resource path="res://examples/MenuDemo2D/assets/menu/buttonStock-d.png" type="Texture" id=4]
+[ext_resource path="res://examples/MenuDemo2D/src/menu/Options.gd" type="Script" id=5]
+[ext_resource path="res://examples/MenuDemo2D/assets/menu/GameMenu-font-12.tres" type="DynamicFont" id=6]
+[ext_resource path="res://examples/MenuDemo2D/assets/menu/background.jpg" type="Texture" id=7]
+[ext_resource path="res://examples/MenuDemo2D/assets/menu/buttonStock-disabled.png" type="Texture" id=8]
+[ext_resource path="res://examples/MenuDemo2D/assets/menu/exit_clear_hovered.png" type="Texture" id=9]
+[ext_resource path="res://examples/MenuDemo2D/assets/menu/buttonStock-hover.png" type="Texture" id=10]
+
+[node name="Options" type="Control"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -512.0
+margin_top = -300.0
+margin_right = 512.0
+margin_bottom = 300.0
+focus_mode = 2
+script = ExtResource( 5 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="NinePatchRect" type="NinePatchRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 7 )
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="border" type="TextureRect" parent="VBoxContainer"]
+margin_right = 1024.0
+margin_bottom = 64.0
+texture = ExtResource( 2 )
+stretch_mode = 2
+
+[node name="ExitButton" type="TextureButton" parent="VBoxContainer/border"]
+margin_left = 980.0
+margin_top = -14.0
+margin_right = 1043.0
+margin_bottom = 46.0
+texture_normal = ExtResource( 9 )
+texture_pressed = ExtResource( 3 )
+expand = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="VBoxContainer/border"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_fonts/font = ExtResource( 6 )
+text = "Game Options"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PanelContainer" type="Control" parent="VBoxContainer"]
+margin_top = 68.0
+margin_right = 1024.0
+margin_bottom = 516.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="buttonBar" type="Control" parent="VBoxContainer"]
+margin_top = 520.0
+margin_right = 1024.0
+margin_bottom = 600.0
+rect_min_size = Vector2( 0, 80 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/buttonBar"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+rect_min_size = Vector2( 0, 85 )
+alignment = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="cancel" type="TextureButton" parent="VBoxContainer/buttonBar/HBoxContainer"]
+margin_left = 420.0
+margin_right = 720.0
+margin_bottom = 85.0
+rect_min_size = Vector2( 300, 85 )
+texture_normal = ExtResource( 1 )
+texture_pressed = ExtResource( 4 )
+texture_hover = ExtResource( 10 )
+texture_disabled = ExtResource( 8 )
+texture_focused = ExtResource( 10 )
+expand = true
+
+[node name="Label" type="Label" parent="VBoxContainer/buttonBar/HBoxContainer/cancel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_fonts/font = ExtResource( 6 )
+text = "Cancel"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="accept" type="TextureButton" parent="VBoxContainer/buttonBar/HBoxContainer"]
+margin_left = 724.0
+margin_right = 1024.0
+margin_bottom = 85.0
+rect_min_size = Vector2( 300, 85 )
+texture_normal = ExtResource( 1 )
+texture_pressed = ExtResource( 4 )
+texture_hover = ExtResource( 10 )
+texture_disabled = ExtResource( 8 )
+texture_focused = ExtResource( 10 )
+expand = true
+
+[node name="Label" type="Label" parent="VBoxContainer/buttonBar/HBoxContainer/accept"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_fonts/font = ExtResource( 6 )
+text = "Accept"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[connection signal="pressed" from="VBoxContainer/border/ExitButton" to="." method="_on_ExitButton_pressed"]
