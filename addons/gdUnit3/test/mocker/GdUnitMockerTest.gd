@@ -817,6 +817,39 @@ func test_mock_func_with_default_build_in_type():
 	verify(mock).bar("def", Vector3.DOWN, AABB(Vector3.ONE, Vector3.ZERO))
 	verify_no_more_interactions(mock)
 
+func test_mock_virtual_function_is_not_called_twice() -> void:
+	# this test verifies the special handling of virtual functions by Godot
+	# virtual functions are handeld in a special way 
+	# node.cpp
+	# case NOTIFICATION_READY: {
+	#
+	#    if (get_script_instance()) {
+	#
+	#       Variant::CallError err;
+	#       get_script_instance()->call_multilevel_reversed(SceneStringNames::get_singleton()->_ready,NULL,0);
+	#    }
+
+	var mock :ClassWithOverridenVirtuals = mock(ClassWithOverridenVirtuals, CALL_REAL_FUNC)
+	assert_object(mock).is_not_null()
+	
+	# inital state
+	assert_int(mock._x).is_equal(200)
+	
+	# add_child calls internally by "default" _ready() where is a virtual function
+	# mock has to not call real implementation at twice for virtual functions
+	add_child(mock)
+	
+	# verify it by member _x is onyle onw time doubled
+	# the _ready func is multiply the inital x value by two
+	assert_int(mock._x).is_equal(400)
+	
+	# now simulate an input event calls '_input'
+	var action = InputEventKey.new()
+	action.pressed = false
+	action.scancode = KEY_ENTER
+	get_tree().input_event(action)
+	assert_int(mock._x).is_equal(410)
+
 func test_mock_scene_by_path():
 	var mocked_scene = mock("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
 	assert_object(mocked_scene).is_not_null()

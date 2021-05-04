@@ -34,7 +34,7 @@ func test_double_return_typed_function_without_arg() -> void:
 		"	if __saved_return_values.has(args):",
 		"		return __saved_return_values.get(args)",
 		"	",
-		"	if __working_mode == GdUnitMock.CALL_REAL_FUNC:",
+		"	if false == false and __working_mode == GdUnitMock.CALL_REAL_FUNC:",
 		"		return .get_class()",
 		"	return \"\"",
 		""])
@@ -60,7 +60,7 @@ func test_double_return_typed_function_with_args() -> void:
 		"	if __saved_return_values.has(args):",
 		"		return __saved_return_values.get(args)",
 		"	",
-		"	if __working_mode == GdUnitMock.CALL_REAL_FUNC:",
+		"	if false == false and __working_mode == GdUnitMock.CALL_REAL_FUNC:",
 		"		return .is_connected(signal_, target_, method_)",
 		"	return false",
 		""])
@@ -86,7 +86,7 @@ func test_double_return_undef_function_with_args() -> void:
 		"	if __saved_return_values.has(args):",
 		"		return __saved_return_values.get(args)",
 		"	",
-		"	if __working_mode == GdUnitMock.CALL_REAL_FUNC:",
+		"	if false == false and __working_mode == GdUnitMock.CALL_REAL_FUNC:",
 		"		return .disconnect(signal_, target_, method_)",
 		"	return null",
 		""])
@@ -111,7 +111,7 @@ func test_double_void_function_with_args_and_varargs() -> void:
 		"	else:",
 		"		__save_function_interaction(args)",
 		"	",
-		"	if __working_mode == GdUnitMock.CALL_REAL_FUNC:",
+		"	if false == false and __working_mode == GdUnitMock.CALL_REAL_FUNC:",
 		"		match varargs.size():",
 		"			0: .emit_signal(signal_)",
 		"			1: .emit_signal(signal_, varargs[0])",
@@ -147,7 +147,7 @@ func test_double_void_function_without_args_and_varargs() -> void:
 		"	else:",
 		"		__save_function_interaction(args)",
 		"	",
-		"	if __working_mode == GdUnitMock.CALL_REAL_FUNC:",
+		"	if false == false and __working_mode == GdUnitMock.CALL_REAL_FUNC:",
 		"		match varargs.size():",
 		"			0: ._signal_callback()",
 		"			1: ._signal_callback(varargs[0])",
@@ -162,3 +162,54 @@ func test_double_void_function_without_args_and_varargs() -> void:
 		"			10: ._signal_callback(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7], varargs[8], varargs[9])",
 		""])
 
+func test_double_virtual_script_function_without_arg() -> void:
+	var doubler := GdUnitMockBuilder.MockFunctionDoubler.new(false)
+	
+	# void _ready() virtual
+	var fd := get_function_description("Node", "_ready")
+	assert_array(doubler.double(fd)).contains_exactly([
+		"func _ready():",
+		"	var args :Array = [\"_ready\"] + []",
+		"	var default_return_value = null",
+		"	",
+		"	if __is_prepare_return_value():",
+		"		return __save_function_return_value(args)",
+		"	if __is_verify_interactions():",
+		"		__verify_interactions(args)",
+		"		return null",
+		"	else:",
+		"		__save_function_interaction(args)",
+		"	",
+		"	if __saved_return_values.has(args):",
+		"		return __saved_return_values.get(args)",
+		"	",
+		"	if true == false and __working_mode == GdUnitMock.CALL_REAL_FUNC:",
+		"		return ._ready()",
+		"	return null",
+		""])
+
+func test_double_virtual_script_function_with_arg() -> void:
+	var doubler := GdUnitMockBuilder.MockFunctionDoubler.new(false)
+	
+	# void _input(event: InputEvent) virtual
+	var fd := get_function_description("Node", "_input")
+	assert_array(doubler.double(fd)).contains_exactly([
+		"func _input(event_):",
+		"	var args :Array = [\"_input\"] + [event_]",
+		"	var default_return_value = null",
+		"	",
+		"	if __is_prepare_return_value():",
+		"		return __save_function_return_value(args)",
+		"	if __is_verify_interactions():",
+		"		__verify_interactions(args)",
+		"		return null",
+		"	else:",
+		"		__save_function_interaction(args)",
+		"	",
+		"	if __saved_return_values.has(args):",
+		"		return __saved_return_values.get(args)",
+		"	",
+		"	if true == false and __working_mode == GdUnitMock.CALL_REAL_FUNC:",
+		"		return ._input(event_)",
+		"	return null",
+		""])

@@ -26,7 +26,9 @@ func test_double_return_typed_function_without_arg() -> void:
 		"		return __verify_interactions(args)",
 		"	else:",
 		"		__save_function_interaction(args)",
-		"	return __instance_delegator.get_class()",
+		"	if false == false:",
+		"		return __instance_delegator.get_class()",
+		"	return \"\"",
 		""])
 
 func test_double_return_typed_function_with_args() -> void:
@@ -42,7 +44,9 @@ func test_double_return_typed_function_with_args() -> void:
 		"		return __verify_interactions(args)",
 		"	else:",
 		"		__save_function_interaction(args)",
-		"	return __instance_delegator.is_connected(signal_, target_, method_)",
+		"	if false == false:",
+		"		return __instance_delegator.is_connected(signal_, target_, method_)",
+		"	return false",
 		""])
 
 func test_double_return_undef_function_with_args() -> void:
@@ -58,7 +62,9 @@ func test_double_return_undef_function_with_args() -> void:
 		"		return __verify_interactions(args)",
 		"	else:",
 		"		__save_function_interaction(args)",
-		"	return __instance_delegator.disconnect(signal_, target_, method_)",
+		"	if false == false:",
+		"		return __instance_delegator.disconnect(signal_, target_, method_)",
+		"	return null",
 		""])
 
 func test_double_void_function_with_args_and_varargs() -> void:
@@ -77,18 +83,19 @@ func test_double_void_function_with_args_and_varargs() -> void:
 		"	else:",
 		"		__save_function_interaction(args)",
 		"	",
-		"	match varargs.size():",
-		"		0: __instance_delegator.emit_signal(signal_)",
-		"		1: __instance_delegator.emit_signal(signal_, varargs[0])",
-		"		2: __instance_delegator.emit_signal(signal_, varargs[0], varargs[1])",
-		"		3: __instance_delegator.emit_signal(signal_, varargs[0], varargs[1], varargs[2])",
-		"		4: __instance_delegator.emit_signal(signal_, varargs[0], varargs[1], varargs[2], varargs[3])",
-		"		5: __instance_delegator.emit_signal(signal_, varargs[0], varargs[1], varargs[2], varargs[3], varargs[4])",
-		"		6: __instance_delegator.emit_signal(signal_, varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5])",
-		"		7: __instance_delegator.emit_signal(signal_, varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6])",
-		"		8: __instance_delegator.emit_signal(signal_, varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7])",
-		"		9: __instance_delegator.emit_signal(signal_, varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7], varargs[8])",
-		"		10: __instance_delegator.emit_signal(signal_, varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7], varargs[8], varargs[9])",
+		"	if false == false:",
+		"		match varargs.size():",
+		"			0: __instance_delegator.emit_signal(signal_)",
+		"			1: __instance_delegator.emit_signal(signal_, varargs[0])",
+		"			2: __instance_delegator.emit_signal(signal_, varargs[0], varargs[1])",
+		"			3: __instance_delegator.emit_signal(signal_, varargs[0], varargs[1], varargs[2])",
+		"			4: __instance_delegator.emit_signal(signal_, varargs[0], varargs[1], varargs[2], varargs[3])",
+		"			5: __instance_delegator.emit_signal(signal_, varargs[0], varargs[1], varargs[2], varargs[3], varargs[4])",
+		"			6: __instance_delegator.emit_signal(signal_, varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5])",
+		"			7: __instance_delegator.emit_signal(signal_, varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6])",
+		"			8: __instance_delegator.emit_signal(signal_, varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7])",
+		"			9: __instance_delegator.emit_signal(signal_, varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7], varargs[8])",
+		"			10: __instance_delegator.emit_signal(signal_, varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7], varargs[8], varargs[9])",
 		""])
 
 
@@ -108,24 +115,25 @@ func test_double_void_function_without_args_and_varargs() -> void:
 		"	else:",
 		"		__save_function_interaction(args)",
 		"	",
-		"	match varargs.size():",
-		"		0: __instance_delegator._signal_callback()",
-		"		1: __instance_delegator._signal_callback(varargs[0])",
-		"		2: __instance_delegator._signal_callback(varargs[0], varargs[1])",
-		"		3: __instance_delegator._signal_callback(varargs[0], varargs[1], varargs[2])",
-		"		4: __instance_delegator._signal_callback(varargs[0], varargs[1], varargs[2], varargs[3])",
-		"		5: __instance_delegator._signal_callback(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4])",
-		"		6: __instance_delegator._signal_callback(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5])",
-		"		7: __instance_delegator._signal_callback(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6])",
-		"		8: __instance_delegator._signal_callback(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7])",
-		"		9: __instance_delegator._signal_callback(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7], varargs[8])",
-		"		10: __instance_delegator._signal_callback(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7], varargs[8], varargs[9])",
+		"	if false == false:",
+		"		match varargs.size():",
+		"			0: __instance_delegator._signal_callback()",
+		"			1: __instance_delegator._signal_callback(varargs[0])",
+		"			2: __instance_delegator._signal_callback(varargs[0], varargs[1])",
+		"			3: __instance_delegator._signal_callback(varargs[0], varargs[1], varargs[2])",
+		"			4: __instance_delegator._signal_callback(varargs[0], varargs[1], varargs[2], varargs[3])",
+		"			5: __instance_delegator._signal_callback(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4])",
+		"			6: __instance_delegator._signal_callback(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5])",
+		"			7: __instance_delegator._signal_callback(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6])",
+		"			8: __instance_delegator._signal_callback(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7])",
+		"			9: __instance_delegator._signal_callback(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7], varargs[8])",
+		"			10: __instance_delegator._signal_callback(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7], varargs[8], varargs[9])",
 		""])
 
 func test_double_static_script_function_no_args() -> void:
 	var doubler := GdUnitSpyBuilder.SpyFunctionDoubler.new()
 	
-	var fd := GdFunctionDescriptor.new( "foo", true, false, TYPE_NIL, "", [])
+	var fd := GdFunctionDescriptor.new( "foo", false, true, false, TYPE_NIL, "", [])
 	assert_array(doubler.double(fd)).contains_exactly([
 		"static func foo():",
 		"	var args :Array = [\"foo\"] + []",
@@ -134,13 +142,15 @@ func test_double_static_script_function_no_args() -> void:
 		"		return __self[0].__verify_interactions(args)",
 		"	else:",
 		"		__self[0].__save_function_interaction(args)",
-		"	return .foo()",
+		"	if false == false:",
+		"		return .foo()",
+		"	return null",
 		""])
 
 func test_double_static_script_function_with_args() -> void:
 	var doubler := GdUnitSpyBuilder.SpyFunctionDoubler.new()
 	
-	var fd := GdFunctionDescriptor.new( "foo", true, false, TYPE_NIL, "", [
+	var fd := GdFunctionDescriptor.new( "foo", false, true, false, TYPE_NIL, "", [
 		GdFunctionArgument.new("arg1", "bool", ""),
 		GdFunctionArgument.new("arg2", "String", "\"default\"")
 	])
@@ -152,13 +162,15 @@ func test_double_static_script_function_with_args() -> void:
 		"		return __self[0].__verify_interactions(args)",
 		"	else:",
 		"		__self[0].__save_function_interaction(args)",
-		"	return .foo(arg1, arg2)",
+		"	if false == false:",
+		"		return .foo(arg1, arg2)",
+		"	return null",
 		""])
 
 func test_double_script_function_no_args() -> void:
 	var doubler := GdUnitSpyBuilder.SpyFunctionDoubler.new()
 	
-	var fd := GdFunctionDescriptor.new( "foo", false, false, TYPE_NIL, "", [])
+	var fd := GdFunctionDescriptor.new( "foo", false, false, false, TYPE_NIL, "", [])
 	assert_array(doubler.double(fd)).contains_exactly([
 		"func foo():",
 		"	var args :Array = [\"foo\"] + []",
@@ -167,13 +179,15 @@ func test_double_script_function_no_args() -> void:
 		"		return __verify_interactions(args)",
 		"	else:",
 		"		__save_function_interaction(args)",
-		"	return .foo()",
+		"	if false == false:",
+		"		return .foo()",
+		"	return null",
 		""])
 
 func test_double_script_function_with_args() -> void:
 	var doubler := GdUnitSpyBuilder.SpyFunctionDoubler.new()
 	
-	var fd := GdFunctionDescriptor.new( "foo", false, false, TYPE_NIL, "", [
+	var fd := GdFunctionDescriptor.new( "foo", false, false, false, TYPE_NIL, "", [
 		GdFunctionArgument.new("arg1", "bool", ""),
 		GdFunctionArgument.new("arg2", "String", "\"default\"")
 	])
@@ -185,5 +199,43 @@ func test_double_script_function_with_args() -> void:
 		"		return __verify_interactions(args)",
 		"	else:",
 		"		__save_function_interaction(args)",
-		"	return .foo(arg1, arg2)",
+		"	if false == false:",
+		"		return .foo(arg1, arg2)",
+		"	return null",
+		""])
+
+func test_double_virtual_script_function_with_arg() -> void:
+	var doubler := GdUnitSpyBuilder.SpyFunctionDoubler.new()
+	
+	# void _input(event: InputEvent) virtual
+	var fd := get_function_description("Node", "_input")
+	assert_array(doubler.double(fd)).contains_exactly([
+		"func _input(event_):",
+		"	var args :Array = [\"_input\"] + [event_]",
+		"	",
+		"	if __is_verify_interactions():",
+		"		return __verify_interactions(args)",
+		"	else:",
+		"		__save_function_interaction(args)",
+		"	if true == false:",
+		"		return __instance_delegator._input(event_)",
+		"	return null",
+		""])
+
+func test_double_virtual_script_function_without_arg() -> void:
+	var doubler := GdUnitSpyBuilder.SpyFunctionDoubler.new()
+	
+	# void _ready() virtual
+	var fd := get_function_description("Node", "_ready")
+	assert_array(doubler.double(fd)).contains_exactly([
+		"func _ready():",
+		"	var args :Array = [\"_ready\"] + []",
+		"	",
+		"	if __is_verify_interactions():",
+		"		return __verify_interactions(args)",
+		"	else:",
+		"		__save_function_interaction(args)",
+		"	if true == false:",
+		"		return __instance_delegator._ready()",
+		"	return null",
 		""])

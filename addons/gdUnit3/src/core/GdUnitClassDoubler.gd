@@ -4,20 +4,21 @@ extends Reference
 
 const EXCLUDE_VIRTUAL_FUNCTIONS = [
 	# Object
-	"_get", 
-	"_get_property_list", 
+	#"_get", 
+	#"_get_property_list", 
 	#"_init", 
-	"_enter_tree",
-	"_exit_tree",
-	"_unhandled_key_input",
-	"_unhandled_input",
+	#"_enter_tree",
+	#"_exit_tree",
+	#"_unhandled_key_input",
+	#"_unhandled_input",
 	"_notification", 
-	"_process",
-	"_physics_process",
-	"_set", 
-	"_to_string",
+	#"_process",
+	#"_physics_process",
+	#"_set", 
+	#"_to_string",
 	# Resource
-	"_setup_local_to_scene"]
+	#"_setup_local_to_scene",
+	]
 
 # define functions to be exclude when spy or mock on a scene
 const EXLCUDE_SCENE_FUNCTIONS = [
@@ -26,35 +27,22 @@ const EXLCUDE_SCENE_FUNCTIONS = [
 	"get_script",
 	"get_class",
 	# exclude virtual functions where used by initalizise the scene
-	"_enter_tree",
-	"_exit_tree",
-	"_ready",
-	"_get_minimum_size",
-	"_override_changed",
-	"_theme_changed",
-	"_draw",
-	"_input",
-	"_physics_process",
+	#"_enter_tree",
+	#"_exit_tree",
+	#"_ready",
+	#"_get_minimum_size",
+	#"_override_changed",
+	#"_theme_changed",
+	#"_draw",
+	#"_input",
+	#"_physics_process",
 	#"_process",
-	"_unhandled_key_input",
+	#"_unhandled_key_input",
 	"_unhandled_input",
 	#"_gui_input"
 ]
 
 const EXCLUDE_FUNCTIONS = ["new", "free", "get_instance_id", "get_tree"]
-
-static func extract_class_functions(clazz_name :String, script_path :PoolStringArray) -> Array:
-	#prints("extract_class_functions", clazz_name)
-	if ClassDB.class_get_method_list(clazz_name):
-		return ClassDB.class_get_method_list(clazz_name)
-	
-	var script = load(script_path[0])
-	var clazz_functions :Array = script.get_method_list()
-	if script is GDScript:
-		var base_clazz :String = script.get_instance_base_type()
-		if base_clazz:
-			return extract_class_functions(base_clazz, script_path)
-	return clazz_functions
 
 # loads the doubler template
 static func load_template(template :Object, clazz_name :String, clazz_path :PoolStringArray) -> PoolStringArray:
@@ -110,7 +98,7 @@ static func double_functions(clazz_name :String, clazz_path :PoolStringArray, fu
 			class_descriptor = class_descriptor.parent()
 		
 	# double regular class functions
-	var clazz_functions := extract_class_functions(clazz_name, clazz_path)
+	var clazz_functions := GdObjects.extract_class_functions(clazz_name, clazz_path)
 	for method in clazz_functions:
 		var func_descriptor := GdFunctionDescriptor.extract_from(method)
 		if functions.has(func_descriptor.name()) or exclude_override_functions.has(func_descriptor.name()):

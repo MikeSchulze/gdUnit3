@@ -8,7 +8,9 @@ const SPY_TEMPLATE = \
 		return $(instance)__verify_interactions(args)
 	else:
 		$(instance)__save_function_interaction(args)
-	return $(instance_delegator).$(func_name)($(func_arg))
+	if $(is_virtual) == false:
+		return $(instance_delegator).$(func_name)($(func_arg))
+	return ${default_return_value}
 """
 
 const SPY_VOID_TEMPLATE = \
@@ -19,7 +21,8 @@ const SPY_VOID_TEMPLATE = \
 		return
 	else:
 		$(instance)__save_function_interaction(args)
-	$(instance_delegator).$(func_name)($(func_arg))
+	if $(is_virtual) == false:
+		$(instance_delegator).$(func_name)($(func_arg))
 """
 
 const SPY_VOID_TEMPLATE_VARARG =\
@@ -32,18 +35,19 @@ const SPY_VOID_TEMPLATE_VARARG =\
 	else:
 		$(instance)__save_function_interaction(args)
 	
-	match varargs.size():
-		0: $(instance_delegator).$(func_name)($(func_arg))
-		1: $(instance_delegator).$(func_name)($(func_arg), varargs[0])
-		2: $(instance_delegator).$(func_name)($(func_arg), varargs[0], varargs[1])
-		3: $(instance_delegator).$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2])
-		4: $(instance_delegator).$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3])
-		5: $(instance_delegator).$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4])
-		6: $(instance_delegator).$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5])
-		7: $(instance_delegator).$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6])
-		8: $(instance_delegator).$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7])
-		9: $(instance_delegator).$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7], varargs[8])
-		10: $(instance_delegator).$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7], varargs[8], varargs[9])
+	if $(is_virtual) == false:
+		match varargs.size():
+			0: $(instance_delegator).$(func_name)($(func_arg))
+			1: $(instance_delegator).$(func_name)($(func_arg), varargs[0])
+			2: $(instance_delegator).$(func_name)($(func_arg), varargs[0], varargs[1])
+			3: $(instance_delegator).$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2])
+			4: $(instance_delegator).$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3])
+			5: $(instance_delegator).$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4])
+			6: $(instance_delegator).$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5])
+			7: $(instance_delegator).$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6])
+			8: $(instance_delegator).$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7])
+			9: $(instance_delegator).$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7], varargs[8])
+			10: $(instance_delegator).$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7], varargs[8], varargs[9])
 """
 
 const SPY_VOID_TEMPLATE_VARARG_ONLY =\
@@ -56,18 +60,19 @@ const SPY_VOID_TEMPLATE_VARARG_ONLY =\
 	else:
 		$(instance)__save_function_interaction(args)
 	
-	match varargs.size():
-		0: $(instance_delegator).$(func_name)()
-		1: $(instance_delegator).$(func_name)(varargs[0])
-		2: $(instance_delegator).$(func_name)(varargs[0], varargs[1])
-		3: $(instance_delegator).$(func_name)(varargs[0], varargs[1], varargs[2])
-		4: $(instance_delegator).$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3])
-		5: $(instance_delegator).$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4])
-		6: $(instance_delegator).$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5])
-		7: $(instance_delegator).$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6])
-		8: $(instance_delegator).$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7])
-		9: $(instance_delegator).$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7], varargs[8])
-		10: $(instance_delegator).$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7], varargs[8], varargs[9])
+	if $(is_virtual) == false:
+		match varargs.size():
+			0: $(instance_delegator).$(func_name)()
+			1: $(instance_delegator).$(func_name)(varargs[0])
+			2: $(instance_delegator).$(func_name)(varargs[0], varargs[1])
+			3: $(instance_delegator).$(func_name)(varargs[0], varargs[1], varargs[2])
+			4: $(instance_delegator).$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3])
+			5: $(instance_delegator).$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4])
+			6: $(instance_delegator).$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5])
+			7: $(instance_delegator).$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6])
+			8: $(instance_delegator).$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7])
+			9: $(instance_delegator).$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7], varargs[8])
+			10: $(instance_delegator).$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7], varargs[8], varargs[9])
 """
 
 class SpyFunctionDoubler extends GdFunctionDoubler:
@@ -75,6 +80,7 @@ class SpyFunctionDoubler extends GdFunctionDoubler:
 	
 	func double(func_descriptor :GdFunctionDescriptor) -> PoolStringArray:
 		var func_signature := func_descriptor.typeless()
+		var is_virtual := func_descriptor.is_virtual()
 		var is_static := func_descriptor.is_static()
 		var is_engine := func_descriptor.is_engine()
 		var is_vararg := func_descriptor.is_vararg()
@@ -98,8 +104,10 @@ class SpyFunctionDoubler extends GdFunctionDoubler:
 		double += func_template\
 			.replace("$(args)", str(arg_names))\
 			.replace("$(varargs)", str(vararg_names)) \
+			.replace("$(is_virtual)", str(is_virtual).to_lower()) \
 			.replace("$(func_name)", func_name )\
-			.replace("$(func_arg)", arg_names.join(", "))
+			.replace("$(func_arg)", arg_names.join(", ")) \
+			.replace("${default_return_value}", default_return_value)
 		
 		if is_static:
 			double = double.replace("$(instance_delegator)", "__self[0].__instance_delegator" if is_engine else "")\

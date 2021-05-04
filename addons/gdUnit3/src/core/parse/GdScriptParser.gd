@@ -89,24 +89,24 @@ class Token extends Reference:
 	var _token: String
 	var _consumed: int
 	var _is_operator: bool
-	
+
 	func _init(token: String, is_operator: bool = false) -> void:
 		_token = token
 		_is_operator = is_operator
 		_consumed = token.length()
-	
+
 	func match(input: String, pos: int) -> bool:
 		return input.findn(_token, pos) == pos
-		
+
 	func is_operator() -> bool:
 		return _is_operator
-		
+
 	func is_inner_class() -> bool:
 		return _token == "class"
 
 	func is_variable() -> bool:
 		return false
-		
+
 	func is_token(token_name :String) -> bool:
 		return _token == token_name
 
@@ -122,12 +122,12 @@ class Variable extends Token:
 	var _plain_value
 	var _typed_value
 	var _type := TYPE_NIL
-	
+
 	func _init(value: String).(value) -> void:
 		_type = _scan_type(value)
 		_plain_value = value
 		_typed_value = _cast_to_type(value, _type)
-		
+
 	func _scan_type(value: String) -> int:
 		if value.begins_with("\"") and value.ends_with("\""):
 			return TYPE_STRING
@@ -141,7 +141,7 @@ class Variable extends Token:
 		if value.is_valid_hex_number():
 			return TYPE_INT
 		return TYPE_OBJECT
-		
+
 	func _cast_to_type(value :String, type: int):
 		match type:
 			TYPE_STRING:
@@ -151,26 +151,26 @@ class Variable extends Token:
 			TYPE_REAL:
 				return float(value)
 		return value
-	
+
 	func is_variable() -> bool:
 		return true
-	
+
 	func type() -> int:
 		return _type
-	
+
 	func value():
 		return _typed_value
-		
+
 	func plain_value():
 		return _plain_value
-	
+
 	func _to_string():
 		return "{%s:%s}" % [_plain_value, GdObjects.type_as_string(_type)]
 
 class TokenInnerClass extends Token:
 	var _clazz_name
 	var _content := PoolStringArray()
-	
+
 	static func _strip_leading_spaces(input :String) -> String:
 		var characters := input.to_ascii()
 		while not characters.empty():
@@ -178,19 +178,19 @@ class TokenInnerClass extends Token:
 				break
 			characters.remove(0)
 		return characters.get_string_from_ascii()
-		
+
 	static func _consumed_bytes(row :String) -> int:
 		return row.replace(" ", "").replace("	", "").length()
-		
+
 	func _init(clazz_name :String).("class") -> void:
 		_clazz_name = clazz_name
-		
+
 	func is_class_name(clazz_name :String) -> bool:
 		return _clazz_name == clazz_name
-		
+
 	func content() -> PoolStringArray:
 		return _content
-		
+
 	func parse(source_rows :PoolStringArray, offset :int) -> void:
 		# add class signature
 		_content.append(source_rows[offset])
@@ -242,7 +242,7 @@ func tokenize_value(input: String, current: int, token: Token) -> Token:
 	var test_for_sign := (token == null or token.is_operator()) and input[current] == "-"
 	while current + next < len(input):
 		var character := input[current + next] as String
-		# if first charater a sign 
+		# if first charater a sign
 		# or allowend charset
 		# or is a float value
 		if (test_for_sign and next==0) \
@@ -276,7 +276,7 @@ func _process_values(left: Token, token_stack: Array, operator: Token) -> Token:
 		var lvalue = left.value()
 		var value = null
 		var next_token = token_stack.pop_front() as Token
-		
+
 		match operator:
 			OPERATOR_ADD:
 				value =  lvalue + next_token.value()
@@ -397,12 +397,12 @@ func parse_argument(row: String, argument_name: String, default_value):
 		current_index += token._consumed
 		if token == TOKEN_NOT_MATCH:
 			push_error("Error on parsing argument '%s'" % row)
-		
+
 		# look for name
 		if not argument_found and not token.is_token(argument_name):
 			continue
 		argument_found = true
-			
+
 		# extract value
 		match token:
 			TOKEN_ARGUMENT_TYPE_ASIGNMENT:
@@ -435,7 +435,7 @@ func _parse_end_function(input: String, remove_trailing_char := false) -> String
 	var bracket_count := 0
 	var is_array := false
 	var end_of_func = false
-	
+
 	while current_index < len(input) and not end_of_func:
 		var character = input[current_index]
 		match character:
@@ -483,7 +483,7 @@ func extract_source_code(script_path :PoolStringArray) -> PoolStringArray:
 		_base_clazz = GdObjects.extract_class_name_from_class_path([base_script.resource_path])
 		source_code += load_source_code(base_script, script_path)
 	return source_code
-	
+
 func load_source_code(script :GDScript, script_path :PoolStringArray) -> PoolStringArray:
 	var map := script.get_script_constant_map()
 	for key in map.keys():
@@ -491,7 +491,7 @@ func load_source_code(script :GDScript, script_path :PoolStringArray) -> PoolStr
 		if value is GDScript:
 			var class_path := GdObjects.extract_class_path(value)
 			_scanned_inner_classes.append(class_path[1])
-	
+
 	var source_code := to_unix_format(script.source_code)
 	var source_rows := source_code.split("\n")
 	# extract all inner class names
@@ -518,7 +518,7 @@ func parse_func_name(row :String) -> String:
 	var next := next_token(input, token._consumed)
 	return next._token
 
-func parse_functions(rows :PoolStringArray, clazz_name :String) -> Array:
+func parse_functions(rows :PoolStringArray, clazz_name :String, clazz_path :PoolStringArray) -> Array:
 	var func_descriptors := Array()
 	for row in rows:
 		# step over inner class functions
@@ -527,10 +527,10 @@ func parse_functions(rows :PoolStringArray, clazz_name :String) -> Array:
 		var input = clean_up_row(row)
 		var token := next_token(input, 0)
 		if token == TOKEN_FUNCTION_STATIC_DECLARATION or token == TOKEN_FUNCTION_DECLARATION:
-			func_descriptors.append(parse_func_description(row, clazz_name))
+			func_descriptors.append(parse_func_description(row, clazz_name, clazz_path))
 	return func_descriptors
 
-func parse_func_description(func_signature :String, clazz_name :String) -> GdFunctionDescriptor:
+func parse_func_description(func_signature :String, clazz_name :String, clazz_path :PoolStringArray) -> GdFunctionDescriptor:
 	var name =  parse_func_name(func_signature)
 	var return_type :int
 	var return_clazz := ""
@@ -541,8 +541,10 @@ func parse_func_description(func_signature :String, clazz_name :String) -> GdFun
 		return_type = token.type()
 		if token.type() == TYPE_OBJECT:
 			return_clazz = _patch_inner_class_names(token.value(), clazz_name)
+
 	return GdFunctionDescriptor.new(
 		name,
+		is_virtual_func(clazz_name, clazz_path, name),
 		is_static_func(func_signature),
 		false,
 		return_type,
@@ -550,18 +552,35 @@ func parse_func_description(func_signature :String, clazz_name :String) -> GdFun
 		parse_arguments(func_signature)
 	)
 
+# caches already parsed classes for virtual functions
+# key: <clazz_name> value: a Array of virtual function names
+var _virtual_func_cache := Dictionary()
+
+func is_virtual_func(clazz_name :String, clazz_path :PoolStringArray, func_name :String) -> bool:
+	if _virtual_func_cache.has(clazz_name):
+		return _virtual_func_cache[clazz_name].has(func_name)
+
+	var virtual_functions := Array()
+	var method_list := GdObjects.extract_class_functions(clazz_name, clazz_path)
+	for method_descriptor in method_list:
+		var is_virtual_function :bool = method_descriptor["flags"] & METHOD_FLAG_VIRTUAL
+		if is_virtual_function:
+			virtual_functions.append(method_descriptor["name"])
+	_virtual_func_cache[clazz_name] = virtual_functions
+	return _virtual_func_cache[clazz_name].has(func_name)
+
 func is_static_func(func_signature :String) -> bool:
 	var input := clean_up_row(func_signature)
 	var token := next_token(input, 0)
 	return token == TOKEN_FUNCTION_STATIC_DECLARATION
-	
+
 func is_inner_class(clazz_path :PoolStringArray) -> bool:
 	return clazz_path.size() > 1
-	
+
 func _patch_inner_class_names(value :String, clazz_name :String) -> String:
 	var patch := value
 	var base_clazz := clazz_name.split(".")[0]
-	
+
 	for inner_clazz_name in _scanned_inner_classes:
 		var full_inner_clazz_path = base_clazz + "." + inner_clazz_name
 		patch = patch.replace(inner_clazz_name, full_inner_clazz_path)
@@ -570,19 +589,19 @@ func _patch_inner_class_names(value :String, clazz_name :String) -> String:
 
 func extract_functions(script :GDScript, clazz_name :String, clazz_path :PoolStringArray) -> Array:
 	var source_code := load_source_code(script, clazz_path)
-	return parse_functions(source_code, clazz_name)
-	
+	return parse_functions(source_code, clazz_name, clazz_path)
+
 func parse(clazz_name :String, clazz_path :PoolStringArray) -> Result:
-	
+
 	if clazz_path.empty():
 		return Result.error("Invalid script path '%s'" % clazz_path)
-		
+
 	var is_inner_class := is_inner_class(clazz_path)
-	
+
 	var script :GDScript = load(clazz_path[0])
 	var function_descriptors := extract_functions(script, clazz_name, clazz_path)
 	var gd_class := GdClassDescriptor.new(clazz_name, is_inner_class, function_descriptors)
-		
+
 	# iterate over class dependencies
 	script = script.get_base_script()
 	while script != null:
@@ -590,5 +609,5 @@ func parse(clazz_name :String, clazz_path :PoolStringArray) -> Result:
 		function_descriptors = extract_functions(script, clazz_name, clazz_path)
 		gd_class.set_parent_clazz(GdClassDescriptor.new(clazz_name, is_inner_class, function_descriptors))
 		script = script.get_base_script()
-	
+
 	return Result.success(gd_class)

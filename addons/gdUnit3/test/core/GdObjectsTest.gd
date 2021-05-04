@@ -480,3 +480,14 @@ func test_is_instance_scene() -> void:
 	assert_bool(GdObjects.is_instance_scene(resource)).is_false()
 	# on a instance of a scene
 	assert_bool(GdObjects.is_instance_scene(auto_free(resource.instance()))).is_true()
+
+func test_extract_class_functions() -> void:
+	var functions := GdObjects.extract_class_functions("Resource", [""])
+	for f in functions:
+		if f["name"] == "get_path":
+			assert_str(GdFunctionDescriptor.extract_from(f)._to_string()).is_equal("func get_path() -> String:")
+
+	functions = GdObjects.extract_class_functions("CustomResourceTestClass", ["res://addons/gdUnit3/test/mocker/resources/CustomResourceTestClass.gd"])
+	for f in functions:
+		if f["name"] == "get_path":
+			assert_str(GdFunctionDescriptor.extract_from(f)._to_string()).is_equal("func get_path() -> String:")
