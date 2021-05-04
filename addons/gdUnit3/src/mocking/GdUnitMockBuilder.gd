@@ -16,7 +16,7 @@ const MOCK_TEMPLATE =\
 	if $(instance)__saved_return_values.has(args):
 		return $(instance)__saved_return_values.get(args)
 	
-	if $(instance)__working_mode == GdUnitMock.CALL_REAL_FUNC:
+	if $(is_virtual) == false and $(instance)__working_mode == GdUnitMock.CALL_REAL_FUNC:
 		return .$(func_name)($(func_arg))
 	return ${default_return_value}
 """
@@ -34,7 +34,7 @@ const MOCK_VOID_TEMPLATE =\
 	else:
 		$(instance)__save_function_interaction(args)
 	
-	if $(instance)__working_mode == GdUnitMock.CALL_REAL_FUNC:
+	if $(is_virtual) == false and $(instance)__working_mode == GdUnitMock.CALL_REAL_FUNC:
 		.$(func_name)($(func_arg))
 """
 
@@ -52,7 +52,7 @@ const MOCK_VOID_TEMPLATE_VARARG =\
 	else:
 		$(instance)__save_function_interaction(args)
 	
-	if $(instance)__working_mode == GdUnitMock.CALL_REAL_FUNC:
+	if $(is_virtual) == false and $(instance)__working_mode == GdUnitMock.CALL_REAL_FUNC:
 		match varargs.size():
 			0: .$(func_name)($(func_arg))
 			1: .$(func_name)($(func_arg), varargs[0])
@@ -81,7 +81,7 @@ const MOCK_VOID_TEMPLATE_VARARG_ONLY =\
 	else:
 		$(instance)__save_function_interaction(args)
 	
-	if $(instance)__working_mode == GdUnitMock.CALL_REAL_FUNC:
+	if $(is_virtual) == false and $(instance)__working_mode == GdUnitMock.CALL_REAL_FUNC:
 		match varargs.size():
 			0: .$(func_name)()
 			1: .$(func_name)(varargs[0])
@@ -104,6 +104,7 @@ class MockFunctionDoubler extends GdFunctionDoubler:
 	
 	func double(func_descriptor :GdFunctionDescriptor) -> PoolStringArray:
 		var func_signature := func_descriptor.typeless()
+		var is_virtual := func_descriptor.is_virtual()
 		var is_static := func_descriptor.is_static()
 		var is_vararg := func_descriptor.is_vararg()
 		var func_name := func_descriptor.name()
@@ -126,6 +127,7 @@ class MockFunctionDoubler extends GdFunctionDoubler:
 		double += func_template\
 			.replace("$(args)", str(arg_names)) \
 			.replace("$(varargs)", str(vararg_names)) \
+			.replace("$(is_virtual)", str(is_virtual).to_lower()) \
 			.replace("$(func_name)", func_name )\
 			.replace("$(func_arg)", arg_names.join(", "))\
 			.replace("${default_return_value}", default_return_value)\

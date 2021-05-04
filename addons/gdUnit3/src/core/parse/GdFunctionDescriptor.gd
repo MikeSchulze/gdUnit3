@@ -4,6 +4,7 @@ extends Reference
 # https://github.com/godotengine/godot/issues/47449
 const METHOD_FLAG_VARARG = 128
 
+var _is_virtual :bool
 var _is_static :bool
 var _is_engine :bool
 var _name :String
@@ -12,18 +13,20 @@ var _return_class :String
 var _args : Array
 var _varargs :Array
 
-func _init(name :String, is_static :bool, is_engine :bool, return_type :int, return_class :String, args : Array, varargs :Array = []):
+func _init(name :String, is_virtual :bool, is_static :bool, is_engine :bool, return_type :int, return_class :String, args : Array, varargs :Array = []):
 	_name = name
 	_return_type = return_type
 	_return_class = return_class
+	_is_virtual = is_virtual
 	_is_static = is_static
 	_is_engine = is_engine
 	_args = args
 	_varargs = varargs
 
-static func of(name :String, is_static :bool, is_engine :bool, return_type :int, return_class :String, args :Array, varargs :Array) -> GdFunctionDescriptor:
+static func of(name :String, is_virtual :bool, is_static :bool, is_engine :bool, return_type :int, return_class :String, args :Array, varargs :Array) -> GdFunctionDescriptor:
 	return load("res://addons/gdUnit3/src/core/parse/GdFunctionDescriptor.gd").new(
 		name,
+		is_virtual,
 		is_static,
 		is_engine,
 		return_type,
@@ -34,6 +37,9 @@ static func of(name :String, is_static :bool, is_engine :bool, return_type :int,
 
 func name() -> String:
 	return _name
+
+func is_virtual() -> bool:
+	return _is_virtual
 
 func is_static() -> bool:
 	return _is_static
@@ -86,18 +92,21 @@ func typed_args() -> String:
 	return collect.join(", ")
 
 func _to_string() -> String:
+	var fsignature := "virtual " if is_virtual() else ""
 	if _return_type == TYPE_NIL:
-		return "func %s(%s):" % [name(), typed_args()]
-	var func_template := "func %s(%s) -> %s:"
+		return fsignature + "func %s(%s):" % [name(), typed_args()]
+	var func_template := fsignature + "func %s(%s) -> %s:"
 	if is_static():
 		func_template= "static func %s(%s) -> %s:"
 	return func_template % [name(), typed_args(), return_type_as_string()]
 
 # extract function description given by Object.get_method_list()
 static func extract_from(method_descriptor :Dictionary) -> GdFunctionDescriptor:
+	var is_virtual :bool = method_descriptor["flags"] & METHOD_FLAG_VIRTUAL
 	var is_vararg :bool = method_descriptor["flags"] & METHOD_FLAG_VARARG
 	return of(
 		method_descriptor["name"],
+		is_virtual,
 		false,
 		true,
 		method_descriptor["return"]["type"],

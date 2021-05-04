@@ -297,6 +297,16 @@ func test_extract_clazz_name():
 	assert_str(_parser.extract_clazz_name("classSoundData:\n")).is_equal("SoundData")
 	assert_str(_parser.extract_clazz_name("classSoundDataextendsNode:\n")).is_equal("SoundData")
 
+func test_is_virtual_func() -> void:
+	# on non virtual func
+	assert_bool(_parser.is_virtual_func("UnknownClass", [""], "")).is_false()
+	assert_bool(_parser.is_virtual_func("Node", [""], "")).is_false()
+	assert_bool(_parser.is_virtual_func("Node", [""], "func foo():")).is_false()
+	# on virtual func
+	assert_bool(_parser.is_virtual_func("Node", [""], "_exit_tree")).is_true()
+	assert_bool(_parser.is_virtual_func("Node", [""], "_ready")).is_true()
+	assert_bool(_parser.is_virtual_func("Node", [""], "_init")).is_true()
+
 func test_is_static_func():
 	assert_bool(_parser.is_static_func("")).is_false()
 	assert_bool(_parser.is_static_func("var a=0")).is_false()
@@ -306,7 +316,7 @@ func test_is_static_func():
 	assert_bool(_parser.is_static_func("static func foo() -> void:")).is_true()
 
 func test_parse_func_description():
-	var fd := _parser.parse_func_description("func foo():", "clazz_name")
+	var fd := _parser.parse_func_description("func foo():", "clazz_name", [""])
 	assert_str(fd.name()).is_equal("foo")
 	assert_bool(fd.is_static()).is_false()
 	assert_int(fd.return_type()).is_equal(TYPE_NIL)
@@ -314,7 +324,7 @@ func test_parse_func_description():
 	assert_str(fd.typeless()).is_equal("func foo():")
 	
 	# static function
-	fd = _parser.parse_func_description("static func foo(arg1 :int, arg2:=false) -> String:", "clazz_name")
+	fd = _parser.parse_func_description("static func foo(arg1 :int, arg2:=false) -> String:", "clazz_name", [""])
 	assert_str(fd.name()).is_equal("foo")
 	assert_bool(fd.is_static()).is_true()
 	assert_int(fd.return_type()).is_equal(TYPE_STRING)
@@ -325,7 +335,7 @@ func test_parse_func_description():
 	assert_str(fd.typeless()).is_equal("static func foo(arg1, arg2=false) -> String:")
 	
 	# static function without return type
-	fd = _parser.parse_func_description("static func foo(arg1 :int, arg2:=false):", "clazz_name")
+	fd = _parser.parse_func_description("static func foo(arg1 :int, arg2:=false):", "clazz_name", [""])
 	assert_str(fd.name()).is_equal("foo")
 	assert_bool(fd.is_static()).is_true()
 	assert_int(fd.return_type()).is_equal(TYPE_NIL)
@@ -347,8 +357,8 @@ func test_parse_class_inherits():
 	assert_str(clazz_desccriptor.name()).is_equal("CustomClassExtendsCustomClass")
 	assert_bool(clazz_desccriptor.is_inner_class()).is_false()
 	assert_array(clazz_desccriptor.functions()).contains_exactly([
-		GdFunctionDescriptor.new("foo2", false, false, TYPE_NIL, "", []),
-		GdFunctionDescriptor.new("bar2", false, false, TYPE_STRING, "", [])
+		GdFunctionDescriptor.new("foo2", false, false, false, TYPE_NIL, "", []),
+		GdFunctionDescriptor.new("bar2", false, false, false, TYPE_STRING, "", [])
 	])
 	
 	# extends from CustomResourceTestClass
@@ -357,18 +367,17 @@ func test_parse_class_inherits():
 	assert_str(clazz_desccriptor.name()).is_equal("CustomResourceTestClass")
 	assert_bool(clazz_desccriptor.is_inner_class()).is_false()
 	assert_array(clazz_desccriptor.functions()).contains_exactly([
-		GdFunctionDescriptor.new("foo", false, false, TYPE_STRING, "", []),
-		GdFunctionDescriptor.new("foo2", false, false, TYPE_NIL, "", []),
-		GdFunctionDescriptor.new("foo_void", false, false, GdObjects.TYPE_VOID, "", []),
-		GdFunctionDescriptor.new("bar", false, false, TYPE_STRING, "", [
+		GdFunctionDescriptor.new("foo", false, false, false, TYPE_STRING, "", []),
+		GdFunctionDescriptor.new("foo2", false, false, false, TYPE_NIL, "", []),
+		GdFunctionDescriptor.new("foo_void", false, false, false, GdObjects.TYPE_VOID, "", []),
+		GdFunctionDescriptor.new("bar", false, false, false, TYPE_STRING, "", [
 			GdFunctionArgument.new("arg1", "int"),
 			GdFunctionArgument.new("arg2", "int", "23"),
 			GdFunctionArgument.new("name", "String", "\"test\""),
 		]),
-		GdFunctionDescriptor.new("foo5", false, false, TYPE_NIL, "", []),
+		GdFunctionDescriptor.new("foo5", false, false, false, TYPE_NIL, "", []),
 	])
 	
 	# no other class extends
 	clazz_desccriptor = clazz_desccriptor.parent()
 	assert_object(clazz_desccriptor).is_null()
-	

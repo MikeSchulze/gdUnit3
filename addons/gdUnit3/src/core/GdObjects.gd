@@ -318,7 +318,7 @@ static func is_instance(value) -> bool:
 		return true
 	return not value.has_method('new') and not value.has_method('instance')
 
-# only object form type Node and attached filename 
+# only object form type Node and attached filename
 static func is_instance_scene(instance) -> bool:
 	if instance is Node:
 		var node := instance as Node
@@ -367,14 +367,14 @@ static func extract_class_path(clazz) -> PoolStringArray:
 	if clazz is String:
 		clazz_path.append(clazz)
 		return clazz_path
-		
+
 	if is_instance(clazz):
 		# is instance a script instance?
 		var script := clazz.script as GDScript
 		if script != null:
 			return extract_class_path(script)
 		return clazz_path
-	
+
 	if clazz is GDScript:
 		# if not found we go the expensive way and extract the path form the script by creating an instance
 		var arg_list := build_function_default_arguments(clazz, "_init")
@@ -399,7 +399,7 @@ static func extract_class_name_from_class_path(clazz_path :PoolStringArray) -> S
 static func extract_class_name(clazz) -> Result:
 	if clazz == null:
 		return Result.error("Can't extract class name form a null value.")
-	
+
 	if is_instance(clazz):
 		# is instance a script instance?
 		var script := clazz.script as GDScript
@@ -407,18 +407,18 @@ static func extract_class_name(clazz) -> Result:
 			var clazz_path := extract_class_path(script)
 			return Result.success(extract_class_name_from_class_path(clazz_path))
 		return Result.success(clazz.get_class())
-	
+
 	# extract name form full qualified class path
 	if clazz is String:
 		return Result.success(clazz.get_file().replace(".gd", ""))
-	
+
 	if is_primitive_type(clazz):
 		return Result.error("Can't extract class name for an primitive '%s'" % type_as_string(typeof(clazz)))
-	
+
 	if is_script(clazz):
 		var clazz_path := extract_class_path(clazz)
 		return Result.success(extract_class_name_from_class_path(clazz_path))
-		
+
 	# need to create an instance for a class typ the extract the class name
 	var instance = clazz.new()
 	if instance == null:
@@ -429,7 +429,7 @@ static func extract_class_name(clazz) -> Result:
 
 static func extract_inner_clazz_names(clazz_name :String, script_path :PoolStringArray) -> PoolStringArray:
 	var inner_classes := PoolStringArray()
-	
+
 	if ClassDB.class_exists(clazz_name):
 		return inner_classes
 	var script :GDScript = load(script_path[0])
@@ -440,6 +440,21 @@ static func extract_inner_clazz_names(clazz_name :String, script_path :PoolStrin
 			var class_path := extract_class_path(value)
 			inner_classes.append(class_path[1])
 	return inner_classes
+
+static func extract_class_functions(clazz_name :String, script_path :PoolStringArray) -> Array:
+	if ClassDB.class_get_method_list(clazz_name):
+		return ClassDB.class_get_method_list(clazz_name)
+
+	if not Directory.new().file_exists(script_path[0]):
+		return Array()
+	var script = load(script_path[0])
+	var clazz_functions :Array = script.get_method_list()
+	if script is GDScript:
+		var base_clazz :String = script.get_instance_base_type()
+		if base_clazz:
+			return extract_class_functions(base_clazz, script_path)
+	return clazz_functions
+
 
 # scans all registert script classes for given <clazz_name>
 # if the class is public in the global space than return true otherwise false
@@ -456,7 +471,7 @@ static func is_public_script_class(clazz_name) -> bool:
 
 static func build_function_default_arguments(script :GDScript, func_name :String) -> Array:
 	assert(DEFAULT_VALUES_BY_TYPE.size() == TYPE_MAX)
-	
+
 	var arg_list := Array()
 	for func_sig in script.get_script_method_list():
 		if func_sig["name"] == func_name:

@@ -17,6 +17,7 @@ func test_extract_from_func_without_return_type():
 	var method_descriptor := get_method_description("Node", "add_child_below_node")
 	var fd := GdFunctionDescriptor.extract_from(method_descriptor)
 	assert_str(fd.name()).is_equal("add_child_below_node")
+	assert_bool(fd.is_virtual()).is_false()
 	assert_bool(fd.is_static()).is_false()
 	assert_bool(fd.is_engine()).is_true()
 	assert_bool(fd.is_vararg()).is_false()
@@ -33,6 +34,7 @@ func test_extract_from_func_with_return_type():
 	var method_descriptor := get_method_description("Node", "find_node")
 	var fd := GdFunctionDescriptor.extract_from(method_descriptor)
 	assert_str(fd.name()).is_equal("find_node")
+	assert_bool(fd.is_virtual()).is_false()
 	assert_bool(fd.is_static()).is_false()
 	assert_bool(fd.is_engine()).is_true()
 	assert_bool(fd.is_vararg()).is_false()
@@ -50,6 +52,7 @@ func test_extract_from_func_with_vararg():
 	var method_descriptor := get_method_description("Node", "emit_signal")
 	var fd := GdFunctionDescriptor.extract_from(method_descriptor)
 	assert_str(fd.name()).is_equal("emit_signal")
+	assert_bool(fd.is_virtual()).is_false()
 	assert_bool(fd.is_static()).is_false()
 	assert_bool(fd.is_engine()).is_true()
 	assert_bool(fd.is_vararg()).is_true()
@@ -68,3 +71,46 @@ func test_extract_from_func_with_vararg():
 		GdFunctionArgument.new("vararg9_", "VarArg", "\"%s\"" % GdObjects.TYPE_VARARG_PLACEHOLDER_VALUE)
 	])
 	assert_str(fd.typeless()).is_equal("func emit_signal(signal_, vararg0_=\"__null__\", vararg1_=\"__null__\", vararg2_=\"__null__\", vararg3_=\"__null__\", vararg4_=\"__null__\", vararg5_=\"__null__\", vararg6_=\"__null__\", vararg7_=\"__null__\", vararg8_=\"__null__\", vararg9_=\"__null__\"):")
+
+func test_extract_from_descriptor_is_virtual_func():
+	var method_descriptor := get_method_description("Node", "_enter_tree")
+	var fd := GdFunctionDescriptor.extract_from(method_descriptor)
+	assert_str(fd.name()).is_equal("_enter_tree")
+	assert_bool(fd.is_virtual()).is_true()
+	assert_bool(fd.is_static()).is_false()
+	assert_bool(fd.is_engine()).is_true()
+	assert_bool(fd.is_vararg()).is_false()
+	assert_int(fd.return_type()).is_equal(TYPE_NIL)
+	assert_array(fd.args()).is_empty()
+	# void _enter_tree() virtual
+	assert_str(fd.typeless()).is_equal("func _enter_tree():")
+
+func test_extract_from_descriptor_is_virtual_func_full_check():
+	var methods := ClassDB.class_get_method_list("Node")
+	var expected_virtual_functions := [
+		# Object virtuals
+		"_get",
+		"_get_property_list",
+		"_init",
+		"_notification",
+		"_set",
+		"_to_string",
+		# Note virtuals
+		"_enter_tree",
+		"_exit_tree",
+		"_get_configuration_warning",
+		"_input",
+		"_physics_process",
+		"_process",
+		"_ready",
+		"_unhandled_input",
+		"_unhandled_key_input"
+	]
+	var _count := 0
+	for method_descriptor in methods:
+		var fd := GdFunctionDescriptor.extract_from(method_descriptor)
+		
+		if fd.is_virtual():
+			_count += 1
+			assert_array(expected_virtual_functions).contains([fd.name()])
+	assert_int(_count).is_equal(expected_virtual_functions.size())
