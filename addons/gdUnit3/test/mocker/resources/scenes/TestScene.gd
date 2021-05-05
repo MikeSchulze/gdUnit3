@@ -58,6 +58,6 @@ func _destroy_spell(spell :Spell) -> void:
 	remove_child(spell)
 	spell.queue_free()
 
-func _unhandled_input(event):
+func _input(event):
 	if event.is_action_released("ui_accept"):
 		add_child(create_spell())

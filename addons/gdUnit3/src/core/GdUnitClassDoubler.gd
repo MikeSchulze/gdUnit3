@@ -3,21 +3,9 @@ class_name GdUnitClassDoubler
 extends Reference
 
 const EXCLUDE_VIRTUAL_FUNCTIONS = [
-	# Object
-	#"_get", 
-	#"_get_property_list", 
-	#"_init", 
-	#"_enter_tree",
-	#"_exit_tree",
-	#"_unhandled_key_input",
-	#"_unhandled_input",
+	# we have to exclude notifications because NOTIFICATION_PREDELETE is try
+	# to delete already freed spy/mock resources and will result in a conflict
 	"_notification", 
-	#"_process",
-	#"_physics_process",
-	#"_set", 
-	#"_to_string",
-	# Resource
-	#"_setup_local_to_scene",
 	]
 
 # define functions to be exclude when spy or mock on a scene
@@ -25,21 +13,6 @@ const EXLCUDE_SCENE_FUNCTIONS = [
 	# needs to exclude get/set script functions otherwise it endsup in recursive endless loop
 	"set_script",
 	"get_script",
-	"get_class",
-	# exclude virtual functions where used by initalizise the scene
-	#"_enter_tree",
-	#"_exit_tree",
-	#"_ready",
-	#"_get_minimum_size",
-	#"_override_changed",
-	#"_theme_changed",
-	#"_draw",
-	#"_input",
-	#"_physics_process",
-	#"_process",
-	#"_unhandled_key_input",
-	"_unhandled_input",
-	#"_gui_input"
 ]
 
 const EXCLUDE_FUNCTIONS = ["new", "free", "get_instance_id", "get_tree"]

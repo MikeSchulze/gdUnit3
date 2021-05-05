@@ -389,27 +389,37 @@ func test_spy_scene_by_path():
 
 func test_spy_on_PackedScene():
 	var resource := load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
+	var original_script = resource.get_script()
 	assert_object(resource).is_instanceof(PackedScene)
 	
 	var spy_scene = spy(resource)
+	
 	assert_object(spy_scene)\
 		.is_not_null()\
-		.is_instanceof(PackedScene)\
+		.is_not_instanceof(PackedScene)\
 		.is_not_same(resource)
+	assert_object(spy_scene.get_script())\
+		.is_not_null()\
+		.is_instanceof(GDScript)\
+		.is_not_same(original_script)
+	assert_str(spy_scene.get_script().resource_name).is_equal("SpyTestScene.gd")
+	# check is mocked scene registered for auto freeing
+	assert_bool(GdUnitTools.is_auto_free_registered(spy_scene, get_meta("MEMORY_POOL"))).is_true()
 
 func test_spy_scene_by_instance():
 	var resource := load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
-	var instance :Control = auto_free(resource.instance())
+	var instance :Control = resource.instance()
+	var original_script = instance.get_script()
 	var spy_scene = spy(instance)
 	
 	assert_object(spy_scene)\
 		.is_not_null()\
-		.is_instanceof(Control)\
-		.is_not_same(instance)
+		.is_same(instance)\
+		.is_instanceof(Control)
 	assert_object(spy_scene.get_script())\
 		.is_not_null()\
 		.is_instanceof(GDScript)\
-		.is_not_same(instance.get_script())
+		.is_not_same(original_script)
 	assert_str(spy_scene.get_script().resource_name).is_equal("SpyTestScene.gd")
 	# check is mocked scene registered for auto freeing
 	assert_bool(GdUnitTools.is_auto_free_registered(spy_scene, get_meta("MEMORY_POOL"))).is_true()

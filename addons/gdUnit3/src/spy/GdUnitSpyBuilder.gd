@@ -9,7 +9,7 @@ const SPY_TEMPLATE = \
 	else:
 		$(instance)__save_function_interaction(args)
 	if $(is_virtual) == false:
-		return $(instance_delegator).$(func_name)($(func_arg))
+		return .$(func_name)($(func_arg))
 	return ${default_return_value}
 """
 
@@ -22,7 +22,7 @@ const SPY_VOID_TEMPLATE = \
 	else:
 		$(instance)__save_function_interaction(args)
 	if $(is_virtual) == false:
-		$(instance_delegator).$(func_name)($(func_arg))
+		.$(func_name)($(func_arg))
 """
 
 const SPY_VOID_TEMPLATE_VARARG =\
@@ -37,17 +37,17 @@ const SPY_VOID_TEMPLATE_VARARG =\
 	
 	if $(is_virtual) == false:
 		match varargs.size():
-			0: $(instance_delegator).$(func_name)($(func_arg))
-			1: $(instance_delegator).$(func_name)($(func_arg), varargs[0])
-			2: $(instance_delegator).$(func_name)($(func_arg), varargs[0], varargs[1])
-			3: $(instance_delegator).$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2])
-			4: $(instance_delegator).$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3])
-			5: $(instance_delegator).$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4])
-			6: $(instance_delegator).$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5])
-			7: $(instance_delegator).$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6])
-			8: $(instance_delegator).$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7])
-			9: $(instance_delegator).$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7], varargs[8])
-			10: $(instance_delegator).$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7], varargs[8], varargs[9])
+			0: .$(func_name)($(func_arg))
+			1: .$(func_name)($(func_arg), varargs[0])
+			2: .$(func_name)($(func_arg), varargs[0], varargs[1])
+			3: .$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2])
+			4: .$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3])
+			5: .$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4])
+			6: .$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5])
+			7: .$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6])
+			8: .$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7])
+			9: .$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7], varargs[8])
+			10: .$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7], varargs[8], varargs[9])
 """
 
 const SPY_VOID_TEMPLATE_VARARG_ONLY =\
@@ -62,17 +62,17 @@ const SPY_VOID_TEMPLATE_VARARG_ONLY =\
 	
 	if $(is_virtual) == false:
 		match varargs.size():
-			0: $(instance_delegator).$(func_name)()
-			1: $(instance_delegator).$(func_name)(varargs[0])
-			2: $(instance_delegator).$(func_name)(varargs[0], varargs[1])
-			3: $(instance_delegator).$(func_name)(varargs[0], varargs[1], varargs[2])
-			4: $(instance_delegator).$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3])
-			5: $(instance_delegator).$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4])
-			6: $(instance_delegator).$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5])
-			7: $(instance_delegator).$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6])
-			8: $(instance_delegator).$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7])
-			9: $(instance_delegator).$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7], varargs[8])
-			10: $(instance_delegator).$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7], varargs[8], varargs[9])
+			0: .$(func_name)()
+			1: .$(func_name)(varargs[0])
+			2: .$(func_name)(varargs[0], varargs[1])
+			3: .$(func_name)(varargs[0], varargs[1], varargs[2])
+			4: .$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3])
+			5: .$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4])
+			6: .$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5])
+			7: .$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6])
+			8: .$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7])
+			9: .$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7], varargs[8])
+			10: .$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7], varargs[8], varargs[9])
 """
 
 class SpyFunctionDoubler extends GdFunctionDoubler:
@@ -110,10 +110,10 @@ class SpyFunctionDoubler extends GdFunctionDoubler:
 			.replace("${default_return_value}", default_return_value)
 		
 		if is_static:
-			double = double.replace("$(instance_delegator)", "__self[0].__instance_delegator" if is_engine else "")\
+			double = double.replace("", "__self[0].__instance_delegator" if is_engine else "")\
 				.replace("$(instance)", "__self[0].")
 		else:
-			double = double.replace("$(instance_delegator)", "__instance_delegator" if is_engine else "")\
+			double = double.replace("", "__instance_delegator" if is_engine else "")\
 				.replace("$(instance)", "")
 		return double.split("\n")
 		
@@ -127,6 +127,10 @@ class SpyFunctionDoubler extends GdFunctionDoubler:
 		return SPY_TEMPLATE
 
 static func build(instance, memory_pool :int, push_errors :bool = true, debug_write = false):
+	# spy on PackedScene
+	if GdObjects.is_scene(instance):
+		return spy_on_scene(instance.instance(), memory_pool, debug_write)
+	# spy on a scene instance
 	if GdObjects.is_instance_scene(instance):
 		return spy_on_scene(instance, memory_pool, debug_write)
 	
@@ -145,11 +149,13 @@ static func spy_on_script(instance, memory_pool, function_excludes :PoolStringAr
 	var extends_clazz := result.value() as String
 	
 	if GdObjects.is_array_type(instance):
-		push_error("Can't build spy on type '%s'! Spy on Container Built-In Type not supported!" % extends_clazz)
+		if GdUnitSettings.is_verbose_assert_errors():
+			push_error("Can't build spy on type '%s'! Spy on Container Built-In Type not supported!" % extends_clazz)
 		return null
 		
 	if not GdObjects.is_instance(instance):
-		push_error("Can't build spy for class type '%s'! Using an instance instead e.g. 'spy(<instance>)'" % [extends_clazz])
+		if GdUnitSettings.is_verbose_assert_errors():
+			push_error("Can't build spy for class type '%s'! Using an instance instead e.g. 'spy(<instance>)'" % [extends_clazz])
 		return null
 	
 	var clazz_path := GdObjects.extract_class_path(instance)
@@ -173,7 +179,8 @@ static func spy_on_script(instance, memory_pool, function_excludes :PoolStringAr
 
 static func spy_on_scene(scene :Node, memory_pool, debug_write) -> Object:
 	if scene.get_script() == null:
-		push_error("Can't create a spy on a scene without script '%s'" % scene.get_filename())
+		if GdUnitSettings.is_verbose_assert_errors():
+			push_error("Can't create a spy on a scene without script '%s'" % scene.get_filename())
 		return null
 	# buils spy on original script
 	var scene_script = scene.get_script().new()
@@ -181,8 +188,6 @@ static func spy_on_scene(scene :Node, memory_pool, debug_write) -> Object:
 	scene_script.free()
 	if spy == null:
 		return null
-	# build new spy instance to original scene
-	var scene_instance = load(scene.get_filename()).instance()
-	scene_instance.set_script(spy)
-	scene_instance.__set_singleton(scene)
-	return GdUnitTools.register_auto_free(scene_instance, memory_pool)
+	# replace original script whit spy 
+	scene.set_script(spy)
+	return GdUnitTools.register_auto_free(scene, memory_pool)

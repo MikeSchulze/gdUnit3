@@ -26,7 +26,7 @@ func test_simulate_key_pressed_on_mock():
 	
 	# create a scene runner
 	var runner := scene_runner(mocked_scene)
-
+	
 	# simulate a key event to fire the spell
 	runner.simulate_key_pressed(KEY_ENTER)
 	# verify the spell is created and added to the scene tree
@@ -38,7 +38,7 @@ func test_simulate_key_pressed_on_mock():
 
 func test_simulate_key_pressed_on_spy():
 	var scene := load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
-	var spyed_scene :Control = spy(auto_free(scene.instance()))
+	var spyed_scene = spy(scene)
 	assert_object(spyed_scene).is_not_null()
 	assert_array(spyed_scene.get_children())\
 		.extract("get_name")\
@@ -73,13 +73,3 @@ func test_simulate_key_pressed_in_combination_with_spy():
 	verify(mocked_scene).create_spell()
 	verify(mocked_scene).add_child(spell_spy)
 	verify(spell_spy).connect("spell_explode", mocked_scene, "_destroy_spell")
-	
-
-func test_is_spyed_scene() -> void:
-	assert_bool(GdUnitSceneRunner.is_spyed_scene(auto_free(Node.new()))).is_false()
-	var scene_resource = load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
-	var mocked_scene = mock(scene_resource)
-	assert_bool(GdUnitSceneRunner.is_spyed_scene(mocked_scene)).is_false()
-	
-	var spyed_scene = spy(auto_free(scene_resource.instance()))
-	assert_bool(GdUnitSceneRunner.is_spyed_scene(spyed_scene)).is_true()
