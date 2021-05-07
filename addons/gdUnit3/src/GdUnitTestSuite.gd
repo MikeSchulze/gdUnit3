@@ -146,6 +146,10 @@ static func any_float() -> GdUnitArgumentMatcher:
 static func any_string() -> GdUnitArgumentMatcher:
 	return GdUnitArgumentMatchers.any_string()
 
+# Argument matcher to match any color value
+static func any_color() -> GdUnitArgumentMatcher:
+	return GdUnitArgumentMatchers.any_color()
+
 # Argument matcher to match any instance of given class
 static func any_class(clazz :Object) -> GdUnitArgumentMatcher:
 	return GdUnitArgumentMatchers.any_class(clazz)

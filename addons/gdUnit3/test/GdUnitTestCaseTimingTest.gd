@@ -78,5 +78,5 @@ func test_multi_yielding_with_fuzzer_fail_after_3_iterations(fuzzer := Fuzzers.r
 	prints("1")
 	yield(get_tree().create_timer(1.0), "timeout")
 	prints("Go")
-	if fuzzer.iteration_index() == 3:
+	if fuzzer.iteration_index() >= 3:
 		assert_bool(true).is_false()

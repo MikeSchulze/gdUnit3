@@ -45,6 +45,11 @@ _global_script_classes=[ {
 "path": "res://addons/gdUnit3/test/matchers/AnyClazzArgumentMatcherTest.gd"
 }, {
 "base": "GdUnitArgumentMatcher",
+"class": "AnyColorArgumentMatcher",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/src/matchers/AnyColorArgumentMatcher.gd"
+}, {
+"base": "GdUnitArgumentMatcher",
 "class": "AnyFloatArgumentMatcher",
 "language": "GDScript",
 "path": "res://addons/gdUnit3/src/matchers/AnyFloatArgumentMatcher.gd"
@@ -792,6 +797,7 @@ _global_script_class_icons={
 "AnyBoolArgumentMatcherTest": "",
 "AnyClazzArgumentMatcher": "",
 "AnyClazzArgumentMatcherTest": "",
+"AnyColorArgumentMatcher": "",
 "AnyFloatArgumentMatcher": "",
 "AnyFloatArgumentMatcherTest": "",
 "AnyIntArgumentMatcher": "",
