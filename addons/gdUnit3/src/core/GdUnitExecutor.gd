@@ -282,6 +282,3 @@ func _set_memory_pool(test_suite :GdUnitTestSuite, pool :int):
 # --- test report events
 func _event_test_report(report :GdUnitReport):
 	_reports.append(report)
-	# break current running test on first error report
-	if _test_run_state and _test_run_state.is_valid():
-		_test_run_state.emit_signal("completed")

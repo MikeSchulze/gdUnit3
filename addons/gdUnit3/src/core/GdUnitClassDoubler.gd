@@ -13,6 +13,8 @@ const EXLCUDE_SCENE_FUNCTIONS = [
 	# needs to exclude get/set script functions otherwise it endsup in recursive endless loop
 	"set_script",
 	"get_script",
+	# needs to exclude otherwise verify fails on collection arguments on calling to string
+	"_to_string"
 ]
 
 const EXCLUDE_FUNCTIONS = ["new", "free", "get_instance_id", "get_tree"]

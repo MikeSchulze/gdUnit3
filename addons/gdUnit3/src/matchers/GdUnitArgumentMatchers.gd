@@ -10,6 +10,7 @@ func _init():
 	_instances[TYPE_INT] = AnyIntArgumentMatcher.new()
 	_instances[TYPE_REAL] = AnyFloatArgumentMatcher.new()
 	_instances[TYPE_STRING] = AnyStringArgumentMatcher.new()
+	_instances[TYPE_COLOR] = AnyColorArgumentMatcher.new()
 	_instances[TYPE_ANY] = AnyArgumentMatcher.new()
 
 static func to_matcher(arguments :Array) -> ChainedArgumentMatcher:
@@ -37,6 +38,9 @@ static func any_float() -> GdUnitArgumentMatcher:
 
 static func any_string() -> GdUnitArgumentMatcher:
 	return _instances[TYPE_STRING] 
+
+static func any_color() -> GdUnitArgumentMatcher:
+	return _instances[TYPE_COLOR]
 
 static func any_class(clazz) -> GdUnitArgumentMatcher:
 	return AnyClazzArgumentMatcher.new(clazz)
