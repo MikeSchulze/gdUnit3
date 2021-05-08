@@ -219,6 +219,9 @@ static func type_as_string(type :int) -> String:
 static func typeof_as_string(value) -> String:
 	return TYPE_AS_STRING_MAPPINGS.get(typeof(value), "Unknown type")
 
+static func all_types() -> PoolIntArray:
+	return PoolIntArray(TYPE_AS_STRING_MAPPINGS.keys())
+
 static func string_as_typeof(type :String) -> int:
 	# init STRING_AS_TYPE_MAPPINGS if empty by build a flipped copy
 	if STRING_AS_TYPE_MAPPINGS.empty():
