@@ -224,6 +224,16 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/src/matchers/EqualsArgumentMatcher.gd"
 }, {
+"base": "Reference",
+"class": "ExampleWithSignal",
+"language": "GDScript",
+"path": "res://examples/mocking/src/ExampleWithSignal.gd"
+}, {
+"base": "GdUnitTestSuite",
+"class": "ExampleWithSignalTest",
+"language": "GDScript",
+"path": "res://examples/mocking/test/ExampleWithSignalTest.gd"
+}, {
 "base": "Resource",
 "class": "Fuzzer",
 "language": "GDScript",
@@ -833,6 +843,8 @@ _global_script_class_icons={
 "CustomResourceTestClass": "",
 "DeepStubTestClass": "",
 "EqualsArgumentMatcher": "",
+"ExampleWithSignal": "",
+"ExampleWithSignalTest": "",
 "Fuzzer": "",
 "FuzzerTool": "",
 "Fuzzers": "",
