@@ -132,23 +132,107 @@ static func any() -> GdUnitArgumentMatcher:
 
 # Argument matcher to match any boolean value
 static func any_bool() -> GdUnitArgumentMatcher:
-	return GdUnitArgumentMatchers.any_bool()
+	return GdUnitArgumentMatchers.by_type(TYPE_BOOL)
 
 # Argument matcher to match any integer value
 static func any_int() -> GdUnitArgumentMatcher:
-	return GdUnitArgumentMatchers.any_int()
+	return GdUnitArgumentMatchers.by_type(TYPE_INT)
 
 # Argument matcher to match any float value
 static func any_float() -> GdUnitArgumentMatcher:
-	return GdUnitArgumentMatchers.any_float()
+	return GdUnitArgumentMatchers.by_type(TYPE_REAL)
 
 # Argument matcher to match any string value
 static func any_string() -> GdUnitArgumentMatcher:
-	return GdUnitArgumentMatchers.any_string()
+	return GdUnitArgumentMatchers.by_type(TYPE_STRING)
 
-# Argument matcher to match any color value
+# Argument matcher to match any Color value
 static func any_color() -> GdUnitArgumentMatcher:
-	return GdUnitArgumentMatchers.any_color()
+	return GdUnitArgumentMatchers.by_type(TYPE_COLOR)
+
+# Argument matcher to match any Vector2 value
+static func any_vector2() -> GdUnitArgumentMatcher:
+	return GdUnitArgumentMatchers.by_type(TYPE_VECTOR2)
+
+# Argument matcher to match any Vector3 value
+static func any_vector3() -> GdUnitArgumentMatcher:
+	return GdUnitArgumentMatchers.by_type(TYPE_VECTOR3)
+
+# Argument matcher to match any Rect2 value
+static func any_rect2() -> GdUnitArgumentMatcher:
+	return GdUnitArgumentMatchers.by_type(TYPE_RECT2)
+
+# Argument matcher to match any Plane value
+static func any_plane() -> GdUnitArgumentMatcher:
+	return GdUnitArgumentMatchers.by_type(TYPE_PLANE)
+
+# Argument matcher to match any Quat value
+static func any_quat() -> GdUnitArgumentMatcher:
+	return GdUnitArgumentMatchers.by_type(TYPE_QUAT)
+
+# Argument matcher to match any AABB value
+static func any_aabb() -> GdUnitArgumentMatcher:
+	return GdUnitArgumentMatchers.by_type(TYPE_AABB)
+
+# Argument matcher to match any Basis value
+static func any_basis() -> GdUnitArgumentMatcher:
+	return GdUnitArgumentMatchers.by_type(TYPE_BASIS)
+
+# Argument matcher to match any Transform value
+static func any_transform() -> GdUnitArgumentMatcher:
+	return GdUnitArgumentMatchers.by_type(TYPE_TRANSFORM)
+
+# Argument matcher to match any Transform2D value
+static func any_transform_2d() -> GdUnitArgumentMatcher:
+	return GdUnitArgumentMatchers.by_type(TYPE_TRANSFORM2D)
+
+# Argument matcher to match any NodePath value
+static func any_node_path() -> GdUnitArgumentMatcher:
+	return GdUnitArgumentMatchers.by_type(TYPE_NODE_PATH)
+
+# Argument matcher to match any RID value
+static func any_rid() -> GdUnitArgumentMatcher:
+	return GdUnitArgumentMatchers.by_type(TYPE_RID)
+
+# Argument matcher to match any Object value
+static func any_object() -> GdUnitArgumentMatcher:
+	return GdUnitArgumentMatchers.by_type(TYPE_OBJECT)
+
+# Argument matcher to match any Dictionary value
+static func any_dictionary() -> GdUnitArgumentMatcher:
+	return GdUnitArgumentMatchers.by_type(TYPE_DICTIONARY)
+
+# Argument matcher to match any Array value
+static func any_array() -> GdUnitArgumentMatcher:
+	return GdUnitArgumentMatchers.by_type(TYPE_ARRAY)
+
+# Argument matcher to match any PoolByteArray value
+static func any_pool_byte_array() -> GdUnitArgumentMatcher:
+	return GdUnitArgumentMatchers.by_type(TYPE_RAW_ARRAY)
+
+# Argument matcher to match any PoolIntArray value
+static func any_pool_int_array() -> GdUnitArgumentMatcher:
+	return GdUnitArgumentMatchers.by_type(TYPE_INT_ARRAY)
+
+# Argument matcher to match any PoolRealArray value
+static func any_pool_float_array() -> GdUnitArgumentMatcher:
+	return GdUnitArgumentMatchers.by_type(TYPE_REAL_ARRAY)
+
+# Argument matcher to match any PoolStringArray value
+static func any_pool_string_array() -> GdUnitArgumentMatcher:
+	return GdUnitArgumentMatchers.by_type(TYPE_STRING_ARRAY)
+
+# Argument matcher to match any PoolVector2Array value
+static func any_pool_vector2_array() -> GdUnitArgumentMatcher:
+	return GdUnitArgumentMatchers.by_type(TYPE_VECTOR2_ARRAY)
+
+# Argument matcher to match any PoolVector3Array value
+static func any_pool_vector3_array() -> GdUnitArgumentMatcher:
+	return GdUnitArgumentMatchers.by_type(TYPE_VECTOR3_ARRAY)
+
+# Argument matcher to match any PoolColorArray value
+static func any_pool_color_array() -> GdUnitArgumentMatcher:
+	return GdUnitArgumentMatchers.by_type(TYPE_COLOR_ARRAY)
 
 # Argument matcher to match any instance of given class
 static func any_class(clazz :Object) -> GdUnitArgumentMatcher:

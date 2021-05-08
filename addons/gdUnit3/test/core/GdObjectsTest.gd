@@ -491,3 +491,36 @@ func test_extract_class_functions() -> void:
 	for f in functions:
 		if f["name"] == "get_path":
 			assert_str(GdFunctionDescriptor.extract_from(f)._to_string()).is_equal("func get_path() -> String:")
+
+func test_all_types() -> void:
+	assert_array(GdObjects.all_types()).contains_exactly([
+		TYPE_NIL,
+		TYPE_BOOL,
+		TYPE_INT,
+		TYPE_REAL,
+		TYPE_STRING,
+		TYPE_VECTOR2,
+		TYPE_RECT2,
+		TYPE_VECTOR3,
+		TYPE_TRANSFORM2D,
+		TYPE_PLANE,
+		TYPE_QUAT,
+		TYPE_AABB,
+		TYPE_BASIS,
+		TYPE_TRANSFORM,
+		TYPE_COLOR,
+		TYPE_NODE_PATH,
+		TYPE_RID,
+		TYPE_OBJECT,
+		TYPE_DICTIONARY,
+		TYPE_ARRAY,
+		TYPE_RAW_ARRAY,
+		TYPE_INT_ARRAY,
+		TYPE_REAL_ARRAY,
+		TYPE_STRING_ARRAY,
+		TYPE_VECTOR2_ARRAY,
+		TYPE_VECTOR3_ARRAY,
+		TYPE_COLOR_ARRAY,
+		GdObjects.TYPE_VOID,
+		GdObjects.TYPE_VARARG,
+	])

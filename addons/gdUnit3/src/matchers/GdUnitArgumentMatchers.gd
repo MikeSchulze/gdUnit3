@@ -6,11 +6,8 @@ const _instances = Dictionary()
 
 
 func _init():
-	_instances[TYPE_BOOL] = AnyBoolArgumentMatcher.new()
-	_instances[TYPE_INT] = AnyIntArgumentMatcher.new()
-	_instances[TYPE_REAL] = AnyFloatArgumentMatcher.new()
-	_instances[TYPE_STRING] = AnyStringArgumentMatcher.new()
-	_instances[TYPE_COLOR] = AnyColorArgumentMatcher.new()
+	for build_in_type in GdObjects.all_types():
+		_instances[build_in_type] = AnyBuildInTypeArgumentMatcher.new(build_in_type)
 	_instances[TYPE_ANY] = AnyArgumentMatcher.new()
 
 static func to_matcher(arguments :Array) -> ChainedArgumentMatcher:
@@ -27,20 +24,8 @@ static func to_matcher(arguments :Array) -> ChainedArgumentMatcher:
 static func any() -> GdUnitArgumentMatcher:
 	return _instances[TYPE_ANY]
 
-static func any_bool() -> GdUnitArgumentMatcher:
-	return _instances[TYPE_BOOL]
-
-static func any_int() -> GdUnitArgumentMatcher:
-	return _instances[TYPE_INT]
-
-static func any_float() -> GdUnitArgumentMatcher:
-	return _instances[TYPE_REAL]
-
-static func any_string() -> GdUnitArgumentMatcher:
-	return _instances[TYPE_STRING] 
-
-static func any_color() -> GdUnitArgumentMatcher:
-	return _instances[TYPE_COLOR]
+static func by_type(type :int) -> GdUnitArgumentMatcher:
+	return _instances[type]
 
 static func any_class(clazz) -> GdUnitArgumentMatcher:
 	return AnyClazzArgumentMatcher.new(clazz)
