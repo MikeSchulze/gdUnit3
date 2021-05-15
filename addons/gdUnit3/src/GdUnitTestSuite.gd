@@ -51,6 +51,11 @@ func error_as_string(error_number :int) -> String:
 func auto_free(obj):
 	return GdUnitTools.register_auto_free(obj, get_meta("MEMORY_POOL"))
 
+# configue test case to expect failing by a timeout by given value is reached
+func expect_fail_with_timeout(timeout :int) -> void:
+	# TODO configure current test case to expect fail by timeout
+	pass
+
 # Creates a new directory under the temporary directory *user://tmp*
 # Useful for storing data during test execution. 
 # The directory is automatically deleted after test suite execution

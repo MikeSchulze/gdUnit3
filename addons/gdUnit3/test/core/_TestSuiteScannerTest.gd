@@ -119,3 +119,17 @@ func test_build_test_suite_path() -> void:
 	var source_path := tmp_path + "/Person.gd"
 	assert_str(_TestSuiteScanner.build_test_suite_path(source_path)).is_equal("user://tmp/test/projectX/entity/PersonTest.gd")
 
+func test_parse_and_add_test_cases() -> void:
+	var default_time := _TestCase.DEFAULT_TIMEOUT
+	var scanner = auto_free(_TestSuiteScanner.new())
+	var test_suite :GdUnitTestSuite = auto_free(GdUnitTestSuite.new())
+	var script_path := "res://addons/gdUnit3/test/core/resources/test_script_with_arguments.gd"
+	var test_case_names := PoolStringArray(["test_no_args", "test_with_timeout", "test_whith_fuzzer", "test_whith_fuzzer_iterations"])
+	scanner._parse_and_add_test_cases(test_suite, script_path, test_case_names)
+	assert_array(test_suite.get_children())\
+		.extractv(extr("get_name"), extr("timeout"), extr("fuzzer_func"), extr("iterations"))\
+		.contains_exactly([
+			tuple("test_no_args", default_time, "", 1),
+			tuple("test_with_timeout", 2000, "", 1),
+			tuple("test_whith_fuzzer", default_time, "fuzzer:=Fuzzers.rangei(-10,22)", Fuzzer.ITERATION_DEFAULT_COUNT),
+			tuple("test_whith_fuzzer_iterations", default_time, "fuzzer:=Fuzzers.rangei(-10,22)", 10)])

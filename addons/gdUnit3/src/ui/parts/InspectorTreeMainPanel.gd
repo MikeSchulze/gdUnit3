@@ -165,7 +165,8 @@ func set_state_failed(item :TreeItem) -> void:
 
 func set_state_error(item :TreeItem) -> void:
 	item.set_meta(META_GDUNIT_STATE, STATE.ERROR)
-	item.set_custom_color(0, Color.lightgreen)
+	item.set_custom_color(0, Color.darkred)
+	item.set_suffix(0, "timeout! " + item.get_suffix(0))
 	item.set_icon(0, ICON_TEST_ERROR)
 	item.collapsed = false
 
@@ -204,6 +205,8 @@ func update_state(item: TreeItem, event :GdUnitEvent) -> void:
 			set_state_warnings(item)
 		if event.is_failed():
 			set_state_failed(item)
+		if event.is_error():
+			set_state_error(item)
 		for report in event.reports():
 			add_report(item, report)
 	set_state_orphan(item, event)

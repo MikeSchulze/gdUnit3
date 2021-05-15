@@ -298,6 +298,11 @@ static func is_auto_free_registered(obj, pool :int) -> bool:
 	var obj_pool := _objects_to_delete[pool] as Array
 	return obj_pool.has(obj)
 
+
+# test is given object a valid 'GDScriptFunctionState'
+static func is_yielded(obj) -> bool:
+	return obj is GDScriptFunctionState and obj.is_valid()
+
 # runs over all registered files and closes it
 static func run_auto_close():
 	while not _files_to_close.empty():

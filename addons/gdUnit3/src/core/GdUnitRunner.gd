@@ -58,14 +58,14 @@ func _process(delta):
 			if _test_suites_to_process.empty():
 				_state = STOP
 			else:
-				set_process(false)
 				# process next test suite
 				var test_suite := _test_suites_to_process.pop_front() as GdUnitTestSuite
 				var fs = _executor.execute(test_suite)
 				# is yielded than wait for completed
-				if fs is GDScriptFunctionState:
+				if GdUnitTools.is_yielded(fs):
+					set_process(false)
 					yield(fs, "completed")
-				set_process(true)
+					set_process(true)
 		STOP:
 			_state = EXIT
 			# give the engine small amount time to finish the rpc

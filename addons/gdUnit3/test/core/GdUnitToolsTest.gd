@@ -146,3 +146,21 @@ func test_scan_dir() -> void:
 			"report_6",
 			"file_a",
 			"file_b"])
+
+func execute_timer(time:float):
+	yield(get_tree().create_timer(time),"timeout")
+
+func test_is_yielded() -> void:
+	assert_bool(GdUnitTools.is_yielded(null)).is_false()
+	assert_bool(GdUnitTools.is_yielded("abc")).is_false()
+	assert_bool(GdUnitTools.is_yielded(Resource.new())).is_false()
+	assert_bool(GdUnitTools.is_yielded(1)).is_false()
+	
+	assert_bool(GdUnitTools.is_yielded(GDScriptFunctionState.new())).is_false()
+	# start execution of a timer function with 2s
+	var fs = execute_timer(2.000)
+	# returnes function state is valid for 2s
+	assert_bool(GdUnitTools.is_yielded(fs)).is_true()
+	# wait more than 2s and the function state should be invalid
+	yield(get_tree().create_timer(2.100),"timeout")
+	assert_bool(GdUnitTools.is_yielded(fs)).is_false()
