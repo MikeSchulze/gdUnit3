@@ -255,6 +255,10 @@ static func resource_as_string(resource_path :String) -> String:
 	file.close()
 	return file_content
 
+static func normalize_text(text :String) -> String:
+	return text.replace("\r", "");
+
+
 static func free_instance(instance :Object):
 	# needs to manually exculde JavaClass
 	# see https://github.com/godotengine/godot/issues/44932
@@ -298,6 +302,11 @@ static func is_auto_free_registered(obj, pool :int) -> bool:
 	var obj_pool := _objects_to_delete[pool] as Array
 	return obj_pool.has(obj)
 
+
+# test is given object a valid 'GDScriptFunctionState'
+static func is_yielded(obj) -> bool:
+	return obj is GDScriptFunctionState and obj.is_valid()
+
 # runs over all registered files and closes it
 static func run_auto_close():
 	while not _files_to_close.empty():
@@ -327,3 +336,7 @@ static func clear_push_errors() -> void:
 	var runner = Engine.get_meta("GdUnitRunner")
 	if runner != null:
 		runner.clear_push_errors()
+
+static func register_expect_interupted_by_timeout(test_suite :Node, test_case_name :String) -> void:
+	var test_case = test_suite.find_node(test_case_name, false, false)
+	test_case.expect_to_interupt()

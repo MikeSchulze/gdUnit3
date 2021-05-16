@@ -29,7 +29,10 @@ func _on_event(event :GdUnitEvent) -> void:
 		GdUnitEvent.TESTCASE_BEFORE:
 			pass
 		GdUnitEvent.TESTRUN_AFTER:
-			status_changed(0, event.is_failed())
+			if event.is_error():
+				status_changed(event.is_error(), 0)
+			else:
+				status_changed(0, event.is_failed())
 		GdUnitEvent.TESTSUITE_BEFORE:
 			pass
 		GdUnitEvent.TESTSUITE_AFTER:

@@ -49,6 +49,14 @@ func test_parse_fuzzer_multiple_argument():
 	assert_that(_parser.parse_fuzzer("func test_foo(fuzzer = fuzzer(), arg1=42)")) \
 		.is_equal("fuzzer=fuzzer()")
 
+func test_parse_argument_timeout():
+	var DEFAULT_TIMEOUT = 1000
+	assert_that(_parser.parse_argument("func test_foo()", "timeout", DEFAULT_TIMEOUT)).is_equal(DEFAULT_TIMEOUT)
+	assert_that(_parser.parse_argument("func test_foo(timeout = 2000)", "timeout", DEFAULT_TIMEOUT)).is_equal(2000)
+	assert_that(_parser.parse_argument("func test_foo(timeout: = 2000)", "timeout", DEFAULT_TIMEOUT)).is_equal(2000)
+	assert_that(_parser.parse_argument("func test_foo(timeout:int = 2000)", "timeout", DEFAULT_TIMEOUT)).is_equal(2000)
+	assert_that(_parser.parse_argument("func test_foo(arg1 = false, timeout=2000)", "timeout", DEFAULT_TIMEOUT)).is_equal(2000)
+
 func test_parse_arguments():
 	assert_array(_parser.parse_arguments("func foo():")) \
 		.has_size(0)

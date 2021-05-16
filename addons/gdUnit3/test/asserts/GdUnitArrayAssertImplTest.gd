@@ -83,7 +83,7 @@ func test_contains_exactly():
 	assert_array([1, 2, 3, 4, 5], GdUnitAssert.EXPECT_FAIL) \
 		.contains_exactly([1, 4, 3, 2, 5])\
 		.has_error_message(expected_error_message)
-		
+
 func test_fluent():
 	assert_array([])\
 		.has_size(0)\
