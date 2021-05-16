@@ -63,5 +63,6 @@ func extractv(
 	extractor5 :GdUnitValueExtractor = null,
 	extractor6 :GdUnitValueExtractor = null,
 	extractor7 :GdUnitValueExtractor = null,
+	extractor8 :GdUnitValueExtractor = null,
 	extractor9 :GdUnitValueExtractor = null) -> GdUnitArrayAssert:
 	return self

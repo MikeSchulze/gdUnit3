@@ -138,6 +138,33 @@ class TestObj:
 	
 	func get_x():
 		return _x
+	
+	func get_x1() -> String:
+		return "x1"
+	
+	func get_x2() -> String:
+		return "x2"
+	
+	func get_x3() -> String:
+		return "x3"
+	
+	func get_x4() -> String:
+		return "x4"
+	
+	func get_x5() -> String:
+		return "x5"
+	
+	func get_x6() -> String:
+		return "x6"
+	
+	func get_x7() -> String:
+		return "x7"
+	
+	func get_x8() -> String:
+		return "x8"
+	
+	func get_x9() -> String:
+		return "x9"
 
 func test_extractv() -> void:
 	# single extract
@@ -152,3 +179,21 @@ func test_extractv() -> void:
 	assert_array([TestObj.new("A", 10), TestObj.new("B", "foo", "bar"), TestObj.new("C", 11, 42)])\
 		.extractv(extr("get_name"), extr("get_value"), extr("get_x"))\
 		.contains_exactly([tuple("A", 10, null), tuple("B", "foo", "bar"), tuple("C", 11, 42)])
+
+func test_extractv_max_args() -> void:
+		assert_array([TestObj.new("A", 10), TestObj.new("B", "foo", "bar"), TestObj.new("C", 11, 42)])\
+		.extractv(\
+			extr("get_name"),
+			extr("get_x1"),
+			extr("get_x2"),
+			extr("get_x3"),
+			extr("get_x4"),
+			extr("get_x5"),
+			extr("get_x6"),
+			extr("get_x7"),
+			extr("get_x8"),
+			extr("get_x9"))\
+		.contains_exactly([
+			tuple("A", "x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8", "x9"),
+			tuple("B", "x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8", "x9"),
+			tuple("C", "x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8", "x9")])
