@@ -1,7 +1,7 @@
 tool
 extends EditorPlugin
 
-var _gd_inspector :GdUnitInspecor
+var _gd_inspector :Node
 var _server_node
 var _gd_console:Node
 var _singleton :GdUnitSingleton = GdUnitSingleton.new()
