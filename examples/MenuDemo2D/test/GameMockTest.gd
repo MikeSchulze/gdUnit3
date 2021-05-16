@@ -1,5 +1,5 @@
 # GdUnit generated TestSuite
-class_name GameTest
+class_name GameMockTest
 extends GdUnitTestSuite
 
 # TestSuite generated from
@@ -8,9 +8,13 @@ const __source = 'res://examples/MenuDemo2D/src/Game.gd'
 # enable only for visualisize the scene steps
 var _debug_wait = false
 
-func test_game_connected_signals():
+func test_game_scene_mocked():
 	var scene = mock("res://examples/MenuDemo2D/src/Game.tscn")
 	scene_runner(scene)
+	# check inital state 
+	verify(scene, 0)._on_game_paused(any_bool())
+	assert_str(scene._label.text).is_equal("App started")
+	assert_str(scene._state_label.text).is_equal("Game Init");
 	assert_bool(scene._game_repository.is_connected("new_game", scene, "_on_new_game")).is_true()
 	assert_bool(scene._game_repository.is_connected("load_game", scene, "_on_load_game")).is_true()
 	assert_bool(scene._game_repository.is_connected("save_game", scene, "_on_save_game")).is_true()
@@ -18,10 +22,6 @@ func test_game_connected_signals():
 func test_game_menu_open_close():
 	var scene = mock("res://examples/MenuDemo2D/src/Game.tscn")
 	var scene_runner := scene_runner(scene)
-	# check inital state 
-	verify(scene, 0)._on_game_paused(any_bool())
-	assert_str(scene._label.text).is_equal("App started")
-	assert_str(scene._state_label.text).is_equal("Game Init");
 	
 	# first esc press to open the main menu
 	scene_runner.simulate_key_pressed(KEY_ESCAPE)
@@ -36,10 +36,6 @@ func test_game_menu_open_close():
 func test_game_menu_new_game_esc():
 	var scene = mock("res://examples/MenuDemo2D/src/Game.tscn")
 	var scene_runner := scene_runner(scene)
-	# check inital state 
-	verify(scene, 0)._on_game_paused(any_bool())
-	assert_str(scene._label.text).is_equal("App started")
-	assert_str(scene._state_label.text).is_equal("Game Init");
 	
 	# simulate esc pressed to open the main menu
 	scene_runner.simulate_key_pressed(KEY_ESCAPE)
@@ -76,11 +72,6 @@ func test_game_menu_new_game_esc():
 func test_game_menu_new_game_press_new():
 	var scene = mock("res://examples/MenuDemo2D/src/Game.tscn")
 	var scene_runner := scene_runner(scene)
-	# check inital state 
-	verify(scene, 0)._on_game_paused(any_bool())
-	assert_str(scene._label.text).is_equal("App started")
-	assert_str(scene._state_label.text).is_equal("Game Init");
-	assert_bool(scene._game_repository.is_connected("new_game", scene, "_on_new_game")).is_true()
 	
 	# simulate esc pressed to open the main menu
 	scene_runner.simulate_key_pressed(KEY_ESCAPE)

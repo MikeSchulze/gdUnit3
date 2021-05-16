@@ -1,12 +1,48 @@
 # GdUnit generated TestSuite
-class_name ExampleWithSignalTest
+class_name ExampleMockWithSignalTest
 extends GdUnitTestSuite
 
 # TestSuite generated from
 const __source = 'res://examples/mocking/src/ExampleWithSignal.gd'
 
+func test_mock_default_mode() -> void:
+	# build a mock for class ExampleWithSignal (default mode RETURN_DEFAULTS)
+	# default mode means no real implementation is called and a default value is returnd instead
+	# this mode is usefull when you need a not fully initalisized object for testing
+	# you have to override (mock) functions to return a specific value
+	var mock :ExampleWithSignal = mock(ExampleWithSignal)
+	
+	# we did not initially have any recorded interactions on this mock
+	verify_no_interactions(mock)
+	
+	# call function foo with value 0 
+	mock.foo(0)
+	
+	# and we can verify we have called `foo` with argument '0'
+	verify(mock).foo(0)
+	
+	# and no more other interactions on this mock was hapen
+	verify_no_more_interactions(mock)
+	
+	# if you call a function a 'default' value based on return type is returnd
+	assert_object(mock.create_fighter("a")).is_null()
+	
+	# We can 'override' a function that returns a user-defined value for a specific argument.
+	# in this case for 'create_fighter("a")' and 'create_fighter("b")'
+	do_return(ExampleWithSignal.FooFighter.new("my fighter a"))\
+		.on(mock)\
+		.create_fighter("a")
+	do_return(ExampleWithSignal.FooFighter.new("my fighter b"))\
+		.on(mock)\
+		.create_fighter("b")
+	# let check this works
+	assert_object(mock.create_fighter("a")).is_equal(ExampleWithSignal.FooFighter.new("my fighter a"))
+	assert_object(mock.create_fighter("b")).is_equal(ExampleWithSignal.FooFighter.new("my fighter b"))
+
 func test_foo_emits_test_signal_a() -> void:
-	# build a mock for class ExampleWithSignal and we using call real implementation
+	# build a mock for class ExampleWithSignal and we using mode CALL_REAL_FUNC
+	# on this mode the real implementaion is called
+	# you can still override (mock) implementations  
 	var mock :ExampleWithSignal = mock(ExampleWithSignal, CALL_REAL_FUNC)
 	
 	# we did not initially have any recorded interactions on this mock
