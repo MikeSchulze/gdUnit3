@@ -156,7 +156,6 @@ func test_is_yielded() -> void:
 	assert_bool(GdUnitTools.is_yielded(Resource.new())).is_false()
 	assert_bool(GdUnitTools.is_yielded(1)).is_false()
 	
-	assert_bool(GdUnitTools.is_yielded(GDScriptFunctionState.new())).is_false()
 	# start execution of a timer function with 2s
 	var fs = execute_timer(2.000)
 	# returnes function state is valid for 2s

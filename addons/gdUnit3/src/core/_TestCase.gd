@@ -11,10 +11,11 @@ var _fuzzer_func: String = ""
 var _line_number: int = -1
 var _script_path: String
 var _skipped := false
+var _expect_to_interupt := false
 
 var _timer : Timer = Timer.new()
 var _fs
-var _aborted :bool = false
+var _interupted :bool = false
 var _timeout :int
 
 func _init() -> void:
@@ -54,13 +55,19 @@ func set_timeout():
 	_timer.start()
 
 func _test_case_timeout():
-	_aborted = true
+	_interupted = true
 	if _fs is GDScriptFunctionState:
 		yield(get_tree(), "idle_frame")
 		_fs.emit_signal("completed")
 
-func is_aborted() -> bool:
-	return _aborted
+func is_interupted() -> bool:
+	return _interupted
+
+func expect_to_interupt() -> void:
+	_expect_to_interupt = true
+
+func is_expect_interupted() -> bool:
+	 return _expect_to_interupt
 
 func line_number() -> int:
 	return _line_number

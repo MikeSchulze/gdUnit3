@@ -122,7 +122,7 @@ func after_test(test_suite :GdUnitTestSuite, test_case :_TestCase) -> GDScriptFu
 
 	var test_warnings := false
 	var test_failed := not _reports.empty()
-	var test_errors := test_case.is_aborted()
+	var test_errors := test_case.is_interupted() and not test_case.is_expect_interupted()
 	var orphan_nodes = _mem_monitor_testcase.orphan_nodes()
 	# create report if  orphan nodes detected
 	if orphan_nodes > 0:
@@ -163,7 +163,7 @@ func _after_test_run(test_suite :GdUnitTestSuite, test_case :_TestCase):
 	_mem_monitor_testrun.stop()
 	var test_warnings := false
 	var test_failed := not _reports.empty()
-	var test_errors := test_case.is_aborted()
+	var test_errors := test_case.is_interupted() and not test_case.is_expect_interupted()
 	var orphan_nodes := _mem_monitor_testrun.orphan_nodes()
 	_total_test_orphan_nodes += orphan_nodes
 	_total_test_failed += test_failed as int
@@ -216,10 +216,10 @@ func execute_test_case(test_suite :GdUnitTestSuite, test_case :_TestCase) -> GDS
 				# is yielded than wait for completed
 				if GdUnitTools.is_yielded(_test_run_state):
 					yield(_test_run_state, "completed")
-				if test_case.is_aborted():
+				if test_case.is_interupted():
 					break
 	
-	if test_case.is_aborted():
+	if test_case.is_interupted() and not test_case.is_expect_interupted():
 		_reports.push_front(GdUnitReport.new() \
 				.create(GdUnitReport.INTERUPTED, test_case.line_number(), "Test timed out after %s" % LocalTime.elapsed(test_case.timeout())))
 	
@@ -256,11 +256,12 @@ func execute(test_suite :GdUnitTestSuite) -> GDScriptFunctionState:
 			# stop on first error if fail fast enabled
 			if _fail_fast and _total_test_failed > 0:
 				break
+			test_suite.set_active_test_case(test_case.get_name())
 			fs = execute_test_case(test_suite, test_case)
 			# is yielded than wait for completed
 			if GdUnitTools.is_yielded(fs):
 				yield(fs, "completed")
-				if test_case.is_aborted():
+				if test_case.is_interupted():
 					# it needs to go this hard way to kill the outstanding yields of a test case when the test timed out
 					# we delete the current test suite where is execute the current test case to kill the function state
 					# and replace it by a clone without function state

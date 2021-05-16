@@ -24,7 +24,8 @@ func report_error(error :String) -> GdUnitArrayAssert:
 
 # -------- Base Assert wrapping ------------------------------------------------
 func has_error_message(expected: String) -> GdUnitArrayAssert:
-	_base.has_error_message(expected)
+	# normalize text to get rid of windows vs unix line formatting
+	_base.has_error_message(GdUnitTools.normalize_text(expected))
 	return self
 
 func starts_with_error_message(expected: String) -> GdUnitArrayAssert:

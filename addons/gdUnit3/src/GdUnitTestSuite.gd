@@ -41,6 +41,11 @@ func skip(skipped :bool) -> void:
 func is_skipped() -> bool:
 	return get_meta("gd_skipped") if has_meta("gd_skipped") else false
 
+
+var __active_test_case :String
+func set_active_test_case(test_case :String) -> void:
+	__active_test_case = test_case
+
 # === Tools ====================================================================
 # Mapps Godot error number to a readable error message. See at ERROR
 # https://docs.godotengine.org/de/stable/classes/class_@globalscope.html#enum-globalscope-error
@@ -51,10 +56,11 @@ func error_as_string(error_number :int) -> String:
 func auto_free(obj):
 	return GdUnitTools.register_auto_free(obj, get_meta("MEMORY_POOL"))
 
-# configue test case to expect failing by a timeout by given value is reached
-func expect_fail_with_timeout(timeout :int) -> void:
-	# TODO configure current test case to expect fail by timeout
-	pass
+# Discard the error message triggered by a timeout (interruption).
+# By default, an interrupted test is reported as an error.
+# This function allows you to change the message to Success when an interrupted error is reported.
+func discard_error_interupted_by_timeout() -> void:
+	GdUnitTools.register_expect_interupted_by_timeout(self, __active_test_case)
 
 # Creates a new directory under the temporary directory *user://tmp*
 # Useful for storing data during test execution. 

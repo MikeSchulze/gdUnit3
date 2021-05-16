@@ -677,11 +677,3 @@ static func markTextDifferences(text1 :String, text2 :String, lcsList :PoolStrin
 				word2LastIndex += 1
 
 	return stringBuffer
-
-
-# Normalizes given string by deleting \n, \t and extra spaces.
-static func normalizeText(text :String) -> String:
-	#text = text.trim();
-	text = text.replace("\n", " ");
-	text = text.replace("\t", " ");
-	return text.replace("  ", " ");

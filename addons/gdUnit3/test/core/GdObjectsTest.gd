@@ -169,15 +169,6 @@ func test_string_diff_empty():
 func test_string_diff():
 	assert_array(GdObjects.string_diff("Abc", "abc")).is_equal(["￵A￳abc", "￳A￵abc"])
 	
-func _test_longestCommonSubsequence():
-	assert_str("This is a test message").is_equal("This is a test Message")
-	var text1 := GdObjects.normalizeText("This is a test message")
-	var text2 := GdObjects.normalizeText("This is a gread test Message")
-	
-	prints(GdObjects.longestCommonSubsequence(text1, text2))
-	#prints(GdObjects.markTextDifferences(text1, text2, l, Color.green, Color.red))
-
-
 class TestClassForIsType:
 	var x
 
