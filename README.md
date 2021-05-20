@@ -2,8 +2,10 @@
 # GdUnit3 - Godot Unit Test Framework ![Godot v3.2](https://img.shields.io/badge/Godot-v3.2-%23478cbf?logo=godot-engine&logoColor=white) ![Godot v3.3](https://img.shields.io/badge/Godot-v3.3-%23478cbf?logo=godot-engine&logoColor=white)
 ![GdUnit3 Unit Test Framework](.//addons/gdUnit3/GdUnit3Banner.png)
 
-## Beta Phase!
-Please notice the plugin is still in beta phase and has current no acceptance to be bug free or complete
+## Release Candidate
+Please notice the plugin is the first release candidate and has current no acceptance to be bug.
+You are welcome to report bugs or create new feature requests.
+I would also appreciate feedback.
 
 # GdUnit3
 * Fully integrated in the Godot editor
