@@ -2,8 +2,8 @@ class_name GdUnitSpyTest
 extends GdUnitTestSuite
 
 # small helper to verify last assert error
-static func assert_last_error(expected :String):
-	var gd_assert := GdUnitAssertImpl.new("")
+func assert_last_error(expected :String):
+	var gd_assert := GdUnitAssertImpl.new(self, "")
 	if Engine.has_meta(GdAssertReports.LAST_ERROR):
 		gd_assert._current_error_message = Engine.get_meta(GdAssertReports.LAST_ERROR)
 	gd_assert.has_error_message(expected)

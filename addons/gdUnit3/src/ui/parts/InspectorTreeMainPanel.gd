@@ -133,6 +133,11 @@ func cleanup_tree() -> void:
 	for child in _report_list.get_children():
 		_report_list.remove_child(child)
 
+func select_item(item :TreeItem) -> void:
+	if not item.is_selected(0):
+		item.select(0)
+		_tree.ensure_cursor_is_visible()
+
 func set_state_running(item :TreeItem) -> void:
 	item.set_custom_color(0, Color.darkgreen)
 	item.set_icon(0, ICON_SPINNER)
@@ -142,8 +147,8 @@ func set_state_running(item :TreeItem) -> void:
 	item.remove_meta(META_GDUNIT_ORPHAN)
 	item.collapsed = false
 	# force scrolling to current test case
-	item.select(0)
-	_tree.ensure_cursor_is_visible()
+	select_item(item)
+	
 
 func set_state_succeded(item :TreeItem) -> void:
 	item.set_meta(META_GDUNIT_STATE, STATE.SUCCESS)
@@ -233,12 +238,11 @@ func abort_running() -> void:
 func select_first_error() -> void:
 	var parent := _tree_root.get_children()
 	while parent != null:
-		if not is_state_success(parent):
+		if is_state_failed(parent) or is_state_error(parent):
 			var item :=  parent.get_children()
 			while item != null:
-				if not is_state_success(item):
-					item.select(0)
-					_tree.ensure_cursor_is_visible()
+				if is_state_failed(item) or is_state_error(item):
+					select_item(item)
 					return
 				item = item.get_next()
 		parent = parent.get_next()
@@ -251,8 +255,7 @@ func select_first_orphan() -> void:
 			while item != null:
 				if is_item_state_orphan(item):
 					parent.set_collapsed(false)
-					item.select(0)
-					_tree.ensure_cursor_is_visible()
+					select_item(item)
 					return
 				item = item.get_next()
 		parent = parent.get_next()
@@ -387,11 +390,12 @@ func _on_event(event:GdUnitEvent) -> void:
 	match event.type():
 		GdUnitEvent.INIT:
 			init_tree()
+		GdUnitEvent.STOP:
+			select_first_error()
+			show_failed_report(_tree.get_selected())
 		GdUnitEvent.TESTCASE_BEFORE:
 			update_test_case(event)
 		GdUnitEvent.TESTCASE_AFTER:
-			update_test_case(event)
-		GdUnitEvent.TESTRUN_AFTER:
 			update_test_case(event)
 		GdUnitEvent.TESTSUITE_BEFORE:
 			update_test_suite(event)

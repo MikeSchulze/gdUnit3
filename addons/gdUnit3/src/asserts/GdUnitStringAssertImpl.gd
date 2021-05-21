@@ -3,8 +3,8 @@ extends GdUnitStringAssert
 
 var _base :GdUnitAssert
 
-func _init(current, expect_result :int):
-	_base = GdUnitAssertImpl.new(current, expect_result)
+func _init(caller :Object, current, expect_result :int):
+	_base = GdUnitAssertImpl.new(caller, current, expect_result)
 	if typeof(current) != TYPE_STRING:
 		report_error("GdUnitStringAssert inital error, unexpected type <%s>" % GdObjects.typeof_as_string(current))
 

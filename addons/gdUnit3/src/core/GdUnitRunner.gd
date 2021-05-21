@@ -28,7 +28,6 @@ func _init():
 		OS.set_window_title("GdUnit3 Runner (Debug)")
 		OS.set_window_minimized(true)
 	_signal_handler = GdUnitSingleton.get_or_create_singleton(SignalHandler.SINGLETON_NAME, "res://addons/gdUnit3/src/core/event/SignalHandler.gd")
-	_signal_handler.register_on_gdunit_events(self, "_on_send_event")
 	# store current runner instance to engine meta data to can be access in as a singleton
 	Engine.set_meta(GDUNIT_RUNNER, self)
 

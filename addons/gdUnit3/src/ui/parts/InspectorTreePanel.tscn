@@ -106,6 +106,7 @@ keep_pressed_outside = true
 text = "Run Test"
 align = 0
 switch_on_hover = true
+
 [connection signal="column_title_pressed" from="Panel/Tree" to="." method="_on_Tree_column_title_pressed"]
 [connection signal="item_activated" from="Panel/Tree" to="." method="_on_Tree_item_activated"]
 [connection signal="item_double_clicked" from="Panel/Tree" to="." method="_on_Tree_item_double_clicked"]

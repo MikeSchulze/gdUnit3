@@ -21,6 +21,12 @@ func args() -> Array:
 func extract_value(value):
 	if value == null:
 		return null
+	
+	# for array types we need to call explicit by function name, using funcref is only supported for Objects
+	# TODO extend to all array functions
+	if GdObjects.is_array_type(value) and func_name() == "empty":
+		return value.empty()
+	
 	if not (value is Object):
 		if GdUnitSettings.is_verbose_assert_warnings():
 			push_warning("Extracting value from element '%s' by func '%s' failed! Converting to \"n.a.\"" % [value, func_name()])

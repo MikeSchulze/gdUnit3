@@ -51,16 +51,16 @@ static func _expected(value, delimiter ="\n") -> String:
 				return "[color=%s]%s[/color]" % [VALUE_COLOR, GdObjects.array_to_string(value, delimiter)]
 			return "'[color=%s]%s[/color]'" % [VALUE_COLOR, value]
 
-static func orphan_detected_on_before(count :int):
-	return "%s\n Detected <%d> orphan nodes on stage [b]before()[/b]!" % [
+static func orphan_detected_on_suite_setup(count :int):
+	return "%s\n Detected <%d> orphan nodes during test suite setup stage! [b]Check before() and after()![/b]" % [
 		_warning("WARNING:"), count]
 
-static func orphan_detected_on_before_test(count :int):
-	return "%s\n Detected <%d> orphan nodes on stage [b]before_test()[/b]!" % [
+static func orphan_detected_on_test_setup(count :int):
+	return "%s\n Detected <%d> orphan nodes during test setup! [b]Check before_test() and after_test()![/b]" % [
 		_warning("WARNING:"), count]
 
 static func orphan_detected_on_test(count :int):
-	return "%s\n Detected <%d> orphan nodes!" % [
+	return "%s\n Detected <%d> orphan nodes during test execution!" % [
 		_warning("WARNING:"), count]
 	
 static func fuzzer_interuped(iterations: int, error: String) -> String:

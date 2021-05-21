@@ -28,12 +28,15 @@ func _on_event(event :GdUnitEvent) -> void:
 			status_changed(0, 0)
 		GdUnitEvent.TESTCASE_BEFORE:
 			pass
-		GdUnitEvent.TESTRUN_AFTER:
+		GdUnitEvent.TESTCASE_AFTER:
 			if event.is_error():
-				status_changed(event.is_error(), 0)
+				status_changed(event.error_count(), 0)
 			else:
-				status_changed(0, event.is_failed())
+				status_changed(0, event.failed_count())
 		GdUnitEvent.TESTSUITE_BEFORE:
 			pass
 		GdUnitEvent.TESTSUITE_AFTER:
-			pass
+			if event.is_error():
+				status_changed(event.error_count(), 0)
+			else:
+				status_changed(0, event.failed_count())

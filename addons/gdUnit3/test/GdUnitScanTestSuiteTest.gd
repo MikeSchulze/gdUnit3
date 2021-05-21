@@ -21,4 +21,4 @@ func  	 test_b21 		 ( 	 ) 	 	 :
 func after():
 	assert_array(get_children())\
 		.extract("get_name")\
-		.contains_exactly(["test_a", "test_b", "test_b2", "test_b21"])
+		.contains_exactly(["test_example", "test_b", "test_b2", "test_b21"])

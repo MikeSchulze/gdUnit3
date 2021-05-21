@@ -246,19 +246,9 @@ class CLIRunner extends Node:
 			GdUnitEvent.TESTSUITE_AFTER:
 				_report.update_test_suite_report(event.suite_name(), event.skipped_count(), event.orphan_nodes(),  event.elapsed_time())
 				
-			GdUnitEvent.TESTRUN_BEFORE:
+			GdUnitEvent.TESTCASE_BEFORE:
 				_report.add_testcase_report(event.suite_name(), GdUnitTestCaseReport.new(event.test_name()))
 			
-			GdUnitEvent.TESTRUN_AFTER:
-				var test_report := GdUnitTestCaseReport.new(
-					event.test_name(),
-					event.is_failed(),
-					event.orphan_nodes(),
-					event.skipped_count(),
-					event.reports(),
-					event.elapsed_time())
-				_report.update_testcase_report(event.suite_name(), test_report)
-				
 			GdUnitEvent.TESTCASE_AFTER:
 				var test_report := GdUnitTestCaseReport.new(
 					event.test_name(),
@@ -266,7 +256,7 @@ class CLIRunner extends Node:
 					event.orphan_nodes(),
 					event.skipped_count(),
 					event.reports(),
-					0)
+					event.elapsed_time())
 				_report.update_testcase_report(event.suite_name(), test_report)
 		print_status(event)
 	
@@ -289,7 +279,7 @@ class CLIRunner extends Node:
 				_console.print_color("	Run Test: %s > %s :" % [event.resource_path(), event.test_name()], Color.antiquewhite)\
 					.prints_color("STARTED", Color.forestgreen)
 			
-			GdUnitEvent.TESTRUN_AFTER:
+			GdUnitEvent.TESTCASE_AFTER:
 				_console.print_color("	Run Test: %s > %s :" % [event.resource_path(), event.test_name()], Color.antiquewhite)
 				_print_status(event)
 			

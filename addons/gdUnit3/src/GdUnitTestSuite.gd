@@ -54,7 +54,7 @@ func error_as_string(error_number :int) -> String:
 
 # A litle helper to auto freeing your created objects after test execution
 func auto_free(obj):
-	return GdUnitTools.register_auto_free(obj, get_meta("MEMORY_POOL"))
+	return GdUnitTools.register_auto_free(obj, get_meta(GdUnitMemoryPool.META_PARAM))
 
 # Discard the error message triggered by a timeout (interruption).
 # By default, an interrupted test is reported as an error.
@@ -110,11 +110,11 @@ const RETURN_DEEP_STUB = GdUnitMock.RETURN_DEEP_STUB
 
 # Creates a mock for given class name
 func mock(clazz, mock_mode := RETURN_DEFAULTS):
-	return GdUnitMockBuilder.build(clazz, mock_mode, get_meta("MEMORY_POOL"))
+	return GdUnitMockBuilder.build(self, clazz, mock_mode)
 
 # Creates a spy on given object instance
 func spy(instance):
-	return GdUnitSpyBuilder.build(instance, get_meta("MEMORY_POOL"))
+	return GdUnitSpyBuilder.build(self, instance)
 
 # Configures a return value for the specified function and used arguments.
 func do_return(value) -> GdUnitMock:
@@ -126,11 +126,11 @@ func verify(obj, times := 1, expect_result :int = GdUnitAssert.EXPECT_SUCCESS):
 
 # Verifies no interactions is happen on this mock or spy
 func verify_no_interactions(obj, expect_result :int = GdUnitAssert.EXPECT_SUCCESS) -> GdUnitAssert:
-	return GdUnitObjectInteractions.verify_no_interactions(obj, expect_result)
+	return GdUnitObjectInteractions.verify_no_interactions(self, obj, expect_result)
 
 # Verifies the given mock or spy has any unverified interaction.
 func verify_no_more_interactions(obj, expect_result :int = GdUnitAssert.EXPECT_SUCCESS) -> GdUnitAssert:
-	return GdUnitObjectInteractions.verify_no_more_interactions(obj, expect_result)
+	return GdUnitObjectInteractions.verify_no_more_interactions(self, obj, expect_result)
 
 # Resets the saved function call counters on a mock or spy
 func reset(obj) -> void:
@@ -278,31 +278,31 @@ func assert_that(current, expect_result: int = GdUnitAssert.EXPECT_SUCCESS) -> G
 			return assert_object(current, expect_result)
 
 func assert_bool(current, expect_result: int = GdUnitAssert.EXPECT_SUCCESS) -> GdUnitBoolAssert:
-	return GdUnitBoolAssertImpl.new(current, expect_result)
+	return GdUnitBoolAssertImpl.new(self, current, expect_result)
 
 func assert_str(current, expect_result: int = GdUnitAssert.EXPECT_SUCCESS) -> GdUnitStringAssert:
-	return GdUnitStringAssertImpl.new(current, expect_result)
+	return GdUnitStringAssertImpl.new(self, current, expect_result)
 
 func assert_int(current, expect_result: int = GdUnitAssert.EXPECT_SUCCESS) -> GdUnitIntAssert:
-	return GdUnitIntAssertImpl.new(current, expect_result)
+	return GdUnitIntAssertImpl.new(self, current, expect_result)
 
 func assert_float(current, expect_result: int = GdUnitAssert.EXPECT_SUCCESS) -> GdUnitFloatAssert:
-	return GdUnitFloatAssertImpl.new(current, expect_result)
+	return GdUnitFloatAssertImpl.new(self, current, expect_result)
 
 func assert_array(current, expect_result: int = GdUnitAssert.EXPECT_SUCCESS) -> GdUnitArrayAssert:
-	return GdUnitArrayAssertImpl.new(current, expect_result)
+	return GdUnitArrayAssertImpl.new(self, current, expect_result)
 
 func assert_dict(current, expect_result: int = GdUnitAssert.EXPECT_SUCCESS) -> GdUnitDictionaryAssert:
-	return GdUnitDictionaryAssertImpl.new(current, expect_result)
+	return GdUnitDictionaryAssertImpl.new(self, current, expect_result)
 
-static func assert_file(current, expect_result: int = GdUnitAssert.EXPECT_SUCCESS) -> GdUnitFileAssert:
-	return GdUnitFileAssertImpl.new(current, expect_result)
+func assert_file(current, expect_result: int = GdUnitAssert.EXPECT_SUCCESS) -> GdUnitFileAssert:
+	return GdUnitFileAssertImpl.new(self, current, expect_result)
 
 func assert_object(current, expect_result: int = GdUnitAssert.EXPECT_SUCCESS) -> GdUnitObjectAssert:
-	return GdUnitObjectAssertImpl.new(current, get_meta("MEMORY_POOL"), expect_result)
+	return GdUnitObjectAssertImpl.new(self, current, expect_result)
 
 func assert_result(current :Result, expect_result: int = GdUnitAssert.EXPECT_SUCCESS) -> GdUnitResultAssert:
-	return GdUnitResultAssertImpl.new(current, get_meta("MEMORY_POOL"), expect_result)
+	return GdUnitResultAssertImpl.new(self, current, expect_result)
 
-static func assert_not_yet_implemented():
-	GdUnitAssertImpl.new(null).test_fail()
+func assert_not_yet_implemented():
+	GdUnitAssertImpl.new(self, null).test_fail()

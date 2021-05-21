@@ -4,6 +4,7 @@ var __expected_interactions :int = -1
 var __expect_result :int
 var __saved_interactions := Dictionary()
 var __verified_interactions := Array()
+var __caller :Object
 
 func __save_function_interaction(args :Array) -> void:
 	__saved_interactions[args] = __saved_interactions.get(args, 0) + 1
@@ -28,7 +29,7 @@ func __verify_interactions(args :Array):
 			# add as verified
 			__verified_interactions.append(key)
 	
-	var gd_assert := GdUnitAssertImpl.new("", __expect_result)
+	var gd_assert := GdUnitAssertImpl.new(__caller, "", __expect_result)
 	if total_interactions != __expected_interactions:
 		var expected_summary = {args : __expected_interactions}
 		var error_message :String
@@ -73,3 +74,6 @@ func __filter_vargs(arg_values :Array) -> Array:
 			continue
 		filtered.append(arg)
 	return filtered
+
+func __set_caller(caller :Object) -> void:
+	__caller = caller

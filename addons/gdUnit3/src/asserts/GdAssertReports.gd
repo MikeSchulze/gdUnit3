@@ -8,9 +8,9 @@ static func report_success(gd_assert :GdUnitAssert) -> GdUnitAssert:
 	Engine.remove_meta(LAST_ERROR)
 	if not gd_assert._expect_fail || gd_assert._is_failed:
 		return gd_assert
-	send_report(GdAssertMessages._error("Expecting to fail!"), gd_assert._get_line_number(), GdUnitReport.SUCCESS)
+	var error_msg := GdAssertMessages._error("Expecting to fail!")
+	gd_assert.send_report(GdUnitReport.new().create(GdUnitReport.SUCCESS, gd_assert._get_line_number(), error_msg))
 	return gd_assert
-
 
 static func report_error(message:String, gd_assert :GdUnitAssert, line_number :int) -> GdUnitAssert:
 	if gd_assert != null:
@@ -21,11 +21,5 @@ static func report_error(message:String, gd_assert :GdUnitAssert, line_number :i
 		# if we expect to fail we handle as success test
 		if gd_assert._expect_fail:
 			return gd_assert
-	send_report(message, line_number, GdUnitReport.ERROR)
+	gd_assert.send_report(GdUnitReport.new().create(GdUnitReport.FAILURE, line_number, message))
 	return gd_assert
-
-
-static func send_report(message :String, line_number :int, reportType = GdUnitReport.ERROR):
-	# temporary workarround
-	var eventHandler:SignalHandler = GdUnitSingleton.get_singleton(SignalHandler.SINGLETON_NAME)
-	eventHandler.send_test_report(GdUnitReport.new().create(reportType, line_number, message))

@@ -8,6 +8,7 @@ const ERRORS = "errors"
 const SKIPPED = "skipped"
 const ELAPSED_TIME = "elapsed_time"
 const ORPHAN_NODES = "orphan_nodes"
+const ERROR_COUNT = "error_count"
 const FAILED_COUNT = "failed_count"
 const SKIPPED_COUNT = "skipped_count"
 
@@ -18,8 +19,6 @@ enum  {
 	TESTSUITE_AFTER,
 	TESTCASE_BEFORE,
 	TESTCASE_AFTER,
-	TESTRUN_BEFORE,
-	TESTRUN_AFTER
 }
 
 var _event_type
@@ -30,45 +29,32 @@ var _total_count :int = 0
 var _statisics := Dictionary()
 var _reports := Array()
 
-func before(resource_path :String, suite_name :String, total_count) -> GdUnitEvent:
+func suite_before(resource_path :String, suite_name :String, total_count) -> GdUnitEvent:
 	_event_type = TESTSUITE_BEFORE
 	_resource_path = resource_path
 	_suite_name = suite_name
+	_test_name = "before"
 	_total_count = total_count
 	return self
 
-func after(resource_path :String, suite_name :String, statisics :Dictionary = {}, reports :Array = []) -> GdUnitEvent:
+func suite_after(resource_path :String, suite_name :String, statisics :Dictionary = {}, reports :Array = []) -> GdUnitEvent:
 	_event_type = TESTSUITE_AFTER
 	_resource_path = resource_path
 	_suite_name  = suite_name
+	_test_name = "after"
 	_statisics = statisics
 	_reports = reports
 	return self
 
-func beforeTest(resource_path :String, suite_name:String, test_name:String) -> GdUnitEvent:
+func test_before(resource_path :String, suite_name:String, test_name:String) -> GdUnitEvent:
 	_event_type = TESTCASE_BEFORE
 	_resource_path = resource_path
 	_suite_name  = suite_name
 	_test_name = test_name
 	return self
 
-func afterTest(resource_path :String, suite_name :String, test_name :String, statisics :Dictionary = {}, reports :Array = []) -> GdUnitEvent:
+func test_after(resource_path :String, suite_name :String, test_name :String, statisics :Dictionary = {}, reports :Array = []) -> GdUnitEvent:
 	_event_type = TESTCASE_AFTER
-	_resource_path = resource_path
-	_suite_name  = suite_name
-	_test_name = test_name
-	_statisics = statisics
-	_reports = reports
-	return self
-
-func testrun_before(suite_name:String, test_name:String) -> GdUnitEvent:
-	_event_type = TESTRUN_BEFORE
-	_suite_name  = suite_name
-	_test_name = test_name
-	return self
-	
-func testrun_after(resource_path :String, suite_name :String, test_name :String, statisics :Dictionary = {}, reports :Array = []) -> GdUnitEvent:
-	_event_type = TESTRUN_AFTER
 	_resource_path = resource_path
 	_suite_name  = suite_name
 	_test_name = test_name
@@ -97,6 +83,9 @@ func statistic(type :String) -> int:
 func total_count() -> int:
 	return _total_count
 
+func error_count() -> int:
+	return _statisics.get(ERROR_COUNT, 0)
+	
 func failed_count() -> int:
 	return _statisics.get(FAILED_COUNT, 0)
 	

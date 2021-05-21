@@ -3,8 +3,8 @@ extends GdUnitArrayAssert
 
 var _base :GdUnitAssert
 
-func _init(current, expect_result: int):
-	_base = GdUnitAssertImpl.new(current, expect_result)
+func _init(caller :Object, current, expect_result: int):
+	_base = GdUnitAssertImpl.new(caller, current, expect_result)
 	if current != null and not GdObjects.is_array_type(current):
 		report_error("GdUnitArrayAssert inital error, unexpected type <%s>" % GdObjects.typeof_as_string(current))
 
