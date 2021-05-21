@@ -1,12 +1,14 @@
 class_name GdUnitAssertImpl
 extends GdUnitAssert
 
+
 var _current
 var _is_failed :bool = false
 var _current_error_message :String = ""
 var _expect_fail :bool = false
 var _custom_error_message = null
 var _error_info = null
+var _report_consumer :WeakRef
 
 # Scans the current stack trace for the root cause to extract the line number
 static func _get_line_number() -> int:
@@ -19,14 +21,24 @@ static func _get_line_number() -> int:
 		var stack_info = stack_trace.pop_front()
 		var function :String = stack_info.get("function")
 		var source :String = stack_info.get("source")
+		# is test execution error?
 		if function == "execute" and source.find("/_TestCase.gd"):
 			return failure_line
+		# is test before/after error
+		if function == "after_test" or function == "before_test" and source.find("/GdUnitExecutor.gd"):
+			return stack_info.get("line")
+		# is suite before/after error
+		if function == "after" or function == "before" and source.find("/GdUnitExecutor.gd"):
+			return stack_info.get("line")
 		failure_line = stack_info.get("line")
 	# if no GdUnitExecutor in the stacktrace then is possible called in a yield stack
 	var stack_info = get_stack()[-1]
 	return stack_info.get("line")
 
-func _init(current, expect_result :int = EXPECT_SUCCESS):
+func _init(caller :Object, current, expect_result :int = EXPECT_SUCCESS):
+	assert(caller != null, "missing argument caller!")
+	assert(caller.has_meta(GdUnitReportConsumer.META_PARAM), "caller must register a report consumer!")
+	_report_consumer = weakref(caller.get_meta(GdUnitReportConsumer.META_PARAM))
 	_current = current
 	# we expect the test will fail
 	if expect_result == EXPECT_FAIL:
@@ -107,3 +119,6 @@ func is_not_null() -> GdUnitAssert:
 func _notification(event):
 	if event == NOTIFICATION_PREDELETE:
 		_current = null
+
+func send_report(report :GdUnitReport)-> void:
+	_report_consumer.get_ref().consume(report)

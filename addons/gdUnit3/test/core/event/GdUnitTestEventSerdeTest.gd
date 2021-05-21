@@ -2,36 +2,36 @@
 # of GdUnitEvent class
 extends GdUnitTestSuite
 	
-func test_serde_before():
-	var event := GdUnitEvent.new().before("path", "test_suite_a", 22)
+func test_serde_suite_before():
+	var event := GdUnitEvent.new().suite_before("path", "test_suite_a", 22)
 	var serialized := event.serialize()
 	var deserialized := GdUnitEvent.new().deserialize(serialized)
 	assert_that(deserialized).is_instanceof(GdUnitEvent)
 	assert_that(deserialized).is_equal(event)
 	
-func test_serde_after():
-	var event := GdUnitEvent.new().after("path","test_suite_a")
+func test_serde_suite_after():
+	var event := GdUnitEvent.new().suite_after("path","test_suite_a")
 	var serialized := event.serialize()
 	var deserialized := GdUnitEvent.new().deserialize(serialized)
 	assert_that(deserialized).is_equal(event)
 
-func test_serde_beforeTest():
-	var event := GdUnitEvent.new().beforeTest("path", "test_suite_a", "test_foo")
+func test_serde_test_before():
+	var event := GdUnitEvent.new().test_before("path", "test_suite_a", "test_foo")
 	var serialized := event.serialize()
 	var deserialized := GdUnitEvent.new().deserialize(serialized)
 	assert_that(deserialized).is_equal(event)
 
-func test_serde_afterTest_no_report():
-	var event := GdUnitEvent.new().afterTest("path", "test_suite_a", "test_foo")
+func test_serde_test_after_no_report():
+	var event := GdUnitEvent.new().test_after("path", "test_suite_a", "test_foo")
 	var serialized := event.serialize()
 	var deserialized := GdUnitEvent.new().deserialize(serialized)
 	assert_that(deserialized).is_equal(event)
 	
-func test_serde_afterTest_with_report():
+func test_serde_test_after_with_report():
 	var reports := [\
-	GdUnitReport.new().create(GdUnitReport.ERROR, 24, "this is a error a"), \
-	GdUnitReport.new().create(GdUnitReport.ERROR, 26, "this is a error b")]
-	var event := GdUnitEvent.new().afterTest("path", "test_suite_a", "test_foo", {}, reports)
+	GdUnitReport.new().create(GdUnitReport.FAILURE, 24, "this is a error a"), \
+	GdUnitReport.new().create(GdUnitReport.FAILURE, 26, "this is a error b")]
+	var event := GdUnitEvent.new().test_after("path", "test_suite_a", "test_foo", {}, reports)
 
 	var serialized := event.serialize()
 	var deserialized := GdUnitEvent.new().deserialize(serialized)
@@ -39,7 +39,7 @@ func test_serde_afterTest_with_report():
 	assert_array(deserialized.reports()).contains_exactly(reports)
 
 func test_serde_TestReport():
-	var report := GdUnitReport.new().create(GdUnitReport.ERROR, 24, "this is a error")
+	var report := GdUnitReport.new().create(GdUnitReport.FAILURE, 24, "this is a error")
 	var serialized := report.serialize()
 	var deserialized := GdUnitReport.new().deserialize(serialized)
 	assert_that(deserialized).is_equal(report)

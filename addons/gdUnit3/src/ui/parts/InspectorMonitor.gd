@@ -39,8 +39,6 @@ func _on_event(event :GdUnitEvent) -> void:
 			pass
 		GdUnitEvent.TESTCASE_AFTER:
 			status_changed(0, event.orphan_nodes())
-		GdUnitEvent.TESTRUN_AFTER:
-			status_changed(0, event.orphan_nodes())
 		GdUnitEvent.TESTSUITE_BEFORE:
 			pass
 		GdUnitEvent.TESTSUITE_AFTER:

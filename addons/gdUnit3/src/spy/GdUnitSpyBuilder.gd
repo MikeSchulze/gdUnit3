@@ -126,19 +126,21 @@ class SpyFunctionDoubler extends GdFunctionDoubler:
 			return SPY_VOID_TEMPLATE
 		return SPY_TEMPLATE
 
-static func build(instance, memory_pool :int, push_errors :bool = true, debug_write = false):
+static func build(caller :Object, instance, push_errors :bool = true, debug_write = false):
+	var memory_pool :int = caller.get_meta(GdUnitMemoryPool.META_PARAM)
 	# spy on PackedScene
 	if GdObjects.is_scene(instance):
-		return spy_on_scene(instance.instance(), memory_pool, debug_write)
+		return spy_on_scene(caller, instance.instance(), memory_pool, debug_write)
 	# spy on a scene instance
 	if GdObjects.is_instance_scene(instance):
-		return spy_on_scene(instance, memory_pool, debug_write)
+		return spy_on_scene(caller, instance, memory_pool, debug_write)
 	
 	var spy := spy_on_script(instance, memory_pool, [], debug_write)
 	if spy == null:
 		return null
 	var spy_instance = spy.new()
 	spy_instance.__set_singleton(instance)
+	spy_instance.__set_caller(caller)
 	return GdUnitTools.register_auto_free(spy_instance, memory_pool)
 
 static func spy_on_script(instance, memory_pool, function_excludes :PoolStringArray, debug_write) -> GDScript:
@@ -177,7 +179,7 @@ static func spy_on_script(instance, memory_pool, function_excludes :PoolStringAr
 		return null
 	return spy
 
-static func spy_on_scene(scene :Node, memory_pool, debug_write) -> Object:
+static func spy_on_scene(caller :Object, scene :Node, memory_pool, debug_write) -> Object:
 	if scene.get_script() == null:
 		if GdUnitSettings.is_verbose_assert_errors():
 			push_error("Can't create a spy on a scene without script '%s'" % scene.get_filename())
@@ -190,4 +192,5 @@ static func spy_on_scene(scene :Node, memory_pool, debug_write) -> Object:
 		return null
 	# replace original script whit spy 
 	scene.set_script(spy)
+	scene.__set_caller(caller)
 	return GdUnitTools.register_auto_free(scene, memory_pool)

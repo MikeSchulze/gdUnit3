@@ -5,7 +5,7 @@ extends Resource
 enum {
 	SUCCESS,
 	WARN,
-	ERROR,
+	FAILURE,
 	ORPHAN,
 	TERMINATED,
 	INTERUPTED,

@@ -158,15 +158,16 @@ static func do_push_errors(enabled :bool):
 static func is_push_error_enabled() -> bool:
 	return _config["push_errors"]
 
-static func build(clazz, mock_mode :String, memory_pool :int, debug_write = false):
+static func build(caller :Object, clazz, mock_mode :String, debug_write = false):
+	var memory_pool :int = caller.get_meta(GdUnitMemoryPool.META_PARAM)
 	var push_errors := is_push_error_enabled()
 	if not is_mockable(clazz, push_errors):
 		return null
 	
 	if GdObjects.is_scene(clazz):
-		return mock_on_scene(clazz as PackedScene, memory_pool, debug_write)
+		return mock_on_scene(caller, clazz as PackedScene, memory_pool, debug_write)
 	elif typeof(clazz) == TYPE_STRING and clazz.ends_with(".tscn"):
-		return mock_on_scene(load(clazz), memory_pool, debug_write)
+		return mock_on_scene(caller, load(clazz), memory_pool, debug_write)
 	
 	var mock = mock_on_script(clazz, mock_mode, memory_pool, [], debug_write)
 	if mock == null:
@@ -174,9 +175,10 @@ static func build(clazz, mock_mode :String, memory_pool :int, debug_write = fals
 	var mock_instance = mock.new()
 	mock_instance.__set_singleton()
 	mock_instance.__set_mode(mock_mode)
+	mock_instance.__set_caller(caller)
 	return GdUnitTools.register_auto_free(mock_instance, memory_pool)
 
-static func mock_on_scene(scene :PackedScene, memory_pool :int, debug_write :bool) -> Object:
+static func mock_on_scene(caller :Object, scene :PackedScene, memory_pool :int, debug_write :bool) -> Object:
 	var push_errors := is_push_error_enabled()
 	if not scene.can_instance():
 		if push_errors:
@@ -197,6 +199,7 @@ static func mock_on_scene(scene :PackedScene, memory_pool :int, debug_write :boo
 	scene_instance.set_script(mock)
 	scene_instance.__set_singleton()
 	scene_instance.__set_mode(GdUnitMock.CALL_REAL_FUNC)
+	scene_instance.__set_caller(caller)
 	return GdUnitTools.register_auto_free(scene_instance, memory_pool)
 
 static func mock_on_script(clazz, mock_mode :String, memory_pool :int, function_excludes :PoolStringArray, debug_write :bool) -> GDScript:

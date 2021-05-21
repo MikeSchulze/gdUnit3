@@ -16,6 +16,7 @@ func before():
 	# not needs to be manually close, will be auto closed before test execution
 
 func after():
+	# verify tmp files are deleted automatically
 	assert_bool(File.new().file_exists(file_to_save)).is_false()
 
 func test_create_temp_dir():

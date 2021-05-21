@@ -1,13 +1,10 @@
 class_name GdUnitObjectAssertImpl
 extends GdUnitObjectAssert
 
-
 var _base :GdUnitAssert
-var _memory_pool :int
 
-func _init(current, memory_pool :int, expect_result :int):
-	_memory_pool = memory_pool
-	_base = GdUnitAssertImpl.new(current, expect_result)
+func _init(caller :Object, current, expect_result :int):
+	_base = GdUnitAssertImpl.new(caller, current, expect_result)
 	if current != null and typeof(current) != TYPE_OBJECT:
 		report_error("GdUnitObjectAssert inital error, unexpected type <%s>" % GdObjects.typeof_as_string(current))
 

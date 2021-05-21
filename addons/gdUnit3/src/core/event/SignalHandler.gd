@@ -7,7 +7,6 @@ signal client_connected
 signal client_disconnected
 signal client_terminated
 signal send_message
-signal send_report
 signal test_suite_event
 signal test_suite_added
 
@@ -35,16 +34,6 @@ func register_on_message(target:Object, eventFunc:String) -> void:
 	var err = connect("send_message", target, eventFunc, [], CONNECT_REFERENCE_COUNTED)
 	if err != OK:
 		push_error("Can't connect signal <send_message> to %s:%s.\n%s" % [target, eventFunc, GdUnitTools.error_as_string(err)])
-
-
-# assert report events
-func send_test_report(report) -> void:
-	emit_signal("send_report", report)
-
-func register_on_test_reports(target:Object, eventFunc:String) -> void:
-	var err = connect("send_report", target, eventFunc, [], CONNECT_REFERENCE_COUNTED)
-	if err != OK:
-		push_error("Can't connect signal <send_report> to %s:%s.\n%s" % [target, eventFunc, GdUnitTools.error_as_string(err)])
 
 # add test suite to current running
 func send_add_test_suite(test_suite) -> void:

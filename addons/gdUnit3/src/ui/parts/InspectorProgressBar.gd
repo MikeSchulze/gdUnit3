@@ -31,7 +31,7 @@ func _on_event(event :GdUnitEvent) -> void:
 			progress_update(0, 0, event.total_count())
 		GdUnitEvent.TESTCASE_BEFORE:
 			pass
-		GdUnitEvent.TESTRUN_AFTER:
+		GdUnitEvent.TESTCASE_AFTER:
 			progress_update(1, event.is_failed())
 		GdUnitEvent.TESTSUITE_BEFORE:
 			pass

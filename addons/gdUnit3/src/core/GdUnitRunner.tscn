@@ -11,4 +11,5 @@ script = ExtResource( 1 )
 
 [node name="GdUnitExecutor" type="Node" parent="."]
 script = ExtResource( 3 )
+
 [connection signal="send_event" from="GdUnitExecutor" to="." method="_on_Executor_send_event"]
