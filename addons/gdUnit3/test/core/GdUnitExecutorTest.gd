@@ -480,7 +480,7 @@ func test_execute_error_on_test_timeout() -> void:
 		# report suite is not success, is error
 		tuple("after", false, false, false, true),
 	])
-	# only 'test_case1' reports a 'real' failures plus test setup stage failures
+	# 'test_case1' reports a error triggered by test timeout
 	assert_event_reports(events,
 		[],
 		[],
