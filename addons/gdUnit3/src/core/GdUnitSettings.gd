@@ -25,7 +25,7 @@ const STDOUT_WITE_TO_FILE = CATEGORY_LOGGING + "log_path"
 # defaults
 # server connection timeout in minutes
 const DEFAULT_SERVER_TIMEOUT := 30
-# test case runtime timout in seconds
+# test case runtime timeout in seconds
 const DEFAULT_TEST_TIMEOUT := 60*5
 
 static func setup():
