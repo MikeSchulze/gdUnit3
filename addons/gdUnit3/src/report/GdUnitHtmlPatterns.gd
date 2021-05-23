@@ -71,11 +71,11 @@ static func build(template :String, report :GdUnitReportSummary, report_link :St
 		.replace(TESTSUITE_NAME, report.name())\
 		.replace(TESTSUITE_COUNT, str(report.suite_count()))\
 		.replace(TESTCASE_COUNT, str(report.test_count()))\
-		.replace(FAILURE_COUNT, str(report.failure_count()))\
+		.replace(FAILURE_COUNT, str(report.error_count() + report.failure_count()))\
 		.replace(SKIPPED_COUNT, str(report.skipped_count()))\
 		.replace(ORPHAN_COUNT, str(report.orphan_count()))\
 		.replace(DURATION, LocalTime.elapsed(report.duration()))\
-		.replace(SUCCESS_PERCENT, report.calculate_succes_rate(report.test_count(), report.failure_count()))\
+		.replace(SUCCESS_PERCENT, report.calculate_succes_rate(report.test_count(), report.error_count(), report.failure_count()))\
 		.replace(REPORT_STATE, report.report_state())\
 		.replace(REPORT_LINK, report_link)\
 		.replace(BUILD_DATE, current_date())\

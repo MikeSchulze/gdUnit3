@@ -30,7 +30,9 @@ func line_number() -> int:
 	
 func message() -> String:
 	return _message
-	
+
+func is_error() -> bool:
+	return _type == TERMINATED or _type == INTERUPTED or _type == ABORT
 
 func _to_string():
 	return "[color=green]line [/color][color=aqua]%d:[/color] \t %s" % [_line_number, _message]
