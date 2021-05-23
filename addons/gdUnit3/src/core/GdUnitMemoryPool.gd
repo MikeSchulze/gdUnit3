@@ -19,9 +19,16 @@ var _monitors := {
 
 var _monitored_pool_order := Array()
 var _current :int
+var _orphan_detection_enabled :bool = true
 
 func _init():
 	set_name("GdUnitMemoryPool-%d" % get_instance_id())
+	configure(GdUnitSettings.is_verbose_orphans())
+
+func configure(orphan_detection :bool):
+	_orphan_detection_enabled = orphan_detection
+	if not _orphan_detection_enabled:
+		prints("!!! Reporting orphan nodes is disabled. Please check GdUnit settings.")
 
 func set_pool(obj :Object, pool_id :int, reset_monitor: bool = false) -> void:
 	_current = pool_id
@@ -42,4 +49,6 @@ func get_monitor(pool_id :int) -> GdUnitMemMonitor:
 	return _monitors.get(pool_id)
 
 func orphan_nodes() -> int:
-	return _monitors.get(_current).orphan_nodes()
+	if _orphan_detection_enabled:
+		return _monitors.get(_current).orphan_nodes()
+	return 0

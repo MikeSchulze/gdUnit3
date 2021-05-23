@@ -120,7 +120,7 @@ func test_build_test_suite_path() -> void:
 	assert_str(_TestSuiteScanner.build_test_suite_path(source_path)).is_equal("user://tmp/test/projectX/entity/PersonTest.gd")
 
 func test_parse_and_add_test_cases() -> void:
-	var default_time := _TestCase.DEFAULT_TIMEOUT
+	var default_time := GdUnitSettings.test_timeout()
 	var scanner = auto_free(_TestSuiteScanner.new())
 	var test_suite :GdUnitTestSuite = auto_free(GdUnitTestSuite.new())
 	var script_path := "res://addons/gdUnit3/test/core/resources/test_script_with_arguments.gd"
