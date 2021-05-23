@@ -16,9 +16,10 @@ func before():
 func _on_executor_event(event :GdUnitEvent) -> void:
 	_events.append(event)
 
-func execute(test_suite :GdUnitTestSuite):
+func execute(test_suite :GdUnitTestSuite, enable_orphan_detection := true):
 	yield(get_tree(), "idle_frame")
 	_events.clear()
+	_executor._memory_pool.configure(enable_orphan_detection)
 	var fs = _executor.execute(test_suite)
 	if GdUnitTools.is_yielded(fs):
 		yield(fs, "completed" )
@@ -404,6 +405,45 @@ func test_execute_failure_and_orphans() -> void:
 		 "WARNING: Detected <2> orphan nodes during test setup! Check before_test() and after_test()!"],
 		# and one failure detected at stage 'after'
 		["WARNING: Detected <1> orphan nodes during test suite setup stage! Check before() and after()!"])
-	
 
-
+# GD-62
+func test_execute_failure_and_orphans_report_orphan_disabled() -> void:
+	# this is a more complex failure state, we expect to find multipe orphans on different stages
+	var test_suite := load_test_suite("res://addons/gdUnit3/test/core/resources/testsuites/TestSuiteFailAndOrpahnsDetected.resource")
+	# verify all test cases loaded
+	assert_array(test_suite.get_children()).extract("get_name").contains_exactly(["test_case1", "test_case2"])
+	# simulate test suite execution whit disabled orphan detection
+	var events = yield(execute(test_suite, false), "completed")
+	# verify basis infos
+	assert_event_list(events, "TestSuiteFailAndOrpahnsDetected")
+	# we expect failing on multiple stages, no orphans reported
+	assert_event_counters(events).contains_exactly([
+		tuple(GdUnitEvent.TESTSUITE_BEFORE, 0, 0, 0),
+		tuple(GdUnitEvent.TESTCASE_BEFORE, 0, 0, 0),
+		tuple(GdUnitEvent.TESTCASE_AFTER, 0, 0, 0),
+		tuple(GdUnitEvent.TESTCASE_BEFORE, 0, 0, 0),
+		# one failure
+		tuple(GdUnitEvent.TESTCASE_AFTER, 0, 1, 0),
+		tuple(GdUnitEvent.TESTSUITE_AFTER, 0, 0, 0),
+	])
+	# is_success, is_warning, is_failed, is_error
+	assert_event_states(events).contains_exactly([
+		tuple("before", true, false, false, false),
+		tuple("test_case1", true, false, false, false),
+		# test case has success
+		tuple("test_case1", true, false, false, false),
+		tuple("test_case2", true, false, false, false),
+		# test case has a failure
+		tuple("test_case2", false, false, true, false),
+		# report suite is not success, has warnings and failures
+		tuple("after", false, false, true, false),
+	])
+	# only 'test_case1' reports a failure, orphans are not reported
+	assert_event_reports(events,
+		[],
+		[],
+		[],
+		[],
+		# ends with a failure
+		["faild on test_case2()"],
+		[])

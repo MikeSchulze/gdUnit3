@@ -2,7 +2,7 @@ class_name _TestCase
 extends Node
 
 # default timeout 5min
-const DEFAULT_TIMEOUT :int = 1000 * 60 * 5
+const DEFAULT_TIMEOUT := -1
 const ARGUMENT_TIMEOUT := "timeout"
 
 var _iterations: int = 1
@@ -17,11 +17,13 @@ var _timer : Timer = Timer.new()
 var _fs
 var _interupted :bool = false
 var _timeout :int
+var _default_timeout :int
 
 func _init() -> void:
 	add_child(_timer)
 	_timer.set_one_shot(true)
 	_timer.connect('timeout', self, '_test_case_timeout')
+	_default_timeout = GdUnitSettings.test_timeout()
 
 func configure(name: String, line_number: int, script_path: String, timeout :int = DEFAULT_TIMEOUT, fuzzer: String = "", iterations: int = 1, seed_ :int = -1, skipped := false) -> _TestCase:
 	set_name(name)
@@ -32,7 +34,9 @@ func configure(name: String, line_number: int, script_path: String, timeout :int
 	_seed = seed_
 	_script_path = script_path
 	_skipped = skipped
-	_timeout = timeout
+	_timeout = _default_timeout
+	if timeout != DEFAULT_TIMEOUT:
+		_timeout = timeout
 	return self
 
 func execute(fuzzer :Fuzzer = null) :
