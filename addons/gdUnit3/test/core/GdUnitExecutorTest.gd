@@ -450,7 +450,7 @@ func test_execute_failure_and_orphans_report_orphan_disabled() -> void:
 
 # GD-66
 func test_execute_error_on_test_timeout() -> void:
-	# this tests a timout on a test case reported as error
+	# this tests a timeout on a test case reported as error
 	var test_suite := load_test_suite("res://addons/gdUnit3/test/core/resources/testsuites/TestSuiteErrorOnTestTimeout.resource")
 	# verify all test cases loaded
 	assert_array(test_suite.get_children()).extract("get_name").contains_exactly(["test_case1", "test_case2"])
