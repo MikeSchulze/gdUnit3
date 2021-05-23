@@ -27,6 +27,12 @@ func test_count() -> int:
 		count += report.test_count()
 	return count
 
+func error_count() -> int:
+	var count := _error_count
+	for report in _reports:
+		count += report.error_count()
+	return count
+
 func failure_count() -> int:
 	var count := _failure_count
 	for report in _reports:
@@ -55,22 +61,24 @@ func add_report(report :GdUnitReportSummary) -> void:
 	_reports.append(report)
 
 func report_state() -> String:
-	return calculate_state(failure_count(), orphan_count())
+	return calculate_state(error_count(), failure_count(), orphan_count())
 
 func succes_rate() -> String:
-	return calculate_succes_rate(test_count(), failure_count())
+	return calculate_succes_rate(test_count(), error_count(), failure_count())
 
-static func calculate_state(failure_count :int, orphan_count :int) -> String:
+static func calculate_state(error_count :int, failure_count :int, orphan_count :int) -> String:
+	if error_count > 0:
+		return "error"
 	if failure_count > 0:
 		return "failure"
 	if orphan_count > 0:
 		return "warning"
 	return "success"
 
-static func calculate_succes_rate(test_count :int, failure_count: int) -> String:
+static func calculate_succes_rate(test_count :int, error_count: int, failure_count: int) -> String:
 	if failure_count == 0:
 		return "100%"
-	return "%d" % ((test_count-failure_count) * 100 / test_count) + "%"
+	return "%d" % ((test_count-failure_count-error_count) * 100 / test_count) + "%"
 
 func create_summary(report_dir :String) -> String:
 	return ""

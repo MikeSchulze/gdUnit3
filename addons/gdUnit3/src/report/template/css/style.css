@@ -238,6 +238,10 @@ div.tab td.success, div.tab a.success {
 	color: #03a606;
 }
 
+div.tab td.error, div.tab a.error {
+	color: #bf3600;
+}
+
 div.tab td.failure, div.tab a.failure {
 	color: #bf3600;
 }
@@ -270,6 +274,11 @@ div.tab th {
 .border_success {
 	border: solid 3px #03a606;
 	background-image: repeating-linear-gradient(45deg, white, white 20%,  #03a606);
+}
+
+.border_error {
+	border: solid 3px #bf3600;
+	background-image: repeating-linear-gradient(45deg, #e86363, white 0%, #bf3600);
 }
 
 .border_failure {

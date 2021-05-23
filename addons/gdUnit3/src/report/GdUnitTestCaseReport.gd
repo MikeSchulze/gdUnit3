@@ -3,9 +3,10 @@ extends GdUnitReportSummary
 
 var _failure_reports :Array
 
-func _init(test_name :String, is_failed :bool = false, orphans :int = 0, skipped :int = 0, failure_reports :Array = [], duration :int = 0):
+func _init(test_name :String, is_error :bool = false, is_failed :bool = false, orphans :int = 0, skipped :int = 0, failure_reports :Array = [], duration :int = 0):
 	_name = test_name
 	_test_count = 1
+	_error_count = is_error
 	_failure_count = is_failed
 	_orphan_count = orphans
 	_skipped_count = skipped
@@ -41,6 +42,7 @@ func create_record(report_dir :String) -> String:
 		.replace(GdUnitHtmlPatterns.FAILURE_REPORT, failure_report())
 
 func update(report :GdUnitTestCaseReport) -> void:
+	_error_count += report.error_count()
 	_failure_count += report.failure_count()
 	_orphan_count += report.orphan_count()
 	_skipped_count += report.skipped_count()

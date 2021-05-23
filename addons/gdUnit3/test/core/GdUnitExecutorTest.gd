@@ -447,3 +447,45 @@ func test_execute_failure_and_orphans_report_orphan_disabled() -> void:
 		# ends with a failure
 		["faild on test_case2()"],
 		[])
+
+# GD-66
+func test_execute_error_on_test_timeout() -> void:
+	# this tests a timeout on a test case reported as error
+	var test_suite := load_test_suite("res://addons/gdUnit3/test/core/resources/testsuites/TestSuiteErrorOnTestTimeout.resource")
+	# verify all test cases loaded
+	assert_array(test_suite.get_children()).extract("get_name").contains_exactly(["test_case1", "test_case2"])
+	# simulate test suite execution
+	var events = yield(execute(test_suite), "completed" )
+	# verify basis infos
+	assert_event_list(events, "TestSuiteErrorOnTestTimeout")
+	# we expect failing on multiple stages
+	assert_event_counters(events).contains_exactly([
+		tuple(GdUnitEvent.TESTSUITE_BEFORE, 0, 0, 0),
+		tuple(GdUnitEvent.TESTCASE_BEFORE, 0, 0, 0),
+		# the first test has two failures plus one from 'before_test'
+		tuple(GdUnitEvent.TESTCASE_AFTER, 1, 0, 0),
+		tuple(GdUnitEvent.TESTCASE_BEFORE, 0, 0, 0),
+		# the second test has no failures but one from 'before_test'
+		tuple(GdUnitEvent.TESTCASE_AFTER, 0, 0, 0),
+		# and one failure is on stage 'after' found
+		tuple(GdUnitEvent.TESTSUITE_AFTER, 0, 0, 0),
+	])
+	assert_event_states(events).contains_exactly([
+		tuple("before", true, false, false, false),
+		tuple("test_case1", true, false, false, false),
+		# testcase ends with a timeout error
+		tuple("test_case1", false, false, false, true),
+		tuple("test_case2", true, false, false, false),
+		tuple("test_case2", true, false, false, false),
+		# report suite is not success, is error
+		tuple("after", false, false, false, true),
+	])
+	# 'test_case1' reports a error triggered by test timeout
+	assert_event_reports(events,
+		[],
+		[],
+		# verify error reports to 'test_case1'
+		["Test timed out suite_after 2s 0ms"],
+		[],
+		[],
+		[])

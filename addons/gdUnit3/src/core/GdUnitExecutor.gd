@@ -23,6 +23,7 @@ var _report_collector : = GdUnitReportCollector.new()
 var _total_test_execution_orphans :int
 var _total_test_warnings :int
 var _total_test_failed :int
+var _total_test_errors :int
 
 var _test_run_state :GDScriptFunctionState
 var _with_yielding := true
@@ -61,6 +62,7 @@ func suite_before(test_suite :GdUnitTestSuite, total_count :int) -> GDScriptFunc
 	fire_event(GdUnitEvent.new()\
 		.suite_before(test_suite.get_script().resource_path, test_suite.get_name(), total_count))
 	_testsuite_timer = LocalTime.now()
+	_total_test_errors = 0
 	_total_test_failed = 0
 	_total_test_warnings = 0
 	if not test_suite.is_skipped():
@@ -77,7 +79,6 @@ func suite_after(test_suite :GdUnitTestSuite) -> GDScriptFunctionState:
 	GdUnitTools.clear_tmp()
 	
 	var is_warning := _total_test_warnings != 0
-	var is_error := false
 	var is_skipped := test_suite.is_skipped()
 	var skip_count := test_suite.get_child_count()
 	var orphan_nodes := 0
@@ -98,6 +99,7 @@ func suite_after(test_suite :GdUnitTestSuite) -> GDScriptFunctionState:
 			reports.push_front(GdUnitReport.new() \
 				.create(GdUnitReport.WARN, 1, GdAssertMessages.orphan_detected_on_suite_setup(orphan_nodes)))
 	
+	var is_error := _total_test_errors != 0 or _report_collector.has_errors(STAGE_TEST_SUITE_BEFORE|STAGE_TEST_SUITE_AFTER)
 	var is_failed := _total_test_failed != 0 or _report_collector.has_failures(STAGE_TEST_SUITE_BEFORE|STAGE_TEST_SUITE_AFTER)
 	# create report
 	var statistics = {
@@ -105,7 +107,7 @@ func suite_after(test_suite :GdUnitTestSuite) -> GDScriptFunctionState:
 		GdUnitEvent.ELAPSED_TIME: _testsuite_timer.elapsed_since_ms(),
 		GdUnitEvent.WARNINGS: is_warning,
 		GdUnitEvent.ERRORS: is_error,
-		GdUnitEvent.ERROR_COUNT: 0,
+		GdUnitEvent.ERROR_COUNT: _report_collector.count_errors(STAGE_TEST_SUITE_BEFORE|STAGE_TEST_SUITE_AFTER),
 		GdUnitEvent.FAILED: is_failed,
 		GdUnitEvent.FAILED_COUNT: _report_collector.count_failures(STAGE_TEST_SUITE_BEFORE|STAGE_TEST_SUITE_AFTER),
 		GdUnitEvent.SKIPPED_COUNT: skip_count,
@@ -152,15 +154,18 @@ func test_after(test_suite :GdUnitTestSuite, test_case :_TestCase) -> GDScriptFu
 	
 	var reports := _report_collector.get_reports(STAGE_TEST_CASE_BEFORE|STAGE_TEST_CASE_EXECUTE|STAGE_TEST_CASE_AFTER)
 	var is_error := test_case.is_interupted() and not test_case.is_expect_interupted()
+	var error_count := _report_collector.count_errors(STAGE_TEST_CASE_BEFORE|STAGE_TEST_CASE_EXECUTE|STAGE_TEST_CASE_AFTER)
 	var failure_count := _report_collector.count_failures(STAGE_TEST_CASE_BEFORE|STAGE_TEST_CASE_EXECUTE|STAGE_TEST_CASE_AFTER)
 	var is_warning := _report_collector.has_warnings(STAGE_TEST_CASE_BEFORE|STAGE_TEST_CASE_EXECUTE|STAGE_TEST_CASE_AFTER)
 	
+	_total_test_errors += error_count
 	_total_test_failed += failure_count
 	var statistics = {
 		GdUnitEvent.ORPHAN_NODES: _total_test_execution_orphans,
 		GdUnitEvent.ELAPSED_TIME: _testcase_timer.elapsed_since_ms(),
 		GdUnitEvent.WARNINGS: is_warning,
 		GdUnitEvent.ERRORS: is_error,
+		GdUnitEvent.ERROR_COUNT: error_count,
 		GdUnitEvent.FAILED: failure_count > 0,
 		GdUnitEvent.FAILED_COUNT: failure_count,
 		GdUnitEvent.SKIPPED: test_case.is_skipped(),

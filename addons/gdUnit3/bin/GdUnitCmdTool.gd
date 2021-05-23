@@ -252,6 +252,7 @@ class CLIRunner extends Node:
 			GdUnitEvent.TESTCASE_AFTER:
 				var test_report := GdUnitTestCaseReport.new(
 					event.test_name(),
+					event.is_error(),
 					event.is_failed(),
 					event.orphan_nodes(),
 					event.skipped_count(),
@@ -261,7 +262,7 @@ class CLIRunner extends Node:
 		print_status(event)
 	
 	func report_exit_code(report :GdUnitHtmlReport) -> int:
-		if report.failure_count() > 0:
+		if report.error_count() + report.failure_count() > 0:
 			_console.prints_color("Exit code: %d" % RETURN_ERROR, Color.firebrick)
 			return RETURN_ERROR
 		if report.orphan_count() > 0:
@@ -285,12 +286,12 @@ class CLIRunner extends Node:
 			
 			GdUnitEvent.TESTSUITE_AFTER:
 				_print_status(event)
-				_console.prints_color("	| %d total | %d failed | %d skipped | %d orphans |\n" % [_report.test_count(), _report.failure_count(), _report.skipped_count(), _report.orphan_count()], Color.antiquewhite)
+				_console.prints_color("	| %d total | %d error | %d failed | %d skipped | %d orphans |\n" % [_report.test_count(), _report.error_count(), _report.failure_count(), _report.skipped_count(), _report.orphan_count()], Color.antiquewhite)
 	
 	func _print_status(event :GdUnitEvent) -> void:
 		if event.is_skipped():
 			_console.print_color("SKIPPED", Color.goldenrod, CmdConsole.BOLD|CmdConsole.ITALIC)
-		elif event.is_failed():
+		elif event.is_failed() or event.is_error():
 			_console.print_color("FAILED", Color.crimson, CmdConsole.BOLD)
 		elif event.orphan_nodes() > 0:
 			_console.print_color("PASSED", Color.goldenrod, CmdConsole.BOLD|CmdConsole.UNDERLINE)

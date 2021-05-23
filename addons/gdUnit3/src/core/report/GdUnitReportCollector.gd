@@ -44,6 +44,23 @@ func get_reports(execution_states :int) -> Array:
 			reports.append_array(get_reports_by_state(state))
 	return reports
 
+func has_errors(execution_states :int) -> bool:
+	for state in ALL_REPORT_STATES:
+		if execution_states&state == state:
+			for report in get_reports_by_state(state):
+				if report.is_error():
+					return true
+	return false
+
+func count_errors(execution_states :int) -> int:
+	var count := 0
+	for state in ALL_REPORT_STATES:
+		if execution_states&state == state:
+			for report in get_reports_by_state(state):
+				if report.is_error():
+					count += 1
+	return count
+
 func has_failures(execution_states :int) -> bool:
 	for state in ALL_REPORT_STATES:
 		if execution_states&state == state:
