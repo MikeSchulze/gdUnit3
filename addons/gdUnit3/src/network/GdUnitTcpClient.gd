@@ -12,11 +12,11 @@ var _host :String
 var _port :int
 var _client_id :int
 var _connected :bool
-var _client :StreamPeerTCP
+var _stream :StreamPeerTCP
 
 func _ready():
 	_connected = false
-	_client = StreamPeerTCP.new()
+	_stream = StreamPeerTCP.new()
 	_timer = Timer.new()
 	add_child(_timer)
 	_timer.set_one_shot(true)
@@ -24,10 +24,10 @@ func _ready():
 
 func stop() -> void:
 	console("Client: disconnect from server")
-	if _client != null:
+	if _stream != null:
 		rpc_send(RPCClientDisconnect.new().with_id(_client_id))
-	if _client != null:
-		_client.disconnect_from_host()
+	if _stream != null:
+		_stream.disconnect_from_host()
 	_connected = false
 
 func start(host :String, port :int) -> Result:
@@ -37,14 +37,14 @@ func start(host :String, port :int) -> Result:
 		return Result.warn("Client already connected ... %s:%d" % [_host, _port])
 	
 	# Connect client to server
-	if not _client.is_connected_to_host():
-		var err := _client.connect_to_host(host, port)
+	if not _stream.is_connected_to_host():
+		var err := _stream.connect_to_host(host, port)
 		if err != OK:
 			return Result.error("GdUnit3: Can't establish client, error code: %s" % err)
 	return Result.success("GdUnit3: Client connected on port %d" % port)
 
 func _process(_delta):
-	match _client.get_status():
+	match _stream.get_status():
 		StreamPeerTCP.STATUS_NONE:
 			return
 		
@@ -54,13 +54,13 @@ func _process(_delta):
 			# wait until client is connected to server
 			for retry in 10:
 				console("wait to connect ..")
-				if _client.get_status() == StreamPeerTCP.STATUS_CONNECTING:
+				if _stream.get_status() == StreamPeerTCP.STATUS_CONNECTING:
 					yield(get_tree().create_timer(0.500), "timeout")
-				if _client.get_status() == StreamPeerTCP.STATUS_CONNECTED:
+				if _stream.get_status() == StreamPeerTCP.STATUS_CONNECTED:
 					set_process(true)
 					return
 			set_process(true)
-			_client.disconnect_from_host()
+			_stream.disconnect_from_host()
 			console("connection failed")
 			emit_signal("connection_failed", "Connect to TCP Server %s:%d faild!" % [_host, _port])
 		
@@ -80,7 +80,7 @@ func _process(_delta):
 			process_rpc()
 		
 		StreamPeerTCP.STATUS_ERROR:
-			_client.disconnect_from_host()
+			_stream.disconnect_from_host()
 			console("connection failed")
 			emit_signal("connection_failed", "Connect to TCP Server %s:%d faild!" % [_host, _port])
 			return
@@ -88,20 +88,20 @@ func _process(_delta):
 func is_client_connected() -> bool:
 	return _connected
 
-func process_rpc():
-	if _client.get_available_bytes() > 0:
-		var rpc := RPC.deserialize(_client.get_var())
+func process_rpc() -> void:
+	if _stream.get_available_bytes() > 0:
+		var rpc := RPC.deserialize(_stream.get_var())
 		if rpc is RPCClientDisconnect:
 			stop()
 
 func rpc_send(rpc :RPC) -> void:
-	if _client != null:
-		_client.put_var(rpc.serialize(), true)
+	if _stream != null:
+		_stream.put_var(rpc.serialize(), true)
 
 func rpc_receive() -> RPC:
-	if _client != null:
-		while _client.get_available_bytes() > 0:
-			return RPC.deserialize(_client.get_var(true))
+	if _stream != null:
+		while _stream.get_available_bytes() > 0:
+			return RPC.deserialize(_stream.get_var(true))
 	return null
 
 func console(message :String) -> void:

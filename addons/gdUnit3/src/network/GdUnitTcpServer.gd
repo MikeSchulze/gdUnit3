@@ -11,7 +11,7 @@ const GD_TEST_SERVER_PORT :int = 31002
 
 var _server :TCP_Server
 
-class TCPClient extends Node:
+class TcpConnection extends Node:
 	var _id :int
 	var _stream : StreamPeerTCP
 	
@@ -45,7 +45,6 @@ class TCPClient extends Node:
 			if rpc is RPCClientDisconnect:
 				close()
 			get_parent().emit_signal("rpc_data", rpc)
-		return null
 
 func _ready():
 	_server = TCP_Server.new()
@@ -76,14 +75,14 @@ func start() -> Result:
 
 func stop() -> void:
 	_server.stop()
-	for client in get_children():
-		if client is TCPClient:
-			client.close()
+	for connection in get_children():
+		if connection is TcpConnection:
+			connection.close()
 
 func disconnect_client(client_id :int) -> void:
-	for child in get_children():
-		if child is TCPClient and child.id() == client_id:
-			child.close()
+	for connection in get_children():
+		if connection is TcpConnection and connection.id() == client_id:
+			connection.close()
 
 func _process(_delta):
 	if not _server.is_listening():
@@ -91,16 +90,16 @@ func _process(_delta):
 	
 	# check is new connection incomming
 	if _server.is_connection_available():
-		add_child(TCPClient.new(_server))
+		add_child(TcpConnection.new(_server))
 
 func _on_client_connected(client_id :int):
 	console("client connected %d" % client_id)
 
 func _on_client_disconnected(client_id :int):
 	console("client disconnected %d" % client_id)
-	for child in get_children():
-		if child is TCPClient and child.id() == client_id:
-			remove_child(child)
+	for connection in get_children():
+		if connection is TcpConnection and connection.id() == client_id:
+			remove_child(connection)
 	
 func console(message :String) -> void:
 	#print_debug(message)
