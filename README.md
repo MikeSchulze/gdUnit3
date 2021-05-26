@@ -19,6 +19,6 @@ I would also appreciate feedback.
 * Spy on a instance to verify that a function has been called with certain parameters.
 * Mock or Spy on a Scene
 * Scene runner to simulate interactions on a scene (Input events like mouse and/or keyboard)
-* Command Line Tool Command-Line-Tool
+* Command Line Tool with HTML report
 
 [Documentation](https://github.com/MikeSchulze/gdUnit3/wiki)
