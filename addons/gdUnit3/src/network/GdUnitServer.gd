@@ -22,7 +22,6 @@ func _ready():
 	_server.connect("client_connected", self, "_on_client_connected")
 	_server.connect("client_disconnected", self, "_on_client_disconnected")
 	_server.connect("rpc_data", self, "_receive_rpc_data")
-	_signal_handler.send_message("GdUnitServer started: " + str(self))
 	
 	#register_tasks(_error_handler.get_tasks())
 
