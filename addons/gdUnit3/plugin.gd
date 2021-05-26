@@ -6,10 +6,8 @@ var _server_node
 var _gd_console:Node
 var _singleton :GdUnitSingleton = GdUnitSingleton.new()
 
-
 func _enter_tree():
 	Engine.set_meta("GdUnitEditorPlugin", self)
-	
 	GdUnitSettings.setup()
 	
 	# install SignalHandler singleton

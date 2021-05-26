@@ -4,7 +4,7 @@ const GDUNIT_RUNNER = "GdUnitRunner"
 
 signal sync_rpc_id_result_received
 
-onready var _client :Network = $Network
+onready var _client :GdUnitTcpClient = $GdUnitTcpClient
 onready var _executor :GdUnitExecutor = $GdUnitExecutor
 
 
@@ -33,7 +33,7 @@ func _init():
 
 func _ready():
 	_config.load()
-	var result := _client.connect_client(_config.server_port())
+	var result := _client.start("127.0.0.1", _config.server_port())
 	if result.is_error():
 		push_error(result.error_message())
 		return
@@ -120,24 +120,23 @@ func _collect_test_case_count(testSuites :Array) -> int:
 
 # RPC send functions
 func send_message(message :String):
-	rpc_id(1, "receive_message", message)
+	_client.rpc_send(RPCMessage.of(message))
 
 func send_test_suite(test_suite :GdUnitTestSuite):
-	var data := GdSerde.serialize_test_suite(test_suite)
-	rpc_id(1, "receive_test_suite", data)
-
-
-func get_last_push_error() -> Result:
-	return yield(sync_rpc_id(1, "GdUnitPushErrorHandler:get_last_error"), "completed")
-
-func get_list_push_error(from_id :int, to_id :int) -> Result:
-	return yield(sync_rpc_id(1, "GdUnitPushErrorHandler:list_errors", [from_id, to_id]), "completed")
-
-func clear_push_errors() -> Result:
-	return async_rpc_id(1, "GdUnitPushErrorHandler:clear_error_list")
+	_client.rpc_send(RPCGdUnitTestSuite.of(test_suite))
 
 func _on_Executor_send_event(event :GdUnitEvent):
-	rpc_id(1, "receive_event", event.serialize())
+	_client.rpc_send(RPCGdUnitEvent.of(event))
+
+#func get_last_push_error() -> Result:
+#	return yield(sync_rpc_id(1, "GdUnitPushErrorHandler:get_last_error"), "completed")
+
+#func get_list_push_error(from_id :int, to_id :int) -> Result:
+#	return yield(sync_rpc_id(1, "GdUnitPushErrorHandler:list_errors", [from_id, to_id]), "completed")
+
+#func clear_push_errors() -> Result:
+#	return async_rpc_id(1, "GdUnitPushErrorHandler:clear_error_list")
+
 
 # sends an syncronized rpc call to <peer_id> and waits until a response is received
 # 
