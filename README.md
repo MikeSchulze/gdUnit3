@@ -7,7 +7,7 @@ Please notice the plugin is the first release candidate and has current no accep
 You are welcome to report bugs or create new feature requests.
 I would also appreciate feedback.
 
-# GdUnit3
+# GdUnit3 V0.9.5-RC
 * Fully integrated in the Godot editor
 * Run test-suite(s) by using the context menu on FileSystem, ScriptEditor or GdUnitInspector
 * Create test's directly from the ScriptEditor
