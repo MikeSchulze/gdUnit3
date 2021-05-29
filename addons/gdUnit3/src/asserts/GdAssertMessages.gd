@@ -135,11 +135,8 @@ static func error_is_zero(current) -> String:
 static func error_is_not_zero() -> String:
 	return "%s\n not equal to 0" % [_error("Expecting:")]
 
-static func error_is_in_range(current, from, to) -> String:
-	return "%s\n %s\n in range between\n %s <> %s" % [_error("Expecting:"), _current(current), _expected(from), _expected(to)]
-
-static func error_is_value(current, expected, compare_operator) -> String:
-	match compare_operator:
+static func error_is_value(operation, current, expected, expected2=null) -> String:
+	match operation:
 		Comparator.EQUAL:
 			return "%s\n %s but was '%s'" % [_error("Expecting:"), _expected(expected), _nerror(current)]
 		Comparator.LESS_THAN:
@@ -150,6 +147,10 @@ static func error_is_value(current, expected, compare_operator) -> String:
 			return "%s\n %s but was '%s'" % [_error("Expecting to be greater than:"), _expected(expected), _nerror(current)]
 		Comparator.GREATER_EQUAL:
 			return "%s\n %s but was '%s'" % [_error("Expecting to be greater than or equal:"), _expected(expected), _nerror(current)]
+		Comparator.BETWEEN_EQUAL:
+			return "%s\n %s\n in range between\n %s <> %s" % [_error("Expecting:"), _current(current), _expected(expected), _expected(expected2)]
+		Comparator.NOT_BETWEEN_EQUAL:
+			return "%s\n %s\n not in range between\n %s <> %s" % [_error("Expecting:"), _current(current), _expected(expected), _expected(expected2)]
 	return "TODO create expected message"
 
 static func error_is_in(current, expected :Array) -> String:

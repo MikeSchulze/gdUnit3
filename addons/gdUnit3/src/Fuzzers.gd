@@ -5,6 +5,10 @@ extends Resource
 static func rangei(from: int, to: int) -> Fuzzer:
 	return IntFuzzer.new(from, to)
 
+# Generates an random Vector2 in a range form to 
+static func rangev2(from: Vector2, to: Vector2) -> Fuzzer:
+	return Vector2Fuzzer.new(from, to)
+
 # Generates an integer in a range form to that can be divided exactly by 2
 static func eveni(from: int, to: int) -> Fuzzer:
 	return IntFuzzer.new(from, to, IntFuzzer.EVEN)
