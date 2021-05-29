@@ -271,7 +271,7 @@ func assert_that(current, expect_result: int = GdUnitAssert.EXPECT_SUCCESS) -> G
 		TYPE_STRING:
 			return assert_str(current, expect_result)
 		TYPE_VECTOR2:
-			return assert_float(current, expect_result)
+			return assert_vector2(current, expect_result)
 		TYPE_DICTIONARY:
 			return assert_dict(current, expect_result)
 		TYPE_ARRAY:
