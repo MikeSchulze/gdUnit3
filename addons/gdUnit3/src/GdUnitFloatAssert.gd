@@ -10,6 +10,10 @@ func is_equal(expected :float) -> GdUnitFloatAssert:
 func is_not_equal(expected :float) -> GdUnitFloatAssert:
 	return self
 
+# Verifies that the current and expected value are approximately equal.
+func is_equal_approx(expected :float, approx :float) -> GdUnitFloatAssert:
+	return self
+
 # Verifies that the current value is less than the given one.
 func is_less(expected :float) -> GdUnitFloatAssert:
 	return self
@@ -50,7 +54,7 @@ func is_in(expected :Array) -> GdUnitFloatAssert:
 func is_not_in(expected :Array) -> GdUnitFloatAssert:
 	return self
 
-# Verifies that the current value is in range (from, to) inclusive from and to.
-func is_in_range(from :float, to :float) -> GdUnitFloatAssert:
+# Verifies that the current value is between the given boundaries (inclusive).
+func is_between(from :float, to :float) -> GdUnitFloatAssert:
 	return self
 

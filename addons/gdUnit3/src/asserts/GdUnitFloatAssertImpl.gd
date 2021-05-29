@@ -49,32 +49,36 @@ func is_not_equal(expected :float) -> GdUnitFloatAssert:
 	_base.is_not_equal(expected)
 	return self
 
+# Verifies that the current and expected value are approximately equal.
+func is_equal_approx(expected :float, approx :float) -> GdUnitFloatAssert:
+	return is_between(expected-approx, expected+approx)
+
 # Verifies that the current value is less than the given one.
 func is_less(expected :float) -> GdUnitFloatAssert:
 	var current := __current()
 	if current >= expected:
-		report_error(GdAssertMessages.error_is_value(current, expected, Comparator.LESS_THAN))
+		report_error(GdAssertMessages.error_is_value(Comparator.LESS_THAN, current, expected))
 	return report_success()
 
 # Verifies that the current value is less than or equal the given one.
 func is_less_equal(expected :float) -> GdUnitFloatAssert:
 	var current := __current()
 	if current > expected:
-		report_error(GdAssertMessages.error_is_value(current, expected, Comparator.LESS_EQUAL))
+		report_error(GdAssertMessages.error_is_value(Comparator.LESS_EQUAL, current, expected))
 	return report_success()
 
 # Verifies that the current value is greater than the given one.
 func is_greater(expected :float) -> GdUnitFloatAssert:
 	var current := __current()
 	if current <= expected:
-		return report_error(GdAssertMessages.error_is_value(current, expected, Comparator.GREATER_THAN))
+		return report_error(GdAssertMessages.error_is_value(Comparator.GREATER_THAN, current, expected))
 	return report_success()
 
 # Verifies that the current value is greater than or equal the given one.
 func is_greater_equal(expected :float) -> GdUnitFloatAssert:
 	var current := __current()
 	if current < expected:
-		return report_error(GdAssertMessages.error_is_value(current, expected, Comparator.GREATER_EQUAL))
+		return report_error(GdAssertMessages.error_is_value(Comparator.GREATER_EQUAL, current, expected))
 	return report_success()
 
 # Verifies that the current value is negative.
@@ -119,10 +123,10 @@ func is_not_in(expected :Array) -> GdUnitFloatAssert:
 		return report_error(GdAssertMessages.error_is_not_in(current, expected))
 	return report_success()
 
-# Verifies that the current value is in range (from, to) inclusive from and to.
-func is_in_range(from :float, to :float) -> GdUnitFloatAssert:
+# Verifies that the current value is between the given boundaries (inclusive).
+func is_between(from :float, to :float) -> GdUnitFloatAssert:
 	var current := __current()
 	if current < from or current > to:
-		return report_error(GdAssertMessages.error_is_in_range(current, from, to))
+		return report_error(GdAssertMessages.error_is_value(Comparator.BETWEEN_EQUAL, current, from, to))
 	return report_success()
 

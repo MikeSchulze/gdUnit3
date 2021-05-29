@@ -53,28 +53,28 @@ func is_not_equal(expected :int) -> GdUnitIntAssert:
 func is_less(expected :int) -> GdUnitIntAssert:
 	var current := __current()
 	if current >= expected:
-		return report_error(GdAssertMessages.error_is_value(current, expected, Comparator.LESS_THAN))
+		return report_error(GdAssertMessages.error_is_value(Comparator.LESS_THAN, current, expected))
 	return report_success()
 
 # Verifies that the current value is less than or equal the given one.
 func is_less_equal(expected :int) -> GdUnitIntAssert:
 	var current := __current()
 	if current > expected:
-		return report_error(GdAssertMessages.error_is_value(current, expected, Comparator.LESS_EQUAL))
+		return report_error(GdAssertMessages.error_is_value(Comparator.LESS_EQUAL, current, expected))
 	return report_success()
 
 # Verifies that the current value is greater than the given one.
 func is_greater(expected :int) -> GdUnitIntAssert:
 	var current := __current()
 	if current <= expected:
-		return report_error(GdAssertMessages.error_is_value(current, expected, Comparator.GREATER_THAN))
+		return report_error(GdAssertMessages.error_is_value(Comparator.GREATER_THAN, current, expected))
 	return report_success()
 
 # Verifies that the current value is greater than or equal the given one.
 func is_greater_equal(expected :int) -> GdUnitIntAssert:
 	var current := __current()
 	if current < expected:
-		return report_error(GdAssertMessages.error_is_value(current, expected, Comparator.GREATER_EQUAL))
+		return report_error(GdAssertMessages.error_is_value(Comparator.GREATER_EQUAL, current, expected))
 	return report_success()
 
 # Verifies that the current value is even.
@@ -133,11 +133,9 @@ func is_not_in(expected :Array) -> GdUnitIntAssert:
 		return report_error(GdAssertMessages.error_is_not_in(current, expected))
 	return report_success()
 
-# Verifies that the current value is in range (from, to) inclusive from and to.
-func is_in_range(from :int, to :int) -> GdUnitIntAssert:
+# Verifies that the current value is between the given boundaries (inclusive).
+func is_between(from :int, to :int) -> GdUnitIntAssert:
 	var current := __current()
 	if current < from or current > to:
-		return report_error(GdAssertMessages.error_is_in_range(current, from, to))
+		return report_error(GdAssertMessages.error_is_value(Comparator.BETWEEN_EQUAL, current, from, to))
 	return report_success()
-
-

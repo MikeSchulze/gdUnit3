@@ -119,19 +119,19 @@ func test_is_not_in():
 		.is_not_in([3, 4, 5, 6])\
 		.has_error_message("Expecting:\n '5'\n is not in\n '[3, 4, 5, 6]'")
 
-func test_is_in_range(fuzzer = Fuzzers.rangei(-20, 20)):
+func test_is_between(fuzzer = Fuzzers.rangei(-20, 20)):
 	var value = fuzzer.next_value() as int
-	assert_int(value).is_in_range(-20, 20)
+	assert_int(value).is_between(-20, 20)
 
-func test_is_in_range_must_fail():
+func test_is_between_must_fail():
 	assert_int(-10, GdUnitAssert.EXPECT_FAIL) \
-		.is_in_range(-9, 0) \
+		.is_between(-9, 0) \
 		.has_error_message("Expecting:\n '-10'\n in range between\n '-9' <> '0'")
 	assert_int(0, GdUnitAssert.EXPECT_FAIL) \
-		.is_in_range(1, 10) \
+		.is_between(1, 10) \
 		.has_error_message("Expecting:\n '0'\n in range between\n '1' <> '10'")
 	assert_int(10, GdUnitAssert.EXPECT_FAIL) \
-		.is_in_range(11, 21) \
+		.is_between(11, 21) \
 		.has_error_message("Expecting:\n '10'\n in range between\n '11' <> '21'")
 
 func test_must_fail_has_invlalid_type():

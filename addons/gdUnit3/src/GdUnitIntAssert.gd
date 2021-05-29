@@ -58,7 +58,7 @@ func is_in(expected :Array) -> GdUnitIntAssert:
 func is_not_in(expected :Array) -> GdUnitIntAssert:
 	return self
 
-# Verifies that the current value is in range (from, to) inclusive from and to.
-func is_in_range(from :int, to :int) -> GdUnitIntAssert:
+# Verifies that the current value is between the given boundaries (inclusive).
+func is_between(from :int, to :int) -> GdUnitIntAssert:
 	return self
 

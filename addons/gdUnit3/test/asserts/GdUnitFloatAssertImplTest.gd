@@ -19,6 +19,20 @@ func test_is_not_equal():
 		.is_not_equal(23.2)\
 		.has_error_message("Expecting:\n '23.200000'\n not equal to\n '23.200000'")
 
+func test_is_equal_approx() -> void:
+	assert_float(23.2).is_equal_approx(23.2, 0.01)
+	assert_float(23.19).is_equal_approx(23.2, 0.01)
+	assert_float(23.20).is_equal_approx(23.2, 0.01)
+	assert_float(23.21).is_equal_approx(23.2, 0.01)
+	
+	#false test
+	assert_float(23.18, GdUnitAssert.EXPECT_FAIL)\
+		.is_equal_approx(23.2, 0.01)\
+		.has_error_message("Expecting:\n '23.180000'\n in range between\n '23.190000' <> '23.210000'")
+	assert_float(23.22, GdUnitAssert.EXPECT_FAIL)\
+		.is_equal_approx(23.2, 0.01)\
+		.has_error_message("Expecting:\n '23.220000'\n in range between\n '23.190000' <> '23.210000'")
+
 func test_is_less():
 	assert_float(23.2).is_less(23.4)
 	assert_float(23.2).is_less(26.0)
@@ -93,20 +107,20 @@ func test_is_not_in():
 		.is_not_in([5.1, 5.2, 5.3, 5.4])\
 		.has_error_message("Expecting:\n '5.200000'\n is not in\n '[5.1, 5.2, 5.3, 5.4]'")
 
-func test_is_in_range():
-	assert_float(-20.0).is_in_range(-20.0, 20.9)
-	assert_float(10.0).is_in_range(-20.0, 20.9)
-	assert_float(20.9).is_in_range(-20.0, 20.9)
+func test_is_between():
+	assert_float(-20.0).is_between(-20.0, 20.9)
+	assert_float(10.0).is_between(-20.0, 20.9)
+	assert_float(20.9).is_between(-20.0, 20.9)
 
-func test_is_in_range_must_fail():
+func test_is_between_must_fail():
 	assert_float(-10.0, GdUnitAssert.EXPECT_FAIL) \
-		.is_in_range(-9.0, 0.0) \
+		.is_between(-9.0, 0.0) \
 		.has_error_message("Expecting:\n '-10.000000'\n in range between\n '-9.000000' <> '0.000000'")
 	assert_float(0.0, GdUnitAssert.EXPECT_FAIL) \
-		.is_in_range(1, 10) \
+		.is_between(1, 10) \
 		.has_error_message("Expecting:\n '0.000000'\n in range between\n '1.000000' <> '10.000000'")
 	assert_float(10.0, GdUnitAssert.EXPECT_FAIL) \
-		.is_in_range(11, 21) \
+		.is_between(11, 21) \
 		.has_error_message("Expecting:\n '10.000000'\n in range between\n '11.000000' <> '21.000000'")
 
 func test_must_fail_has_invlalid_type():

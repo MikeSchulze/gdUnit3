@@ -270,6 +270,10 @@ func assert_that(current, expect_result: int = GdUnitAssert.EXPECT_SUCCESS) -> G
 			return assert_float(current, expect_result)
 		TYPE_STRING:
 			return assert_str(current, expect_result)
+		TYPE_VECTOR2:
+			return assert_vector2(current, expect_result)
+		TYPE_VECTOR3:
+			return assert_vector3(current, expect_result)
 		TYPE_DICTIONARY:
 			return assert_dict(current, expect_result)
 		TYPE_ARRAY:
@@ -288,6 +292,12 @@ func assert_int(current, expect_result: int = GdUnitAssert.EXPECT_SUCCESS) -> Gd
 
 func assert_float(current, expect_result: int = GdUnitAssert.EXPECT_SUCCESS) -> GdUnitFloatAssert:
 	return GdUnitFloatAssertImpl.new(self, current, expect_result)
+
+func assert_vector2(current, expect_result: int = GdUnitAssert.EXPECT_SUCCESS) -> GdUnitVector2Assert:
+	return GdUnitVector2AssertImpl.new(self, current, expect_result)
+
+func assert_vector3(current, expect_result: int = GdUnitAssert.EXPECT_SUCCESS) -> GdUnitVector3Assert:
+	return GdUnitVector3AssertImpl.new(self, current, expect_result)
 
 func assert_array(current, expect_result: int = GdUnitAssert.EXPECT_SUCCESS) -> GdUnitArrayAssert:
 	return GdUnitArrayAssertImpl.new(self, current, expect_result)

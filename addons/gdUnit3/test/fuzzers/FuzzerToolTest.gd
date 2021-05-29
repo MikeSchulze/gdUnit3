@@ -20,21 +20,21 @@ func test_create_fuzzer_argument_default():
 	var fuzzer := FuzzerTool.create_fuzzer(self.get_script(), fuzzer_func)
 	assert_that(fuzzer).is_not_null()
 	assert_that(fuzzer).is_instanceof(Fuzzer)
-	assert_int(fuzzer.next_value()).is_in_range(-10, 22)
+	assert_int(fuzzer.next_value()).is_between(-10, 22)
 
 func test_create_fuzzer_argument_with_constants():
 	var fuzzer_func := "fuzzer:=Fuzzers.rangei(-10, MAX_VALUE)"
 	var fuzzer := FuzzerTool.create_fuzzer(self.get_script(), fuzzer_func)
 	assert_that(fuzzer).is_not_null()
 	assert_that(fuzzer).is_instanceof(Fuzzer)
-	assert_int(fuzzer.next_value()).is_in_range(-10, 22)
+	assert_int(fuzzer.next_value()).is_between(-10, 22)
 
 func test_create_fuzzer_argument_with_custom_function():
 	var fuzzer_func := "fuzzer:=fuzzer()"
 	var fuzzer := FuzzerTool.create_fuzzer(self.get_script(), fuzzer_func)
 	assert_that(fuzzer).is_not_null()
 	assert_that(fuzzer).is_instanceof(Fuzzer)
-	assert_int(fuzzer.next_value()).is_in_range(MIN_VALUE, MAX_VALUE)
+	assert_int(fuzzer.next_value()).is_between(MIN_VALUE, MAX_VALUE)
 
 func test_create_fuzzer_do_fail():
 	var fuzzer_func := "fuzzer:=non_fuzzer()"
