@@ -189,14 +189,14 @@ func execute_test_case(test_suite :GdUnitTestSuite, test_case :_TestCase) -> GDS
 	test_case.generate_seed()
 	
 	if not test_case.is_skipped():
-		var fuzzer := create_fuzzer(test_suite, test_case)
-		if not fuzzer:
+		if not test_case.has_fuzzer():
 			_test_run_state = test_case.execute()
 			# is yielded than wait for completed
 			if GdUnitTools.is_yielded(_test_run_state):
 				yield(_test_run_state, "completed")
 		else:
-			for iteration in fuzzer.iteration_limit():
+			var fuzzers := create_fuzzers(test_suite, test_case)
+			for iteration in test_case.iterations():
 				if _with_yielding:
 					# give main thread time to sync to prevent network timeouts
 					yield(get_tree(), "idle_frame")
@@ -207,8 +207,7 @@ func execute_test_case(test_suite :GdUnitTestSuite, test_case :_TestCase) -> GDS
 					_report_collector.add_report(STAGE_TEST_CASE_EXECUTE, GdUnitReport.new() \
 							.create(GdUnitReport.FAILURE, report.line_number(), GdAssertMessages.fuzzer_interuped(iteration-1, report.message())))
 					break
-				fuzzer._iteration_index += 1
-				_test_run_state = test_case.execute(fuzzer)
+				_test_run_state = test_case.execute(fuzzers, iteration)
 				# is yielded than wait for completed
 				if GdUnitTools.is_yielded(_test_run_state):
 					yield(_test_run_state, "completed")
@@ -298,10 +297,13 @@ func clone_test_suite(test_suite :GdUnitTestSuite) -> GdUnitTestSuite:
 	add_child(_test_suite)
 	return _test_suite
 
-static func create_fuzzer(test_suite :GdUnitTestSuite, test_case :_TestCase) -> Fuzzer:
+static func create_fuzzers(test_suite :GdUnitTestSuite, test_case :_TestCase) -> Array:
 	if not test_case.has_fuzzer():
-		return null
-	var fuzzer := FuzzerTool.create_fuzzer(test_suite.get_script(), test_case.fuzzer_func())
-	fuzzer._iteration_index = 0
-	fuzzer._iteration_limit = test_case.iterations()
-	return fuzzer
+		return Array()
+	var fuzzers := Array()
+	for fuzzer_def in test_case.fuzzers():
+		var fuzzer := FuzzerTool.create_fuzzer(test_suite.get_script(), fuzzer_def)
+		fuzzer._iteration_index = 0
+		fuzzer._iteration_limit = test_case.iterations()
+		fuzzers.append(fuzzer)
+	return fuzzers

@@ -17,9 +17,12 @@ var TOKEN_FUNCTION := Token.new(".")
 var TOKEN_FUNCTION_RETURN_TYPE := Token.new("->")
 var TOKEN_ARGUMENT_ASIGNMENT := Token.new("=")
 var TOKEN_ARGUMENT_TYPE_ASIGNMENT := Token.new(":=")
-var TOKEN_ARGUMENT_FUZZER_ASIGNMENT1 := Token.new("fuzzer:Fuzzer=")
-var TOKEN_ARGUMENT_FUZZER_ASIGNMENT2 := Token.new("fuzzer:=")
-var TOKEN_ARGUMENT_FUZZER_ASIGNMENT3 := Token.new("fuzzer=")
+var TOKEN_TEST_TIMEOUT := Token.new("timeout")
+var TOKEN_FUZZER_ITERATIONS := Token.new("fuzzer_iterations")
+var TOKEN_FUZZER_SEED := Token.new("fuzzer_seed")
+var TOKEN_ARGUMENT_FUZZER_ASIGNMENT1 := regex_token("fuzzer(|[a-z,A-Z,0-9,_]+):Fuzzer=")
+var TOKEN_ARGUMENT_FUZZER_ASIGNMENT2 := regex_token("fuzzer(|[a-z,A-Z,0-9,_]+):=")
+var TOKEN_ARGUMENT_FUZZER_ASIGNMENT3 := regex_token("fuzzer(|[a-z,A-Z,0-9,_]+)=")
 var TOKEN_ARGUMENT_TYPE := Token.new(":")
 var TOKEN_ARGUMENT_SEPARATOR := Token.new(",")
 var TOKEN_BRACKET_OPEN := Token.new("(")
@@ -43,6 +46,9 @@ var TOKENS := [
 	TOKEN_ENUM,
 	TOKEN_FUNCTION_STATIC_DECLARATION,
 	TOKEN_FUNCTION_DECLARATION,
+	TOKEN_TEST_TIMEOUT,
+	TOKEN_FUZZER_ITERATIONS,
+	TOKEN_FUZZER_SEED,
 	TOKEN_ARGUMENT_FUZZER_ASIGNMENT1,
 	TOKEN_ARGUMENT_FUZZER_ASIGNMENT2,
 	TOKEN_ARGUMENT_FUZZER_ASIGNMENT3,
@@ -85,31 +91,42 @@ static func clean_up_row(row :String) -> String:
 static func to_unix_format(input :String) -> String:
 	return input.replace("\r\n", "\n")
 
+static func regex_token(token :String) -> Token:
+	return Token.new(token, false, prepare_regex(token))
+
 class Token extends Reference:
 	var _token: String
 	var _consumed: int
 	var _is_operator: bool
+	var _regex :RegEx
 
-	func _init(token: String, is_operator: bool = false) -> void:
+	func _init(token: String, is_operator:= false, regex :RegEx=null) -> void:
 		_token = token
 		_is_operator = is_operator
 		_consumed = token.length()
-
+		_regex = regex
+	
 	func match(input: String, pos: int) -> bool:
+		if _regex:
+			var result := _regex.search(input, pos)
+			if result == null:
+				return false
+			_consumed = result.get_end() - result.get_start()
+			return pos == result.get_start()
 		return input.findn(_token, pos) == pos
-
+	
 	func is_operator() -> bool:
 		return _is_operator
-
+	
 	func is_inner_class() -> bool:
 		return _token == "class"
-
+	
 	func is_variable() -> bool:
 		return false
-
+	
 	func is_token(token_name :String) -> bool:
 		return _token == token_name
-
+	
 	func _to_string():
 		return "{" + _token + "}"
 
@@ -397,12 +414,9 @@ func parse_argument(row: String, argument_name: String, default_value):
 		current_index += token._consumed
 		if token == TOKEN_NOT_MATCH:
 			push_error("Error on parsing argument '%s'" % row)
-
-		# look for name
 		if not argument_found and not token.is_token(argument_name):
 			continue
 		argument_found = true
-
 		# extract value
 		match token:
 			TOKEN_ARGUMENT_TYPE_ASIGNMENT:
@@ -413,21 +427,26 @@ func parse_argument(row: String, argument_name: String, default_value):
 				return token.value()
 	return default_value
 
-# Extracts the full fuzzer argument and assignment as String from the given <row>
+# Extracts the full fuzzer signature and collects into a array from the given <row>
 # if no fuzzer argument found an empty String is returned
-func parse_fuzzer(row: String) -> String:
+func parse_fuzzers(row: String) -> PoolStringArray:
 	var argument_name := Fuzzer.ARGUMENT_FUZZER_INSTANCE
 	var input := clean_up_row(row)
 	var current_index := 0
 	var token :Token = null
+	var fuzzers := PoolStringArray()
 	while current_index < len(input):
 		token = next_token(input, current_index) as Token
 		if token == TOKEN_NOT_MATCH:
 			push_error("Error on parsing fuzzer '%s'" % row)
 		if token in FUZZER_TOKENS:
-			return _parse_end_function(input.substr(current_index))
+			var fuzzer := _parse_end_function(input.substr(current_index))
+			fuzzers.append(fuzzer)
+			current_index += fuzzer.length()
+			continue
 		current_index += token._consumed
-	return ""
+	return fuzzers
+
 
 func _parse_end_function(input: String, remove_trailing_char := false) -> String:
 	# find end of function

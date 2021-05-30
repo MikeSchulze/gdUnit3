@@ -7,7 +7,7 @@ const ARGUMENT_TIMEOUT := "timeout"
 
 var _iterations: int = 1
 var _seed: int
-var _fuzzer_func: String = ""
+var _fuzzers: PoolStringArray = PoolStringArray()
 var _line_number: int = -1
 var _script_path: String
 var _skipped := false
@@ -25,11 +25,11 @@ func _init() -> void:
 	_timer.connect('timeout', self, '_test_case_timeout')
 	_default_timeout = GdUnitSettings.test_timeout()
 
-func configure(name: String, line_number: int, script_path: String, timeout :int = DEFAULT_TIMEOUT, fuzzer: String = "", iterations: int = 1, seed_ :int = -1, skipped := false) -> _TestCase:
+func configure(name: String, line_number: int, script_path: String, timeout :int = DEFAULT_TIMEOUT, fuzzers:= PoolStringArray(), iterations: int = 1, seed_ :int = -1, skipped := false) -> _TestCase:
 	set_name(name)
 	_line_number = line_number
-	if not fuzzer.empty():
-		_fuzzer_func = fuzzer
+	if not fuzzers.empty():
+		_fuzzers = fuzzers
 		_iterations = iterations
 	_seed = seed_
 	_script_path = script_path
@@ -39,17 +39,21 @@ func configure(name: String, line_number: int, script_path: String, timeout :int
 		_timeout = timeout
 	return self
 
-func execute(fuzzer :Fuzzer = null) :
-	if fuzzer:
-		if fuzzer._iteration_index == 1:
-			set_timeout()
-		_fs = get_parent().call(name, fuzzer)
-	else:
+func execute(fuzzers := Array(), iteration := 0):
+	if iteration == 0:
 		set_timeout()
+	if not fuzzers.empty():
+		update_fuzzers(fuzzers, iteration)
+		_fs = get_parent().callv(name, fuzzers)
+	else:
 		_fs = get_parent().call(name)
 	if GdUnitTools.is_yielded(_fs):
 		yield(_fs, "completed")
 	return _fs
+
+func update_fuzzers(fuzzers :Array, iteration :int):
+	for fuzzer in fuzzers:
+		fuzzer._iteration_index = iteration + 1
 
 func set_timeout():
 	var time :float = _timeout / 1000.0
@@ -86,10 +90,10 @@ func seed_value() -> int:
 	return _seed
 	
 func has_fuzzer() -> bool:
-	return not _fuzzer_func.empty()
+	return not _fuzzers.empty()
 	
-func fuzzer_func() -> String:
-	return _fuzzer_func
+func fuzzers() -> PoolStringArray:
+	return _fuzzers
 
 func script_path() -> String:
 	return _script_path
@@ -110,7 +114,7 @@ static func serialize(test_case: _TestCase) -> Dictionary:
 	serialized["line_number"] = test_case.line_number()
 	serialized["script_path"] = test_case.script_path()
 	serialized["timeout"] = test_case.timeout()
-	serialized["fuzzer"] = test_case.fuzzer_func()
+	serialized["fuzzers"] = test_case.fuzzers()
 	serialized["iterations"] = test_case.iterations()
 	serialized["seed"] = test_case.seed_value()
 	serialized["skipped"] = test_case.is_skipped()
@@ -123,7 +127,7 @@ static func deserialize(serialized: Dictionary) -> _TestCase:
 		serialized["line_number"],
 		serialized["script_path"],
 		serialized["timeout"],
-		serialized["fuzzer"],
+		serialized["fuzzers"],
 		serialized["iterations"],
 		serialized["seed"],
 		serialized["skipped"])

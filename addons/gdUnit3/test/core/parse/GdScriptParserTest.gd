@@ -29,25 +29,43 @@ func test_parse_argument_with_same_func_name():
 	assert_that(_parser.parse_argument(row, "arg1", 23)).is_equal(41)
 
 func test_parse_fuzzer_single_argument():
-	assert_that(_parser.parse_fuzzer("func test_foo(fuzzer = Fuzzers.random_rangei(-23, 22))")) \
-		.is_equal("fuzzer=Fuzzers.random_rangei(-23,22)")
+	assert_that(_parser.parse_fuzzers("func test_foo(fuzzer = Fuzzers.random_rangei(-23, 22))")) \
+		.contains_exactly(["fuzzer=Fuzzers.random_rangei(-23,22)"])
 	# test with bad formatting
-	assert_that(_parser.parse_fuzzer("func test_foo(  	fuzzer  :	= Fuzzers.random_rangei(	-23,	 22))")) \
-		.is_equal("fuzzer:=Fuzzers.random_rangei(-23,22)")
-	assert_that(_parser.parse_fuzzer("func test_foo(fuzzer :Fuzzer = Fuzzers.random_rangei(-23, 22))")) \
-		.is_equal("fuzzer:Fuzzer=Fuzzers.random_rangei(-23,22)")
-	assert_that(_parser.parse_fuzzer("func test_foo(fuzzer = fuzzer())")) \
-		.is_equal("fuzzer=fuzzer()")
+	assert_that(_parser.parse_fuzzers("func test_foo(  	fuzzer  :	= Fuzzers.random_rangei(	-23,	 22))")) \
+		.contains_exactly(["fuzzer:=Fuzzers.random_rangei(-23,22)"])
+	assert_that(_parser.parse_fuzzers("func test_foo(fuzzer :Fuzzer = Fuzzers.random_rangei(-23, 22))")) \
+		.contains_exactly(["fuzzer:Fuzzer=Fuzzers.random_rangei(-23,22)"])
+	assert_that(_parser.parse_fuzzers("func test_foo(fuzzer = fuzzer())")) \
+		.contains_exactly(["fuzzer=fuzzer()"])
 
 func test_parse_fuzzer_multiple_argument():
-	assert_that(_parser.parse_fuzzer("func test_foo(fuzzer = Fuzzers.random_rangei(-23, 22), arg1=42)")) \
-		.is_equal("fuzzer=Fuzzers.random_rangei(-23,22)")
-	assert_that(_parser.parse_fuzzer("func test_foo(fuzzer := Fuzzers.random_rangei(-23, 22), arg1=42)")) \
-		.is_equal("fuzzer:=Fuzzers.random_rangei(-23,22)")
-	assert_that(_parser.parse_fuzzer("func test_foo(fuzzer :Fuzzer = Fuzzers.random_rangei(-23, 22), arg1=42)")) \
-		.is_equal("fuzzer:Fuzzer=Fuzzers.random_rangei(-23,22)")
-	assert_that(_parser.parse_fuzzer("func test_foo(fuzzer = fuzzer(), arg1=42)")) \
-		.is_equal("fuzzer=fuzzer()")
+	assert_that(_parser.parse_fuzzers("func test_foo(fuzzer = Fuzzers.random_rangei(-23, 22), arg1=42)")) \
+		.contains_exactly(["fuzzer=Fuzzers.random_rangei(-23,22)"])
+	assert_that(_parser.parse_fuzzers("func test_foo(fuzzer := Fuzzers.random_rangei(-23, 22), arg1=42)")) \
+		.contains_exactly(["fuzzer:=Fuzzers.random_rangei(-23,22)"])
+	assert_that(_parser.parse_fuzzers("func test_foo(fuzzer :Fuzzer = Fuzzers.random_rangei(-23, 22), arg1=42)")) \
+		.contains_exactly(["fuzzer:Fuzzer=Fuzzers.random_rangei(-23,22)"])
+	assert_that(_parser.parse_fuzzers("func test_foo(fuzzer = fuzzer(), arg1=42)")) \
+		.contains_exactly(["fuzzer=fuzzer()"])
+
+
+func test_parse_multiple_fuzzers():
+	assert_array(_parser.parse_fuzzers("func test_foo(fuzzer1 = Fuzzers.random_rangei(-23, 22), fuzzer2 = Fuzzers.random_rangei(23, 42))")) \
+		.contains_exactly([
+			"fuzzer1=Fuzzers.random_rangei(-23,22)",
+			"fuzzer2=Fuzzers.random_rangei(23,42)"])
+	# test with different pattern for fuzzer names
+	assert_array(_parser.parse_fuzzers("func test_foo(fuzzer_a = Fuzzers.random_rangei(-23, 22), fuzzerAB1_ad_9 = Fuzzers.random_rangei(23, 42))")) \
+		.contains_exactly([
+			"fuzzer_a=Fuzzers.random_rangei(-23,22)",
+			"fuzzerAB1_ad_9=Fuzzers.random_rangei(23,42)"])
+	# test full set inclusive fuzzer arguments
+	assert_array(_parser.parse_fuzzers("func test_foo(fuzzer_a = fuzz_a(), fuzzer_b := fuzz_b(), fuzzer_c :Fuzzer = fuzz_c(), fuzzer_iterations = 234, fuzzer_seed = 100")) \
+		.contains_exactly([
+			"fuzzer_a=fuzz_a()",
+			"fuzzer_b:=fuzz_b()",
+			"fuzzer_c:Fuzzer=fuzz_c()"])\
 
 func test_parse_argument_timeout():
 	var DEFAULT_TIMEOUT = 1000
