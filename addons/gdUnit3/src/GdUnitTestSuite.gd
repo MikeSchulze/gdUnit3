@@ -261,6 +261,10 @@ static func tuple(arg0, arg1=GdUnitTuple.NO_ARG, arg2=GdUnitTuple.NO_ARG, arg3=G
 
 # === Asserts ==================================================================
 func assert_that(current, expect_result: int = GdUnitAssert.EXPECT_SUCCESS) -> GdUnitAssert:
+	
+	if GdObjects.is_array_type(current):
+		return assert_array(current, expect_result)
+	
 	match typeof(current):
 		TYPE_BOOL:
 			return assert_bool(current, expect_result)

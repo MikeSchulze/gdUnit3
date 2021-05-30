@@ -4,6 +4,7 @@ var _current_test_case: String = ""
 var _test_case_iterations: int = 0
 var _expected_iterations: Dictionary
 var _collect_values_by_seed := Array()
+var _collect_values2_by_seed := Array()
 
 # a simple test fuzzer where provided a hard coded value set
 class TestFuzzer extends Fuzzer:
@@ -30,7 +31,8 @@ func before():
 func before_test():
 	_current_test_case = ""
 	_test_case_iterations = 0
-	_collect_values_by_seed = []
+	_collect_values_by_seed.clear()
+	_collect_values2_by_seed.clear()
 	
 func after_test():
 	if _expected_iterations.has(_current_test_case):
@@ -54,18 +56,32 @@ func test_fuzzer_inject_value(fuzzer := Fuzzers.rangei(-23, 22), fuzzer_iteratio
 	assert_int(fuzzer.next_value()).is_between(-23, 22)
 
 func test_fuzzer_inject_value_with_seed(fuzzer := Fuzzers.rangei(-23, 22), fuzzer_iterations = 10, fuzzer_seed = 187772):
-	_test_case_iterations += 1
 	# collect all generated values
 	_collect_values_by_seed.append(fuzzer.next_value())
 	# finally check after 10 iterations
-	if _test_case_iterations == 10:
+	if fuzzer.iteration_index() == 10:
 		# with same seed we expect always the same values generated
 		assert_array(_collect_values_by_seed).contains_exactly([-20, 6, -18, 8, 9, 9, 3, 16, -12, 0])
 
+func test_multiple_fuzzers_inject_value_with_seed(fuzzer_a := Fuzzers.rangei(-23, 22), fuzzer_b := Fuzzers.rangei(33, 44), fuzzer_iterations = 10, fuzzer_seed = 187772):
+	var value_a = fuzzer_a.next_value()
+	var value_b = fuzzer_b.next_value()
+	assert_int(value_a).is_between(-23, 22)
+	assert_int(value_b).is_between(33, 44)
+	
+	_collect_values_by_seed.append(value_a)
+	_collect_values2_by_seed.append(value_b)
+	# finally check after 10 iterations
+	if fuzzer_a.iteration_index() == 10:
+		# with same seed we expect always the same values generated
+		assert_array(_collect_values_by_seed)\
+			.contains_exactly([-20, -18, 9, 3, -12, -21, -11, -13, -18, 7])
+		assert_array(_collect_values2_by_seed)\
+			.contains_exactly([40, 40, 40, 42, 38, 36, 39, 41, 37, 42])
+
 func test_fuzzer_error_after_eight_iterations(fuzzer=TestFuzzer.new(), fuzzer_iterations = 10):
-	_test_case_iterations += 1
 	# should fail after 8 iterations
-	if _test_case_iterations == 8:
+	if fuzzer.iteration_index() == 8:
 		assert_int(fuzzer.next_value(), GdUnitAssert.EXPECT_FAIL) \
 			.is_between(0, 9) \
 			.has_error_message("Expecting:\n '23'\n in range between\n '0' <> '9'")
@@ -73,5 +89,4 @@ func test_fuzzer_error_after_eight_iterations(fuzzer=TestFuzzer.new(), fuzzer_it
 		assert_int(fuzzer.next_value()).is_between(0, 9)
 
 func test_fuzzer_custom_func(fuzzer=fuzzer()):
-	prints(fuzzer.next_value())
 	assert_int(fuzzer.next_value()).is_between(1, 10)

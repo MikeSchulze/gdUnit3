@@ -119,9 +119,9 @@ func _parse_and_add_test_cases(test_suite :GdUnitTestSuite, resource_path :Strin
 			# grap test arguments
 			var timeout = _script_parser.parse_argument(row, _TestCase.ARGUMENT_TIMEOUT, _TestCase.DEFAULT_TIMEOUT)
 			var iterations = _script_parser.parse_argument(row, Fuzzer.ARGUMENT_ITERATIONS, Fuzzer.ITERATION_DEFAULT_COUNT)
-			var seed_value = _script_parser.parse_argument(row, Fuzzer.ARGUMENT_SEED , -1)
-			var fuzzer_func := _script_parser.parse_fuzzer(row)
-			test_suite.add_child(_TestCase.new().configure(func_name, line_number, resource_path, timeout, fuzzer_func, iterations, seed_value))
+			var seed_value = _script_parser.parse_argument(row, Fuzzer.ARGUMENT_SEED, -1)
+			var fuzzers := _script_parser.parse_fuzzers(row)
+			test_suite.add_child(_TestCase.new().configure(func_name, line_number, resource_path, timeout, fuzzers, iterations, seed_value))
 	
 	file.close()
 
