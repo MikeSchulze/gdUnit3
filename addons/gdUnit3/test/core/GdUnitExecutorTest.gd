@@ -60,17 +60,18 @@ func assert_event_reports(events :Array, reports1 :Array, reports2 :Array, repor
 			else:
 				assert_str("<N/A>").is_equal(expected[m])
 
-func assert_event_list(events :Array, suite_name :String) -> void:
+func assert_event_list(events :Array, suite_name :String, test_case_names = ["test_case1", "test_case2"]) -> void:
+	
+	var expected_events := Array()
+	expected_events.append(tuple(GdUnitEvent.TESTSUITE_BEFORE, suite_name, "before", test_case_names.size()))
+	for test_case in test_case_names:
+		expected_events.append(tuple(GdUnitEvent.TESTCASE_BEFORE, suite_name, test_case, 0))
+		expected_events.append(tuple(GdUnitEvent.TESTCASE_AFTER, suite_name, test_case, 0))
+	expected_events.append(tuple(GdUnitEvent.TESTSUITE_AFTER, suite_name, "after", 0))
+	
 	assert_array(events).has_size(6).extractv(
 		extr("type"), extr("suite_name"), extr("test_name"), extr("total_count"))\
-		.contains_exactly([
-			tuple(GdUnitEvent.TESTSUITE_BEFORE, suite_name, "before", 2),
-			tuple(GdUnitEvent.TESTCASE_BEFORE, suite_name, "test_case1", 0),
-			tuple(GdUnitEvent.TESTCASE_AFTER, suite_name, "test_case1", 0),
-			tuple(GdUnitEvent.TESTCASE_BEFORE, suite_name, "test_case2", 0),
-			tuple(GdUnitEvent.TESTCASE_AFTER, suite_name, "test_case2", 0),
-			tuple(GdUnitEvent.TESTSUITE_AFTER, suite_name, "after", 0),
-		])
+		.contains_exactly(expected_events)
 
 func assert_event_counters(events :Array) -> GdUnitArrayAssert:
 	return assert_array(events).extractv(extr("type"), extr("error_count"), extr("failed_count"), extr("orphan_nodes"))
@@ -472,4 +473,44 @@ func test_execute_error_on_test_timeout() -> void:
 		["Test timed out suite_after 2s 0ms"],
 		[],
 		[],
+		[])
+
+func test_execute_failure_fuzzer_iteration() -> void:
+	# this tests a timeout on a test case reported as error
+	var test_suite := resource("res://addons/gdUnit3/test/core/resources/testsuites/GdUnitFuzzerTest.resource")
+	# verify all test cases loaded
+	var expected_test_cases := ["test_multi_yielding_with_fuzzer", "test_multi_yielding_with_fuzzer_fail_after_3_iterations"]
+	assert_array(test_suite.get_children()).extract("get_name").contains_exactly(expected_test_cases)
+	# simulate test suite execution
+	var events = yield(execute(test_suite), "completed" )
+	
+	# verify basis infos
+	assert_event_list(events, "GdUnitFuzzerTest", expected_test_cases)
+	# we expect failing on multiple stages
+	assert_event_counters(events).contains_exactly([
+		tuple(GdUnitEvent.TESTSUITE_BEFORE, 0, 0, 0),
+		tuple(GdUnitEvent.TESTCASE_BEFORE, 0, 0, 0),
+		tuple(GdUnitEvent.TESTCASE_AFTER, 0, 0, 0),
+		tuple(GdUnitEvent.TESTCASE_BEFORE, 0, 0, 0),
+		# test failed after 3 iterations
+		tuple(GdUnitEvent.TESTCASE_AFTER, 0, 1, 0),
+		tuple(GdUnitEvent.TESTSUITE_AFTER, 0, 0, 0),
+	])
+	# is_success, is_warning, is_failed, is_error
+	assert_event_states(events).contains_exactly([
+		tuple("before", true, false, false, false),
+		tuple("test_multi_yielding_with_fuzzer", true, false, false, false),
+		tuple("test_multi_yielding_with_fuzzer", true, false, false, false),
+		tuple("test_multi_yielding_with_fuzzer_fail_after_3_iterations", true, false, false, false),
+		tuple("test_multi_yielding_with_fuzzer_fail_after_3_iterations", false, false, true, false),
+		tuple("after", false, false, true, false),
+	])
+	# 'test_case1' reports a error triggered by test timeout
+	assert_event_reports(events,
+		[],
+		[],
+		[],
+		[],
+		# must fail after three iterations
+		["Found an error after '3' test iterations Expecting: 'False' but is 'True'"],
 		[])
