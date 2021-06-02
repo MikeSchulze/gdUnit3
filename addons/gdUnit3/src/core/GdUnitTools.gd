@@ -340,3 +340,12 @@ static func clear_push_errors() -> void:
 static func register_expect_interupted_by_timeout(test_suite :Node, test_case_name :String) -> void:
 	var test_case = test_suite.find_node(test_case_name, false, false)
 	test_case.expect_to_interupt()
+
+static func append_array(array, append :Array) -> void:
+	var major :int = Engine.get_version_info()["major"]
+	var minor :int = Engine.get_version_info()["minor"]
+	if major == 3 and minor == 3:
+		array.append_array(append)
+	else:
+		for element in append:
+			array.append(element)

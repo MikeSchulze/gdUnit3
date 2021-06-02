@@ -41,7 +41,7 @@ func get_reports(execution_states :int) -> Array:
 	var reports :Array = Array()
 	for state in ALL_REPORT_STATES:
 		if execution_states&state == state:
-			reports.append_array(get_reports_by_state(state))
+			GdUnitTools.append_array(reports, get_reports_by_state(state))
 	return reports
 
 func has_errors(execution_states :int) -> bool:

@@ -90,7 +90,7 @@ func suite_after(test_suite :GdUnitTestSuite) -> GDScriptFunctionState:
 		var fstate = test_suite.after()
 		if GdUnitTools.is_yielded(fstate):
 			yield(fstate, "completed")
-		reports.append_array(_report_collector.get_reports(STAGE_TEST_SUITE_AFTER))
+		GdUnitTools.append_array(reports, _report_collector.get_reports(STAGE_TEST_SUITE_AFTER))
 		GdUnitTools.run_auto_close()
 		_memory_pool.free_pool()
 		_memory_pool.monitor_stop()
