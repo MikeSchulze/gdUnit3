@@ -15,8 +15,7 @@ func parse(args :Array, ignore_unknown_cmd := false) -> Result:
 	# parse until first program argument
 	while not args.empty():
 		var arg :String = args.pop_front()
-		if arg.find(_tool_name):
-			args.pop_front()
+		if arg.find(_tool_name) != -1:
 			break
 	
 	if args.empty():

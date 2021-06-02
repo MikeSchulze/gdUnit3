@@ -163,11 +163,11 @@ func test_is_array_type():
 	assert_bool(GdObjects.is_array_type(false)).is_false()
 
 func test_string_diff_empty():
-	assert_array(GdObjects.string_diff("", "")).is_equal(["", ""])
-	assert_array(GdObjects.string_diff("Abc", "Abc")).is_equal(["Abc", "Abc"])
+	assert_array(GdObjects.string_diff("", "")).contains_exactly(["", ""])
+	assert_array(GdObjects.string_diff("Abc", "Abc")).contains_exactly(["Abc", "Abc"])
 
-func test_string_diff():
-	assert_array(GdObjects.string_diff("Abc", "abc")).is_equal(["￵A￳abc", "￳A￵abc"])
+func _test_string_diff():
+	assert_array(GdObjects.string_diff("Abc", "abc")).contains_exactly(["￵A￳abc", "￳A￵abc"])
 	
 class TestClassForIsType:
 	var x

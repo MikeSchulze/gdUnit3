@@ -41,6 +41,6 @@ static func apply_testsuite_reports(report_dir :String, template :String, report
 	var table_records := PoolStringArray()
 	
 	for report in reports:
-		var report_link = report.output_path(report_dir)
+		var report_link = report.output_path(report_dir).replace(report_dir, "..")
 		table_records.append(report.create_record(report_link))
 	return template.replace(GdUnitHtmlPatterns.TABLE_BY_TESTSUITES, table_records.join("\n"))
