@@ -1,9 +1,14 @@
 
-# GdUnit3 - Godot Unit Test Framework ![Godot v3.2](https://img.shields.io/badge/Godot-v3.2-%23478cbf?logo=godot-engine&logoColor=white) ![Godot v3.3](https://img.shields.io/badge/Godot-v3.3-%23478cbf?logo=godot-engine&logoColor=white)
+# GdUnit3 - Godot Unit Test Framework 
+![Godot v3.2.3](https://img.shields.io/badge/Godot-v3.2.3-%23478cbf?logo=godot-engine&logoColor=white)
+![Godot v3.2.4](https://img.shields.io/badge/Godot-v3.2.4-%23478cbf?logo=godot-engine&logoColor=white)
+![Godot v3.3](https://img.shields.io/badge/Godot-v3.3-%23478cbf?logo=godot-engine&logoColor=white)
+![Godot v3.3.1](https://img.shields.io/badge/Godot-v3.3.1-%23478cbf?logo=godot-engine&logoColor=white)
+![Godot v3.3.2](https://img.shields.io/badge/Godot-v3.3.2-%23478cbf?logo=godot-engine&logoColor=white)
 ![GdUnit3 Unit Test Framework](.//addons/gdUnit3/GdUnit3Banner.png)
 
 ## Release Candidate
-Please notice the plugin is the first release candidate and has current no acceptance to be bug.
+Please notice the plugin is the first release candidate and has current no acceptance to be bug free.
 You are welcome to report bugs or create new feature requests.
 I would also appreciate feedback.
 
