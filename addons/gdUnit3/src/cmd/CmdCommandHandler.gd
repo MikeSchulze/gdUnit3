@@ -8,8 +8,15 @@ var _cmd_options :CmdOptions
 # holds the command callbacks by key:<cmd_name>:String and value: [<cb single arg>, <cb multible args>]:Array
 var _command_func_refs :Dictionary
 
+# we only able to check fr function name since Godot 3.3.x
+var _enhanced_fr_test := false
+
 func _init(cmd_options :CmdOptions):
 	_cmd_options = cmd_options
+	var major :int = Engine.get_version_info()["major"]
+	var minor :int = Engine.get_version_info()["minor"]
+	if major == 3 and minor == 3:
+		_enhanced_fr_test = true
 
 # register a callback function for given command
 # cmd_name short name of the command
@@ -48,8 +55,8 @@ func _validate() -> Result:
 			errors.append("The command '%s' is unknown, verify your CmdOptions!" % cmd_name)
 		
 		# verify for multiple registered command callbacks
-		if fr != null:
-			var func_cb_name := fr.get_function()
+		if _enhanced_fr_test and fr != null:
+			var func_cb_name = fr.get_function()
 			if registers_func_cbs.has(func_cb_name):
 				var already_registered_cmd = registers_func_cbs[func_cb_name] 
 				errors.append("The function reference '%s' already registerd for command '%s'!" % [func_cb_name, already_registered_cmd])

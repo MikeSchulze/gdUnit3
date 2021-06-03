@@ -40,7 +40,7 @@ func test_is_equal_approx() -> void:
 
 func test_is_less() -> void:
 	assert_vector3(Vector3.ONE).is_less(Vector3.INF)
-	assert_vector3(Vector3(1.2, 1.000001, 1)).is_less(Vector3(1.2, 1.000002, 1))
+	assert_vector3(Vector3(1.2, 1.00001, 1)).is_less(Vector3(1.2, 1.00002, 1))
 	
 	# false test
 	assert_vector3(Vector3.ONE, GdUnitAssert.EXPECT_FAIL)\
@@ -59,14 +59,14 @@ func test_is_less_equal() -> void:
 	assert_vector3(Vector3.ONE, GdUnitAssert.EXPECT_FAIL)\
 		.is_less_equal(Vector3.ZERO)\
 		.has_error_message("Expecting to be less than or equal:\n '(0, 0, 0)' but was '(1, 1, 1)'")
-	assert_vector3(Vector3(1.2, 1.000002, 1), GdUnitAssert.EXPECT_FAIL)\
-		.is_less_equal(Vector3(1.2, 1.000001, 1))\
-		.has_error_message("Expecting to be less than or equal:\n '(1.2, 1.000001, 1)' but was '(1.2, 1.000002, 1)'")
+	assert_vector3(Vector3(1.2, 1.00002, 1), GdUnitAssert.EXPECT_FAIL)\
+		.is_less_equal(Vector3(1.2, 1.00001, 1))\
+		.has_error_message("Expecting to be less than or equal:\n '(1.2, 1.00001, 1)' but was '(1.2, 1.00002, 1)'")
 
 
 func test_is_greater() -> void:
 	assert_vector3(Vector3.INF).is_greater(Vector3.ONE)
-	assert_vector3(Vector3(1.2, 1.000002, 1)).is_greater(Vector3(1.2, 1.000001, 1))
+	assert_vector3(Vector3(1.2, 1.00002, 1)).is_greater(Vector3(1.2, 1.00001, 1))
 	
 	# false test
 	assert_vector3(Vector3.ZERO, GdUnitAssert.EXPECT_FAIL)\
@@ -86,9 +86,9 @@ func test_is_greater_equal() -> void:
 	assert_vector3(Vector3.ZERO, GdUnitAssert.EXPECT_FAIL)\
 		.is_greater_equal(Vector3.ONE)\
 		.has_error_message("Expecting to be greater than or equal:\n '(1, 1, 1)' but was '(0, 0, 0)'")
-	assert_vector3(Vector3(1.2, 1.000002, 1), GdUnitAssert.EXPECT_FAIL)\
-		.is_greater_equal(Vector3(1.2, 1.000003, 1))\
-		.has_error_message("Expecting to be greater than or equal:\n '(1.2, 1.000003, 1)' but was '(1.2, 1.000002, 1)'")
+	assert_vector3(Vector3(1.2, 1.00002, 1), GdUnitAssert.EXPECT_FAIL)\
+		.is_greater_equal(Vector3(1.2, 1.00003, 1))\
+		.has_error_message("Expecting to be greater than or equal:\n '(1.2, 1.00003, 1)' but was '(1.2, 1.00002, 1)'")
 
 func test_is_between(fuzzer = Fuzzers.rangev3(Vector3.ZERO, Vector3.ONE)):
 	var value :Vector3 = fuzzer.next_value()

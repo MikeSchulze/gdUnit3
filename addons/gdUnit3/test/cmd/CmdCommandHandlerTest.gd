@@ -77,10 +77,10 @@ func test__validate_registerd_register_same_callback_twice():
 	var cmd_handler := CmdCommandHandler.new(_cmd_options)
 	cmd_handler.register_cb("-a", funcref(_cmd_instance, "cmd_a"))
 	cmd_handler.register_cb("-b", funcref(_cmd_instance, "cmd_a"))
-	
-	assert_result(cmd_handler._validate())\
-		.is_error()\
-		.contains_message("The function reference 'cmd_a' already registerd for command '-a'!")
+	if cmd_handler._enhanced_fr_test:
+		assert_result(cmd_handler._validate())\
+			.is_error()\
+			.contains_message("The function reference 'cmd_a' already registerd for command '-a'!")
 
 func test_execute_no_commands():
 	var cmd_handler := CmdCommandHandler.new(_cmd_options)
