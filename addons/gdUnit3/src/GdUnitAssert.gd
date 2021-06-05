@@ -27,7 +27,7 @@ func is_not_equal(expected):
 func test_fail():
 	return self
 
-# Verifies the failuremessage is equal to expected one.
+# Verifies the failure message is equal to expected one.
 func has_failure_message(expected: String):
 	return self
 
@@ -35,6 +35,6 @@ func has_failure_message(expected: String):
 func starts_with_failure_message(expected: String):
 	return self
 
-# Overrides the default failure message by given custom message 
+# Overrides the default failure message by given custom message.
 func override_failure_message(message :String):
 	return self
