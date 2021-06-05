@@ -15,7 +15,7 @@ func assert_last_error(expected :String):
 	var gd_assert := GdUnitAssertImpl.new(self, "")
 	if Engine.has_meta(GdAssertReports.LAST_ERROR):
 		gd_assert._current_error_message = Engine.get_meta(GdAssertReports.LAST_ERROR)
-	gd_assert.has_error_message(expected)
+	gd_assert.has_failure_message(expected)
 
 func test_is_mockable_godot_classes():
 	# verify enigne classes
@@ -26,7 +26,7 @@ func test_is_mockable_godot_classes():
 		# protected classes (name starts with underscore)
 		var is_mockable :bool = not Engine.has_singleton(clazz_name) and ClassDB.can_instance(clazz_name) and clazz_name.find("_") != 0
 		assert_that(GdUnitMockBuilder.is_mockable(clazz_name)) \
-			.as_error_message("Class '%s' expect mockable %s" % [clazz_name, is_mockable]) \
+			.override_failure_message("Class '%s' expect mockable %s" % [clazz_name, is_mockable]) \
 			.is_equal(is_mockable)
 
 func test_is_mockable_by_class_type():
@@ -46,11 +46,11 @@ func test_is_mockable_by_script_path():
 func test_is_mockable__overriden_func_get_class():
 	# test with class type
 	assert_that(GdUnitMockBuilder.is_mockable(OverridenGetClassTestClass))\
-		.as_error_message("The class 'CustomResourceTestClass' should be mockable when 'func get_class()' is overriden")\
+		.override_failure_message("The class 'CustomResourceTestClass' should be mockable when 'func get_class()' is overriden")\
 		.is_true()
 	# test with resource path
 	assert_that(GdUnitMockBuilder.is_mockable(resource_path + "OverridenGetClassTestClass.gd"))\
-		.as_error_message("The class 'CustomResourceTestClass' should be mockable when 'func get_class()' is overriden")\
+		.override_failure_message("The class 'CustomResourceTestClass' should be mockable when 'func get_class()' is overriden")\
 		.is_true()
 
 
@@ -60,7 +60,7 @@ func test_mock_godot_class_fullcheck(fuzzer=GodotClassNameFuzzer.new(), fuzzer_i
 	if GdUnitMockBuilder.is_mockable(clazz_name):
 		var mock = mock(clazz_name, CALL_REAL_FUNC)
 		assert_that(mock)\
-			.as_error_message("The class %s should be mockable" % clazz_name)\
+			.override_failure_message("The class %s should be mockable" % clazz_name)\
 			.is_not_null()
 
 func test_mock_by_script_path():
@@ -706,7 +706,7 @@ But found interactions on:
 	expected_error = GdScriptParser.to_unix_format(expected_error)
 	# it should fail because we have interactions 
 	verify_no_interactions(mocked_node, GdUnitAssert.EXPECT_FAIL)\
-		.has_error_message(expected_error)
+		.has_failure_message(expected_error)
 
 func test_verify_no_more_interactions():
 	var mocked_node :Node = mock(Node)
@@ -754,7 +754,7 @@ But found interactions on:
 	'find_node(mask :String, False :bool, False :bool)'	1 time's"""
 	expected_error = GdScriptParser.to_unix_format(expected_error)
 	verify_no_more_interactions(mocked_node, GdUnitAssert.EXPECT_FAIL)\
-		.has_error_message(expected_error)
+		.has_failure_message(expected_error)
 
 func test_mock_snake_case_named_class_by_resource_path():
 	var mock_a = mock("res://addons/gdUnit3/test/mocker/resources/snake_case.gd")

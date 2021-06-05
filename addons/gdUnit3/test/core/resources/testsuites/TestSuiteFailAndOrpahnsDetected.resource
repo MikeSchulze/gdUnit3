@@ -27,7 +27,7 @@ func test_case2():
 	_orphans.append(Node.new())
 	_orphans.append(Node.new())
 	_orphans.append(Node.new())
-	assert_str("test_case2").as_error_message("faild on test_case2()").is_empty()
+	assert_str("test_case2").override_failure_message("faild on test_case2()").is_empty()
 
 # we manually freeing the orphans from the simulated testsuite to prevent memory leaks here
 func _notification(what):

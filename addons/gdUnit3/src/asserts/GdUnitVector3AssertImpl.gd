@@ -5,7 +5,7 @@ var _base: GdUnitAssert
 
 func _init(caller :Object, current, expect_result :int):
 	_base = GdUnitAssertImpl.new(caller, current, expect_result)
-	if typeof(current) != TYPE_VECTOR3:
+	if current != null and typeof(current) != TYPE_VECTOR3:
 		report_error("GdUnitVector3Assert inital error, unexpected type <%s>" % GdObjects.typeof_as_string(current))
 
 func __current() -> Vector3:
@@ -20,16 +20,16 @@ func report_error(error :String) -> GdUnitVector3Assert:
 	return self
 
 # -------- Base Assert wrapping ------------------------------------------------
-func has_error_message(expected: String) -> GdUnitVector3Assert:
-	_base.has_error_message(expected)
+func has_failure_message(expected: String) -> GdUnitVector3Assert:
+	_base.has_failure_message(expected)
 	return self
 
-func starts_with_error_message(expected: String) -> GdUnitVector3Assert:
-	_base.starts_with_error_message(expected)
+func starts_with_failure_message(expected: String) -> GdUnitVector3Assert:
+	_base.starts_with_failure_message(expected)
 	return self
 
-func as_error_message(message :String) -> GdUnitVector3Assert:
-	_base.as_error_message(message)
+func override_failure_message(message :String) -> GdUnitVector3Assert:
+	_base.override_failure_message(message)
 	return self
 
 func _notification(event):
@@ -38,6 +38,15 @@ func _notification(event):
 			_base.notification(event)
 			_base = null
 #-------------------------------------------------------------------------------
+# Verifies that the current value is null.
+func is_null() -> GdUnitVector3Assert:
+	_base.is_null()
+	return self
+
+# Verifies that the current value is not null.
+func is_not_null() -> GdUnitVector3Assert:
+	_base.is_not_null()
+	return self
 
 # Verifies that the current value is equal to expected one.
 func is_equal(expected :Vector3) -> GdUnitVector3Assert:

@@ -282,8 +282,10 @@ func assert_that(current, expect_result: int = GdUnitAssert.EXPECT_SUCCESS) -> G
 			return assert_dict(current, expect_result)
 		TYPE_ARRAY:
 			return assert_array(current, expect_result)
-		_:
+		TYPE_OBJECT:
 			return assert_object(current, expect_result)
+		_:
+			return GdUnitAssertImpl.new(self, current, expect_result)
 
 func assert_bool(current, expect_result: int = GdUnitAssert.EXPECT_SUCCESS) -> GdUnitBoolAssert:
 	return GdUnitBoolAssertImpl.new(self, current, expect_result)

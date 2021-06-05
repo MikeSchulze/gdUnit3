@@ -15,3 +15,6 @@ func test_assert_that_types() -> void:
 	assert_object(assert_that([])).is_instanceof(GdUnitArrayAssert)
 	assert_object(assert_that({})).is_instanceof(GdUnitDictionaryAssert)
 	assert_object(assert_that(Result.new())).is_instanceof(GdUnitObjectAssert)
+	# all not a built-in types mapped to default GdUnitAssert
+	assert_object(assert_that(Color.red)).is_instanceof(GdUnitAssertImpl)
+	assert_object(assert_that(Plane.PLANE_XY)).is_instanceof(GdUnitAssertImpl)

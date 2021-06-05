@@ -5,7 +5,7 @@ func before():
 	assert_str("suite before").is_equal("suite before")
 
 func after():
-	assert_str("suite after").as_error_message("failed on after()").is_empty()
+	assert_str("suite after").override_failure_message("failed on after()").is_empty()
 
 func before_test():
 	assert_str("test before").is_equal("test before")

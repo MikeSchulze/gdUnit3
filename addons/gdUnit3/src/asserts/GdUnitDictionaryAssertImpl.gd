@@ -24,20 +24,16 @@ func report_error(error :String) -> GdUnitDictionaryAssert:
 	return self
 
 # -------- Base Assert wrapping ------------------------------------------------
-func has_error_message(expected: String) -> GdUnitDictionaryAssert:
-	_base.has_error_message(expected)
+func has_failure_message(expected: String) -> GdUnitDictionaryAssert:
+	_base.has_failure_message(expected)
 	return self
 
-func starts_with_error_message(expected: String) -> GdUnitDictionaryAssert:
-	_base.starts_with_error_message(expected)
+func starts_with_failure_message(expected: String) -> GdUnitDictionaryAssert:
+	_base.starts_with_failure_message(expected)
 	return self
 
-func as_error_message(message :String) -> GdUnitDictionaryAssert:
-	_base.as_error_message(message)
-	return self
-
-func with_error_info(message :String) -> GdUnitDictionaryAssert:
-	_base.with_error_info(message)
+func override_failure_message(message :String) -> GdUnitDictionaryAssert:
+	_base.override_failure_message(message)
 	return self
 
 func _notification(event):
