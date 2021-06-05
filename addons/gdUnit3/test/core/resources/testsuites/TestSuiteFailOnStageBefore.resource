@@ -2,7 +2,7 @@
 extends GdUnitTestSuite
 
 func before():
-	assert_str("suite before").as_error_message("failed on before()").is_empty()
+	assert_str("suite before").override_failure_message("failed on before()").is_empty()
 
 func after():
 	assert_str("suite after").is_equal("suite after")

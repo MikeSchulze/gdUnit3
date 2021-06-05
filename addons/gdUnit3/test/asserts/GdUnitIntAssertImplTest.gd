@@ -5,14 +5,19 @@ extends GdUnitTestSuite
 # TestSuite generated from
 const __source = 'res://addons/gdUnit3/src/asserts/GdUnitIntAssertImpl.gd'
 
+func test_is_null():
+	assert_int(null).is_null()
+	# should fail because the current is not null
+	assert_int(23, GdUnitAssert.EXPECT_FAIL) \
+		.is_null()\
+		.starts_with_error_message("Expecting: 'Null' but was '23'")
 
-func _test_is_equal_f(fuzzer = Fuzzers.random_rangei(-9223372036854775807, 9223372036854775807)):
-	var value := fuzzer.next_value() as int
-	assert_int(value).is_equal(value)
-
-func _test_is_not_equal_f(fuzzer = Fuzzers.random_rangei(-9223372036854775807, 9223372036854775807)):
-	var value := fuzzer.next_value() as int
-	assert_int(value).is_not_equal(value+1)
+func test_is_not_null():
+	assert_int(23).is_not_null()
+	# should fail because the current is null
+	assert_int(null, GdUnitAssert.EXPECT_FAIL) \
+		.is_not_null()\
+		.has_error_message("Expecting: not to be 'Null'")
 
 func test_is_equal():
 	assert_int(23).is_equal(23)
@@ -37,7 +42,6 @@ func test_is_less():
 		.is_less(23)\
 		.has_error_message("Expecting to be less than:\n '23' but was '23'")
 
-
 func test_is_less_equal():
 	assert_int(23).is_less_equal(42)
 	assert_int(23).is_less_equal(23)
@@ -61,8 +65,6 @@ func test_is_greater_equal():
 	assert_int(23, GdUnitAssert.EXPECT_FAIL) \
 		.is_greater_equal(24)\
 		.has_error_message("Expecting to be greater than or equal:\n '24' but was '23'")
-
-
 
 func _test_is_even_fuzz(fuzzer = Fuzzers.even(-9223372036854775807, 9223372036854775807)):
 	assert_int(fuzzer.next_value()).is_even()
@@ -143,5 +145,9 @@ func test_must_fail_has_invlalid_type():
 		.has_error_message("GdUnitIntAssert inital error, unexpected type <String>")
 	assert_int(Resource.new(), GdUnitAssert.EXPECT_FAIL) \
 		.has_error_message("GdUnitIntAssert inital error, unexpected type <Object>")
-	assert_int(null, GdUnitAssert.EXPECT_FAIL) \
-		.has_error_message("GdUnitIntAssert inital error, unexpected type <null>")
+
+func test_override_failure_message() -> void:
+	assert_int(314, GdUnitAssert.EXPECT_FAIL)\
+		.override_failure_message("Custom failure message")\
+		.is_null()\
+		.has_error_message("Custom failure message")

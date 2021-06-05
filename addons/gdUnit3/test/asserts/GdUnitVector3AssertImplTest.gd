@@ -5,6 +5,20 @@ extends GdUnitTestSuite
 # TestSuite generated from
 const __source = 'res://addons/gdUnit3/src/asserts/GdUnitVector3AssertImpl.gd'
 
+func test_is_null():
+	assert_vector3(null).is_null()
+	# should fail because the current is not null
+	assert_vector3(Vector3.ONE, GdUnitAssert.EXPECT_FAIL) \
+		.is_null()\
+		.starts_with_error_message("Expecting: 'Null' but was '(1, 1, 1)'")
+
+func test_is_not_null():
+	assert_vector3(Vector3.ONE).is_not_null()
+	# should fail because the current is null
+	assert_vector3(null, GdUnitAssert.EXPECT_FAIL) \
+		.is_not_null()\
+		.has_error_message("Expecting: not to be 'Null'")
+
 func test_is_equal() -> void:
 	assert_vector3(Vector3.ONE).is_equal(Vector3.ONE)
 	assert_vector3(Vector3.INF).is_equal(Vector3.INF)
@@ -107,3 +121,9 @@ func test_is_not_between_fail():
 	assert_vector3(Vector3.ONE, GdUnitAssert.EXPECT_FAIL)\
 		.is_not_between(Vector3.ZERO, Vector3.ONE)\
 		.has_error_message("Expecting:\n '(1, 1, 1)'\n not in range between\n '(0, 0, 0)' <> '(1, 1, 1)'")
+
+func test_override_failure_message() -> void:
+	assert_vector2(Vector3.ONE, GdUnitAssert.EXPECT_FAIL)\
+		.override_failure_message("Custom failure message")\
+		.is_null()\
+		.has_error_message("Custom failure message")

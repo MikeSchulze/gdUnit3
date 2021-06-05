@@ -155,3 +155,9 @@ func test_contains_key_value():
 	assert_dict({1:1}, GdUnitAssert.EXPECT_FAIL)\
 		.contains_key_value(1, 2)\
 		.has_error_message("Expecting key and value:\n '1' : '2'\n but contains\n '1' : '1'")
+
+func test_override_failure_message() -> void:
+	assert_dict({1:1}, GdUnitAssert.EXPECT_FAIL)\
+		.override_failure_message("Custom failure message")\
+		.is_null()\
+		.has_error_message("Custom failure message")

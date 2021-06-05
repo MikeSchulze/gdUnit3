@@ -5,6 +5,20 @@ extends GdUnitTestSuite
 # TestSuite generated from
 const __source = 'res://addons/gdUnit3/src/asserts/GdUnitStringAssertImpl.gd'
 
+func test_is_null():
+	assert_str(null).is_null()
+	# should fail because the current is not null
+	assert_str("abc", GdUnitAssert.EXPECT_FAIL) \
+		.is_null()\
+		.starts_with_error_message("Expecting: 'Null' but was 'abc'")
+
+func test_is_not_null():
+	assert_str("abc").is_not_null()
+	# should fail because the current is null
+	assert_str(null, GdUnitAssert.EXPECT_FAIL) \
+		.is_not_null()\
+		.has_error_message("Expecting: not to be 'Null'")
+
 func test_is_equal():
 	assert_str("This is a test message").is_equal("This is a test message")
 	assert_str("This is a test message", GdUnitAssert.EXPECT_FAIL) \
@@ -163,5 +177,9 @@ func test_must_fail_has_invlalid_type():
 		.has_error_message("GdUnitStringAssert inital error, unexpected type <bool>")
 	assert_str(Resource.new(), GdUnitAssert.EXPECT_FAIL) \
 		.has_error_message("GdUnitStringAssert inital error, unexpected type <Object>")
-	assert_str(null, GdUnitAssert.EXPECT_FAIL) \
-		.has_error_message("GdUnitStringAssert inital error, unexpected type <null>")
+
+func test_override_failure_message() -> void:
+	assert_str("", GdUnitAssert.EXPECT_FAIL)\
+		.override_failure_message("Custom failure message")\
+		.is_null()\
+		.has_error_message("Custom failure message")

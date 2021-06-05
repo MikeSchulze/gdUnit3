@@ -15,6 +15,20 @@ func test_isFalse():
 	assert_bool(true, GdUnitAssert.EXPECT_FAIL).is_false() \
 		.has_error_message("Expecting: 'False' but is 'True'")
 
+func test_is_null():
+	assert_bool(null).is_null()
+	# should fail because the current is not null
+	assert_bool(true, GdUnitAssert.EXPECT_FAIL) \
+		.is_null()\
+		.starts_with_error_message("Expecting: 'Null' but was 'True'")
+
+func test_is_not_null():
+	assert_bool(true).is_not_null()
+	# should fail because the current is null
+	assert_bool(null, GdUnitAssert.EXPECT_FAIL) \
+		.is_not_null()\
+		.has_error_message("Expecting: not to be 'Null'")
+
 func test_is_equal():
 	assert_bool(true).is_equal(true)
 	assert_bool(false).is_equal(false)
@@ -41,5 +55,9 @@ func test_must_fail_has_invlalid_type():
 		.has_error_message("GdUnitBoolAssert inital error, unexpected type <String>")
 	assert_bool(Resource.new(), GdUnitAssert.EXPECT_FAIL) \
 		.has_error_message("GdUnitBoolAssert inital error, unexpected type <Object>")
-	assert_bool(null, GdUnitAssert.EXPECT_FAIL) \
-		.has_error_message("GdUnitBoolAssert inital error, unexpected type <null>")
+
+func test_override_failure_message() -> void:
+	assert_bool(true, GdUnitAssert.EXPECT_FAIL)\
+		.override_failure_message("Custom failure message")\
+		.is_null()\
+		.has_error_message("Custom failure message")

@@ -197,3 +197,9 @@ func test_extractv_max_args() -> void:
 			tuple("A", "x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8", "x9"),
 			tuple("B", "x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8", "x9"),
 			tuple("C", "x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8", "x9")])
+
+func test_override_failure_message() -> void:
+	assert_array([], GdUnitAssert.EXPECT_FAIL)\
+		.override_failure_message("Custom failure message")\
+		.is_null()\
+		.has_error_message("Custom failure message")

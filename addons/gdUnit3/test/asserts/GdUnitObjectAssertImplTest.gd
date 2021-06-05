@@ -101,3 +101,8 @@ func test_must_fail_has_invlalid_type():
 	assert_object("foo", GdUnitAssert.EXPECT_FAIL) \
 		.has_error_message("GdUnitObjectAssert inital error, unexpected type <String>")
 
+func test_override_failure_message() -> void:
+	assert_object(auto_free(Node.new()), GdUnitAssert.EXPECT_FAIL)\
+		.override_failure_message("Custom failure message")\
+		.is_null()\
+		.has_error_message("Custom failure message")

@@ -6,8 +6,7 @@ var _current
 var _is_failed :bool = false
 var _current_error_message :String = ""
 var _expect_fail :bool = false
-var _custom_error_message = null
-var _error_info = null
+var _custom_failure_message = null
 var _report_consumer :WeakRef
 
 # Scans the current stack trace for the root cause to extract the line number
@@ -50,12 +49,9 @@ func report_success() -> GdUnitAssert:
 func report_error(error_message :String) -> GdUnitAssert:
 	var line_number := _get_line_number()
 
-	if _custom_error_message == null:
-		var message := error_message
-		if _error_info != null:
-			message = _error_info + "\n" + error_message
-		return GdAssertReports.report_error(message, self, line_number)
-	return GdAssertReports.report_error(_custom_error_message, self, line_number)
+	if _custom_failure_message == null:
+		return GdAssertReports.report_error(error_message, self, line_number)
+	return GdAssertReports.report_error(_custom_failure_message, self, line_number)
 
 func test_fail():
 	return report_error(GdAssertMessages.error_not_implemented())
@@ -87,12 +83,8 @@ func starts_with_error_message(expected :String):
 		report_error(GdAssertMessages.error_not_same_error(current, expected))
 	return self
 
-func as_error_message(message :String):
-	_custom_error_message = message
-	return self
-
-func with_error_info(message :String):
-	_error_info = message
+func override_failure_message(message :String):
+	_custom_failure_message = message
 	return self
 
 func is_equal(expected) -> GdUnitAssert:

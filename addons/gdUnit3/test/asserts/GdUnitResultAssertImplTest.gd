@@ -91,3 +91,9 @@ func test_is_value():
 	assert_result(Result.success(result_value), GdUnitAssert.EXPECT_FAIL) \
 		.is_value("") \
 		.has_error_message("Expecting to contain same value:\n ''\n but was\n <Node>.")
+
+func test_override_failure_message() -> void:
+	assert_result(Result.success(""), GdUnitAssert.EXPECT_FAIL)\
+		.override_failure_message("Custom failure message")\
+		.is_null()\
+		.has_error_message("Custom failure message")

@@ -83,4 +83,9 @@ func test_contains_exactly():
 	assert_array(PoolByteArray([1, 2, 3, 4, 5]), GdUnitAssert.EXPECT_FAIL) \
 		.contains_exactly(PoolByteArray([1, 4, 3, 2, 5]))\
 		.has_error_message(expected_error_message)
-		
+
+func test_override_failure_message() -> void:
+	assert_array(PoolByteArray([]), GdUnitAssert.EXPECT_FAIL)\
+		.override_failure_message("Custom failure message")\
+		.is_null()\
+		.has_error_message("Custom failure message")

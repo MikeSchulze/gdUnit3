@@ -5,6 +5,20 @@ extends GdUnitTestSuite
 # TestSuite generated from
 const __source = 'res://addons/gdUnit3/src/asserts/GdUnitFloatAssertImpl.gd'
 
+func test_is_null():
+	assert_float(null).is_null()
+	# should fail because the current is not null
+	assert_float(23.2, GdUnitAssert.EXPECT_FAIL) \
+		.is_null()\
+		.starts_with_error_message("Expecting: 'Null' but was '23.200000'")
+
+func test_is_not_null():
+	assert_float(23.2).is_not_null()
+	# should fail because the current is null
+	assert_float(null, GdUnitAssert.EXPECT_FAIL) \
+		.is_not_null()\
+		.has_error_message("Expecting: not to be 'Null'")
+
 func test_is_equal():
 	assert_float(23.2).is_equal(23.2)
 	# this assertion fails because 23.2 are not equal to 23.4
@@ -132,5 +146,9 @@ func test_must_fail_has_invlalid_type():
 		.has_error_message("GdUnitFloatAssert inital error, unexpected type <String>")
 	assert_float(Resource.new(), GdUnitAssert.EXPECT_FAIL) \
 		.has_error_message("GdUnitFloatAssert inital error, unexpected type <Object>")
-	assert_float(null, GdUnitAssert.EXPECT_FAIL) \
-		.has_error_message("GdUnitFloatAssert inital error, unexpected type <null>")
+
+func test_override_failure_message() -> void:
+	assert_float(3.14, GdUnitAssert.EXPECT_FAIL)\
+		.override_failure_message("Custom failure message")\
+		.is_null()\
+		.has_error_message("Custom failure message")

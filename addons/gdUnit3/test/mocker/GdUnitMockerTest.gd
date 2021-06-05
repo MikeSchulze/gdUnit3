@@ -26,7 +26,7 @@ func test_is_mockable_godot_classes():
 		# protected classes (name starts with underscore)
 		var is_mockable :bool = not Engine.has_singleton(clazz_name) and ClassDB.can_instance(clazz_name) and clazz_name.find("_") != 0
 		assert_that(GdUnitMockBuilder.is_mockable(clazz_name)) \
-			.as_error_message("Class '%s' expect mockable %s" % [clazz_name, is_mockable]) \
+			.override_failure_message("Class '%s' expect mockable %s" % [clazz_name, is_mockable]) \
 			.is_equal(is_mockable)
 
 func test_is_mockable_by_class_type():
@@ -46,11 +46,11 @@ func test_is_mockable_by_script_path():
 func test_is_mockable__overriden_func_get_class():
 	# test with class type
 	assert_that(GdUnitMockBuilder.is_mockable(OverridenGetClassTestClass))\
-		.as_error_message("The class 'CustomResourceTestClass' should be mockable when 'func get_class()' is overriden")\
+		.override_failure_message("The class 'CustomResourceTestClass' should be mockable when 'func get_class()' is overriden")\
 		.is_true()
 	# test with resource path
 	assert_that(GdUnitMockBuilder.is_mockable(resource_path + "OverridenGetClassTestClass.gd"))\
-		.as_error_message("The class 'CustomResourceTestClass' should be mockable when 'func get_class()' is overriden")\
+		.override_failure_message("The class 'CustomResourceTestClass' should be mockable when 'func get_class()' is overriden")\
 		.is_true()
 
 
@@ -60,7 +60,7 @@ func test_mock_godot_class_fullcheck(fuzzer=GodotClassNameFuzzer.new(), fuzzer_i
 	if GdUnitMockBuilder.is_mockable(clazz_name):
 		var mock = mock(clazz_name, CALL_REAL_FUNC)
 		assert_that(mock)\
-			.as_error_message("The class %s should be mockable" % clazz_name)\
+			.override_failure_message("The class %s should be mockable" % clazz_name)\
 			.is_not_null()
 
 func test_mock_by_script_path():

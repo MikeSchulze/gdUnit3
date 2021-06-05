@@ -5,7 +5,7 @@ var _base: GdUnitAssert
 
 func _init(caller :Object, current, expect_result: int):
 	_base = GdUnitAssertImpl.new(caller, current, expect_result)
-	if typeof(current) != TYPE_BOOL:
+	if current != null and typeof(current) != TYPE_BOOL:
 		report_error("GdUnitBoolAssert inital error, unexpected type <%s>" % GdObjects.typeof_as_string(current))
 
 func __current() -> bool:
@@ -28,8 +28,8 @@ func starts_with_error_message(expected: String) -> GdUnitBoolAssert:
 	_base.starts_with_error_message(expected)
 	return self
 
-func as_error_message(message :String) -> GdUnitBoolAssert:
-	_base.as_error_message(message)
+func override_failure_message(message :String) -> GdUnitBoolAssert:
+	_base.override_failure_message(message)
 	return self
 
 func _notification(event):
@@ -38,6 +38,15 @@ func _notification(event):
 			_base.notification(event)
 			_base = null
 #-------------------------------------------------------------------------------
+# Verifies that the current value is null.
+func is_null() -> GdUnitBoolAssert:
+	_base.is_null()
+	return self
+
+# Verifies that the current value is not null.
+func is_not_null() -> GdUnitBoolAssert:
+	_base.is_not_null()
+	return self
 
 func is_equal(expected) -> GdUnitBoolAssert:
 	_base.is_equal(expected)

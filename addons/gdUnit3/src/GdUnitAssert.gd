@@ -8,6 +8,14 @@ const EXPECT_SUCCESS:int = 0
 const EXPECT_FAIL:int    = 1
 
 
+# Verifies that the current value is null.
+func is_null():
+	return self
+
+# Verifies that the current value is not null.
+func is_not_null():
+	return self
+
 # Verifies that the current value is equal to expected one.
 func is_equal(expected):
 	return self
@@ -27,8 +35,6 @@ func has_error_message(expected: String):
 func starts_with_error_message(expected: String):
 	return self
 
-func as_error_message(message :String):
-	return self
-
-func with_error_info(message :String):
+# Overrides the default failure message by given custom message 
+func override_failure_message(message :String):
 	return self

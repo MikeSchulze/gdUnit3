@@ -47,7 +47,7 @@ func test_timeout_2s(timeout=2000):
 	prints("B", "2s")
 	yield(get_tree().create_timer(1.0), "timeout")
 	# this line should not reach if timeout aborts the test case after 2s
-	assert_bool(true).as_error_message("The test case must be interupted by a timeout after 2s").is_false()
+	assert_bool(true).override_failure_message("The test case must be interupted by a timeout after 2s").is_false()
 	prints("B", "3s")
 	prints("B", "end")
 
@@ -63,7 +63,7 @@ func test_timeout_4s(timeout=4000):
 	prints("C", "3s")
 	yield(get_tree().create_timer(4.0), "timeout")
 	# this line should not reach if timeout aborts the test case after 4s
-	assert_bool(true).as_error_message("The test case must be interupted by a timeout after 4s").is_false()
+	assert_bool(true).override_failure_message("The test case must be interupted by a timeout after 4s").is_false()
 	prints("C", "7s")
 	prints("C", "end")
 
@@ -73,7 +73,7 @@ func test_timeout_single_yield_wait(timeout=3000):
 	yield(get_tree().create_timer(6.0), "timeout")
 	prints("D", "6s")
 	# this line should not reach if timeout aborts the test case after 3s
-	assert_bool(true).as_error_message("The test case must be interupted by a timeout after 3s").is_false()
+	assert_bool(true).override_failure_message("The test case must be interupted by a timeout after 3s").is_false()
 	prints("D", "end test test_timeout")
 
 func test_timeout_long_running_test_abort(timeout=4000):
@@ -100,7 +100,7 @@ func test_timeout_long_running_test_abort(timeout=4000):
 			break
 	
 	# this line should not reach if timeout aborts the test case after 4s
-	assert_bool(true).as_error_message("The test case must be abort interupted by a timeout 4s").is_false()
+	assert_bool(true).override_failure_message("The test case must be abort interupted by a timeout 4s").is_false()
 	prints("F", "end test test_timeout")
 
 func test_timeout_fuzzer(fuzzer := Fuzzers.rangei(-23, 22), timeout=2000):
@@ -111,5 +111,5 @@ func test_timeout_fuzzer(fuzzer := Fuzzers.rangei(-23, 22), timeout=2000):
 	# we expects the test is interupped after 10 iterations because each test takes 200ms
 	# and the test should not longer run than 2000ms
 	assert_int(fuzzer.iteration_index())\
-		.as_error_message("The test must be interupted after around 10 iterations")\
+		.override_failure_message("The test must be interupted after around 10 iterations")\
 		.is_less_equal(10)
