@@ -84,7 +84,7 @@ func test_fuzzer_error_after_eight_iterations(fuzzer=TestFuzzer.new(), fuzzer_it
 	if fuzzer.iteration_index() == 8:
 		assert_int(fuzzer.next_value(), GdUnitAssert.EXPECT_FAIL) \
 			.is_between(0, 9) \
-			.has_error_message("Expecting:\n '23'\n in range between\n '0' <> '9'")
+			.has_failure_message("Expecting:\n '23'\n in range between\n '0' <> '9'")
 	else:
 		assert_int(fuzzer.next_value()).is_between(0, 9)
 

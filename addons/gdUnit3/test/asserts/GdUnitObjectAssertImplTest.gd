@@ -30,7 +30,7 @@ func test_is_instanceof():
 	# should fail because the current is not a instance of `Tree`
 	assert_object(auto_free(Path.new()), GdUnitAssert.EXPECT_FAIL)\
 		.is_instanceof(Tree)\
-		.has_error_message("Expected instance of:\n 'Tree'\n But it was 'Path'")
+		.has_failure_message("Expected instance of:\n 'Tree'\n But it was 'Path'")
 
 func test_is_not_instanceof():
 	# engine class test
@@ -44,27 +44,27 @@ func test_is_not_instanceof():
 	# should fail because the current is not a instance of `Tree`
 	assert_object(auto_free(Path.new()), GdUnitAssert.EXPECT_FAIL)\
 		.is_not_instanceof(Node)\
-		.has_error_message("Expected not be a instance of <Node>")
+		.has_failure_message("Expected not be a instance of <Node>")
 
 func test_is_not_instanceof_on_null_value():
 	assert_object(null, GdUnitAssert.EXPECT_FAIL)\
 		.is_not_null()\
 		.is_instanceof(Node)\
-		.has_error_message("Expected instance of:\n 'Node'\n But it was 'Null'")
+		.has_failure_message("Expected instance of:\n 'Node'\n But it was 'Null'")
 
 func test_is_null():
 	assert_object(null).is_null()
 	# should fail because the current is not null
 	assert_object(auto_free(Node.new()), GdUnitAssert.EXPECT_FAIL) \
 		.is_null()\
-		.starts_with_error_message("Expecting: 'Null' but was <Node>")
+		.starts_with_failure_message("Expecting: 'Null' but was <Node>")
 
 func test_is_not_null():
 	assert_object(auto_free(Node.new())).is_not_null()
 	# should fail because the current is null
 	assert_object(null, GdUnitAssert.EXPECT_FAIL) \
 		.is_not_null()\
-		.has_error_message("Expecting: not to be 'Null'")
+		.has_failure_message("Expecting: not to be 'Null'")
 
 func test_is_same():
 	var obj1 = auto_free(Node.new())
@@ -93,16 +93,16 @@ func test_is_not_same():
 
 func test_must_fail_has_invlalid_type():
 	assert_object(1, GdUnitAssert.EXPECT_FAIL) \
-		.has_error_message("GdUnitObjectAssert inital error, unexpected type <int>")
+		.has_failure_message("GdUnitObjectAssert inital error, unexpected type <int>")
 	assert_object(1.3, GdUnitAssert.EXPECT_FAIL) \
-		.has_error_message("GdUnitObjectAssert inital error, unexpected type <float>")
+		.has_failure_message("GdUnitObjectAssert inital error, unexpected type <float>")
 	assert_object(true, GdUnitAssert.EXPECT_FAIL) \
-		.has_error_message("GdUnitObjectAssert inital error, unexpected type <bool>")
+		.has_failure_message("GdUnitObjectAssert inital error, unexpected type <bool>")
 	assert_object("foo", GdUnitAssert.EXPECT_FAIL) \
-		.has_error_message("GdUnitObjectAssert inital error, unexpected type <String>")
+		.has_failure_message("GdUnitObjectAssert inital error, unexpected type <String>")
 
 func test_override_failure_message() -> void:
 	assert_object(auto_free(Node.new()), GdUnitAssert.EXPECT_FAIL)\
 		.override_failure_message("Custom failure message")\
 		.is_null()\
-		.has_error_message("Custom failure message")
+		.has_failure_message("Custom failure message")

@@ -56,7 +56,7 @@ func report_error(error_message :String) -> GdUnitAssert:
 func test_fail():
 	return report_error(GdAssertMessages.error_not_implemented())
 
-func has_error_message(expected :String):
+func has_failure_message(expected :String):
 	var rtl := RichTextLabel.new()
 	rtl.bbcode_enabled = true
 	rtl.parse_bbcode(_current_error_message)
@@ -70,7 +70,7 @@ func has_error_message(expected :String):
 	return self
 
 
-func starts_with_error_message(expected :String):
+func starts_with_failure_message(expected :String):
 	var rtl := RichTextLabel.new()
 	rtl.bbcode_enabled = true
 	rtl.parse_bbcode(_current_error_message)

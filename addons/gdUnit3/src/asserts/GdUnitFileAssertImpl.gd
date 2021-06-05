@@ -19,12 +19,12 @@ func report_error(error :String) -> GdUnitFileAssert:
 	return self
 
 # -------- Base Assert wrapping ------------------------------------------------
-func has_error_message(expected: String) -> GdUnitFileAssert:
-	_base.has_error_message(expected)
+func has_failure_message(expected: String) -> GdUnitFileAssert:
+	_base.has_failure_message(expected)
 	return self
 
-func starts_with_error_message(expected: String) -> GdUnitFileAssert:
-	_base.starts_with_error_message(expected)
+func starts_with_failure_message(expected: String) -> GdUnitFileAssert:
+	_base.starts_with_failure_message(expected)
 	return self
 
 func override_failure_message(message :String) -> GdUnitFileAssert:

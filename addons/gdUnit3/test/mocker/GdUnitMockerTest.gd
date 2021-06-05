@@ -15,7 +15,7 @@ func assert_last_error(expected :String):
 	var gd_assert := GdUnitAssertImpl.new(self, "")
 	if Engine.has_meta(GdAssertReports.LAST_ERROR):
 		gd_assert._current_error_message = Engine.get_meta(GdAssertReports.LAST_ERROR)
-	gd_assert.has_error_message(expected)
+	gd_assert.has_failure_message(expected)
 
 func test_is_mockable_godot_classes():
 	# verify enigne classes
@@ -706,7 +706,7 @@ But found interactions on:
 	expected_error = GdScriptParser.to_unix_format(expected_error)
 	# it should fail because we have interactions 
 	verify_no_interactions(mocked_node, GdUnitAssert.EXPECT_FAIL)\
-		.has_error_message(expected_error)
+		.has_failure_message(expected_error)
 
 func test_verify_no_more_interactions():
 	var mocked_node :Node = mock(Node)
@@ -754,7 +754,7 @@ But found interactions on:
 	'find_node(mask :String, False :bool, False :bool)'	1 time's"""
 	expected_error = GdScriptParser.to_unix_format(expected_error)
 	verify_no_more_interactions(mocked_node, GdUnitAssert.EXPECT_FAIL)\
-		.has_error_message(expected_error)
+		.has_failure_message(expected_error)
 
 func test_mock_snake_case_named_class_by_resource_path():
 	var mock_a = mock("res://addons/gdUnit3/test/mocker/resources/snake_case.gd")

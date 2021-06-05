@@ -20,12 +20,12 @@ func report_error(error :String) -> GdUnitFloatAssert:
 	return self
 
 # -------- Base Assert wrapping ------------------------------------------------
-func has_error_message(expected: String) -> GdUnitFloatAssert:
-	_base.has_error_message(expected)
+func has_failure_message(expected: String) -> GdUnitFloatAssert:
+	_base.has_failure_message(expected)
 	return self
 
-func starts_with_error_message(expected: String) -> GdUnitFloatAssert:
-	_base.starts_with_error_message(expected)
+func starts_with_failure_message(expected: String) -> GdUnitFloatAssert:
+	_base.starts_with_failure_message(expected)
 	return self
 
 func override_failure_message(message :String) -> GdUnitFloatAssert:

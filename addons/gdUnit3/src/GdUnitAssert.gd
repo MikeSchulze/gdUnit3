@@ -28,11 +28,11 @@ func test_fail():
 	return self
 
 # Verifies the error message is equal to expected one.
-func has_error_message(expected: String):
+func has_failure_message(expected: String):
 	return self
 
 # Verifies that the error starts with the given prefix.
-func starts_with_error_message(expected: String):
+func starts_with_failure_message(expected: String):
 	return self
 
 # Overrides the default failure message by given custom message 
