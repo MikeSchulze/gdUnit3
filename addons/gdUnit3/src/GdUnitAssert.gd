@@ -27,7 +27,7 @@ func is_not_equal(expected):
 func test_fail():
 	return self
 
-# Verifies the error message is equal to expected one.
+# Verifies the failuremessage is equal to expected one.
 func has_failure_message(expected: String):
 	return self
 
