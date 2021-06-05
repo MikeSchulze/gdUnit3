@@ -16,9 +16,9 @@ I would also appreciate feedback.
 * Fully integrated in the Godot editor
 * Run test-suite(s) by using the context menu on FileSystem, ScriptEditor or GdUnitInspector
 * Create test's directly from the ScriptEditor
-* A spacious set of Asserts use to verfy your code
+* A spacious set of Asserts use to verify your code
 * Argument matchers to verify the behavior of a function call by a specified argument type.
-* Fluentable syntax support
+* Fluent syntax support
 * Test Fuzzing support
 * Mocking a class to simulate the implementation which you define the output of certain function
 * Spy on a instance to verify that a function has been called with certain parameters.
