@@ -31,7 +31,7 @@ func test_fail():
 func has_failure_message(expected: String):
 	return self
 
-# Verifies that the error starts with the given prefix.
+# Verifies that the failure starts with the given prefix.
 func starts_with_failure_message(expected: String):
 	return self
 
