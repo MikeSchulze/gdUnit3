@@ -1,8 +1,13 @@
 tool
 extends PanelContainer
 
+signal failure_next
+signal failure_prevous
+
 onready var _errors = $GridContainer/Errors/value
 onready var _failures = $GridContainer/Failures/value
+onready var _button_failure_up := $GridContainer/Failures/buttons/failure_up
+onready var _button_failure_down := $GridContainer/Failures/buttons/failure_down
 
 onready var _signal_handler :SignalHandler = GdUnitSingleton.get_singleton(SignalHandler.SINGLETON_NAME)
 
@@ -13,6 +18,12 @@ func _ready():
 	_signal_handler.register_on_gdunit_events(self, "_on_event")
 	_failures.text = "0"
 	_errors.text = "0"
+	
+	var editor := EditorPlugin.new()
+	var editiorTheme := editor.get_editor_interface().get_base_control().theme
+	_button_failure_up.icon = editiorTheme.get_icon("ArrowUp", "EditorIcons")
+	_button_failure_down.icon = editiorTheme.get_icon("ArrowDown", "EditorIcons")
+
 
 func status_changed(errors :int, failed :int):
 	total_failed += failed
@@ -40,3 +51,9 @@ func _on_event(event :GdUnitEvent) -> void:
 				status_changed(event.error_count(), 0)
 			else:
 				status_changed(0, event.failed_count())
+
+func _on_failure_up_pressed():
+	emit_signal("failure_prevous")
+
+func _on_failure_down_pressed():
+	emit_signal("failure_next")

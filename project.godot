@@ -754,6 +754,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/test/mocker/GodotClassNameFuzzer.gd"
 }, {
+"base": "GdUnitTestSuite",
+"class": "InspectorTreeMainPanelTest",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/test/ui/parts/InspectorTreeMainPanelTest.gd"
+}, {
 "base": "Fuzzer",
 "class": "IntFuzzer",
 "language": "GDScript",
@@ -1049,6 +1054,7 @@ _global_script_class_icons={
 "GdUnitVector3AssertImplTest": "",
 "GeneratedPersonTest": "",
 "GodotClassNameFuzzer": "",
+"InspectorTreeMainPanelTest": "",
 "IntFuzzer": "",
 "LocalTime": "",
 "LocalTimeTest": "",
