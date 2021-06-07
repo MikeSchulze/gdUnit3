@@ -35,7 +35,7 @@ __meta__ = {
 [node name="Header" type="VBoxContainer" parent="VBoxContainer"]
 use_parent_material = true
 margin_right = 1024.0
-margin_bottom = 88.0
+margin_bottom = 90.0
 grow_horizontal = 2
 grow_vertical = 2
 rect_clip_content = true
@@ -65,11 +65,11 @@ anchor_right = 0.0
 anchor_bottom = 0.0
 margin_top = 52.0
 margin_right = 1024.0
-margin_bottom = 88.0
+margin_bottom = 90.0
 size_flags_horizontal = 11
 
 [node name="MainPanel" parent="VBoxContainer" instance=ExtResource( 7 )]
-margin_top = 88.0
+margin_top = 90.0
 rect_clip_content = true
 size_flags_horizontal = 3
 
@@ -79,12 +79,15 @@ anchor_bottom = 0.0
 margin_top = 564.0
 margin_right = 1024.0
 margin_bottom = 600.0
+
 [connection signal="gdunit_runner_start" from="." to="VBoxContainer/Header/ToolBar" method="_on_GdUnit_gdunit_runner_start"]
 [connection signal="gdunit_runner_start" from="." to="VBoxContainer/MainPanel" method="_on_GdUnit_gdunit_runner_start"]
 [connection signal="gdunit_runner_stop" from="." to="VBoxContainer/Header/ToolBar" method="_on_GdUnit_gdunit_runner_stop"]
 [connection signal="gdunit_runner_stop" from="." to="VBoxContainer/MainPanel" method="_on_GdUnit_gdunit_runner_stop"]
 [connection signal="run_pressed" from="VBoxContainer/Header/ToolBar" to="." method="_on_ToolBar_run_pressed"]
 [connection signal="stop_pressed" from="VBoxContainer/Header/ToolBar" to="." method="_on_ToolBar_stop_pressed"]
+[connection signal="failure_next" from="VBoxContainer/Header/StatusBar" to="VBoxContainer/MainPanel" method="_on_StatusBar_failure_next"]
+[connection signal="failure_prevous" from="VBoxContainer/Header/StatusBar" to="VBoxContainer/MainPanel" method="_on_StatusBar_failure_prevous"]
 [connection signal="run_testcase" from="VBoxContainer/MainPanel" to="." method="_on_MainPanel_run_testcase"]
 [connection signal="run_testsuite" from="VBoxContainer/MainPanel" to="." method="_on_MainPanel_run_testsuite"]
 [connection signal="jump_to_orphan_nodes" from="VBoxContainer/Monitor" to="VBoxContainer/MainPanel" method="_on_Monitor_jump_to_orphan_nodes"]

@@ -48,6 +48,7 @@ const META_LINE_NUMBER := "line_number"
 
 var _editor :EditorPlugin
 var _tree_root :TreeItem
+var _current_failures := Array()
 
 static func find_item(parent :TreeItem, item_path :Array) -> TreeItem:
 	var path := item_path.duplicate()
@@ -81,7 +82,7 @@ static func is_state_failed(item :TreeItem) -> bool:
 	return item.has_meta(META_GDUNIT_STATE) and item.get_meta(META_GDUNIT_STATE) == STATE.FAILED
 
 static func is_state_error(item :TreeItem) -> bool:
-	return item.has_meta(META_GDUNIT_STATE) and item.get_meta(META_GDUNIT_STATE) == STATE.ERROR
+	return item.has_meta(META_GDUNIT_STATE) and (item.get_meta(META_GDUNIT_STATE) == STATE.ERROR or item.get_meta(META_GDUNIT_STATE) == STATE.ABORDED)
 
 static func is_item_state_orphan(item :TreeItem) -> bool:
 	if item.has_meta(META_GDUNIT_ORPHAN):
@@ -90,7 +91,8 @@ static func is_item_state_orphan(item :TreeItem) -> bool:
 
 func _ready():
 	init_tree()
-	_editor = EditorPlugin.new()
+	if Engine.editor_hint:
+		_editor = EditorPlugin.new()
 	_signal_handler.register_on_test_suite_added(self, "_on_test_suite_added")
 	_signal_handler.register_on_gdunit_events(self, "_on_event")
 
@@ -115,6 +117,7 @@ func init_tree() -> void:
 	_tree_root = _tree.create_item()
 
 func cleanup_tree() -> void:
+	clear_failures()
 	if not _tree_root:
 		return
 	var parent := _tree_root.get_children()
@@ -235,17 +238,55 @@ func abort_running() -> void:
 				item = item.get_next()
 		parent = parent.get_next()
 
-func select_first_error() -> void:
+func select_first_failure() -> void:
+	if not _current_failures.empty():
+		select_item(_current_failures[0])
+
+func select_last_failure() -> void:
+	if not _current_failures.empty():
+		select_item(_current_failures[-1])
+
+func clear_failures() -> void:
+	_current_failures.clear()
+
+func collect_failures_and_errors() -> Array:
+	clear_failures()
 	var parent := _tree_root.get_children()
 	while parent != null:
 		if is_state_failed(parent) or is_state_error(parent):
 			var item :=  parent.get_children()
 			while item != null:
 				if is_state_failed(item) or is_state_error(item):
-					select_item(item)
-					return
+					_current_failures.append(item)
 				item = item.get_next()
 		parent = parent.get_next()
+	return _current_failures
+
+func select_next_failure() -> void:
+	var current_selected := _tree.get_selected()
+	if current_selected == null:
+		select_first_failure()
+		return
+	if _current_failures.empty():
+		return
+	var index := _current_failures.find(current_selected)
+	if index == -1 or index == _current_failures.size()-1:
+		select_item(_current_failures[0])
+	else:
+		select_item(_current_failures[index+1])
+
+func select_previous_failure() -> void:
+	var current_selected := _tree.get_selected()
+	if current_selected == null:
+		select_last_failure()
+		return
+	if _current_failures.empty():
+		return
+	var index := _current_failures.find(current_selected)
+	if index == -1 or index == 0:
+		select_item(_current_failures[_current_failures.size()-1])
+	else:
+		select_item(_current_failures[index-1])
 
 func select_first_orphan() -> void:
 	var parent := _tree_root.get_children()
@@ -376,12 +417,14 @@ func _on_Tree_item_double_clicked() -> void:
 func _on_GdUnit_gdunit_runner_start():
 	_context_menu_run.disabled = true
 	_context_menu_debug.disabled = true
+	clear_failures()
 
 func _on_GdUnit_gdunit_runner_stop(client_id :int):
 	_context_menu_run.disabled = false
 	_context_menu_debug.disabled = false
 	abort_running()
-	select_first_error()
+	collect_failures_and_errors()
+	select_first_failure()
 
 func _on_test_suite_added(test_suite :GdUnitTestSuite) -> void:
 	add_test_suite(test_suite)
@@ -391,7 +434,7 @@ func _on_event(event:GdUnitEvent) -> void:
 		GdUnitEvent.INIT:
 			init_tree()
 		GdUnitEvent.STOP:
-			select_first_error()
+			select_first_failure()
 			show_failed_report(_tree.get_selected())
 		GdUnitEvent.TESTCASE_BEFORE:
 			update_test_case(event)
@@ -405,3 +448,9 @@ func _on_event(event:GdUnitEvent) -> void:
 
 func _on_Monitor_jump_to_orphan_nodes():
 	select_first_orphan()
+
+func _on_StatusBar_failure_next():
+	select_next_failure()
+
+func _on_StatusBar_failure_prevous():
+	select_previous_failure()
