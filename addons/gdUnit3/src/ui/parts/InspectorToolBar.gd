@@ -4,7 +4,9 @@ extends HBoxContainer
 signal run_pressed
 signal stop_pressed
 
-onready var _label := $version
+onready var _label := $description/version
+onready var _button_wiki := $description/wiki
+
 onready var _button_run := $Tools/run
 onready var _button_run_debug := $Tools/debug
 onready var _button_stop := $Tools/stop
@@ -35,3 +37,6 @@ func _on_GdUnit_gdunit_runner_stop(client_id :int):
 	_button_run.disabled = false
 	_button_run_debug.disabled = false
 	_button_stop.disabled = true
+
+func _on_wiki_pressed():
+	OS.shell_open("https://github.com/MikeSchulze/gdUnit3/wiki")
