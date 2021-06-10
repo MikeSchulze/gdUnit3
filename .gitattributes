@@ -10,6 +10,10 @@
 /process_example.txt   export-ignore
 /README.md             export-ignore
 
-# exclude examples from AssetLib
+# exclude integration tests from AssetLib
+/addons/gdUnit3/test
+/addons/GdCommons/test
+/addons/utils/test
 
+# exclude examples from AssetLib
 /examples
