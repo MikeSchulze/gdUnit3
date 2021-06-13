@@ -774,7 +774,7 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/test/core/LocalTimeTest.gd"
 }, {
-"base": "Reference",
+"base": "Control",
 "class": "MenuDialog",
 "language": "GDScript",
 "path": "res://gdUnit3-examples/MenuDemo2D/src/menu/MenuDialog.gd"
