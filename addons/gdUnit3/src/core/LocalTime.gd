@@ -2,7 +2,7 @@
 class_name LocalTime
 extends Resource
 
-const SCRIPT_PATH = "res://addons/GdCommons/DateTime/src/LocalTime.gd"
+const SCRIPT_PATH = "res://addons/gdUnit3/src/core/LocalTime.gd"
 
 const SECONDS_PER_MINUTE:int = 60
 const MINUTES_PER_HOUR:int = 60

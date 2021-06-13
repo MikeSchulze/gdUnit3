@@ -3,7 +3,7 @@ class_name LocalTimeTest
 extends GdUnitTestSuite
 
 # TestSuite generated from
-const __source = 'res://addons/DateTime/src/LocalTime.gd'
+const __source = 'res://addons/gdUnit3/src/core/LocalTime.gd'
 
 
 func test_time_constants():
