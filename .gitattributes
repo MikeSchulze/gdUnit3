@@ -12,8 +12,6 @@
 
 # exclude integration tests from AssetLib
 /addons/gdUnit3/test
-/addons/GdCommons/test
-/addons/utils/test
 
 # exclude examples from AssetLib
-/examples
+/gdUnit3-examples
