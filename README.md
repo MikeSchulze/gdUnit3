@@ -12,7 +12,25 @@ Please notice the plugin is the first release candidate and has current no accep
 You are welcome to report bugs or create new feature requests.
 I would also appreciate feedback.
 
-# GdUnit3 V0.9.5-RC
+
+# To Install the GdUnit3 Plugin
+
+You have to install the GdUnit3 plugin over the AssetLib in the Godot Editor.
+![image](https://github.com/MikeSchulze/gdUnit3/wiki/images/Install-AssetLib.png)
+1. Select the tab AssetLib in the middle on the top
+2. Enter GdUnit3 in the search bar
+3. Select GdUnit3 and press the install button
+4. Finally you have to activate the plugin
+
+![image](https://github.com/MikeSchulze/gdUnit3/wiki/images/Activate-StepA.png)
+1. Choose Project->Project Settings, click the Plugins tab and activate GdUnit.
+
+![image](https://github.com/MikeSchulze/gdUnit3/wiki/images/Activate-StepB.png)
+
+1. After activation the GdUnit3 inspector is displayed in the top left
+2. Done, GdUnit is ready to use
+
+# GdUnit3 V0.9.6-RC
 * Fully integrated in the Godot editor
 * Run test-suite(s) by using the context menu on FileSystem, ScriptEditor or GdUnitInspector
 * Create test's directly from the ScriptEditor
