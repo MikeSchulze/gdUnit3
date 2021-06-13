@@ -3,12 +3,17 @@ extends EditorPlugin
 
 var _gd_inspector :Node
 var _server_node
-var _gd_console:Node
+var _gd_console :Node
+var _update_tool :Node
 var _singleton :GdUnitSingleton = GdUnitSingleton.new()
 
 func _enter_tree():
 	Engine.set_meta("GdUnitEditorPlugin", self)
 	GdUnitSettings.setup()
+	# show possible update notification when is enabled
+	if GdUnitSettings.is_update_notification_enabled():
+		_update_tool = load("res://addons/gdUnit3/src/update/GdUnitUpdate.tscn").instance()
+		get_parent().add_child(_update_tool)
 	
 	# install SignalHandler singleton
 	GdUnitSingleton.add_singleton(SignalHandler.SINGLETON_NAME, "res://addons/gdUnit3/src/core/event/SignalHandler.gd")
@@ -36,12 +41,10 @@ func _exit_tree():
 	_gd_inspector.free()
 	_gd_console.free()
 	_server_node.free()
+	 # Delete and release the update tool only when it is not in use, otherwise it will interrupt the execution of the update
+	if _update_tool and not _update_tool.is_update_in_progress():
+		remove_child(_update_tool)
+		_update_tool.free()
 	GdUnitSingleton.remove_singleton(SignalHandler.SINGLETON_NAME)
 	Engine.remove_meta("GdUnitEditorPlugin")
 	prints("Unload GdUnit3 Plugin success")
-
-
-
-#func make_visible(visible: bool):
-#	if _gd_inspector:
-#		_gd_inspector.set_visible(true)

@@ -145,15 +145,14 @@ static func copy_directory(from_dir :String, to_dir :String, recursive :bool = f
 		return false
 		
 	# check if destination exists 
-	var sdir = to_dir + "/" + from_dir.get_base_dir().split("/")[-1]
 	var dest_dir := Directory.new()
-	if not dest_dir.dir_exists(sdir):
+	if not dest_dir.dir_exists(to_dir):
 		# create it
-		var err := dest_dir.make_dir_recursive(sdir)
+		var err := dest_dir.make_dir_recursive(to_dir)
 		if err != OK:
-			push_error("Can't create directory '%s'. Error: %s" % [sdir, error_as_string(err)])
+			push_error("Can't create directory '%s'. Error: %s" % [to_dir, error_as_string(err)])
 			return false
-	dest_dir.open(sdir)
+	dest_dir.open(to_dir)
 	
 	if source_dir.open(from_dir) == OK:
 		source_dir.list_dir_begin()
@@ -167,7 +166,7 @@ static func copy_directory(from_dir :String, to_dir :String, recursive :bool = f
 			var dest := dest_dir.get_current_dir() + "/" + next
 			if source_dir.current_is_dir():
 				if recursive:
-					copy_directory(source + "/", dest_dir.get_current_dir(), recursive)
+					copy_directory(source + "/", dest, recursive)
 				continue
 			var err = source_dir.copy(source, dest)
 			if err != OK:
@@ -344,7 +343,7 @@ static func register_expect_interupted_by_timeout(test_suite :Node, test_case_na
 static func append_array(array, append :Array) -> void:
 	var major :int = Engine.get_version_info()["major"]
 	var minor :int = Engine.get_version_info()["minor"]
-	if major == 3 and minor == 3:
+	if major >= 3 and minor >= 3:
 		array.append_array(append)
 	else:
 		for element in append:

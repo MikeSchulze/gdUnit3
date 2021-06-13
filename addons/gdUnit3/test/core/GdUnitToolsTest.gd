@@ -48,19 +48,19 @@ func test_create_temp_file():
 func test_copy_directory():
 	var temp_dir := create_temp_dir("test_copy_directory")
 	assert_bool(GdUnitTools.copy_directory("res://addons/gdUnit3/test/core/resources/copy_test/folder_a/", temp_dir)).is_true()
-	assert_file("%s/folder_a/file_a.txt" % temp_dir).exists()
-	assert_file("%s/folder_a/file_b.txt" % temp_dir).exists()
+	assert_file("%s/file_a.txt" % temp_dir).exists()
+	assert_file("%s/file_b.txt" % temp_dir).exists()
 	# TODO extends test with verify directory content assert_dir()
 	
 func test_copy_directory_recursive():
 	var temp_dir := create_temp_dir("test_copy_directory_recursive")
 	assert_bool(GdUnitTools.copy_directory("res://addons/gdUnit3/test/core/resources/copy_test/", temp_dir, true)).is_true()
-	assert_file("%s/copy_test/folder_a/file_a.txt" % temp_dir).exists()
-	assert_file("%s/copy_test/folder_a/file_b.txt" % temp_dir).exists()
-	assert_file("%s/copy_test/folder_b/file_a.txt" % temp_dir).exists()
-	assert_file("%s/copy_test/folder_b/file_b.txt" % temp_dir).exists()
-	assert_file("%s/copy_test/folder_b/folder_ba/file_x.txt" % temp_dir).exists()
-	assert_file("%s/copy_test/folder_c/file_z.txt" % temp_dir).exists()
+	assert_file("%s/folder_a/file_a.txt" % temp_dir).exists()
+	assert_file("%s/folder_a/file_b.txt" % temp_dir).exists()
+	assert_file("%s/folder_b/file_a.txt" % temp_dir).exists()
+	assert_file("%s/folder_b/file_b.txt" % temp_dir).exists()
+	assert_file("%s/folder_b/folder_ba/file_x.txt" % temp_dir).exists()
+	assert_file("%s/folder_c/file_z.txt" % temp_dir).exists()
 	# TODO extends test with verify directory content assert_dir()
 
 func test_make_qualified_path() -> void:

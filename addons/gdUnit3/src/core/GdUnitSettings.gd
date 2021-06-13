@@ -6,6 +6,8 @@ const MAIN_CATEGORY = "gdunit3"
 # Common Settings
 const COMMON_SETTINGS = MAIN_CATEGORY + "/settings"
 
+const UPDATE_NOTIFICATION_ENABLED = COMMON_SETTINGS + "/update_notification_enabled"
+
 const SERVER_TIMEOUT = COMMON_SETTINGS + "/server_connection_timeout_minutes"
 const TEST_TIMEOUT = COMMON_SETTINGS + "/test_timeout_seconds"
 
@@ -29,6 +31,7 @@ const DEFAULT_SERVER_TIMEOUT := 30
 const DEFAULT_TEST_TIMEOUT := 60*5
 
 static func setup():
+	create_property_if_need(UPDATE_NOTIFICATION_ENABLED, true)
 	create_property_if_need(SERVER_TIMEOUT, DEFAULT_SERVER_TIMEOUT)
 	create_property_if_need(TEST_TIMEOUT, DEFAULT_TEST_TIMEOUT)
 	create_property_if_need(REPORT_ERROR_NOTIFICATIONS, false)
@@ -46,6 +49,15 @@ static func get_setting(name :String, default) :
 	if ProjectSettings.has_setting(name):
 		return ProjectSettings.get_setting(name)
 	return default
+
+static func is_update_notification_enabled() -> bool:
+	if ProjectSettings.has_setting(UPDATE_NOTIFICATION_ENABLED):
+		return ProjectSettings.get_setting(UPDATE_NOTIFICATION_ENABLED)
+	return false
+
+static func set_update_notification(enable :bool) -> void:
+	ProjectSettings.set_setting(UPDATE_NOTIFICATION_ENABLED, enable)
+	ProjectSettings.save()
 
 static func is_report_push_errors() -> bool:
 	if ProjectSettings.has_setting(REPORT_ERROR_NOTIFICATIONS):

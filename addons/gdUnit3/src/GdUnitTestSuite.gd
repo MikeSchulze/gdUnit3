@@ -87,6 +87,10 @@ func resource_as_array(resource_path :String) -> PoolStringArray:
 func resource_as_string(resource_path :String) -> String:
 	return GdUnitTools.resource_as_string(resource_path)
 
+# Reads a resource by given path <resource_path> and return Variand translated by str2var
+func resource_as_var(resource_path :String):
+	return str2var(GdUnitTools.resource_as_string(resource_path))
+
 # clears the debuger error list 
 # PROTOTYPE!!!! Don't use it for now
 func clear_push_errors() -> void:
