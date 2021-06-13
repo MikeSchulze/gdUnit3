@@ -1,0 +1,180 @@
+[gd_scene load_steps=12 format=2]
+
+[ext_resource path="res://addons/gdUnit3/src/update/GdUnitUpdate.gd" type="Script" id=1]
+[ext_resource path="res://addons/gdUnit3/src/update/assets/fonts/RobotoMono-14-bold.tres" type="DynamicFont" id=2]
+[ext_resource path="res://addons/gdUnit3/src/update/assets/fonts/RobotoMono-14.tres" type="DynamicFont" id=3]
+[ext_resource path="res://addons/gdUnit3/src/update/assets/fonts/RobotoMono-14-italics.tres" type="DynamicFont" id=4]
+[ext_resource path="res://addons/gdUnit3/src/update/assets/fonts/RobotoMono-14-bold-italics.tres" type="DynamicFont" id=5]
+[ext_resource path="res://addons/gdUnit3/src/update/assets/fonts/RobotoMono-h3.tres" type="DynamicFont" id=6]
+[ext_resource path="res://addons/gdUnit3/src/update/GdMarkDownReader.gd" type="Script" id=7]
+[ext_resource path="res://addons/gdUnit3/src/update/GdUnitUpdateClient.gd" type="Script" id=8]
+[ext_resource path="res://addons/gdUnit3/src/update/assets/progress-background.png" type="Texture" id=9]
+
+[sub_resource type="StyleBoxFlat" id=1]
+bg_color = Color( 0.929412, 0.909804, 0.462745, 1 )
+
+[sub_resource type="StyleBoxFlat" id=2]
+
+[node name="Control" type="WindowDialog"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 256.0
+margin_top = 150.0
+margin_right = -256.0
+margin_bottom = -150.0
+rect_min_size = Vector2( 400, 200 )
+input_pass_on_modal_close_click = false
+popup_exclusive = true
+window_title = "GdUnit3 Update"
+resizable = true
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="GridContainer" type="VBoxContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PanelContainer" type="PanelContainer" parent="GridContainer"]
+margin_right = 512.0
+margin_bottom = 41.0
+size_flags_horizontal = 3
+
+[node name="header" type="Label" parent="GridContainer/PanelContainer"]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 505.0
+margin_bottom = 34.0
+size_flags_horizontal = 9
+custom_fonts/font = ExtResource( 6 )
+
+[node name="PanelContainer2" type="PanelContainer" parent="GridContainer"]
+margin_top = 45.0
+margin_right = 512.0
+margin_bottom = 266.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ScrollContainer" type="ScrollContainer" parent="GridContainer/PanelContainer2"]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 505.0
+margin_bottom = 214.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="content" type="RichTextLabel" parent="GridContainer/PanelContainer2/ScrollContainer"]
+margin_right = 498.0
+margin_bottom = 207.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_fonts/mono_font = ExtResource( 3 )
+custom_fonts/bold_italics_font = ExtResource( 5 )
+custom_fonts/italics_font = ExtResource( 4 )
+custom_fonts/bold_font = ExtResource( 2 )
+custom_fonts/normal_font = ExtResource( 3 )
+bbcode_enabled = true
+
+[node name="Panel" type="Panel" parent="GridContainer"]
+margin_top = 270.0
+margin_right = 512.0
+margin_bottom = 300.0
+rect_min_size = Vector2( 0, 30 )
+size_flags_horizontal = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="GridContainer/Panel"]
+use_parent_material = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="show_next" type="CheckBox" parent="GridContainer/Panel/HBoxContainer"]
+margin_right = 127.0
+margin_bottom = 30.0
+pressed = true
+text = "show next time"
+
+[node name="update" type="ToolButton" parent="GridContainer/Panel/HBoxContainer"]
+margin_left = 131.0
+margin_right = 319.0
+margin_bottom = 30.0
+size_flags_horizontal = 3
+disabled = true
+text = "Update"
+flat = false
+
+[node name="cancel" type="ToolButton" parent="GridContainer/Panel/HBoxContainer"]
+margin_left = 323.0
+margin_right = 512.0
+margin_bottom = 30.0
+size_flags_horizontal = 3
+text = "Cancel"
+flat = false
+
+[node name="GdMarkDownReader" type="Node" parent="."]
+script = ExtResource( 7 )
+
+[node name="GdUnitUpdateClient" type="Node" parent="."]
+script = ExtResource( 8 )
+
+[node name="UpdateProgress" type="Popup" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -300.0
+margin_top = -20.0
+margin_right = 300.0
+margin_bottom = 20.0
+rect_min_size = Vector2( 600, 40 )
+popup_exclusive = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Progress" type="TextureRect" parent="UpdateProgress"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+rect_min_size = Vector2( 600, 40 )
+texture = ExtResource( 9 )
+expand = true
+
+[node name="bar" type="ProgressBar" parent="UpdateProgress/Progress"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 4.0
+margin_top = 4.0
+margin_right = -4.0
+margin_bottom = -4.0
+custom_styles/fg = SubResource( 1 )
+custom_styles/bg = SubResource( 2 )
+percent_visible = false
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="label" type="Label" parent="UpdateProgress/Progress"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 4.0
+margin_top = 4.0
+margin_right = -4.0
+margin_bottom = -4.0
+custom_fonts/font = ExtResource( 3 )
+custom_colors/font_color = Color( 0.145098, 0.0941176, 0.160784, 1 )
+valign = 1
+
+[connection signal="meta_clicked" from="GridContainer/PanelContainer2/ScrollContainer/content" to="." method="_on_content_meta_clicked"]
+[connection signal="meta_hover_ended" from="GridContainer/PanelContainer2/ScrollContainer/content" to="." method="_on_content_meta_hover_ended"]
+[connection signal="meta_hover_started" from="GridContainer/PanelContainer2/ScrollContainer/content" to="." method="_on_content_meta_hover_started"]
+[connection signal="toggled" from="GridContainer/Panel/HBoxContainer/show_next" to="." method="_on_show_next_toggled"]
+[connection signal="pressed" from="GridContainer/Panel/HBoxContainer/update" to="." method="_on_update_pressed"]
+[connection signal="pressed" from="GridContainer/Panel/HBoxContainer/cancel" to="." method="_on_cancel_pressed"]

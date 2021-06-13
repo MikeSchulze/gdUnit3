@@ -35,14 +35,14 @@ func write() -> String:
 	var to_write = GdUnitHtmlPatterns.build(template, self, "")
 	to_write = apply_path_reports(_report_path, to_write, _reports)
 	to_write = apply_testsuite_reports(_report_path, to_write, _reports)
-	
+
 	# write report
 	var index_file := "%s/index.html" % _report_path
 	var file := File.new()
 	file.open(index_file, File.WRITE)
 	file.store_string(to_write)
 	file.close()
-	GdUnitTools.copy_directory("res://addons/gdUnit3/src/report/template/css/", _report_path)
+	GdUnitTools.copy_directory("res://addons/gdUnit3/src/report/template/css/", _report_path + "/css")
 	return index_file
 
 func delete_history(max_reports :int) -> int:
@@ -61,7 +61,7 @@ static func apply_path_reports(report_dir :String, template :String, reports :Ar
 
 static func apply_testsuite_reports(report_dir :String, template :String, reports :Array) -> String:
 	var table_records := PoolStringArray()
-	
+
 	for report in reports:
 		var report_link :String = report.write(report_dir).replace(report_dir, ".")
 		table_records.append(report.create_record(report_link))
