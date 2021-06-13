@@ -3,7 +3,7 @@ class_name ResultTest
 extends GdUnitTestSuite
 
 # TestSuite generated from
-const __source = 'res://addons/GdCommons/utils/src/Result.gd'
+const __source = 'res://addons/gdUnit3/src/core/Result.gd'
 
 
 func test_serde():

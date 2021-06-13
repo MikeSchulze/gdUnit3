@@ -14,7 +14,7 @@ var _error_message := ""
 var _value = null
 
 static func __instance() -> Result:
-	return load("res://addons/GdCommons/utils/src/Result.gd").new()
+	return load("res://addons/gdUnit3/src/core/Result.gd").new()
 
 static func success(value) -> Result:
 	assert(value != null, "The value must not be NULL")
