@@ -3,7 +3,7 @@ class_name ExampleSpyWithSignalTest
 extends GdUnitTestSuite
 
 # TestSuite generated from
-const __source = 'res://examples/mocking/src/ExampleWithSignal.gd'
+const __source = 'res://gdUnit3-examples/mocking/src/ExampleWithSignal.gd'
 
 func test_foo_emits_test_signal_a() -> void:
 	# build a spy_instance from the ExampleWithSignal instance

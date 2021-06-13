@@ -1,0 +1,8 @@
+[gd_resource type="DynamicFont" load_steps=2 format=2]
+
+[ext_resource path="res://gdUnit3-examples/MenuDemo2D/assets/menu/Megacut.ttf" type="DynamicFontData" id=1]
+
+
+[resource]
+size = 35
+font_data = ExtResource( 1 )

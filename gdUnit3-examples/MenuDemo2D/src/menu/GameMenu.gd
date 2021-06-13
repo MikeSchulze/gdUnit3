@@ -7,10 +7,10 @@ export var save_game_availabe : bool = false
 onready var _button_load_game :TextureButton = $VBoxContainer/LoadGame
 onready var _button_load_game_label :Label = $VBoxContainer/LoadGame/Label
 
-onready var _new_game = preload("res://examples/MenuDemo2D/src/menu/NewGame.tscn")
-onready var _load_game = preload("res://examples/MenuDemo2D/src/menu/LoadGame.tscn")
-onready var _save_game = preload("res://examples/MenuDemo2D/src/menu/SaveGame.tscn")
-onready var _options = preload("res://examples/MenuDemo2D/src/menu/Options.tscn")
+onready var _new_game = preload("res://gdUnit3-examples/MenuDemo2D/src/menu/NewGame.tscn")
+onready var _load_game = preload("res://gdUnit3-examples/MenuDemo2D/src/menu/LoadGame.tscn")
+onready var _save_game = preload("res://gdUnit3-examples/MenuDemo2D/src/menu/SaveGame.tscn")
+onready var _options = preload("res://gdUnit3-examples/MenuDemo2D/src/menu/Options.tscn")
 
 # inital focus to load game
 onready var _last_focus :Control = $VBoxContainer/LoadGame

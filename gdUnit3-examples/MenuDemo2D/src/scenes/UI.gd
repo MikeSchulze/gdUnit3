@@ -2,7 +2,7 @@ extends CanvasLayer
 
 signal game_paused
 
-onready var game_menu = preload("res://examples/MenuDemo2D/src/menu/GameMenu.tscn")
+onready var game_menu = preload("res://gdUnit3-examples/MenuDemo2D/src/menu/GameMenu.tscn")
 
 func open_menu():
 	var menu :Node = game_menu.instance()

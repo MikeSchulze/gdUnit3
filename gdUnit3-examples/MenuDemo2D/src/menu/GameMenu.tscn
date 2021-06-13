@@ -1,16 +1,17 @@
 [gd_scene load_steps=13 format=2]
 
-[ext_resource path="res://examples/MenuDemo2D/src/menu/new_shortcut.tres" type="ShortCut" id=1]
-[ext_resource path="res://examples/MenuDemo2D/assets/menu/background.jpg" type="Texture" id=2]
-[ext_resource path="res://examples/MenuDemo2D/assets/menu/GameMenu-font.tres" type="DynamicFont" id=5]
-[ext_resource path="res://examples/MenuDemo2D/src/menu/GameMenu.gd" type="Script" id=6]
-[ext_resource path="res://examples/MenuDemo2D/assets/menu/exit_clear.png" type="Texture" id=7]
-[ext_resource path="res://examples/MenuDemo2D/assets/menu/exit_clear_hovered.png" type="Texture" id=8]
-[ext_resource path="res://examples/MenuDemo2D/assets/menu/border.tga" type="Texture" id=9]
-[ext_resource path="res://examples/MenuDemo2D/assets/menu/buttonStock-normal.png" type="Texture" id=10]
-[ext_resource path="res://examples/MenuDemo2D/assets/menu/buttonStock-d.png" type="Texture" id=11]
-[ext_resource path="res://examples/MenuDemo2D/assets/menu/buttonStock-disabled.png" type="Texture" id=12]
-[ext_resource path="res://examples/MenuDemo2D/assets/menu/buttonStock-hover.png" type="Texture" id=13]
+[ext_resource path="res://gdUnit3-examples/MenuDemo2D/src/menu/new_shortcut.tres" type="ShortCut" id=1]
+[ext_resource path="res://gdUnit3-examples/MenuDemo2D/assets/menu/background.jpg" type="Texture" id=2]
+[ext_resource path="res://gdUnit3-examples/MenuDemo2D/assets/menu/GameMenu-font.tres" type="DynamicFont" id=5]
+[ext_resource path="res://gdUnit3-examples/MenuDemo2D/src/menu/GameMenu.gd" type="Script" id=6]
+[ext_resource path="res://gdUnit3-examples/MenuDemo2D/assets/menu/exit_clear.png" type="Texture" id=7]
+[ext_resource path="res://gdUnit3-examples/MenuDemo2D/assets/menu/exit_clear_hovered.png" type="Texture" id=8]
+[ext_resource path="res://gdUnit3-examples/MenuDemo2D/assets/menu/border.tga" type="Texture" id=9]
+[ext_resource path="res://gdUnit3-examples/MenuDemo2D/assets/menu/buttonStock-normal.png" type="Texture" id=10]
+[ext_resource path="res://gdUnit3-examples/MenuDemo2D/assets/menu/buttonStock-d.png" type="Texture" id=11]
+[ext_resource path="res://gdUnit3-examples/MenuDemo2D/assets/menu/buttonStock-disabled.png" type="Texture" id=12]
+[ext_resource path="res://gdUnit3-examples/MenuDemo2D/assets/menu/buttonStock-hover.png" type="Texture" id=13]
+
 
 [sub_resource type="StreamTexture" id=1]
 flags = 4
