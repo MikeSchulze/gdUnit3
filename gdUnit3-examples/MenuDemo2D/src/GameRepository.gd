@@ -32,7 +32,7 @@ func _init():
 
 static func instance() -> GameRepository:
 	if _instance.empty():
-		load("res://examples/MenuDemo2D/src/GameRepository.gd").new()
+		load("res://gdUnit3-examples/MenuDemo2D/src/GameRepository.gd").new()
 	return _instance[0]
 
 func _notification(what):

@@ -6,7 +6,7 @@ const COLOR_RAMP = [Color.rebeccapurple, Color.greenyellow, Color.khaki, Color.a
 
 onready var _itmes = $VBoxContainer/PanelContainer/HBoxContainer/ItemList
 onready var _preview = $VBoxContainer/PanelContainer/HBoxContainer/preview
-onready var _font = preload("res://examples/MenuDemo2D/assets/menu/GameMenu-font-12.tres")
+onready var _font = preload("res://gdUnit3-examples/MenuDemo2D/assets/menu/GameMenu-font-12.tres")
 
 var _selected_index := -1
 

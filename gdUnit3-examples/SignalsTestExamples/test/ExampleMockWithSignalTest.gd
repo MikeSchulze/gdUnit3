@@ -3,7 +3,7 @@ class_name ExampleMockWithSignalTest
 extends GdUnitTestSuite
 
 # TestSuite generated from
-const __source = 'res://examples/mocking/src/ExampleWithSignal.gd'
+const __source = 'res://gdUnit3-examples/mocking/src/ExampleWithSignal.gd'
 
 func test_mock_default_mode() -> void:
 	# build a mock for class ExampleWithSignal (default mode RETURN_DEFAULTS)

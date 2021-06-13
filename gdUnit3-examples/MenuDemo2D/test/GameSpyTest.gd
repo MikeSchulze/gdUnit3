@@ -3,7 +3,7 @@ class_name GameSpyTest
 extends GdUnitTestSuite
 
 # TestSuite generated from
-const __source = 'res://examples/MenuDemo2D/src/Game.gd'
+const __source = 'res://gdUnit3-examples/MenuDemo2D/src/Game.gd'
 
 # enable only for visualisize the spy_scene steps
 var _debug_wait = false
@@ -12,7 +12,7 @@ var spy_scene
 
 func before():
 	# using 'before()' to create only once the spy_scene at beginning of test suite run
-	var scene_instance = load("res://examples/MenuDemo2D/src/Game.tscn").instance()
+	var scene_instance = load("res://gdUnit3-examples/MenuDemo2D/src/Game.tscn").instance()
 	# create a spy on this spy_scene instance
 	spy_scene = spy(scene_instance)
 

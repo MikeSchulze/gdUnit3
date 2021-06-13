@@ -3,13 +3,13 @@ class_name GameMockTest
 extends GdUnitTestSuite
 
 # TestSuite generated from
-const __source = 'res://examples/MenuDemo2D/src/Game.gd'
+const __source = 'res://gdUnit3-examples/MenuDemo2D/src/Game.gd'
 
 # enable only for visualisize the scene steps
 var _debug_wait = false
 
 func test_game_scene_mocked():
-	var scene = mock("res://examples/MenuDemo2D/src/Game.tscn")
+	var scene = mock("res://gdUnit3-examples/MenuDemo2D/src/Game.tscn")
 	scene_runner(scene)
 	# check inital state 
 	verify(scene, 0)._on_game_paused(any_bool())
@@ -20,7 +20,7 @@ func test_game_scene_mocked():
 	assert_bool(scene._game_repository.is_connected("save_game", scene, "_on_save_game")).is_true()
 
 func test_game_menu_open_close():
-	var scene = mock("res://examples/MenuDemo2D/src/Game.tscn")
+	var scene = mock("res://gdUnit3-examples/MenuDemo2D/src/Game.tscn")
 	var scene_runner := scene_runner(scene)
 	
 	# first esc press to open the main menu
@@ -34,7 +34,7 @@ func test_game_menu_open_close():
 	assert_str(scene._state_label.text).is_equal("Game Running")
 
 func test_game_menu_new_game_esc():
-	var scene = mock("res://examples/MenuDemo2D/src/Game.tscn")
+	var scene = mock("res://gdUnit3-examples/MenuDemo2D/src/Game.tscn")
 	var scene_runner := scene_runner(scene)
 	
 	# simulate esc pressed to open the main menu
@@ -70,7 +70,7 @@ func test_game_menu_new_game_esc():
 	assert_str(scene._state_label.text).is_equal("Game Running")
 
 func test_game_menu_new_game_press_new():
-	var scene = mock("res://examples/MenuDemo2D/src/Game.tscn")
+	var scene = mock("res://gdUnit3-examples/MenuDemo2D/src/Game.tscn")
 	var scene_runner := scene_runner(scene)
 	
 	# simulate esc pressed to open the main menu
