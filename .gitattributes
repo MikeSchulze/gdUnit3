@@ -10,8 +10,5 @@
 /process_example.txt   export-ignore
 /README.md             export-ignore
 
-# exclude integration tests from AssetLib
-/addons/gdUnit3/test
-
-# exclude examples from AssetLib
-/gdUnit3-examples
+/addons/gdUnit3/test   export-ignore
+/gdUnit3-examples      export-ignore
