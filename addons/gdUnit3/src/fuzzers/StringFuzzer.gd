@@ -36,7 +36,9 @@ static func extract_charset(pattern :String) -> PoolByteArray:
 		# range starts
 		if char_current == 45 and char_before != -1:
 			var char_next := pattern.ord_at(index)
-			charset.append_array(build_chars(char_before, char_next))
+			var characters := build_chars(char_before, char_next)
+			for character in characters:
+				charset.append(character)
 			char_before = -1
 			index += 1
 			continue
