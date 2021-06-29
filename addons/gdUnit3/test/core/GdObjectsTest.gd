@@ -189,6 +189,11 @@ func test_string_diff():
 	assert_array(diffs[0].to_ascii()).contains_exactly(expected_l_diff)
 	assert_array(diffs[1].to_ascii()).contains_exactly(expected_r_diff)
 
+func test_string_diff_large_value(fuzzer := Fuzzers.rand_str(1000, 4000), fuzzer_iterations = 10):
+	# test diff with large values not crashes the API GD-100
+	var value :String = fuzzer.next_value()
+	GdObjects.string_diff(value, value)
+
 class TestClassForIsType:
 	var x
 

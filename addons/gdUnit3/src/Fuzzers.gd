@@ -1,6 +1,9 @@
 class_name Fuzzers
 extends Resource
 
+static func rand_str(min_length :int, max_length, charset := StringFuzzer.DEFAULT_CHARSET) -> Fuzzer:
+	return StringFuzzer.new(min_length, max_length, charset)
+
 # Generates an random integer in a range form to 
 static func rangei(from: int, to: int) -> Fuzzer:
 	return IntFuzzer.new(from, to)
