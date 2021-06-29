@@ -549,26 +549,35 @@ static func _buildLookup(lb: PoolByteArray, rb: PoolByteArray) -> Array:
 const DIV_ADD = 243
 const DIV_SUB = 245
 
-static func _diff(lb: PoolByteArray, rb: PoolByteArray, m: int, n: int, lookup: Array, ldiff: Array, rdiff: Array):
-	#if last character of X and Y matches
-	if m > 0 && n > 0 && lb[m - 1] == rb[n - 1]:
-		ldiff.push_front(lb[m - 1])
-		rdiff.push_front(rb[n - 1])
-		_diff(lb, rb, m - 1, n - 1, lookup, ldiff, rdiff)
-	#current character of Y is not present in X
-	else: if (n > 0 && (m == 0 || lookup[m][n - 1] >= lookup[m - 1][n])):
-		ldiff.push_front(rb[n - 1])
-		ldiff.push_front(DIV_ADD)
-		rdiff.push_front(rb[n - 1])
-		rdiff.push_front(DIV_SUB)
-		_diff(lb, rb, m, n - 1, lookup, ldiff, rdiff)
-	#current character of X is not present in Y
-	else: if (m > 0 && (n == 0 || lookup[m][n - 1] < lookup[m - 1][n])):
-		ldiff.push_front(lb[m - 1])
-		ldiff.push_front(DIV_SUB)
-		rdiff.push_front(lb[m - 1])
-		rdiff.push_front(DIV_ADD)
-		_diff(lb, rb, m - 1, n, lookup, ldiff, rdiff)
+static func _diff(lb: PoolByteArray, rb: PoolByteArray, lookup: Array, ldiff: Array, rdiff: Array):
+	var loffset = lb.size()
+	var roffset = rb.size()
+	
+	while true:
+		#if last character of X and Y matches
+		if loffset > 0 && roffset > 0 && lb[loffset - 1] == rb[roffset - 1]:
+			loffset -= 1
+			roffset -= 1
+			ldiff.push_front(lb[loffset])
+			rdiff.push_front(rb[roffset])
+			continue
+		#current character of Y is not present in X
+		else: if (roffset > 0 && (loffset == 0 || lookup[loffset][roffset - 1] >= lookup[loffset - 1][roffset])):
+			roffset -= 1
+			ldiff.push_front(rb[roffset])
+			ldiff.push_front(DIV_ADD)
+			rdiff.push_front(rb[roffset])
+			rdiff.push_front(DIV_SUB)
+			continue
+		#current character of X is not present in Y
+		else: if (loffset > 0 && (roffset == 0 || lookup[loffset][roffset - 1] < lookup[loffset - 1][roffset])):
+			loffset -= 1
+			ldiff.push_front(lb[loffset])
+			ldiff.push_front(DIV_SUB)
+			rdiff.push_front(lb[loffset])
+			rdiff.push_front(DIV_ADD)
+			continue
+		break
 
 static func string_diff(left, right) -> Array:
 	var lb := PoolByteArray() if left == null else left.to_ascii()
@@ -576,7 +585,7 @@ static func string_diff(left, right) -> Array:
 	var ldiff := Array()
 	var rdiff := Array()
 	var lookup =  _buildLookup(lb, rb);
-	_diff(lb, rb, lb.size(), rb.size(), lookup, ldiff, rdiff)
+	_diff(lb, rb, lookup, ldiff, rdiff)
 	return [PoolByteArray(ldiff).get_string_from_ascii(), PoolByteArray(rdiff).get_string_from_ascii()]
 
 static func find_nodes_by_class(root: Node, cls: String, recursive: bool = false) -> Array:
