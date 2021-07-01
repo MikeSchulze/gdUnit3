@@ -22,7 +22,7 @@ func _enter_tree():
 	# needs to wait before we can add a child to the root
 	yield(get_tree(), "idle_frame")
 	_server_node = load("res://addons/gdUnit3/src/network/GdUnitServer.tscn").instance()
-	get_tree().root.add_child(_server_node)
+	add_child(_server_node)
 	var err := _gd_inspector.connect("gdunit_runner_stop", _server_node, "_on_gdunit_runner_stop")
 	if err != OK:
 		prints("ERROR", GdUnitTools.error_as_string(err))
@@ -31,13 +31,16 @@ func _enter_tree():
 func _exit_tree():
 	remove_control_from_docks(_gd_inspector)
 	remove_control_from_bottom_panel(_gd_console)
-	get_tree().root.remove_child(_server_node)
+	remove_child(_server_node)
 	
-	_server_node.queue_free()
-	_gd_inspector.queue_free()
-	_gd_console.queue_free()
+	_gd_inspector.free()
+	_gd_console.free()
+	_server_node.free()
 	GdUnitSingleton.remove_singleton(SignalHandler.SINGLETON_NAME)
+	Engine.remove_meta("GdUnitEditorPlugin")
 	prints("Unload GdUnit3 Plugin success")
+
+
 
 #func make_visible(visible: bool):
 #	if _gd_inspector:

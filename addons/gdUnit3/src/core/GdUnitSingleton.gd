@@ -7,7 +7,7 @@
 class_name GdUnitSingleton
 extends Resource
 
-const _singletons:Dictionary = Dictionary()
+const _singletons :Dictionary = Dictionary()
 
 static func get_singleton(name: String) -> Object:
 	if _singletons.has(name):
@@ -33,5 +33,3 @@ static func remove_singleton(name: String) -> void:
 		_singletons.erase(name)
 		return
 	push_error("Remove singleton '" + name + "' failed. No global instance found.")
-
-

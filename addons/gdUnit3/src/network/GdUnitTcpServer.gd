@@ -41,7 +41,7 @@ class TcpConnection extends Node:
 			var data_received = _stream.get_var(true)
 			if data_received == null:
 				return
-			var rpc := RPC.deserialize(data_received)
+			var rpc = RPC.deserialize(data_received)
 			if rpc is RPCClientDisconnect:
 				close()
 			get_parent().emit_signal("rpc_data", rpc)
@@ -78,6 +78,7 @@ func stop() -> void:
 	for connection in get_children():
 		if connection is TcpConnection:
 			connection.close()
+			remove_child(connection)
 
 func disconnect_client(client_id :int) -> void:
 	for connection in get_children():

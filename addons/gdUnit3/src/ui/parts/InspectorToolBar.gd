@@ -12,11 +12,11 @@ onready var _button_run_debug := $Tools/debug
 onready var _button_stop := $Tools/stop
 
 func _ready():
-	var editor := EditorPlugin.new()
+	var editor :EditorPlugin = Engine.get_meta("GdUnitEditorPlugin")
 	var editiorTheme := editor.get_editor_interface().get_base_control().theme
 	_button_run.icon = editiorTheme.get_icon("Play", "EditorIcons")
 	_button_stop.icon = editiorTheme.get_icon("Stop", "EditorIcons")
-	
+
 	var config = ConfigFile.new()
 	config.load('addons/gdUnit3/plugin.cfg')
 	var version = config.get_value('plugin', 'version')
