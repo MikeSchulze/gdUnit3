@@ -18,8 +18,8 @@ func _ready():
 	_signal_handler.register_on_gdunit_events(self, "_on_event")
 	_failures.text = "0"
 	_errors.text = "0"
-	
-	var editor := EditorPlugin.new()
+
+	var editor :EditorPlugin = Engine.get_meta("GdUnitEditorPlugin")
 	var editiorTheme := editor.get_editor_interface().get_base_control().theme
 	_button_failure_up.icon = editiorTheme.get_icon("ArrowUp", "EditorIcons")
 	_button_failure_down.icon = editiorTheme.get_icon("ArrowDown", "EditorIcons")

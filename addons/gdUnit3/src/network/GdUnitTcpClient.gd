@@ -90,7 +90,7 @@ func is_client_connected() -> bool:
 
 func process_rpc() -> void:
 	if _stream.get_available_bytes() > 0:
-		var rpc := RPC.deserialize(_stream.get_var())
+		var rpc = RPC.deserialize(_stream.get_var())
 		if rpc is RPCClientDisconnect:
 			stop()
 

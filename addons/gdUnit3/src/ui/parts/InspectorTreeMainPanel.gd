@@ -92,13 +92,9 @@ static func is_item_state_orphan(item :TreeItem) -> bool:
 func _ready():
 	init_tree()
 	if Engine.editor_hint:
-		_editor = EditorPlugin.new()
+		_editor = Engine.get_meta("GdUnitEditorPlugin")
 	_signal_handler.register_on_test_suite_added(self, "_on_test_suite_added")
 	_signal_handler.register_on_gdunit_events(self, "_on_event")
-
-func _exit_tree():
-	if _editor:
-		_editor.free()
 
 static func load_resized_texture(path :String, width :int = 16, height :int = 16) -> Texture:
 	var texture :Texture = load(path)
@@ -151,7 +147,7 @@ func set_state_running(item :TreeItem) -> void:
 	item.collapsed = false
 	# force scrolling to current test case
 	select_item(item)
-	
+
 
 func set_state_succeded(item :TreeItem) -> void:
 	item.set_meta(META_GDUNIT_STATE, STATE.SUCCESS)
