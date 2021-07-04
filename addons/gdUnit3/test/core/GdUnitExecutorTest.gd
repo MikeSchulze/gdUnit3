@@ -514,3 +514,31 @@ func test_execute_failure_fuzzer_iteration() -> void:
 		# must fail after three iterations
 		["Found an error after '3' test iterations Expecting: 'False' but is 'True'"],
 		[])
+
+func test_execute_add_child_on_before_GD_106() -> void:
+	var test_suite := resource("res://addons/gdUnit3/test/core/resources/testsuites/TestSuiteFailAddChildStageBefore.resource")
+	# verify all test cases loaded
+	assert_array(test_suite.get_children()).extract("get_name").contains_exactly(["test_case1", "test_case2"])
+	# simulate test suite execution
+	var events = yield(execute(test_suite), "completed" )
+	# verify basis infos
+	assert_event_list(events, "TestSuiteFailAddChildStageBefore")
+	# verify all counters are zero / no errors, failures, orphans
+	assert_event_counters(events).contains_exactly([
+		tuple(GdUnitEvent.TESTSUITE_BEFORE, 0, 0, 0),
+		tuple(GdUnitEvent.TESTCASE_BEFORE, 0, 0, 0),
+		tuple(GdUnitEvent.TESTCASE_AFTER, 0, 0, 0),
+		tuple(GdUnitEvent.TESTCASE_BEFORE, 0, 0, 0),
+		tuple(GdUnitEvent.TESTCASE_AFTER, 0, 0, 0),
+		tuple(GdUnitEvent.TESTSUITE_AFTER, 0, 0, 0),
+	])
+	assert_event_states(events).contains_exactly([
+		tuple("before", true, false, false, false),
+		tuple("test_case1", true, false, false, false),
+		tuple("test_case1", true, false, false, false),
+		tuple("test_case2", true, false, false, false),
+		tuple("test_case2", true, false, false, false),
+		tuple("after", true, false, false, false),
+	])
+	# all success no reports expected
+	assert_event_reports(events, [], [], [], [], [], [])

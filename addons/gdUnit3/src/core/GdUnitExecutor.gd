@@ -253,6 +253,9 @@ func execute(test_suite :GdUnitTestSuite) -> GDScriptFunctionState:
 	if not test_suite.is_skipped():
 		for test_case_index in test_suite.get_child_count():
 			var test_case = test_suite.get_child(test_case_index)
+			# only iterate over test case, we need to filter because of possible adding other child types on before() or before_test()
+			if not test_case is _TestCase:
+				continue
 			# stop on first error if fail fast enabled
 			if _fail_fast and _total_test_failed > 0:
 				break
