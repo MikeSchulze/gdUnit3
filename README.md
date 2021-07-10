@@ -30,7 +30,7 @@ You have to install the GdUnit3 plugin over the AssetLib in the Godot Editor.
 1. After activation the GdUnit3 inspector is displayed in the top left
 2. Done, GdUnit is ready to use
 
-# GdUnit3 V0.9.6-RC
+# GdUnit3 V0.9.7-RC
 * Fully integrated in the Godot editor
 * Run test-suite(s) by using the context menu on FileSystem, ScriptEditor or GdUnitInspector
 * Create test's directly from the ScriptEditor
@@ -43,5 +43,6 @@ You have to install the GdUnit3 plugin over the AssetLib in the Godot Editor.
 * Mock or Spy on a Scene
 * Scene runner to simulate interactions on a scene (Input events like mouse and/or keyboard)
 * Command Line Tool with HTML report
+* Update Notifier to install latest version from GitHub 
 
 [Documentation](https://github.com/MikeSchulze/gdUnit3/wiki)
