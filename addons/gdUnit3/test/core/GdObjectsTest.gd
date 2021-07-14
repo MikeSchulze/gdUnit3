@@ -497,6 +497,17 @@ func test_is_instance_scene() -> void:
 	# on a instance of a scene
 	assert_bool(GdObjects.is_instance_scene(auto_free(resource.instance()))).is_true()
 
+func test_is_scene_resource_path() -> void:
+	assert_bool(GdObjects.is_scene_resource_path(Reference.new())).is_false()
+	assert_bool(GdObjects.is_scene_resource_path(CustomClass.new())).is_false()
+	assert_bool(GdObjects.is_scene_resource_path(auto_free(Control.new()))).is_false()
+	
+	# check on a loaded scene
+	var resource = load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
+	assert_bool(GdObjects.is_scene_resource_path(resource)).is_false()
+	# on resource path
+	assert_bool(GdObjects.is_scene_resource_path("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")).is_true()
+
 func test_extract_class_functions() -> void:
 	var functions := GdObjects.extract_class_functions("Resource", [""])
 	for f in functions:

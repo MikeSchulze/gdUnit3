@@ -307,6 +307,9 @@ static func is_native_class(value) -> bool:
 static func is_scene(value) -> bool:
 	return is_object(value) and value is PackedScene
 
+static func is_scene_resource_path(value) -> bool:
+	return value is String and value.ends_with(".tscn")
+
 static func is_instance(value) -> bool:
 	if not is_object(value) or is_native_class(value):
 		return false

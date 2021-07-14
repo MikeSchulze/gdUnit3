@@ -8,6 +8,8 @@ var _scene_name :String
 var _verbose :bool
 var _simulate_start_time :LocalTime
 var _current_mouse_pos :Vector2
+var _is_simulate_runnig := false
+var _expected_signal_args :Array
 
 func _init(scene :Node, verbose :bool):
 	assert(scene != null, "Scene must be not null!")
@@ -24,7 +26,8 @@ func _init(scene :Node, verbose :bool):
 	connect("tree_exited", self, "_tree_exiting")
 
 func _tree_exiting():
-	self.remove_child(_scene)
+	if is_instance_valid(_scene):
+		self.remove_child(_scene)
 
 func _notification(what):
 	if what == NOTIFICATION_PREDELETE:
@@ -32,6 +35,19 @@ func _notification(what):
 		OS.window_maximized = false
 		OS.set_window_minimized(true)
 		__print("End simulate %s, total time %s" % [_scene_name, _simulate_start_time.elapsed_since()])
+
+# resets the scene to inital state
+# needs to more investigate how to reset a loaded scene fully, calling _ready is not enough
+#func reset() -> Node:
+#	__print("reset scene")
+#	__reset(_scene)
+#	return _scene
+
+#func __reset(node: Node):
+#	for child in node.get_children():
+#		__reset(child)
+#	if node.has_method("_ready"):
+#		node._ready()
 
 # Simulates that a key has been pressed
 # key_code : the key code e.g. 'KEY_ENTER'
@@ -113,6 +129,39 @@ func simulate_mouse_button_release(buttonIndex :int) -> GdUnitSceneRunner:
 	__print("	process mouse button event %s (%s) <- %s" % [_scene, _scene_name, action.as_text()])
 	_scene_tree.input_event(action)
 	return self
+
+# Simulates scene processing for a certain number of frames by given delta peer frame
+# frames: amount of frames to process
+# delta_peer_frame: the time delta between a frame in ms
+func simulate(frames: int, delta_peer_frame :float) -> GdUnitSceneRunner:
+	for frame in frames:
+		_is_simulate_runnig = true
+		yield(get_tree().create_timer(delta_peer_frame), "timeout")
+		_scene._process(delta_peer_frame)
+	_is_simulate_runnig = false
+	return self
+
+# Simulates scene processing until the given signal is emited by the scene
+# signal_name: the signal to stop the simulation
+# arg..: optional signal arguments to be match for stop
+func simulate_until_signal(signal_name :String, arg0 = null, arg1 = null, arg2 = null, arg3 = null, arg4 = null, arg5 = null) -> GdUnitSceneRunner:
+	_scene.connect(signal_name, self, "__interupt_simulate")
+	_expected_signal_args = [arg0, arg1, arg2, arg3, arg4, arg5]
+	_is_simulate_runnig = true
+	while _is_simulate_runnig:
+		yield(get_tree().create_timer(.010), "timeout")
+		_scene._process(.010)
+	return self
+
+func __interupt_simulate(arg0 = null, arg1 = null, arg2 = null, arg3 = null, arg4 = null, arg5 = null):
+	var current_signal_args = [arg0, arg1, arg2, arg3, arg4, arg5]
+	# if signal has expected args we have to compare with received ones and only if matches we stop
+	for i in _expected_signal_args.size():
+		var expected_arg = _expected_signal_args[i]
+		var signal_arg = current_signal_args[i]
+		if expected_arg != null and expected_arg != signal_arg:
+			return
+	_is_simulate_runnig = false
 
 # Sets the mouse cursor to given position relative to the viewport.
 func set_mouse_pos(pos :Vector2) -> GdUnitSceneRunner:

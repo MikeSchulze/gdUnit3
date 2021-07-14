@@ -1,0 +1,149 @@
+[gd_scene load_steps=14 format=2]
+
+[ext_resource path="res://gdUnit3-examples/RoomDemo3D/src/assets/door.tres" type="Material" id=1]
+[ext_resource path="res://gdUnit3-examples/RoomDemo3D/src/rooms/components/door.gd" type="Script" id=2]
+[ext_resource path="res://gdUnit3-examples/RoomDemo3D/src/assets/door_border.material" type="Material" id=3]
+[ext_resource path="res://gdUnit3-examples/RoomDemo3D/src/assets/TestGrid.material" type="Material" id=4]
+[ext_resource path="res://gdUnit3-examples/RoomDemo3D/src/assets/Sliding-Closet-Door.mp3" type="AudioStream" id=5]
+
+[sub_resource type="CubeMesh" id=1]
+size = Vector3( 2.2, 2.2, 1 )
+
+[sub_resource type="CubeMesh" id=2]
+size = Vector3( 2, 2, 1.2 )
+
+[sub_resource type="BoxShape" id=3]
+extents = Vector3( 1, 1, 3 )
+
+[sub_resource type="CubeMesh" id=4]
+size = Vector3( 1.2, 2, 0.2 )
+
+[sub_resource type="ConcavePolygonShape" id=5]
+data = PoolVector3Array( -0.6, 1, 0.1, 0.6, 1, 0.1, -0.6, -1, 0.1, 0.6, 1, 0.1, 0.6, -1, 0.1, -0.6, -1, 0.1, 0.6, 1, -0.1, -0.6, 1, -0.1, 0.6, -1, -0.1, -0.6, 1, -0.1, -0.6, -1, -0.1, 0.6, -1, -0.1, 0.6, 1, 0.1, 0.6, 1, -0.1, 0.6, -1, 0.1, 0.6, 1, -0.1, 0.6, -1, -0.1, 0.6, -1, 0.1, -0.6, 1, -0.1, -0.6, 1, 0.1, -0.6, -1, -0.1, -0.6, 1, 0.1, -0.6, -1, 0.1, -0.6, -1, -0.1, 0.6, 1, 0.1, -0.6, 1, 0.1, 0.6, 1, -0.1, -0.6, 1, 0.1, -0.6, 1, -0.1, 0.6, 1, -0.1, -0.6, -1, 0.1, 0.6, -1, 0.1, -0.6, -1, -0.1, 0.6, -1, 0.1, 0.6, -1, -0.1, -0.6, -1, -0.1 )
+
+[sub_resource type="ConcavePolygonShape" id=6]
+data = PoolVector3Array( -0.6, 1, 0.1, 0.6, 1, 0.1, -0.6, -1, 0.1, 0.6, 1, 0.1, 0.6, -1, 0.1, -0.6, -1, 0.1, 0.6, 1, -0.1, -0.6, 1, -0.1, 0.6, -1, -0.1, -0.6, 1, -0.1, -0.6, -1, -0.1, 0.6, -1, -0.1, 0.6, 1, 0.1, 0.6, 1, -0.1, 0.6, -1, 0.1, 0.6, 1, -0.1, 0.6, -1, -0.1, 0.6, -1, 0.1, -0.6, 1, -0.1, -0.6, 1, 0.1, -0.6, -1, -0.1, -0.6, 1, 0.1, -0.6, -1, 0.1, -0.6, -1, -0.1, 0.6, 1, 0.1, -0.6, 1, 0.1, 0.6, 1, -0.1, -0.6, 1, 0.1, -0.6, 1, -0.1, 0.6, 1, -0.1, -0.6, -1, 0.1, 0.6, -1, 0.1, -0.6, -1, -0.1, 0.6, -1, 0.1, 0.6, -1, -0.1, -0.6, -1, -0.1 )
+
+[sub_resource type="Animation" id=7]
+resource_name = "close"
+length = 0.5
+tracks/0/type = "transform"
+tracks/0/path = NodePath("door_left")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = PoolRealArray( 0, 1, -1.5, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0.5, 1, -0.5, 0, 0, 0, 0, 0, 1, 1, 1, 1 )
+tracks/1/type = "transform"
+tracks/1/path = NodePath("door_right")
+tracks/1/interp = 2
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = PoolRealArray( 0, 1, 1.6, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0.5, 1, 0.5, 0, 0, 0, 0, 0, 1, 1, 1, 1 )
+tracks/2/type = "audio"
+tracks/2/path = NodePath("AudioStreamPlayer3D")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"clips": [ {
+"end_offset": 0.5,
+"start_offset": 0.3,
+"stream": ExtResource( 5 )
+}, {
+"end_offset": 0.0,
+"start_offset": 0.0,
+"stream": null
+} ],
+"times": PoolRealArray( 0, 0.5 )
+}
+
+[sub_resource type="Animation" id=8]
+resource_name = "open"
+length = 0.5
+tracks/0/type = "transform"
+tracks/0/path = NodePath("door_left")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = PoolRealArray( 0, 1, -0.6, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0.5, 1, -1.5, 0, 0, 0, 0, 0, 1, 1, 1, 1 )
+tracks/1/type = "transform"
+tracks/1/path = NodePath("door_right")
+tracks/1/interp = 2
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = PoolRealArray( 0, 1, 0.6, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0.5, 1, 1.5, 0, 0, 0, 0, 0, 1, 1, 1, 1 )
+tracks/2/type = "audio"
+tracks/2/path = NodePath("AudioStreamPlayer3D")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"clips": [ {
+"end_offset": 0.5,
+"start_offset": 0.3,
+"stream": ExtResource( 5 )
+}, {
+"end_offset": 0.0,
+"start_offset": 0.0,
+"stream": null
+} ],
+"times": PoolRealArray( 0, 0.5 )
+}
+
+[node name="door" type="Spatial"]
+script = ExtResource( 2 )
+
+[node name="border" type="CSGMesh" parent="."]
+mesh = SubResource( 1 )
+material = ExtResource( 3 )
+
+[node name="space" type="CSGMesh" parent="border"]
+operation = 2
+mesh = SubResource( 2 )
+material = ExtResource( 4 )
+
+[node name="trigger" type="Area" parent="border"]
+
+[node name="CollisionShape" type="CollisionShape" parent="border/trigger"]
+transform = Transform( 1.2, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shape = SubResource( 3 )
+
+[node name="door_left" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0, 0 )
+mesh = SubResource( 4 )
+material/0 = ExtResource( 1 )
+
+[node name="StaticBody" type="StaticBody" parent="door_left"]
+
+[node name="CollisionShape" type="CollisionShape" parent="door_left/StaticBody"]
+shape = SubResource( 5 )
+
+[node name="door_right" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0, 0 )
+material_override = ExtResource( 1 )
+mesh = SubResource( 4 )
+material/0 = null
+
+[node name="StaticBody" type="StaticBody" parent="door_right"]
+
+[node name="CollisionShape" type="CollisionShape" parent="door_right/StaticBody"]
+shape = SubResource( 6 )
+
+[node name="animate" type="AnimationPlayer" parent="."]
+anims/close = SubResource( 7 )
+anims/open = SubResource( 8 )
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
+transform = Transform( 3, 0, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0 )
+stream = ExtResource( 5 )
+
+[connection signal="body_entered" from="border/trigger" to="." method="_on_trigger_body_entered"]
+[connection signal="body_exited" from="border/trigger" to="." method="_on_trigger_body_exited"]
+[connection signal="animation_finished" from="animate" to="." method="_on_animate_animation_finished"]
+[connection signal="animation_started" from="animate" to="." method="_on_animate_animation_started"]
