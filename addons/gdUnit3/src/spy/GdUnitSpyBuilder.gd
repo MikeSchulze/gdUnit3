@@ -126,20 +126,24 @@ class SpyFunctionDoubler extends GdFunctionDoubler:
 			return SPY_VOID_TEMPLATE
 		return SPY_TEMPLATE
 
-static func build(caller :Object, instance, push_errors :bool = true, debug_write = false):
+static func build(caller :Object, to_spy, push_errors :bool = true, debug_write = false):
 	var memory_pool :int = caller.get_meta(GdUnitMemoryPool.META_PARAM)
-	# spy on PackedScene
-	if GdObjects.is_scene(instance):
-		return spy_on_scene(caller, instance.instance(), memory_pool, debug_write)
-	# spy on a scene instance
-	if GdObjects.is_instance_scene(instance):
-		return spy_on_scene(caller, instance, memory_pool, debug_write)
 	
-	var spy := spy_on_script(instance, memory_pool, [], debug_write)
+	# if resource path load it before
+	if GdObjects.is_scene_resource_path(to_spy):
+		to_spy = load(to_spy)
+	# spy on PackedScene
+	if GdObjects.is_scene(to_spy):
+		return spy_on_scene(caller, to_spy.instance(), memory_pool, debug_write)
+	# spy on a scene instance
+	if GdObjects.is_instance_scene(to_spy):
+		return spy_on_scene(caller, to_spy, memory_pool, debug_write)
+	
+	var spy := spy_on_script(to_spy, memory_pool, [], debug_write)
 	if spy == null:
 		return null
 	var spy_instance = spy.new()
-	spy_instance.__set_singleton(instance)
+	spy_instance.__set_singleton(to_spy)
 	spy_instance.__set_caller(caller)
 	return GdUnitTools.register_auto_free(spy_instance, memory_pool)
 

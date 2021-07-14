@@ -382,10 +382,15 @@ func test_spy_func_with_default_build_in_type():
 	verify(spy_instance).bar("def", Vector3.DOWN, AABB(Vector3.ONE, Vector3.ZERO))
 	verify_no_more_interactions(spy_instance)
 
-func test_spy_scene_by_path():
+func test_spy_scene_by_resource_path():
 	var spy_scene = spy("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
-	# must fail spy is only allowed on a instance
-	assert_object(spy_scene).is_null()
+	assert_object(spy_scene)\
+		.is_not_null()\
+		.is_not_instanceof(PackedScene)\
+		.is_instanceof(Control)
+	assert_str(spy_scene.get_script().resource_name).is_equal("SpyTestScene.gd")
+	# check is spyed scene registered for auto freeing
+	assert_bool(GdUnitTools.is_auto_free_registered(spy_scene, get_meta("MEMORY_POOL"))).is_true()
 
 func test_spy_on_PackedScene():
 	var resource := load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
@@ -403,7 +408,7 @@ func test_spy_on_PackedScene():
 		.is_instanceof(GDScript)\
 		.is_not_same(original_script)
 	assert_str(spy_scene.get_script().resource_name).is_equal("SpyTestScene.gd")
-	# check is mocked scene registered for auto freeing
+	# check is spyed scene registered for auto freeing
 	assert_bool(GdUnitTools.is_auto_free_registered(spy_scene, get_meta("MEMORY_POOL"))).is_true()
 
 func test_spy_scene_by_instance():

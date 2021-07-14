@@ -214,13 +214,9 @@ func execute_test_case(test_suite :GdUnitTestSuite, test_case :_TestCase) -> GDS
 				if test_case.is_interupted():
 					break
 	
-	if is_instance_valid(test_suite.__scene_runner):
-		test_suite.__scene_runner.free()
-		# give runner time to finallize
-		yield(get_tree(), "idle_frame")
-		test_suite.__scene_runner = null
-	
 	_memory_pool.free_pool()
+	# give objects time to finallize
+	yield(get_tree(), "idle_frame")
 	_memory_pool.monitor_stop()
 	var execution_orphan_nodes = _memory_pool.orphan_nodes()
 	if execution_orphan_nodes > 0:
@@ -244,6 +240,7 @@ func execute(test_suite :GdUnitTestSuite) -> GDScriptFunctionState:
 	if _fail_fast and _total_test_failed > 0:
 		test_suite.free()
 		return null
+	
 	_report_collector.register_report_provider(test_suite)
 	add_child(test_suite)
 	var fs = suite_before(test_suite, test_suite.get_child_count())

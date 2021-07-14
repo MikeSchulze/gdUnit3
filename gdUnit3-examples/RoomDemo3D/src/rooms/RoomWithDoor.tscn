@@ -1,0 +1,76 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://gdUnit3-examples/RoomDemo3D/src/rooms/RoomWithDoor.gd" type="Script" id=1]
+[ext_resource path="res://gdUnit3-examples/RoomDemo3D/src/assets/TestGrid.material" type="Material" id=2]
+[ext_resource path="res://gdUnit3-examples/RoomDemo3D/src/Player.tscn" type="PackedScene" id=3]
+[ext_resource path="res://gdUnit3-examples/RoomDemo3D/src/rooms/components/door.tscn" type="PackedScene" id=4]
+[ext_resource path="res://gdUnit3-examples/RoomDemo3D/src/assets/Sponge.tscn" type="PackedScene" id=5]
+
+[sub_resource type="BoxShape" id=1]
+
+[node name="TestRoom" type="Spatial"]
+script = ExtResource( 1 )
+
+[node name="player" parent="." instance=ExtResource( 3 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 5, -1, 0 )
+
+[node name="room_a" type="Area" parent="."]
+
+[node name="floor" type="CSGBox" parent="room_a"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 5, -1, -4 )
+material_override = ExtResource( 2 )
+use_collision = true
+width = 10.0
+height = 0.1
+depth = 20.0
+
+[node name="wall_a" type="CSGBox" parent="room_a"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 0.2, 5, 1, -5 )
+material_override = ExtResource( 2 )
+use_collision = true
+width = 10.0
+height = 4.0
+depth = 1.0
+
+[node name="door" parent="room_a/wall_a" instance=ExtResource( 4 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 2, 0, -0.833333, 0 )
+
+[node name="door_space" type="CSGBox" parent="room_a/wall_a"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 2, 0, -1, 0 )
+operation = 2
+height = 2.4
+depth = 1.0
+
+[node name="wall_b" type="CSGBox" parent="room_a"]
+transform = Transform( -4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 10, 1, 0 )
+material_override = ExtResource( 2 )
+use_collision = true
+width = 10.0
+height = 4.0
+depth = 0.1
+
+[node name="wall_c" type="CSGBox" parent="room_a"]
+transform = Transform( -4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 1, 0 )
+material_override = ExtResource( 2 )
+use_collision = true
+width = 10.0
+height = 4.0
+depth = 0.1
+
+[node name="wall_d" type="CSGBox" parent="room_a"]
+transform = Transform( -1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 5, 1, 5 )
+material_override = ExtResource( 2 )
+use_collision = true
+width = 10.0
+height = 4.0
+depth = 0.1
+
+[node name="CollisionShape" type="CollisionShape" parent="room_a"]
+transform = Transform( 5, 0, 0, 0, 2, 0, 0, 0, 5, 5, 1, 0 )
+shape = SubResource( 1 )
+
+[node name="sponge" parent="room_a" instance=ExtResource( 5 )]
+transform = Transform( 0.970708, 0.240262, 0, -0.23188, 0.936843, -0.261835, -0.0629091, 0.254166, 0.965113, 2.36254, 3.62344, -3.91309 )
+
+[connection signal="door_closed" from="room_a/wall_a/door" to="." method="_on_door_door_closed"]
+[connection signal="door_opend" from="room_a/wall_a/door" to="." method="_on_door_door_opend"]

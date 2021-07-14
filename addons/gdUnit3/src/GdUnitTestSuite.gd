@@ -96,11 +96,9 @@ func resource_as_var(resource_path :String):
 func clear_push_errors() -> void:
 	GdUnitTools.clear_push_errors()
 
-var __scene_runner :GdUnitSceneRunner = null
 # Creates a new scene runner to allow simulate interactions on a scene
 func scene_runner(scene :Node, verbose := false) -> GdUnitSceneRunner:
-	__scene_runner =  GdUnitSceneRunner.new(scene, verbose)
-	return __scene_runner
+	return auto_free(GdUnitSceneRunner.new(scene, verbose))
 
 # === Mocking  & Spy ===========================================================
 

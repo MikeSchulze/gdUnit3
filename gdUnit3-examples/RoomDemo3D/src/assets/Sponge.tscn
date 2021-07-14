@@ -1,0 +1,29 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://gdUnit3-examples/RoomDemo3D/src/assets/Sponge.gd" type="Script" id=1]
+
+[sub_resource type="PhysicsMaterial" id=5]
+bounce = 0.52
+
+[sub_resource type="BoxShape" id=6]
+extents = Vector3( 0.5, 0.5, 0.5 )
+
+[sub_resource type="CubeMesh" id=7]
+size = Vector3( 1, 1, 1 )
+
+[sub_resource type="SpatialMaterial" id=4]
+albedo_color = Color( 0.937255, 0.964706, 0.0470588, 1 )
+
+[node name="Sponge" type="RigidBody"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 2.35578, 1.95434, -3.76188 )
+physics_material_override = SubResource( 5 )
+contacts_reported = 10
+contact_monitor = true
+script = ExtResource( 1 )
+
+[node name="CollisionShape" type="CollisionShape" parent="."]
+shape = SubResource( 6 )
+
+[node name="MeshInstance" type="MeshInstance" parent="."]
+mesh = SubResource( 7 )
+material/0 = SubResource( 4 )
