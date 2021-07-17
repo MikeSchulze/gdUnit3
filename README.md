@@ -7,12 +7,6 @@
 ![Godot v3.3.2](https://img.shields.io/badge/Godot-v3.3.2-%23478cbf?logo=godot-engine&logoColor=white)
 ![GdUnit3 Unit Test Framework](.//addons/gdUnit3/GdUnit3Banner.png)
 
-## Release Candidate
-Please notice the plugin is the first release candidate and has current no acceptance to be bug free.
-You are welcome to report bugs or create new feature requests.
-I would also appreciate feedback.
-
-
 # To Install the GdUnit3 Plugin
 
 You have to install the GdUnit3 plugin over the AssetLib in the Godot Editor.
@@ -47,6 +41,12 @@ You have to install the GdUnit3 plugin over the AssetLib in the Godot Editor.
   * Simmulate scene proccessing by waiting for a specific signal
 * Update Notifier to install latest version from GitHub 
 * Command Line Tool with HTML report
+
+
+
+## First production-ready Release
+You are welcome to report bugs or create new feature requests.
+I would also appreciate feedback.
 
 
 [Documentation](https://github.com/MikeSchulze/gdUnit3/wiki)
