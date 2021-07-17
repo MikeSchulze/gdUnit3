@@ -36,9 +36,9 @@ You have to install the GdUnit3 plugin over the AssetLib in the Godot Editor.
 * Spy on a instance to verify that a function has been called with certain parameters.
 * Mock or Spy on a Scene
 * Provides a scene runner to simulate interactions on a scene 
-  * Simmulate by Input events like mouse and/or keyboard
+  * Simulate by Input events like mouse and/or keyboard
   * Simulate scene processing by a certain number of frames
-  * Simmulate scene proccessing by waiting for a specific signal
+  * Simulate scene proccessing by waiting for a specific signal
 * Update Notifier to install latest version from GitHub 
 * Command Line Tool with HTML report
 
