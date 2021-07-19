@@ -171,7 +171,9 @@ func set_mouse_pos(pos :Vector2) -> GdUnitSceneRunner:
 
 # maximizes the window to bring the scene visible
 func maximize_view() -> GdUnitSceneRunner:
-	OS.window_maximized = true
+	OS.set_window_maximized(true)
+	OS.center_window()
+	OS.move_window_to_foreground()
 	return self
 
 func __extract_scene_name(node :Node) -> String:
