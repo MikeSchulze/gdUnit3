@@ -39,8 +39,11 @@ enum STATE {
 	ERROR,
 	ABORDED
 }
+const META_GDUNIT_NAME := "dgUnit_name"
 const META_GDUNIT_STATE := "gdUnit_state"
 const META_GDUNIT_TYPE := "gdUnit_type"
+const META_GDUNIT_SUITE_TOTAL_TESTS := "gdUnit_suite_total_tests"
+const META_GDUNIT_SUITE_SUCCESS_TESTS := "gdUnit_suite_success_tests"
 const META_GDUNIT_REPORT := "gdUnit_report"
 const META_GDUNIT_ORPHAN := "gdUnit_orphan"
 const META_RESOURCE_PATH := "resource_path"
@@ -64,7 +67,7 @@ static func find_item(parent :TreeItem, item_path :Array) -> TreeItem:
 static func _find_item(parent :TreeItem, name :String) -> TreeItem:
 	var item :=  parent.get_children()
 	while item != null:
-		if item.get_text(0) == name:
+		if item.get_meta(META_GDUNIT_NAME) == name:
 			return item
 		item = item.get_next()
 	return null
@@ -334,26 +337,58 @@ func update_test_case(event :GdUnitEvent) -> void:
 		return
 	if event.type() == GdUnitEvent.TESTCASE_AFTER:
 		set_elapsed_time(item, event.elapsed_time())
+		
+		if event.is_success():
+			_update_test_suite_with_successful_case(event.suite_name())
 	update_state(item, event)
 
 
 func add_test_suite(test_suite :GdUnitTestSuite) -> void:
 	var item := _tree.create_item(_tree_root)
-	item.set_text(0, test_suite.get_name())
+	var suite_name := test_suite.get_name()
+	var test_count := test_suite.get_child_count()
+	
 	item.set_icon(0, ICON_TEST_DEFAULT)
+	item.set_meta(META_GDUNIT_NAME, suite_name)
 	item.set_meta(META_GDUNIT_TYPE, GdUnitType.TEST_SUITE)
+	item.set_meta(META_GDUNIT_SUITE_TOTAL_TESTS, test_count)
+	item.set_meta(META_GDUNIT_SUITE_SUCCESS_TESTS, 0)
 	item.set_meta(META_RESOURCE_PATH, test_suite.get_script().resource_path)
 	item.set_meta(META_LINE_NUMBER, 1)
 	item.collapsed = true
+	
+	_update_test_suite_item_text(item)
+	
 	for test_case in test_suite.get_children():
 		_add_test_case(item, test_case)
 		test_case.free()
 	test_suite.free()
 
+
+func _update_test_suite_item_text(item: TreeItem):
+	item.set_text(0, "(%s/%s) %s" % [
+		item.get_meta(META_GDUNIT_SUITE_SUCCESS_TESTS), 
+		item.get_meta(META_GDUNIT_SUITE_TOTAL_TESTS),
+		item.get_meta(META_GDUNIT_NAME)])
+
+
+func _update_test_suite_with_successful_case(suite_name: String):
+	var suite_item := find_item(_tree_root, [suite_name])
+	if suite_item:
+		var successes: int = suite_item.get_meta(META_GDUNIT_SUITE_SUCCESS_TESTS)
+		suite_item.set_meta(META_GDUNIT_SUITE_SUCCESS_TESTS, successes + 1)
+		_update_test_suite_item_text(suite_item)
+	else:
+		push_error("Internal Error: Can't find test suite %s" % suite_name)
+
+
 func _add_test_case(parent :TreeItem, test_case :_TestCase) -> void:
 	var item := _tree.create_item(parent)
-	item.set_text(0, test_case.get_name())
+	var test_name := test_case.get_name()
+	
+	item.set_text(0, test_name)
 	item.set_icon(0, ICON_TEST_DEFAULT)
+	item.set_meta(META_GDUNIT_NAME, test_name)
 	item.set_meta(META_GDUNIT_TYPE, GdUnitType.TEST_CASE)
 	item.set_meta(META_RESOURCE_PATH, test_case.script_path())
 	item.set_meta(META_LINE_NUMBER, test_case.line_number())

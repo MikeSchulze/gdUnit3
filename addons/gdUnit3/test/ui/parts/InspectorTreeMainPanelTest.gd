@@ -37,8 +37,6 @@ func setup_test_env() -> Array:
 	tsB.add_child(_TestCase.new().configure("test_ba", 10, "/foo/TestSuiteA.gd"))
 	tsB.add_child(_TestCase.new().configure("test_bb", 20, "/foo/TestSuiteA.gd"))
 	tsB.add_child(_TestCase.new().configure("test_bc", 30, "/foo/TestSuiteA.gd"))
-	tsB.add_child(_TestCase.new().configure("test_bd", 40, "/foo/TestSuiteA.gd"))
-	tsB.add_child(_TestCase.new().configure("test_be", 50, "/foo/TestSuiteA.gd"))
 	
 	var tsC := GdUnitTestSuite.new()
 	tsC.set_name("TestSuiteC")
@@ -175,3 +173,50 @@ func test_select_previous_failure() -> void:
 	assert_str(_inspector._tree.get_selected().get_text(0)).is_equal("test_ce")
 	_inspector.select_previous_failure()
 	assert_str(_inspector._tree.get_selected().get_text(0)).is_equal("test_cc")
+
+func test_find_item_for_test_suites() -> void:
+	var suite_a: TreeItem = _inspector.find_item(_inspector._tree_root, ["TestSuiteA"])
+	assert_str(suite_a.get_meta(_inspector.META_GDUNIT_NAME)).is_equal("TestSuiteA")
+	
+	var suite_b: TreeItem = _inspector.find_item(_inspector._tree_root, ["TestSuiteB"])
+	assert_str(suite_b.get_meta(_inspector.META_GDUNIT_NAME)).is_equal("TestSuiteB")
+
+
+func test_find_item_for_test_cases() -> void:
+	var case_aa: TreeItem = _inspector.find_item(_inspector._tree_root, ["TestSuiteA", "test_aa"])
+	assert_str(case_aa.get_meta(_inspector.META_GDUNIT_NAME)).is_equal("test_aa")
+	
+	var case_ce: TreeItem = _inspector.find_item(_inspector._tree_root, ["TestSuiteC", "test_ce"])
+	assert_str(case_ce.get_meta(_inspector.META_GDUNIT_NAME)).is_equal("test_ce")
+
+
+func test_suite_text_shows_amount_of_cases() -> void:
+	var suite_a: TreeItem = _inspector.find_item(_inspector._tree_root, ["TestSuiteA"])
+	assert_str(suite_a.get_text(0)).is_equal("(0/5) TestSuiteA")
+	
+	var suite_b: TreeItem = _inspector.find_item(_inspector._tree_root, ["TestSuiteB"])
+	assert_str(suite_b.get_text(0)).is_equal("(0/3) TestSuiteB")
+
+
+func test_suite_text_responds_to_test_case_events() -> void:
+	var suite_a: TreeItem = _inspector.find_item(_inspector._tree_root, ["TestSuiteA"])
+	
+	var success_aa := GdUnitEvent.new().test_after("", "TestSuiteA", "test_aa")
+	_inspector._on_event(success_aa)
+	assert_str(suite_a.get_text(0)).is_equal("(1/5) TestSuiteA")
+	
+	var error_ad := GdUnitEvent.new().test_after("", "TestSuiteA", "test_ad", {GdUnitEvent.ERRORS: true})
+	_inspector._on_event(error_ad)
+	assert_str(suite_a.get_text(0)).is_equal("(1/5) TestSuiteA")
+	
+	var failure_ab := GdUnitEvent.new().test_after("", "TestSuiteA", "test_ab", {GdUnitEvent.FAILED: true})
+	_inspector._on_event(failure_ab)
+	assert_str(suite_a.get_text(0)).is_equal("(1/5) TestSuiteA")
+	
+	var skipped_ac := GdUnitEvent.new().test_after("", "TestSuiteA", "test_ac", {GdUnitEvent.SKIPPED: true})
+	_inspector._on_event(skipped_ac)
+	assert_str(suite_a.get_text(0)).is_equal("(1/5) TestSuiteA")
+	
+	var success_ae := GdUnitEvent.new().test_after("", "TestSuiteA", "test_ae")
+	_inspector._on_event(success_ae)
+	assert_str(suite_a.get_text(0)).is_equal("(2/5) TestSuiteA")
