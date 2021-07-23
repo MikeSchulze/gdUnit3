@@ -128,14 +128,20 @@ func _on_update_pressed():
 	var plugin := EditorPlugin.new()
 	# close gdUnit scripts before update
 	close_open_editor_scripts(plugin)
-
+	
 	plugin.get_editor_interface().set_plugin_enabled("gdUnit3", false)
 	
 	# extract zip to tmp
-	update_progress("extracting zip ..")
 	var source := ProjectSettings.globalize_path(zip_file)
 	var dest := ProjectSettings.globalize_path(tmp_path)
-	OS.execute("tar", ["-xf", source, "-C", dest])
+	
+	update_progress("extracting zip '%s' to '%s'" % [source, dest])
+	var result := _extract_package(source, dest)
+	if result.is_error():
+		update_progress("Update failed! %s" % result.error_message())
+		yield(get_tree().create_timer(3), "timeout")
+		stop_progress()
+		return
 	
 	# find extracted directory name
 	var dir := Directory.new()
@@ -171,6 +177,20 @@ func _on_update_pressed():
 	hide()
 	queue_free()
 	plugin.queue_free()
+
+static func _extract_package(source :String, dest:String) -> Result:
+	var err = OS.execute("tar", ["-xf%s" % source, "-C%s" % dest])
+	if err != 0:
+		var cmd = "tar -xf %s -C \"%s\"" % [source, dest]
+		prints("Extracting by `%s` failed with error code: %d" % [cmd, err])
+		prints("Fallback to unzip")
+		err = OS.execute("unzip", [source, "-d", dest])
+		if err != 0:
+			cmd = "unzip %s -d %s" % [source, dest]
+			prints("Extracting by `%s` failed with error code: %d" % [cmd, err])
+			return Result.error("Extracting `%s` failed! Please collect the error log and report this." % source)
+	prints("%s successfully extracted" % source)
+	return Result.success(dest)
 
 func _on_show_next_toggled(enabled :bool):
 	GdUnitSettings.set_update_notification(enabled)
