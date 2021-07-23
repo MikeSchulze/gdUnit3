@@ -17,7 +17,7 @@ func test_extract_package() -> void:
 	assert_array(GdUnitTools.scan_dir(dest)).is_empty()
 	# now extract to temp
 	var result := GdUnitUpdate._extract_package(source, dest)
-	assert_result(result).is_success()	
+	assert_result(result).is_success()
 	assert_array(GdUnitTools.scan_dir(dest)).contains_exactly(["MikeSchulze-gdUnit3-910d61e"])
 	assert_array(GdUnitTools.scan_dir(dest + "/MikeSchulze-gdUnit3-910d61e")).contains_exactly([
 		"addons",

@@ -83,11 +83,15 @@ func extract_releases(response :GdUnitUpdateClient.HttpResponse, current_version
 		result += "\n"
 	return result
 
-func rescan() -> void:
-	var fs := EditorPlugin.new().get_editor_interface().get_resource_filesystem()
+func rescan(update_scripts :bool = false) -> void:
+	var plugin := EditorPlugin.new()
+	var fs := plugin.get_editor_interface().get_resource_filesystem()
 	fs.scan_sources()
 	while fs.is_scanning():
 		yield(get_tree().create_timer(1), "timeout")
+	if update_scripts:
+		plugin.get_editor_interface().get_resource_filesystem().update_script_classes()
+	plugin.free()
 
 func is_update_in_progress() -> bool:
 	return _update_in_progress
@@ -105,10 +109,12 @@ func update_progress(message :String) -> void:
 	_info_progress.value += 1
 	prints("Update ..", message)
 
-func close_open_editor_scripts(plugin :EditorPlugin) -> void:
+static func close_open_editor_scripts() -> void:
+	var plugin := EditorPlugin.new()
 	var script_editor := plugin.get_editor_interface().get_script_editor()
 	prints("Close all current opened scrpts ..")
 	script_editor._menu_option(MENU_ACTION_FILE_CLOSE_ALL)
+	plugin.free()
 
 func _on_update_pressed():
 	_update_in_progress = true
@@ -125,11 +131,10 @@ func _on_update_pressed():
 		stop_progress()
 		return
 	update_progress("disable GdUnit3 ..")
-	var plugin := EditorPlugin.new()
-	# close gdUnit scripts before update
-	close_open_editor_scripts(plugin)
 	
-	plugin.get_editor_interface().set_plugin_enabled("gdUnit3", false)
+	# close gdUnit scripts before update
+	close_open_editor_scripts()
+	disable_gdUnit()
 	
 	# extract zip to tmp
 	var source := ProjectSettings.globalize_path(zip_file)
@@ -141,6 +146,7 @@ func _on_update_pressed():
 		update_progress("Update failed! %s" % result.error_message())
 		yield(get_tree().create_timer(3), "timeout")
 		stop_progress()
+		enable_gdUnit()
 		return
 	
 	# find extracted directory name
@@ -163,23 +169,31 @@ func _on_update_pressed():
 	GdUnitTools.copy_directory(source_dir, "res://", true)
 	
 	update_progress("refresh editor resources ..")
-	yield(rescan(), "completed")
-	plugin.get_editor_interface().get_resource_filesystem().update_script_classes()
+	yield(rescan(true), "completed")
 	
 	update_progress("executing patches ..")
 	_patcher.execute()
 	
 	update_progress("enable GdUnit3 ..")
 	yield(get_tree().create_timer(.5), "timeout")
-	plugin.get_editor_interface().set_plugin_enabled("gdUnit3", true)
+	enable_gdUnit()
 	update_progress("New GdUnit successfully installed")
 	yield(get_tree().create_timer(1), "timeout")
 	hide()
 	queue_free()
-	plugin.queue_free()
+
+static func enable_gdUnit() -> void:
+	var plugin := EditorPlugin.new()
+	plugin.get_editor_interface().set_plugin_enabled("gdUnit3", true)
+	plugin.free()
+
+static func disable_gdUnit() -> void:
+	var plugin := EditorPlugin.new()
+	plugin.get_editor_interface().set_plugin_enabled("gdUnit3", false)
+	plugin.free()
 
 static func _extract_package(source :String, dest:String) -> Result:
-	var err = OS.execute("tar", ["-xf%s" % source, "-C%s" % dest])
+	var err = OS.execute("tar", ["-xf", source, "-C", dest])
 	if err != 0:
 		var cmd = "tar -xf %s -C \"%s\"" % [source, dest]
 		prints("Extracting by `%s` failed with error code: %d" % [cmd, err])
