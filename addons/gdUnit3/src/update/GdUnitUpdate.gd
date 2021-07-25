@@ -112,7 +112,7 @@ func update_progress(message :String) -> void:
 static func close_open_editor_scripts() -> void:
 	var plugin := EditorPlugin.new()
 	var script_editor := plugin.get_editor_interface().get_script_editor()
-	prints("Close all current opened scrpts ..")
+	prints("Closing all currently opened scripts ..")
 	script_editor._menu_option(MENU_ACTION_FILE_CLOSE_ALL)
 	plugin.free()
 
