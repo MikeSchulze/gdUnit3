@@ -759,6 +759,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/src/update/GdUnitUpdateClient.gd"
 }, {
+"base": "GdUnitTestSuite",
+"class": "GdUnitUpdateTest",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/test/update/GdUnitUpdateTest.gd"
+}, {
 "base": "Reference",
 "class": "GdUnitValueExtractor",
 "language": "GDScript",
@@ -1130,6 +1135,7 @@ _global_script_class_icons={
 "GdUnitTuple": "",
 "GdUnitUpdate": "",
 "GdUnitUpdateClient": "",
+"GdUnitUpdateTest": "",
 "GdUnitValueExtractor": "",
 "GdUnitVector2Assert": "",
 "GdUnitVector2AssertImpl": "",
