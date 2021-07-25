@@ -39,7 +39,7 @@ enum STATE {
 	ERROR,
 	ABORDED
 }
-const META_GDUNIT_NAME := "dgUnit_name"
+const META_GDUNIT_NAME := "gdUnit_name"
 const META_GDUNIT_STATE := "gdUnit_state"
 const META_GDUNIT_TYPE := "gdUnit_type"
 const META_GDUNIT_SUITE_TOTAL_TESTS := "gdUnit_suite_total_tests"
