@@ -584,7 +584,7 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/test/update/GdUnitPatcherTest.gd"
 }, {
-"base": "Node",
+"base": "Reference",
 "class": "GdUnitPushErrorHandler",
 "language": "GDScript",
 "path": "res://addons/gdUnit3/src/network/GdUnitPushErrorHandler.gd"
@@ -1211,10 +1211,6 @@ limits/debugger_stdout/max_chars_per_second=60048
 limits/debugger_stdout/max_messages_per_frame=100
 limits/debugger_stdout/max_errors_per_second=1000
 limits/debugger_stdout/max_warnings_per_second=1000
-
-[physics]
-
-3d/physics_engine="GodotPhysics"
 
 [rendering]
 

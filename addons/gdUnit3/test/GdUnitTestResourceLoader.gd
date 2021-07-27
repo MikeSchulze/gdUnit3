@@ -1,9 +1,6 @@
 class_name GdUnitTestResourceLoader
 extends Reference
 
-static func extract_suite_name(resource_path :String) -> String:
-	return resource_path.get_file().replace(".resource", "")
-
 static func load_test_suite(resource_path :String) -> GdUnitTestSuite:
 	var script := GDScript.new()
 	script.source_code = GdUnitTools.resource_as_string(resource_path)
@@ -11,7 +8,7 @@ static func load_test_suite(resource_path :String) -> GdUnitTestSuite:
 	script.reload()
 	var test_suite :GdUnitTestSuite = GdUnitTestSuite.new()
 	test_suite.set_script(script)
-	test_suite.set_name(extract_suite_name(resource_path))
+	test_suite.set_name(_TestSuiteScanner.parse_test_suite_name(resource_path.replace(".resource", ".gd")))
 	# complete test suite wiht parsed test cases
 	var suite_parser := _TestSuiteScanner.new()
 	var test_case_names := suite_parser._extract_test_case_names(test_suite)

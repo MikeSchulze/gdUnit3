@@ -32,7 +32,8 @@ enum GdUnitType {
 }
 
 enum STATE {
-	RUNNING
+	INITIAL,
+	RUNNING,
 	SUCCESS,
 	WARNING,
 	FAILED,
@@ -53,18 +54,23 @@ var _editor :EditorPlugin
 var _tree_root :TreeItem
 var _current_failures := Array()
 
-static func find_item(parent :TreeItem, item_path :Array) -> TreeItem:
-	var path := item_path.duplicate()
+static func find_item(parent :TreeItem, resource_path :String, test_case :String = "") -> TreeItem:
+	var item = _find_by_resource_path(parent, resource_path)
+	if not item:
+		return null
+	if test_case.empty():
+		return item
+	return _find_by_name(item, test_case)
 
-	var next := parent
-	while not path.empty():
-		var name := path.pop_front() as String
-		next = _find_item(next, name)
-		if not next:
-			return null
-	return next
+static func _find_by_resource_path(parent :TreeItem, resource_path :String) -> TreeItem:
+	var item :=  parent.get_children()
+	while item != null:
+		if item.get_meta(META_RESOURCE_PATH) == resource_path:
+			return item
+		item = item.get_next()
+	return null
 
-static func _find_item(parent :TreeItem, name :String) -> TreeItem:
+static func _find_by_name(parent :TreeItem, name :String) -> TreeItem:
 	var item :=  parent.get_children()
 	while item != null:
 		if item.get_meta(META_GDUNIT_NAME) == name:
@@ -150,7 +156,6 @@ func set_state_running(item :TreeItem) -> void:
 	item.collapsed = false
 	# force scrolling to current test case
 	select_item(item)
-
 
 func set_state_succeded(item :TreeItem) -> void:
 	item.set_meta(META_GDUNIT_STATE, STATE.SUCCESS)
@@ -316,7 +321,7 @@ func show_failed_report(selected_item :TreeItem) -> void:
 		_report_list.add_child(reportNode)
 
 func update_test_suite(event :GdUnitEvent) -> void:
-	var item := find_item(_tree_root, [event.suite_name()])
+	var item := _find_by_resource_path(_tree_root, event.resource_path())
 	if not item:
 		push_error("Internal Error: Can't find test suite %s" % event.suite_name())
 		return
@@ -328,7 +333,7 @@ func update_test_suite(event :GdUnitEvent) -> void:
 	update_state(item, event)
 
 func update_test_case(event :GdUnitEvent) -> void:
-	var item := find_item(_tree_root, [event.suite_name(), event.test_name()])
+	var item := find_item(_tree_root, event.resource_path(), event.test_name())
 	if not item:
 		push_error("Internal Error: Can't find test case %s:%s" % [event.suite_name(), event.test_name()])
 		return
@@ -339,9 +344,8 @@ func update_test_case(event :GdUnitEvent) -> void:
 		set_elapsed_time(item, event.elapsed_time())
 		
 		if event.is_success():
-			_update_test_suite_with_successful_case(event.suite_name())
+			_update_test_suite_with_successful_case(event.resource_path())
 	update_state(item, event)
-
 
 func add_test_suite(test_suite :GdUnitTestSuite) -> void:
 	var item := _tree.create_item(_tree_root)
@@ -349,6 +353,7 @@ func add_test_suite(test_suite :GdUnitTestSuite) -> void:
 	var test_count := test_suite.get_child_count()
 	
 	item.set_icon(0, ICON_TEST_DEFAULT)
+	item.set_meta(META_GDUNIT_STATE, STATE.INITIAL)
 	item.set_meta(META_GDUNIT_NAME, suite_name)
 	item.set_meta(META_GDUNIT_TYPE, GdUnitType.TEST_SUITE)
 	item.set_meta(META_GDUNIT_SUITE_TOTAL_TESTS, test_count)
@@ -364,23 +369,20 @@ func add_test_suite(test_suite :GdUnitTestSuite) -> void:
 		test_case.free()
 	test_suite.free()
 
-
 func _update_test_suite_item_text(item: TreeItem):
 	item.set_text(0, "(%s/%s) %s" % [
 		item.get_meta(META_GDUNIT_SUITE_SUCCESS_TESTS), 
 		item.get_meta(META_GDUNIT_SUITE_TOTAL_TESTS),
 		item.get_meta(META_GDUNIT_NAME)])
 
-
-func _update_test_suite_with_successful_case(suite_name: String):
-	var suite_item := find_item(_tree_root, [suite_name])
+func _update_test_suite_with_successful_case(resource_path: String):
+	var suite_item := _find_by_resource_path(_tree_root, resource_path)
 	if suite_item:
 		var successes: int = suite_item.get_meta(META_GDUNIT_SUITE_SUCCESS_TESTS)
 		suite_item.set_meta(META_GDUNIT_SUITE_SUCCESS_TESTS, successes + 1)
 		_update_test_suite_item_text(suite_item)
 	else:
-		push_error("Internal Error: Can't find test suite %s" % suite_name)
-
+		push_error("Internal Error: Can't find test suite %s" % resource_path)
 
 func _add_test_case(parent :TreeItem, test_case :_TestCase) -> void:
 	var item := _tree.create_item(parent)
@@ -388,6 +390,7 @@ func _add_test_case(parent :TreeItem, test_case :_TestCase) -> void:
 	
 	item.set_text(0, test_name)
 	item.set_icon(0, ICON_TEST_DEFAULT)
+	item.set_meta(META_GDUNIT_STATE, STATE.INITIAL)
 	item.set_meta(META_GDUNIT_NAME, test_name)
 	item.set_meta(META_GDUNIT_TYPE, GdUnitType.TEST_CASE)
 	item.set_meta(META_RESOURCE_PATH, test_case.script_path())
