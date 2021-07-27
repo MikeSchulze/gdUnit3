@@ -6,7 +6,7 @@ extends Resource
 static func serialize_test_suite(test_suite:GdUnitTestSuite) -> Dictionary:
 	var serialized := Dictionary()
 	serialized["name"] = test_suite.get_name()
-	serialized["recource_path"] = test_suite.get_script().resource_path
+	serialized["resource_path"] = test_suite.get_script().resource_path
 	var test_cases := Array()
 	serialized["test_cases"] = test_cases
 	for test_case in test_suite.get_children():
@@ -14,7 +14,7 @@ static func serialize_test_suite(test_suite:GdUnitTestSuite) -> Dictionary:
 	return serialized
 	
 static func deserialize_test_suite(serialized:Dictionary) -> GdUnitTestSuite:
-	var resource_path:String = serialized["recource_path"]
+	var resource_path :String = serialized["resource_path"]
 	var test_suite := load(resource_path).new() as GdUnitTestSuite
 	test_suite.set_name(serialized["name"])
 	var test_cases:Array = serialized["test_cases"]
