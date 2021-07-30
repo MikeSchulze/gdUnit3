@@ -11,12 +11,20 @@ var _current_mouse_pos :Vector2
 var _is_simulate_runnig := false
 var _expected_signal_args :Array
 
+# time factor settings
+var _time_factor := 1.0
+var _saved_time_scale :float
+var _saved_iterations_per_second :float
+
 func _init(scene :Node, verbose :bool):
 	assert(scene != null, "Scene must be not null!")
 	_scene_tree = Engine.get_main_loop()
 	_scene_tree.root.add_child(self)
 	add_child(scene)
 	_verbose = verbose
+	_saved_time_scale = 1
+	_saved_iterations_per_second = ProjectSettings.get_setting("physics/common/physics_fps")
+	set_time_factor(1.0)
 	_scene = scene
 	_scene_name = __extract_scene_name(scene)
 	_simulate_start_time = LocalTime.now()
@@ -31,6 +39,8 @@ func _tree_exiting():
 
 func _notification(what):
 	if what == NOTIFICATION_PREDELETE:
+		# reset time factor to normal
+		__deactivate_time_factor()
 		# we hide the scene/main window after runner is finished 
 		OS.window_maximized = false
 		OS.set_window_minimized(true)
@@ -130,14 +140,36 @@ func simulate_mouse_button_release(buttonIndex :int) -> GdUnitSceneRunner:
 	_scene_tree.input_event(action)
 	return self
 
-# Simulates scene processing for a certain number of frames by given delta peer frame
+# Sets how fast or slow the scene simulation is processed (clock ticks versus the real).
+# It defaults to 1.0. A value of 2.0 means the game moves twice as fast as real life,
+# whilst a value of 0.5 means the game moves at half the regular speed.
+func set_time_factor(time_factor := 1.0) -> GdUnitSceneRunner:
+	_time_factor = min(9.0, time_factor)
+	__print("set time factor: %f" % _time_factor)
+	__print("set physics iterations_per_second: %d" % (_saved_iterations_per_second*_time_factor))
+	return self
+
+# Simulates scene processing for a certain number of frames by given delta peer frame by ignoring the time factor
 # frames: amount of frames to process
 # delta_peer_frame: the time delta between a frame in ms
 func simulate(frames: int, delta_peer_frame :float) -> GdUnitSceneRunner:
+	__deactivate_time_factor()
 	for frame in frames:
 		_is_simulate_runnig = true
 		yield(get_tree().create_timer(delta_peer_frame), "timeout")
-		_scene._process(delta_peer_frame)
+	_is_simulate_runnig = false
+	return self
+
+# Simulates scene processing for a certain number of frames
+# frames: amount of frames to process
+func simulate_frames(frames: int) -> GdUnitSceneRunner:
+	var time_shift_frames := max(1, frames / _time_factor)
+	#prints("time_shift_frames:", time_shift_frames)
+	__activate_time_factor()
+	for frame in time_shift_frames:
+		_is_simulate_runnig = true
+		yield(get_tree(), "idle_frame")
+	__deactivate_time_factor()
 	_is_simulate_runnig = false
 	return self
 
@@ -148,9 +180,10 @@ func simulate_until_signal(signal_name :String, arg0 = null, arg1 = null, arg2 =
 	_scene.connect(signal_name, self, "__interupt_simulate")
 	_expected_signal_args = [arg0, arg1, arg2, arg3, arg4, arg5]
 	_is_simulate_runnig = true
+	__activate_time_factor()
 	while _is_simulate_runnig:
-		yield(get_tree().create_timer(.010), "timeout")
-		_scene._process(.010)
+		yield(get_tree(), "idle_frame")
+	__deactivate_time_factor()
 	return self
 
 func __interupt_simulate(arg0 = null, arg1 = null, arg2 = null, arg3 = null, arg4 = null, arg5 = null):
@@ -183,6 +216,14 @@ func __extract_scene_name(node :Node) -> String:
 	if not node.get_name().begins_with("@"):
 		return node.get_name()
 	return scene_script.resource_name.get_basename()
+
+func __activate_time_factor() -> void:
+	Engine.set_time_scale(_time_factor)
+	Engine.set_iterations_per_second(_saved_iterations_per_second * _time_factor)
+
+func __deactivate_time_factor() -> void:
+	Engine.set_time_scale(1)
+	Engine.set_iterations_per_second(_saved_iterations_per_second * 1)
 
 func __print(message :String) -> void:
 	if _verbose:
