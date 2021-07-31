@@ -44,7 +44,7 @@ You have to install the GdUnit3 plugin over the AssetLib in the Godot Editor.
 
 
 
-## First production-ready Release
+
 You are welcome to report bugs or create new feature requests.
 I would also appreciate feedback.
 
