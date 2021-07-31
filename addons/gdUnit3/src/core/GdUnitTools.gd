@@ -108,7 +108,7 @@ static func current_dir() -> String:
 	return ProjectSettings.globalize_path("res://")
 
 
-static func delete_directory(path :String):
+static func delete_directory(path :String, only_content := false) -> void:
 	var dir := Directory.new()
 	if dir.open(path) == OK:
 		dir.list_dir_begin()
@@ -122,8 +122,13 @@ static func delete_directory(path :String):
 				delete_directory(next)
 			else:
 				# delete file
-				Directory.new().remove(next)
-		Directory.new().remove(path)
+				var err = Directory.new().remove(next)
+				if err:
+					push_error("Delete %s failed: %s" % [next, error_as_string(err)])
+		if not only_content:
+			var err := Directory.new().remove(path)
+			if err:
+				push_error("Delete %s failed: %s" % [path, error_as_string(err)])
 
 
 static func copy_file(from_file :String, to_dir :String) -> Result:
