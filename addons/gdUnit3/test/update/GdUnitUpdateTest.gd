@@ -19,7 +19,7 @@ func test_extract_package() -> void:
 	var result := GdUnitUpdate._extract_package(source, dest)
 	assert_result(result).is_success()
 	assert_array(GdUnitTools.scan_dir(dest)).contains_exactly(["MikeSchulze-gdUnit3-910d61e"])
-	assert_array(GdUnitTools.scan_dir(dest + "/MikeSchulze-gdUnit3-910d61e")).contains_exactly([
+	assert_array(GdUnitTools.scan_dir(dest + "/MikeSchulze-gdUnit3-910d61e")).contains_exactly_in_any_order([
 		"addons",
 		"runtest.cmd",
 		"runtest.sh",

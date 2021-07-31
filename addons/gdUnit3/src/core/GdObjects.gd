@@ -168,7 +168,7 @@ static func equals(obj_a, obj_b, case_sensitive :bool = false, deep_check :bool 
 		return false
 	if obj_b == null and obj_a != null:
 		return false
-
+	
 	match type_a:
 		TYPE_OBJECT:
 			if deep_check:
@@ -201,7 +201,6 @@ static func equals(obj_a, obj_b, case_sensitive :bool = false, deep_check :bool 
 				return obj_a.to_lower() == obj_b.to_lower()
 			else:
 				return obj_a == obj_b
-
 	return obj_a == obj_b
 
 static func notification_as_string(notification :int) -> String:
@@ -503,6 +502,8 @@ static func array_to_string(elements, delimiter := "\n") -> String:
 		if formatted.length() > 0 :
 			formatted += delimiter
 		formatted += str(element)
+		if formatted.length() > 64:
+			return formatted + delimiter + "..."
 	return formatted
 
 # Filters an array by given value

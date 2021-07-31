@@ -68,16 +68,23 @@ func test_has_size():
 func test_contains():
 	assert_array(PoolByteArray([1, 2, 3, 4, 5])).contains(PoolByteArray([5, 2]))
 	# should fail because the array not contains 7 and 6
+	var expected_error := """Expecting contains elements:
+ 1, 2, 3, 4, 5
+ do contains (in any order)
+ 2, 7, 6
+but could not find elements:
+ 7, 6""" 
 	assert_array(PoolByteArray([1, 2, 3, 4, 5]), GdUnitAssert.EXPECT_FAIL) \
 		.contains(PoolByteArray([2, 7, 6]))\
-		.has_failure_message("Expecting:\n 1\n2\n3\n4\n5\n do contains\n 2\n7\n6\nbut could not find elements:\n 7\n6")
+		.has_failure_message(expected_error)
 
 func test_contains_exactly():
 	assert_array(PoolByteArray([1, 2, 3, 4, 5])).contains_exactly(PoolByteArray([1, 2, 3, 4, 5]))
 	# should fail because the array not contains same elements but in different order
-	var expected_error_message := """Expecting to have same elements and in same order:
- 1\n2\n3\n4\n5
- 1\n4\n3\n2\n5
+	var expected_error_message := """Expecting contains exactly elements:
+ 1, 2, 3, 4, 5
+ do contains (in same order)
+ 1, 4, 3, 2, 5
  but has different order at position '1'
  '2' vs '4'"""
 	assert_array(PoolByteArray([1, 2, 3, 4, 5]), GdUnitAssert.EXPECT_FAIL) \

@@ -47,6 +47,10 @@ func contains(expected) -> GdUnitArrayAssert:
 func contains_exactly(expected) -> GdUnitArrayAssert:
 	return self
 
+# Verifies that the current Array contains exactly only the given values and nothing else, in any order.
+func contains_exactly_in_any_order(expected) -> GdUnitArrayAssert:
+	return self
+
 # Extracts all values by given function name and optional arguments into a new ArrayAssert
 # If the elements not accessible by `func_name` the value is converted to `"n.a"`, expecting null values
 func extract(func_name: String, args := Array()) -> GdUnitArrayAssert:

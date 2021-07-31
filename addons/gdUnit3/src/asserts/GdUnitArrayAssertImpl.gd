@@ -12,6 +12,8 @@ func __current() -> Array:
 	return Array(_base._current)
 
 func __expected(expected) -> Array:
+	if typeof(expected) == TYPE_ARRAY:
+		return expected
 	return Array(expected)
 
 func report_success() -> GdUnitArrayAssert:
@@ -141,7 +143,7 @@ func contains_exactly(expected) -> GdUnitArrayAssert:
 	if GdObjects.equals(current_, expected_):
 		return report_success()
 	# check has same elements but in different order
-
+	
 	if GdObjects.equals_sorted(current_, expected_):
 		return report_error(GdAssertMessages.error_arr_contains_exactly(current_, expected_, [], []))
 	# find the difference
@@ -149,6 +151,19 @@ func contains_exactly(expected) -> GdUnitArrayAssert:
 	var not_expect := diffs[0] as Array
 	var not_found := diffs[1] as Array
 	return report_error(GdAssertMessages.error_arr_contains_exactly(current_, expected_, not_expect, not_found))
+
+# Verifies that the current Array contains exactly only the given values and nothing else, in any order.
+func contains_exactly_in_any_order(expected) -> GdUnitArrayAssert:
+	var current_ := __current()
+	var expected_ := __expected(expected)
+	
+	# find the difference
+	var diffs := array_div(current_, expected_, false)
+	var not_expect := diffs[0] as Array
+	var not_found := diffs[1] as Array
+	if not_expect.empty() and not_found.empty():
+		return report_success()
+	return report_error(GdAssertMessages.error_arr_contains_exactly_in_any_order(current_, expected_, not_expect, not_found))
 
 func is_same(expected) -> GdUnitAssert:
 	_base.is_same(expected)
