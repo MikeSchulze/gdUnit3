@@ -66,22 +66,84 @@ func test_has_size():
 		.has_failure_message("Expecting size:\n '4'\n but was\n '5'")
 
 func test_contains():
+	assert_array([1, 2, 3, 4, 5]).contains([])
 	assert_array([1, 2, 3, 4, 5]).contains([5, 2])
+	assert_array([1, 2, 3, 4, 5]).contains([5, 4, 3, 2, 1])
 	# should fail because the array not contains 7 and 6
+	var expected_error_message := """Expecting contains elements:
+ 1, 2, 3, 4, 5
+ do contains (in any order)
+ 2, 7, 6
+but could not find elements:
+ 7, 6"""
 	assert_array([1, 2, 3, 4, 5], GdUnitAssert.EXPECT_FAIL) \
 		.contains([2, 7, 6])\
-		.has_failure_message("Expecting:\n 1\n2\n3\n4\n5\n do contains\n 2\n7\n6\nbut could not find elements:\n 7\n6")
+		.has_failure_message(expected_error_message)
 
 func test_contains_exactly():
 	assert_array([1, 2, 3, 4, 5]).contains_exactly([1, 2, 3, 4, 5])
 	# should fail because the array contains the same elements but in a different order
-	var expected_error_message := """Expecting to have same elements and in same order:
- 1\n2\n3\n4\n5
- 1\n4\n3\n2\n5
+	var expected_error_message := """Expecting contains exactly elements:
+ 1, 2, 3, 4, 5
+ do contains (in same order)
+ 1, 4, 3, 2, 5
  but has different order at position '1'
  '2' vs '4'"""
 	assert_array([1, 2, 3, 4, 5], GdUnitAssert.EXPECT_FAIL) \
 		.contains_exactly([1, 4, 3, 2, 5])\
+		.has_failure_message(expected_error_message)
+	
+	# should fail because the array contains more elements and in a different order
+	expected_error_message = """Expecting contains exactly elements:
+ 1, 2, 3, 4, 5, 6, 7
+ do contains (in same order)
+ 1, 4, 3, 2, 5
+but some elements where not expected:
+ 6, 7"""
+	assert_array([1, 2, 3, 4, 5, 6, 7], GdUnitAssert.EXPECT_FAIL) \
+		.contains_exactly([1, 4, 3, 2, 5])\
+		.has_failure_message(expected_error_message)
+	
+	# should fail because the array contains less elements and in a different order
+	expected_error_message = """Expecting contains exactly elements:
+ 1, 2, 3, 4, 5
+ do contains (in same order)
+ 1, 4, 3, 2, 5, 6, 7
+but could not find elements:
+ 6, 7"""
+	assert_array([1, 2, 3, 4, 5], GdUnitAssert.EXPECT_FAIL) \
+		.contains_exactly([1, 4, 3, 2, 5, 6, 7])\
+		.has_failure_message(expected_error_message)
+
+func test_contains_exactly_in_any_order():
+	assert_array([1, 2, 3, 4, 5]).contains_exactly_in_any_order([1, 2, 3, 4, 5])
+	assert_array([1, 2, 3, 4, 5]).contains_exactly_in_any_order([5, 3, 2, 4, 1])
+	assert_array([1, 2, 3, 4, 5]).contains_exactly_in_any_order([5, 1, 2, 4, 3])
+	
+	# should fail because the array contains not exactly the same elements in any order
+	var expected_error_message := """Expecting contains exactly elements:
+ 1, 2, 6, 4, 5
+ do contains exactly (in any order)
+ 5, 3, 2, 4, 1, 9, 10
+but some elements where not expected:
+ 6
+and could not find elements:
+ 3, 9, 10"""
+	assert_array([1, 2, 6, 4, 5], GdUnitAssert.EXPECT_FAIL) \
+		.contains_exactly_in_any_order([5, 3, 2, 4, 1, 9, 10])\
+		.has_failure_message(expected_error_message)
+		
+	#should fail because the array contains the same elements but in a different order
+	expected_error_message = """Expecting contains exactly elements:
+ 1, 2, 6, 9, 10, 4, 5
+ do contains exactly (in any order)
+ 5, 3, 2, 4, 1
+but some elements where not expected:
+ 6, 9, 10
+and could not find elements:
+ 3"""
+	assert_array([1, 2, 6, 9, 10, 4, 5], GdUnitAssert.EXPECT_FAIL) \
+		.contains_exactly_in_any_order([5, 3, 2, 4, 1])\
 		.has_failure_message(expected_error_message)
 
 func test_fluent():
