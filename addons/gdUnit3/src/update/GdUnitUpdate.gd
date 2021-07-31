@@ -116,12 +116,23 @@ static func close_open_editor_scripts() -> void:
 	script_editor._menu_option(MENU_ACTION_FILE_CLOSE_ALL)
 	plugin.free()
 
-func _on_update_pressed():
+func _prepare_update() -> Dictionary:
 	_update_in_progress = true
 	init_progress(9)
 	update_progress("Downloading update ..")
 	var tmp_path := GdUnitTools.create_temp_dir("update")
 	var zip_file := tmp_path + "/update.zip"
+	# cleanup old download data
+	GdUnitTools.delete_directory(tmp_path, true)
+	return {
+		"tmp_path" : tmp_path,
+		"zip_file" : zip_file
+	}
+
+func _on_update_pressed():
+	var paths := _prepare_update()
+	var zip_file = paths.get("zip_file")
+	var tmp_path = paths.get("tmp_path")
 	
 	var response :GdUnitUpdateClient.HttpResponse = yield(_update_client.request_zip_package(_download_zip_url, zip_file), "completed")
 	if response.code() != 200:

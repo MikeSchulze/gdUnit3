@@ -164,3 +164,50 @@ func test_is_yielded() -> void:
 	# wait more than 2s and the function state should be invalid
 	yield(get_tree().create_timer(2.100),"timeout")
 	assert_bool(GdUnitTools.is_yielded(fs)).is_false()
+
+func _create_file(path :String, name :String) -> void:
+	var file := create_temp_file(path, name)
+	file.store_string("some content")
+	file.close()
+
+func test_delete_directory() -> void:
+	var tmp_dir := create_temp_dir("test_delete_dir")
+	create_temp_dir("test_delete_dir/data1")
+	create_temp_dir("test_delete_dir/data2")
+	_create_file("test_delete_dir", "example_a.txt")
+	_create_file("test_delete_dir", "example_b.txt")
+	_create_file("test_delete_dir/data1", "example.txt")
+	_create_file("test_delete_dir/data2", "example2.txt")
+	
+	assert_array(GdUnitTools.scan_dir(tmp_dir)).contains_exactly_in_any_order([
+		"data1",
+		"data2",
+		"example_a.txt",
+		"example_b.txt"
+	])
+	
+	# Delete the entire directory and its contents
+	GdUnitTools.delete_directory(tmp_dir)
+	assert_bool(Directory.new().dir_exists(tmp_dir)).is_false()
+	assert_array(GdUnitTools.scan_dir(tmp_dir)).is_empty()
+
+func test_delete_directory_content_only() -> void:
+	var tmp_dir := create_temp_dir("test_delete_dir")
+	create_temp_dir("test_delete_dir/data1")
+	create_temp_dir("test_delete_dir/data2")
+	_create_file("test_delete_dir", "example_a.txt")
+	_create_file("test_delete_dir", "example_b.txt")
+	_create_file("test_delete_dir/data1", "example.txt")
+	_create_file("test_delete_dir/data2", "example2.txt")
+	
+	assert_array(GdUnitTools.scan_dir(tmp_dir)).contains_exactly_in_any_order([
+		"data1",
+		"data2",
+		"example_a.txt",
+		"example_b.txt"
+	])
+	
+	# Delete the entire directory and its contents
+	GdUnitTools.delete_directory(tmp_dir, true)
+	assert_bool(Directory.new().dir_exists(tmp_dir)).is_true()
+	assert_array(GdUnitTools.scan_dir(tmp_dir)).is_empty()
