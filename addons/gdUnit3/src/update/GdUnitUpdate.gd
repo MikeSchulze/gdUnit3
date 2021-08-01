@@ -203,10 +203,27 @@ static func disable_gdUnit() -> void:
 	plugin.get_editor_interface().set_plugin_enabled("gdUnit3", false)
 	plugin.free()
 
+
+static func _list_installed_tar_paths() -> PoolStringArray:
+	var stdout = Array()
+	OS.execute("where", ["tar"], true, stdout)
+	return PoolStringArray(stdout)
+
+static func _find_tar_path(os_name :String) -> String:
+	if os_name.to_upper() != "WINDOWS":
+		return "tar"
+	var paths := _list_installed_tar_paths()
+	for path in paths:
+		if path.find("\\System32\\tar") != -1:
+			return path.strip_escapes()
+	return "tar"
+
 static func _extract_package(source :String, dest:String) -> Result:
-	var err = OS.execute("tar", ["-xf", source, "-C", dest])
+	prints("Detect OS :", OS.get_name())
+	var tar_path := _find_tar_path( OS.get_name())
+	var err = OS.execute(tar_path, ["-xf", source, "-C", dest])
 	if err != 0:
-		var cmd = "tar -xf %s -C \"%s\"" % [source, dest]
+		var cmd = "%s -xf \"%s\" -C \"%s\"" % [tar_path, source, dest]
 		prints("Extracting by `%s` failed with error code: %d" % [cmd, err])
 		prints("Fallback to unzip")
 		err = OS.execute("unzip", [source, "-d", dest])
