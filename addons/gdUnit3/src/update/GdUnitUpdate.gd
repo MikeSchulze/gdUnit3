@@ -203,7 +203,6 @@ static func disable_gdUnit() -> void:
 	plugin.get_editor_interface().set_plugin_enabled("gdUnit3", false)
 	plugin.free()
 
-
 static func _list_installed_tar_paths() -> PoolStringArray:
 	var stdout = Array()
 	OS.execute("where", ["tar"], true, stdout)

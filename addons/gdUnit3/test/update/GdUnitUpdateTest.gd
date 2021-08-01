@@ -68,12 +68,14 @@ func test__prepare_update_deletes_old_content() -> void:
 
 func test_find_tar_path_on_windows() -> void:
 	# only execute this test on windows systems
-	if OS.get_name() == "Windows":
+	if OS.get_name() != "Windows":
 		return
 	# simulate a OS window where many tar versions are installed
 	var update :GdUnitUpdate = mock(GdUnitUpdate, CALL_REAL_FUNC)
 	var possible_windows_paths = PoolStringArray([
-		"C:\\my_tar\\tar.exe\nD:\\tools\\tar.exe\nD:\\Windows\\System32\\tar.exe",
+		"C:\\my_tar\\tar.exe",
+		"D:\\tools\\tar.exe",
+		"C:\\Windows\\System32\\tar.exe",
 	])
 	do_return(possible_windows_paths).on(update)._list_installed_tar_paths()
 	# on windows we want to find the windows provided tar version
@@ -81,7 +83,9 @@ func test_find_tar_path_on_windows() -> void:
 	
 	# Windows is installed on D:
 	possible_windows_paths = PoolStringArray([
-		"C:\\my_tar\\tar.exe\nD:\\tools\\tar.exe\nD:\\Windows\\System32\\tar.exe",
+		"C:\\my_tar\\tar.exe",
+		"D:\\tools\\tar.exe",
+		"D:\\Windows\\System32\\tar.exe",
 	])
 	do_return(possible_windows_paths).on(update)._list_installed_tar_paths()
 	assert_str(update._find_tar_path("Windows")).is_equal("D:\\Windows\\System32\\tar.exe")
@@ -89,3 +93,16 @@ func test_find_tar_path_on_windows() -> void:
 func test_find_tar_path_on_non_windows() -> void:
 	assert_str(GdUnitUpdate._find_tar_path("MacOS")).is_equal("tar")
 	assert_str(GdUnitUpdate._find_tar_path("X11")).is_equal("tar")
+
+
+func test_paths():
+	var stdout = Array()
+	OS.execute("where", ["tar"], true, stdout)
+	prints("size:", stdout.size(), stdout)
+	var path :String = stdout[0]
+	
+	var paths = path.split("\n")
+	
+	prints(paths)
+	for p in paths:
+		prints("element:", "`%s`" % p)
