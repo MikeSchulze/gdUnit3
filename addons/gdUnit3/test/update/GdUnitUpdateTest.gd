@@ -73,9 +73,7 @@ func test_find_tar_path_on_windows() -> void:
 	# simulate a OS window where many tar versions are installed
 	var update :GdUnitUpdate = mock(GdUnitUpdate, CALL_REAL_FUNC)
 	var possible_windows_paths = PoolStringArray([
-		"C:\\my_tar\\tar.exe",
-		"D:\\tools\\tar.exe",
-		"C:\\Windows\\System32\\tar.exe",
+		"C:\\my_tar\\tar.exe\nD:\\tools\\tar.exe\nD:\\Windows\\System32\\tar.exe",
 	])
 	do_return(possible_windows_paths).on(update)._list_installed_tar_paths()
 	# on windows we want to find the windows provided tar version
@@ -83,9 +81,7 @@ func test_find_tar_path_on_windows() -> void:
 	
 	# Windows is installed on D:
 	possible_windows_paths = PoolStringArray([
-		"C:\\my_tar\\tar.exe",
-		"D:\\tools\\tar.exe",
-		"D:\\Windows\\System32\\tar.exe",
+		"C:\\my_tar\\tar.exe\nD:\\tools\\tar.exe\nD:\\Windows\\System32\\tar.exe",
 	])
 	do_return(possible_windows_paths).on(update)._list_installed_tar_paths()
 	assert_str(update._find_tar_path("Windows")).is_equal("D:\\Windows\\System32\\tar.exe")

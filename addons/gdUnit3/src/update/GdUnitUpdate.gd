@@ -207,7 +207,9 @@ static func disable_gdUnit() -> void:
 static func _list_installed_tar_paths() -> PoolStringArray:
 	var stdout = Array()
 	OS.execute("where", ["tar"], true, stdout)
-	return PoolStringArray(stdout)
+	if stdout.size() > 0:
+		return PoolStringArray(stdout[0].split("\n"))
+	return PoolStringArray()
 
 static func _find_tar_path(os_name :String) -> String:
 	if os_name.to_upper() != "WINDOWS":
