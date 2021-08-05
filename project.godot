@@ -1132,7 +1132,7 @@ gdscript/warnings/return_value_discarded=false
 
 [editor_plugins]
 
-enabled=PoolStringArray( "res://addons/gdUnit3/plugin.cfg" )
+enabled=PoolStringArray( "res://addons/editor_icon_previewer/plugin.cfg", "res://addons/gdUnit3/plugin.cfg", "res://addons/zylann.editor_debugger/plugin.cfg" )
 
 [gdunit3]
 
