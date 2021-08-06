@@ -4,7 +4,7 @@ about: Suggest an idea for this project
 title: ''
 labels: 'enhancement'
 assignees: 'MikeSchulze'
-project: 'GdUnit3'
+projects: 'GdUnit3'
 
 ---
 
