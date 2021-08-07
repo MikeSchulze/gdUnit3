@@ -1,4 +1,0 @@
-# some comment
-
-extends Resource
-

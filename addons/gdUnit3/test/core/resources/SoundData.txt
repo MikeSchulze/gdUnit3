@@ -1,3 +1,0 @@
-class SoundData:
-var _sample :String
-var _randomnes :float
