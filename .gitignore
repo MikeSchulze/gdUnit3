@@ -10,6 +10,10 @@
 data_*/
 mono_crash.*.json
 
+# submodules
+gdUnit3-examples/
+
+
 # System/tool-specific ignores
 .directory
 *~
