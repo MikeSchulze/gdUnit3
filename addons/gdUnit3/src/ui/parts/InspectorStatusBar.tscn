@@ -1,0 +1,111 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://addons/gdUnit3/src/ui/parts/InspectorStatusBar.gd" type="Script" id=3]
+[ext_resource path="res://addons/gdUnit3/src/ui/assets/failures.svg" type="Texture" id=4]
+[ext_resource path="res://addons/gdUnit3/src/ui/assets/errors.svg" type="Texture" id=5]
+
+[node name="StatusBar" type="PanelContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = -793.0
+margin_bottom = -564.0
+rect_clip_content = true
+size_flags_horizontal = 9
+size_flags_vertical = 9
+script = ExtResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="GridContainer" type="GridContainer" parent="."]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 224.0
+margin_bottom = 29.0
+rect_clip_content = true
+size_flags_horizontal = 9
+columns = 3
+
+[node name="Errors" type="GridContainer" parent="GridContainer"]
+margin_right = 76.0
+margin_bottom = 22.0
+rect_clip_content = true
+columns = 2
+
+[node name="ToolButton" type="ToolButton" parent="GridContainer/Errors"]
+margin_right = 64.0
+margin_bottom = 22.0
+hint_tooltip = "Shows the total test errors."
+size_flags_horizontal = 3
+text = "Errors"
+icon = ExtResource( 5 )
+align = 0
+
+[node name="value" type="Label" parent="GridContainer/Errors"]
+use_parent_material = true
+margin_left = 68.0
+margin_right = 76.0
+margin_bottom = 22.0
+size_flags_horizontal = 3
+size_flags_vertical = 1
+text = "0"
+align = 2
+max_lines_visible = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Failures" type="GridContainer" parent="GridContainer"]
+margin_left = 80.0
+margin_right = 201.0
+margin_bottom = 22.0
+rect_clip_content = true
+size_flags_horizontal = 9
+columns = 3
+
+[node name="ToolButton" type="ToolButton" parent="GridContainer/Failures"]
+margin_right = 77.0
+margin_bottom = 22.0
+rect_clip_content = true
+hint_tooltip = "Shows the total test failures."
+size_flags_horizontal = 9
+size_flags_vertical = 3
+text = "Failures"
+icon = ExtResource( 4 )
+align = 0
+
+[node name="value" type="Label" parent="GridContainer/Failures"]
+use_parent_material = true
+margin_left = 81.0
+margin_right = 89.0
+margin_bottom = 22.0
+size_flags_horizontal = 3
+size_flags_vertical = 1
+text = "0"
+align = 2
+max_lines_visible = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="buttons" type="GridContainer" parent="GridContainer/Failures"]
+margin_left = 93.0
+margin_right = 121.0
+margin_bottom = 22.0
+columns = 2
+
+[node name="failure_up" type="ToolButton" parent="GridContainer/Failures/buttons"]
+margin_right = 12.0
+margin_bottom = 22.0
+hint_tooltip = "Shows the total test errors."
+size_flags_horizontal = 3
+
+[node name="failure_down" type="ToolButton" parent="GridContainer/Failures/buttons"]
+margin_left = 16.0
+margin_right = 28.0
+margin_bottom = 22.0
+hint_tooltip = "Shows the total test errors."
+size_flags_horizontal = 3
+
+[connection signal="pressed" from="GridContainer/Failures/buttons/failure_up" to="." method="_on_failure_up_pressed"]
+[connection signal="pressed" from="GridContainer/Failures/buttons/failure_down" to="." method="_on_failure_down_pressed"]

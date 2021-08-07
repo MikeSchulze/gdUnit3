@@ -1,0 +1,119 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://addons/gdUnit3/src/ui/parts/InspectorTreeMainPanel.gd" type="Script" id=1]
+
+[node name="MainPanel" type="VSplitContainer"]
+margin_top = 74.0
+margin_right = 1024.0
+margin_bottom = 564.0
+size_flags_vertical = 11
+split_offset = 200
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Panel" type="Panel" parent="."]
+margin_right = 1024.0
+margin_bottom = 398.0
+size_flags_vertical = 11
+
+[node name="Tree" type="Tree" parent="Panel"]
+use_parent_material = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_vertical = 3
+allow_rmb_select = true
+hide_root = true
+select_mode = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="report" type="Panel" parent="."]
+margin_top = 410.0
+margin_right = 1024.0
+margin_bottom = 490.0
+rect_min_size = Vector2( 0, 80 )
+rect_clip_content = true
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="report_template" type="RichTextLabel" parent="report"]
+visible = false
+use_parent_material = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+focus_mode = 2
+bbcode_enabled = true
+bbcode_text = "10: [bcolor]this is a test 1[/bcolor] alllal"
+text = "10: [bcolor]this is a test 1[/bcolor] alllal"
+fit_content_height = true
+scroll_active = false
+selection_enabled = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ScrollContainer" type="ScrollContainer" parent="report"]
+use_parent_material = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="list" type="VBoxContainer" parent="report/ScrollContainer"]
+use_parent_material = true
+margin_right = 1024.0
+margin_bottom = 80.0
+rect_min_size = Vector2( 800, 0 )
+rect_clip_content = true
+size_flags_horizontal = 11
+size_flags_vertical = 11
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="contextMenu" type="PopupPanel" parent="."]
+margin_right = 92.0
+margin_bottom = 52.0
+size_flags_horizontal = 3
+
+[node name="items" type="VBoxContainer" parent="contextMenu"]
+margin_left = 4.0
+margin_top = 4.0
+margin_right = 88.0
+margin_bottom = 48.0
+
+[node name="debug" type="MenuButton" parent="contextMenu/items"]
+margin_right = 84.0
+margin_bottom = 20.0
+size_flags_horizontal = 11
+size_flags_vertical = 9
+keep_pressed_outside = true
+text = "Debug Test"
+align = 0
+switch_on_hover = true
+
+[node name="run" type="MenuButton" parent="contextMenu/items"]
+margin_top = 24.0
+margin_right = 84.0
+margin_bottom = 44.0
+size_flags_horizontal = 11
+size_flags_vertical = 9
+keep_pressed_outside = true
+text = "Run Test"
+align = 0
+switch_on_hover = true
+
+[connection signal="column_title_pressed" from="Panel/Tree" to="." method="_on_Tree_column_title_pressed"]
+[connection signal="item_activated" from="Panel/Tree" to="." method="_on_Tree_item_activated"]
+[connection signal="item_double_clicked" from="Panel/Tree" to="." method="_on_Tree_item_double_clicked"]
+[connection signal="item_rmb_selected" from="Panel/Tree" to="." method="_on_Tree_item_rmb_selected"]
+[connection signal="item_selected" from="Panel/Tree" to="." method="_on_Tree_item_selected"]
+[connection signal="focus_exited" from="contextMenu" to="." method="_on_contextMenu_focus_exited"]
+[connection signal="popup_hide" from="contextMenu" to="." method="_on_contextMenu_popup_hide"]
+[connection signal="mouse_exited" from="contextMenu/items" to="." method="_on_items_mouse_exited"]
+[connection signal="pressed" from="contextMenu/items/debug" to="." method="_on_run_pressed" binds= [ true ]]
+[connection signal="pressed" from="contextMenu/items/run" to="." method="_on_run_pressed" binds= [ false ]]

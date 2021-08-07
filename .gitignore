@@ -15,3 +15,7 @@ mono_crash.*.json
 *~
 .DS_Store
 .vscode/
+
+# temporary generated files
+GdUnitRunner.cfg
+reports/

@@ -1,0 +1,33 @@
+name: Run selftest Godot 3.2.x
+on: [push]
+
+jobs:
+  testing:
+    strategy:
+      matrix:
+        godot: [3.2.3]
+
+    name: GdUnit3 Selftest on Godot ${{ matrix.godot }}
+    runs-on: ubuntu-latest
+    container:
+      image: barichello/godot-ci:${{ matrix.godot }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+        with:
+          lfs: true
+      - name: Setup
+        shell: bash
+        run: echo "GODOT_BIN=/usr/local/bin/godot" >> $GITHUB_ENV
+
+      - name: Run Selftes
+        shell: bash
+        run: ./runtest.sh --selftest
+
+      - name: Collect Test Report
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: Report_${{ matrix.godot }}
+          path: reports/**
