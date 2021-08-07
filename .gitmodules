@@ -1,0 +1,3 @@
+[submodule "gdUnit3-examples"]
+	path = gdUnit3-examples
+	url = https://github.com/MikeSchulze/gdUnit3-examples
