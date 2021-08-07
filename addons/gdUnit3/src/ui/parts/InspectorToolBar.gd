@@ -11,6 +11,7 @@ onready var _tool_button := $Tools/tool
 onready var _button_run := $Tools/run
 onready var _button_run_debug := $Tools/debug
 onready var _button_stop := $Tools/stop
+onready var _tool_popup :WindowDialog = $GdUnitToolsDialog
 
 func _ready():
 	GdUnit3Version.init_version_label(_version_label)
@@ -40,3 +41,8 @@ func _on_GdUnit_gdunit_runner_stop(client_id :int):
 
 func _on_wiki_pressed():
 	OS.shell_open("https://github.com/MikeSchulze/gdUnit3/wiki")
+
+
+func _on_btn_tool_pressed():
+	_tool_popup.popup_centered()
+

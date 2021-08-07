@@ -5,6 +5,7 @@
 [ext_resource path="res://addons/gdUnit3/src/update/GdUnitUpdateClient.gd" type="Script" id=3]
 
 [node name="Control" type="WindowDialog"]
+visible = true
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -21,25 +22,40 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="GridContainer" type="HBoxContainer" parent="."]
+[node name="GdUnitUpdateClient" type="Node" parent="."]
+script = ExtResource( 3 )
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_bottom = -30.0
+margin_left = 4.0
+margin_top = 4.0
+margin_right = -4.0
+margin_bottom = -34.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="PanelContainer" type="MarginContainer" parent="GridContainer"]
+[node name="GridContainer" type="HBoxContainer" parent="MarginContainer"]
+margin_right = 1016.0
+margin_bottom = 562.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PanelContainer" type="MarginContainer" parent="MarginContainer/GridContainer"]
 margin_right = 200.0
-margin_bottom = 570.0
+margin_bottom = 562.0
 rect_min_size = Vector2( 200, 0 )
 size_flags_vertical = 3
 custom_constants/margin_top = 20
 
-[node name="Panel" type="VBoxContainer" parent="GridContainer/PanelContainer"]
+[node name="Panel" type="VBoxContainer" parent="MarginContainer/GridContainer/PanelContainer"]
 margin_top = 20.0
 margin_right = 200.0
-margin_bottom = 570.0
+margin_bottom = 562.0
 grow_horizontal = 2
 rect_min_size = Vector2( 50, 100 )
 size_flags_horizontal = 3
@@ -48,14 +64,14 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="CenterContainer" type="CenterContainer" parent="GridContainer/PanelContainer/Panel"]
+[node name="CenterContainer" type="CenterContainer" parent="MarginContainer/GridContainer/PanelContainer/Panel"]
 margin_right = 200.0
 margin_bottom = 100.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
 
-[node name="logo" type="TextureRect" parent="GridContainer/PanelContainer/Panel/CenterContainer"]
+[node name="logo" type="TextureRect" parent="MarginContainer/GridContainer/PanelContainer/Panel/CenterContainer"]
 margin_left = 50.0
 margin_right = 150.0
 margin_bottom = 100.0
@@ -66,7 +82,7 @@ texture = ExtResource( 1 )
 expand = true
 stretch_mode = 1
 
-[node name="CenterContainer2" type="MarginContainer" parent="GridContainer/PanelContainer/Panel"]
+[node name="CenterContainer2" type="MarginContainer" parent="MarginContainer/GridContainer/PanelContainer/Panel"]
 margin_top = 104.0
 margin_right = 200.0
 margin_bottom = 144.0
@@ -75,23 +91,24 @@ size_flags_horizontal = 3
 custom_constants/margin_top = 10
 custom_constants/margin_left = 50
 
-[node name="version" type="RichTextLabel" parent="GridContainer/PanelContainer/Panel/CenterContainer2"]
+[node name="version" type="RichTextLabel" parent="MarginContainer/GridContainer/PanelContainer/Panel/CenterContainer2"]
+use_parent_material = true
 margin_left = 50.0
 margin_top = 10.0
 margin_right = 200.0
 margin_bottom = 40.0
 rect_min_size = Vector2( 150, 30 )
 bbcode_enabled = true
-bbcode_text = "test label"
+bbcode_text = "[color=#9887c4]gd[/color][color=#7a57d6]Unit[/color][color=#9887c4]3[/color] [color=#9887c4]1.0.2[/color]"
 meta_underlined = false
-text = "test label"
+text = "gdUnit3 1.0.2"
 fit_content_height = true
 scroll_active = false
 
-[node name="VBoxContainer" type="VBoxContainer" parent="GridContainer/PanelContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/GridContainer/PanelContainer"]
 margin_top = 20.0
 margin_right = 200.0
-margin_bottom = 570.0
+margin_bottom = 562.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 alignment = 2
@@ -99,42 +116,42 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="btn_report_bug" type="Button" parent="GridContainer/PanelContainer/VBoxContainer"]
-margin_top = 452.0
+[node name="btn_report_bug" type="Button" parent="MarginContainer/GridContainer/PanelContainer/VBoxContainer"]
+margin_top = 444.0
 margin_right = 200.0
-margin_bottom = 482.0
+margin_bottom = 474.0
 rect_min_size = Vector2( 0, 30 )
 hint_tooltip = "Press to create a bug report"
 size_flags_horizontal = 3
 text = "Report Bug"
 
-[node name="btn_request_feature" type="Button" parent="GridContainer/PanelContainer/VBoxContainer"]
-margin_top = 486.0
+[node name="btn_request_feature" type="Button" parent="MarginContainer/GridContainer/PanelContainer/VBoxContainer"]
+margin_top = 478.0
 margin_right = 200.0
-margin_bottom = 516.0
+margin_bottom = 508.0
 rect_min_size = Vector2( 0, 30 )
 hint_tooltip = "Press to create a feature request"
 size_flags_horizontal = 3
 text = "Request Feature"
 
-[node name="btn_install_examples" type="Button" parent="GridContainer/PanelContainer/VBoxContainer"]
-margin_top = 520.0
+[node name="btn_install_examples" type="Button" parent="MarginContainer/GridContainer/PanelContainer/VBoxContainer"]
+margin_top = 512.0
 margin_right = 200.0
-margin_bottom = 550.0
+margin_bottom = 542.0
 rect_min_size = Vector2( 0, 30 )
 hint_tooltip = "Press to install the advanced test examples"
 size_flags_horizontal = 3
 text = "Install Examples"
 
-[node name="TabContainer" type="TabContainer" parent="GridContainer"]
+[node name="TabContainer" type="TabContainer" parent="MarginContainer/GridContainer"]
 margin_left = 204.0
-margin_right = 1024.0
-margin_bottom = 570.0
+margin_right = 1016.0
+margin_bottom = 562.0
 size_flags_horizontal = 11
 size_flags_vertical = 11
 tab_align = 0
 
-[node name="Properties" type="Tabs" parent="GridContainer/TabContainer"]
+[node name="Properties" type="Tabs" parent="MarginContainer/GridContainer/TabContainer"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = 4.0
@@ -145,7 +162,33 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 tab_align = 0
 
-[node name="UI" type="Tabs" parent="GridContainer/TabContainer"]
+[node name="GridContainer" type="GridContainer" parent="MarginContainer/GridContainer/TabContainer/Properties"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+columns = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="MarginContainer/GridContainer/TabContainer/Properties/GridContainer"]
+margin_top = 13.0
+margin_right = 131.0
+margin_bottom = 27.0
+text = "Update Notifications"
+
+[node name="CheckButton" type="CheckButton" parent="MarginContainer/GridContainer/TabContainer/Properties/GridContainer"]
+margin_left = 135.0
+margin_right = 211.0
+margin_bottom = 40.0
+
+[node name="TextEdit" type="TextEdit" parent="MarginContainer/GridContainer/TabContainer/Properties/GridContainer"]
+margin_left = 215.0
+margin_right = 804.0
+margin_bottom = 40.0
+size_flags_horizontal = 3
+text = "Enables/disables the update notification "
+
+[node name="UI" type="Tabs" parent="MarginContainer/GridContainer/TabContainer"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -154,34 +197,58 @@ margin_top = 32.0
 margin_right = -4.0
 margin_bottom = -4.0
 
-[node name="ProgressBar" type="ProgressBar" parent="."]
-visible = false
+[node name="MarginContainer2" type="MarginContainer" parent="."]
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_top = -24.0
-margin_right = -221.0
+margin_left = 4.0
+margin_top = -30.0
+margin_right = -4.0
 margin_bottom = -4.0
+rect_min_size = Vector2( 0, 30 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="btn_close" type="Button" parent="."]
-anchor_left = 1.0
-anchor_top = 1.0
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer2"]
+margin_right = 1016.0
+margin_bottom = 30.0
+size_flags_horizontal = 3
+alignment = 2
+
+[node name="ProgressBar" type="ProgressBar" parent="MarginContainer2/HBoxContainer"]
+visible = false
+margin_right = 812.0
+margin_bottom = 30.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+__meta__ = {
+"_edit_use_anchors_": true,
+"_editor_description_": ""
+}
+
+[node name="Label" type="Label" parent="MarginContainer2/HBoxContainer/ProgressBar"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = -207.878
-margin_top = -23.9286
-margin_right = -7.87756
-margin_bottom = -3.92859
+size_flags_horizontal = 3
+size_flags_vertical = 3
+valign = 3
+clip_text = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="btn_close" type="Button" parent="MarginContainer2/HBoxContainer"]
+margin_left = 816.0
+margin_right = 1016.0
+margin_bottom = 30.0
 rect_min_size = Vector2( 200, 0 )
 text = "Close"
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
-[node name="GdUnitUpdateClient" type="Node" parent="."]
-script = ExtResource( 3 )
-
-[connection signal="pressed" from="GridContainer/PanelContainer/VBoxContainer/btn_report_bug" to="." method="_on_btn_report_bug_pressed"]
-[connection signal="pressed" from="GridContainer/PanelContainer/VBoxContainer/btn_request_feature" to="." method="_on_btn_request_feature_pressed"]
-[connection signal="pressed" from="GridContainer/PanelContainer/VBoxContainer/btn_install_examples" to="." method="_on_btn_install_examples_pressed"]
-[connection signal="pressed" from="btn_close" to="." method="_on_btn_close_pressed"]
+[connection signal="pressed" from="MarginContainer/GridContainer/PanelContainer/VBoxContainer/btn_report_bug" to="." method="_on_btn_report_bug_pressed"]
+[connection signal="pressed" from="MarginContainer/GridContainer/PanelContainer/VBoxContainer/btn_request_feature" to="." method="_on_btn_request_feature_pressed"]
+[connection signal="pressed" from="MarginContainer/GridContainer/PanelContainer/VBoxContainer/btn_install_examples" to="." method="_on_btn_install_examples_pressed"]
+[connection signal="pressed" from="MarginContainer2/HBoxContainer/btn_close" to="." method="_on_btn_close_pressed"]
