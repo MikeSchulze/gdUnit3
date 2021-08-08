@@ -1,7 +1,7 @@
 class_name GdUnit3Version
 extends Reference
 
-const VERSION_PATTERN = "[color=#9887c4]gd[/color][color=#7a57d6]Unit[/color][color=#9887c4]3[/color] [color=#9887c4]${version}[/color]"
+const VERSION_PATTERN = "[center][color=#9887c4]gd[/color][color=#7a57d6]Unit[/color][color=#9887c4]3[/color] [color=#9887c4]${version}[/color][/center]"
 
 var _major :int
 var _minor :int

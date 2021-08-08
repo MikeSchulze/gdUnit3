@@ -10,15 +10,80 @@ onready var _btn_install :Button = $MarginContainer/GridContainer/PanelContainer
 onready var _progress :ProgressBar = $MarginContainer2/HBoxContainer/ProgressBar
 onready var _progress_text :Label = $MarginContainer2/HBoxContainer/ProgressBar/Label
 
+onready var _properties_template :Node = $property_template
+onready var _properties_common :Node = $MarginContainer/GridContainer/Properties/Common/VBoxContainer
+onready var _properties_report :Node = $MarginContainer/GridContainer/Properties/Report/VBoxContainer
 
 func _ready():
 	GdUnit3Version.init_version_label(_version_label)
+	setup_common_properties(_properties_common, GdUnitSettings.COMMON_SETTINGS)
+	setup_common_properties(_properties_report, GdUnitSettings.REPORT_SETTINGS)
 	yield(get_tree(), "idle_frame")
 	#popup_centered()
+	
+func setup_common_properties(properties_parent :Node, property_category) -> void:
+	var category_properties := GdUnitSettings.list_settings(property_category)
+	var t := Theme.new()
+	t.set_constant("hseparation", "GridContainer", 12)
+	
+	var last_category := "!"
+	for p in category_properties:
+		var grid := GridContainer.new()
+		grid.columns = 4
+		grid.theme = t
+		
+		var property : GdUnitSettings.GdUnitProperty = p
+		var current_category = property.category()
+		if current_category != last_category:
+			var sub_category :Node = _properties_template.get_child(3).duplicate()
+			sub_category.get_child(0).text = current_category.capitalize()
+			properties_parent.add_child(sub_category)
+			last_category = current_category
+		# property name
+		var label :Label = _properties_template.get_child(0).duplicate()
+		label.text = _to_human_readable(property.name())
+		label.set_custom_minimum_size(Vector2(300, 0))
+		grid.add_child(label)
+		# property reset btn
+		var reset_btn :ToolButton = _properties_template.get_child(1).duplicate()
+		reset_btn.icon = _get_btn_icon("Reload")
+		reset_btn.disabled = property.value() == property.default()
+		grid.add_child(reset_btn)
+		# property type specific input element
+		grid.add_child(_create_input_element(property, reset_btn))
+		# property help text
+		var info :Node = _properties_template.get_child(2).duplicate()
+		info.text = property.help()
+		grid.add_child(info)
+		properties_parent.add_child(grid)
+
+func _create_input_element(property: GdUnitSettings.GdUnitProperty, reset_btn :ToolButton) -> Node:
+	if property.type() == TYPE_BOOL: 
+		var check_btn := CheckButton.new()
+		check_btn.connect("toggled", self, "_on_ValueInput_text_changed", [property, reset_btn])
+		check_btn.pressed = property.value()
+		check_btn.set_custom_minimum_size(Vector2(100, 0))
+		return check_btn
+	if property.type() in [TYPE_INT, TYPE_STRING]:
+			var input := LineEdit.new()
+			input.connect("text_changed", self, "_on_ValueInput_text_changed", [property, reset_btn])
+			input.text = str(property.value())
+			input.set_custom_minimum_size(Vector2(100, 0))
+			return input 
+	return Control.new()
+
+func _to_human_readable(value :String) -> String:
+	return value.split("/")[-1].capitalize()
+
+func _get_btn_icon(name :String) -> Texture:
+	var editor :EditorPlugin = Engine.get_meta("GdUnitEditorPlugin")
+	if editor:
+		var editiorTheme := editor.get_editor_interface().get_base_control().theme
+		return editiorTheme.get_icon(name, "EditorIcons")
+	return null
 
 func _install_examples() -> void:
 	_init_progress(5)
-	
 	update_progress("Downloading examples")
 	yield(get_tree(), "idle_frame")
 	var tmp_path := GdUnitTools.create_temp_dir("download")
@@ -30,7 +95,6 @@ func _install_examples() -> void:
 		yield(get_tree().create_timer(3), "timeout")
 		stop_progress()
 		return
-	
 	# extract zip to tmp
 	var source := ProjectSettings.globalize_path(zip_file)
 	var dest := ProjectSettings.globalize_path(tmp_path)
@@ -39,7 +103,7 @@ func _install_examples() -> void:
 	
 	var result := GdUnitTools.extract_package(source, dest)
 	if result.is_error():
-		update_progress("Update failed! %s" % result.error_message())
+		update_progress("Install examples failed! %s" % result.error_message())
 		yield(get_tree().create_timer(3), "timeout")
 		stop_progress()
 		return
@@ -79,6 +143,11 @@ func _on_btn_install_examples_pressed():
 
 func _on_btn_close_pressed():
 	hide()
+
+func _on_ValueInput_text_changed(new_value, property: GdUnitSettings.GdUnitProperty, reset_btn :ToolButton):
+	property.set_value(new_value)
+	reset_btn.disabled = property.value() == property.default()
+	GdUnitSettings.update_property(property)
 
 func _init_progress(max_value : int) -> void:
 	_progress.visible = true

@@ -1,11 +1,10 @@
 [gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://icon.png" type="Texture" id=1]
-[ext_resource path="res://addons/gdUnit3/src/ui/parts/GdUnitToolsDialog.gd" type="Script" id=2]
+[ext_resource path="res://addons/gdUnit3/src/ui/GdUnitToolsDialog.gd" type="Script" id=2]
 [ext_resource path="res://addons/gdUnit3/src/update/GdUnitUpdateClient.gd" type="Script" id=3]
 
 [node name="Control" type="WindowDialog"]
-visible = true
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -66,15 +65,17 @@ __meta__ = {
 
 [node name="CenterContainer" type="CenterContainer" parent="MarginContainer/GridContainer/PanelContainer/Panel"]
 margin_right = 200.0
-margin_bottom = 100.0
+margin_bottom = 120.0
 grow_horizontal = 2
 grow_vertical = 2
+rect_min_size = Vector2( 0, 120 )
 size_flags_horizontal = 3
 
 [node name="logo" type="TextureRect" parent="MarginContainer/GridContainer/PanelContainer/Panel/CenterContainer"]
 margin_left = 50.0
+margin_top = 10.0
 margin_right = 150.0
-margin_bottom = 100.0
+margin_bottom = 110.0
 rect_min_size = Vector2( 100, 100 )
 size_flags_horizontal = 0
 size_flags_vertical = 4
@@ -83,27 +84,33 @@ expand = true
 stretch_mode = 1
 
 [node name="CenterContainer2" type="MarginContainer" parent="MarginContainer/GridContainer/PanelContainer/Panel"]
-margin_top = 104.0
+use_parent_material = true
+margin_top = 124.0
 margin_right = 200.0
-margin_bottom = 144.0
-rect_min_size = Vector2( 150, 0 )
+margin_bottom = 154.0
+grow_horizontal = 2
+rect_min_size = Vector2( 0, 30 )
 size_flags_horizontal = 3
-custom_constants/margin_top = 10
-custom_constants/margin_left = 50
 
 [node name="version" type="RichTextLabel" parent="MarginContainer/GridContainer/PanelContainer/Panel/CenterContainer2"]
 use_parent_material = true
-margin_left = 50.0
-margin_top = 10.0
 margin_right = 200.0
-margin_bottom = 40.0
-rect_min_size = Vector2( 150, 30 )
+margin_bottom = 30.0
+rect_min_size = Vector2( 200, 30 )
+rect_clip_content = false
+size_flags_horizontal = 3
 bbcode_enabled = true
-bbcode_text = "[color=#9887c4]gd[/color][color=#7a57d6]Unit[/color][color=#9887c4]3[/color] [color=#9887c4]1.0.2[/color]"
+bbcode_text = "[center][color=#9887c4]gd[/color][color=#7a57d6]Unit[/color][color=#9887c4]3[/color] [color=#9887c4]1.0.2[/color][/center]
+
+aaaaaa"
 meta_underlined = false
-text = "gdUnit3 1.0.2"
-fit_content_height = true
+text = "gdUnit3 1.0.2
+
+aaaaaa"
 scroll_active = false
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/GridContainer/PanelContainer"]
 margin_top = 20.0
@@ -143,7 +150,7 @@ hint_tooltip = "Press to install the advanced test examples"
 size_flags_horizontal = 3
 text = "Install Examples"
 
-[node name="TabContainer" type="TabContainer" parent="MarginContainer/GridContainer"]
+[node name="Properties" type="TabContainer" parent="MarginContainer/GridContainer"]
 margin_left = 204.0
 margin_right = 1016.0
 margin_bottom = 562.0
@@ -151,51 +158,54 @@ size_flags_horizontal = 11
 size_flags_vertical = 11
 tab_align = 0
 
-[node name="Properties" type="Tabs" parent="MarginContainer/GridContainer/TabContainer"]
+[node name="Common" type="Tabs" parent="MarginContainer/GridContainer/Properties"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = 4.0
 margin_top = 32.0
 margin_right = -4.0
 margin_bottom = -4.0
+rect_clip_content = true
 size_flags_horizontal = 3
 size_flags_vertical = 3
 tab_align = 0
 
-[node name="GridContainer" type="GridContainer" parent="MarginContainer/GridContainer/TabContainer/Properties"]
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/GridContainer/Properties/Common"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-columns = 3
+margin_left = 8.0
+margin_top = 8.0
+margin_right = -8.0
+margin_bottom = -8.0
+rect_clip_content = true
+size_flags_horizontal = 3
+size_flags_vertical = 3
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Label" type="Label" parent="MarginContainer/GridContainer/TabContainer/Properties/GridContainer"]
-margin_top = 13.0
-margin_right = 131.0
-margin_bottom = 27.0
-text = "Update Notifications"
-
-[node name="CheckButton" type="CheckButton" parent="MarginContainer/GridContainer/TabContainer/Properties/GridContainer"]
-margin_left = 135.0
-margin_right = 211.0
-margin_bottom = 40.0
-
-[node name="TextEdit" type="TextEdit" parent="MarginContainer/GridContainer/TabContainer/Properties/GridContainer"]
-margin_left = 215.0
-margin_right = 804.0
-margin_bottom = 40.0
-size_flags_horizontal = 3
-text = "Enables/disables the update notification "
-
-[node name="UI" type="Tabs" parent="MarginContainer/GridContainer/TabContainer"]
-visible = false
+[node name="Report" type="Tabs" parent="MarginContainer/GridContainer/Properties"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = 4.0
 margin_top = 32.0
 margin_right = -4.0
 margin_bottom = -4.0
+rect_clip_content = true
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/GridContainer/Properties/Report"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 8.0
+margin_top = 8.0
+margin_right = -8.0
+margin_bottom = -8.0
+rect_clip_content = true
+size_flags_horizontal = 3
+size_flags_vertical = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="MarginContainer2" type="MarginContainer" parent="."]
 anchor_top = 1.0
@@ -204,7 +214,6 @@ anchor_bottom = 1.0
 margin_left = 4.0
 margin_top = -30.0
 margin_right = -4.0
-margin_bottom = -4.0
 rect_min_size = Vector2( 0, 30 )
 __meta__ = {
 "_edit_use_anchors_": false
@@ -244,6 +253,63 @@ margin_right = 1016.0
 margin_bottom = 30.0
 rect_min_size = Vector2( 200, 0 )
 text = "Close"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="property_template" type="Control" parent="."]
+visible = false
+margin_left = 208.0
+margin_top = 415.0
+margin_right = 1020.0
+margin_bottom = 600.0
+size_flags_horizontal = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="property_template"]
+margin_top = 13.0
+margin_right = 131.0
+margin_bottom = 27.0
+rect_min_size = Vector2( 300, 0 )
+text = "Update Notifications"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="btn_reset" type="ToolButton" parent="property_template"]
+margin_right = 12.0
+margin_bottom = 40.0
+hint_tooltip = "Reset to default value"
+focus_mode = 0
+clip_text = true
+
+[node name="info" type="Label" parent="property_template"]
+margin_left = 390.0
+margin_top = 11.0
+margin_right = 590.0
+margin_bottom = 25.0
+size_flags_horizontal = 3
+text = "Enables/disables the update notification "
+clip_text = true
+max_lines_visible = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="sub_category" type="Panel" parent="property_template"]
+anchor_right = 1.0
+rect_min_size = Vector2( 0, 30 )
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="property_template/sub_category"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_colors/font_color = Color( 0.196078, 0.631373, 0.639216, 1 )
+text = "Asserts
+"
+valign = 1
 __meta__ = {
 "_edit_use_anchors_": false
 }
