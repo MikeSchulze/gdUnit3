@@ -152,7 +152,7 @@ func _on_update_pressed():
 	var dest := ProjectSettings.globalize_path(tmp_path)
 	
 	update_progress("extracting zip '%s' to '%s'" % [source, dest])
-	var result := _extract_package(source, dest)
+	var result := GdUnitTools.extract_package(source, dest)
 	if result.is_error():
 		update_progress("Update failed! %s" % result.error_message())
 		yield(get_tree().create_timer(3), "timeout")
@@ -202,38 +202,6 @@ static func disable_gdUnit() -> void:
 	var plugin := EditorPlugin.new()
 	plugin.get_editor_interface().set_plugin_enabled("gdUnit3", false)
 	plugin.free()
-
-static func _list_installed_tar_paths() -> PoolStringArray:
-	var stdout = Array()
-	OS.execute("where", ["tar"], true, stdout)
-	if stdout.size() > 0:
-		return PoolStringArray(stdout[0].split("\n"))
-	return PoolStringArray()
-
-static func _find_tar_path(os_name :String) -> String:
-	if os_name.to_upper() != "WINDOWS":
-		return "tar"
-	var paths := _list_installed_tar_paths()
-	for path in paths:
-		if path.find("\\System32\\tar") != -1:
-			return path.strip_escapes()
-	return "tar"
-
-static func _extract_package(source :String, dest:String) -> Result:
-	prints("Detect OS :", OS.get_name())
-	var tar_path := _find_tar_path( OS.get_name())
-	var err = OS.execute(tar_path, ["-xf", source, "-C", dest])
-	if err != 0:
-		var cmd = "%s -xf \"%s\" -C \"%s\"" % [tar_path, source, dest]
-		prints("Extracting by `%s` failed with error code: %d" % [cmd, err])
-		prints("Fallback to unzip")
-		err = OS.execute("unzip", [source, "-d", dest])
-		if err != 0:
-			cmd = "unzip %s -d %s" % [source, dest]
-			prints("Extracting by `%s` failed with error code: %d" % [cmd, err])
-			return Result.error("Extracting `%s` failed! Please collect the error log and report this." % source)
-	prints("%s successfully extracted" % source)
-	return Result.success(dest)
 
 func _on_show_next_toggled(enabled :bool):
 	GdUnitSettings.set_update_notification(enabled)
