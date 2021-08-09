@@ -5,15 +5,11 @@
 [ext_resource path="res://addons/gdUnit3/src/update/GdUnitUpdateClient.gd" type="Script" id=3]
 
 [node name="Control" type="WindowDialog"]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -512.0
-margin_top = -300.0
-margin_right = 512.0
-margin_bottom = 300.0
+anchor_right = 1.0
+anchor_bottom = 1.0
 rect_min_size = Vector2( 800, 400 )
+size_flags_horizontal = 3
+size_flags_vertical = 3
 window_title = "GdUnitTools"
 resizable = true
 script = ExtResource( 2 )
@@ -23,239 +19,6 @@ __meta__ = {
 
 [node name="GdUnitUpdateClient" type="Node" parent="."]
 script = ExtResource( 3 )
-
-[node name="MarginContainer" type="MarginContainer" parent="."]
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = 4.0
-margin_top = 4.0
-margin_right = -4.0
-margin_bottom = -34.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="GridContainer" type="HBoxContainer" parent="MarginContainer"]
-margin_right = 1016.0
-margin_bottom = 562.0
-size_flags_horizontal = 3
-size_flags_vertical = 3
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="PanelContainer" type="MarginContainer" parent="MarginContainer/GridContainer"]
-margin_right = 200.0
-margin_bottom = 562.0
-rect_min_size = Vector2( 200, 0 )
-size_flags_vertical = 3
-custom_constants/margin_top = 20
-
-[node name="Panel" type="VBoxContainer" parent="MarginContainer/GridContainer/PanelContainer"]
-margin_top = 20.0
-margin_right = 200.0
-margin_bottom = 562.0
-grow_horizontal = 2
-rect_min_size = Vector2( 50, 100 )
-size_flags_horizontal = 3
-size_flags_vertical = 3
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="CenterContainer" type="CenterContainer" parent="MarginContainer/GridContainer/PanelContainer/Panel"]
-margin_right = 200.0
-margin_bottom = 120.0
-grow_horizontal = 2
-grow_vertical = 2
-rect_min_size = Vector2( 0, 120 )
-size_flags_horizontal = 3
-
-[node name="logo" type="TextureRect" parent="MarginContainer/GridContainer/PanelContainer/Panel/CenterContainer"]
-margin_left = 50.0
-margin_top = 10.0
-margin_right = 150.0
-margin_bottom = 110.0
-rect_min_size = Vector2( 100, 100 )
-size_flags_horizontal = 0
-size_flags_vertical = 4
-texture = ExtResource( 1 )
-expand = true
-stretch_mode = 1
-
-[node name="CenterContainer2" type="MarginContainer" parent="MarginContainer/GridContainer/PanelContainer/Panel"]
-use_parent_material = true
-margin_top = 124.0
-margin_right = 200.0
-margin_bottom = 154.0
-grow_horizontal = 2
-rect_min_size = Vector2( 0, 30 )
-size_flags_horizontal = 3
-
-[node name="version" type="RichTextLabel" parent="MarginContainer/GridContainer/PanelContainer/Panel/CenterContainer2"]
-use_parent_material = true
-margin_right = 200.0
-margin_bottom = 30.0
-rect_min_size = Vector2( 200, 30 )
-rect_clip_content = false
-size_flags_horizontal = 3
-bbcode_enabled = true
-bbcode_text = "[center][color=#9887c4]gd[/color][color=#7a57d6]Unit[/color][color=#9887c4]3[/color] [color=#9887c4]1.0.2[/color][/center]
-
-aaaaaa"
-meta_underlined = false
-text = "gdUnit3 1.0.2
-
-aaaaaa"
-scroll_active = false
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/GridContainer/PanelContainer"]
-margin_top = 20.0
-margin_right = 200.0
-margin_bottom = 562.0
-size_flags_horizontal = 3
-size_flags_vertical = 3
-alignment = 2
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="btn_report_bug" type="Button" parent="MarginContainer/GridContainer/PanelContainer/VBoxContainer"]
-margin_top = 444.0
-margin_right = 200.0
-margin_bottom = 474.0
-rect_min_size = Vector2( 0, 30 )
-hint_tooltip = "Press to create a bug report"
-size_flags_horizontal = 3
-text = "Report Bug"
-
-[node name="btn_request_feature" type="Button" parent="MarginContainer/GridContainer/PanelContainer/VBoxContainer"]
-margin_top = 478.0
-margin_right = 200.0
-margin_bottom = 508.0
-rect_min_size = Vector2( 0, 30 )
-hint_tooltip = "Press to create a feature request"
-size_flags_horizontal = 3
-text = "Request Feature"
-
-[node name="btn_install_examples" type="Button" parent="MarginContainer/GridContainer/PanelContainer/VBoxContainer"]
-margin_top = 512.0
-margin_right = 200.0
-margin_bottom = 542.0
-rect_min_size = Vector2( 0, 30 )
-hint_tooltip = "Press to install the advanced test examples"
-size_flags_horizontal = 3
-text = "Install Examples"
-
-[node name="Properties" type="TabContainer" parent="MarginContainer/GridContainer"]
-margin_left = 204.0
-margin_right = 1016.0
-margin_bottom = 562.0
-size_flags_horizontal = 11
-size_flags_vertical = 11
-tab_align = 0
-
-[node name="Common" type="Tabs" parent="MarginContainer/GridContainer/Properties"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = 4.0
-margin_top = 32.0
-margin_right = -4.0
-margin_bottom = -4.0
-rect_clip_content = true
-size_flags_horizontal = 3
-size_flags_vertical = 3
-tab_align = 0
-
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/GridContainer/Properties/Common"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = 8.0
-margin_top = 8.0
-margin_right = -8.0
-margin_bottom = -8.0
-rect_clip_content = true
-size_flags_horizontal = 3
-size_flags_vertical = 3
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Report" type="Tabs" parent="MarginContainer/GridContainer/Properties"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = 4.0
-margin_top = 32.0
-margin_right = -4.0
-margin_bottom = -4.0
-rect_clip_content = true
-
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/GridContainer/Properties/Report"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = 8.0
-margin_top = 8.0
-margin_right = -8.0
-margin_bottom = -8.0
-rect_clip_content = true
-size_flags_horizontal = 3
-size_flags_vertical = 3
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="MarginContainer2" type="MarginContainer" parent="."]
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = 4.0
-margin_top = -30.0
-margin_right = -4.0
-rect_min_size = Vector2( 0, 30 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer2"]
-margin_right = 1016.0
-margin_bottom = 30.0
-size_flags_horizontal = 3
-alignment = 2
-
-[node name="ProgressBar" type="ProgressBar" parent="MarginContainer2/HBoxContainer"]
-visible = false
-margin_right = 812.0
-margin_bottom = 30.0
-size_flags_horizontal = 3
-size_flags_vertical = 3
-__meta__ = {
-"_edit_use_anchors_": true,
-"_editor_description_": ""
-}
-
-[node name="Label" type="Label" parent="MarginContainer2/HBoxContainer/ProgressBar"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-size_flags_horizontal = 3
-size_flags_vertical = 3
-valign = 3
-clip_text = true
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="btn_close" type="Button" parent="MarginContainer2/HBoxContainer"]
-margin_left = 816.0
-margin_right = 1016.0
-margin_bottom = 30.0
-rect_min_size = Vector2( 200, 0 )
-text = "Close"
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="property_template" type="Control" parent="."]
 visible = false
@@ -314,7 +77,245 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[connection signal="pressed" from="MarginContainer/GridContainer/PanelContainer/VBoxContainer/btn_report_bug" to="." method="_on_btn_report_bug_pressed"]
-[connection signal="pressed" from="MarginContainer/GridContainer/PanelContainer/VBoxContainer/btn_request_feature" to="." method="_on_btn_request_feature_pressed"]
-[connection signal="pressed" from="MarginContainer/GridContainer/PanelContainer/VBoxContainer/btn_install_examples" to="." method="_on_btn_install_examples_pressed"]
-[connection signal="pressed" from="MarginContainer2/HBoxContainer/btn_close" to="." method="_on_btn_close_pressed"]
+[node name="v" type="VBoxContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 4.0
+margin_top = 4.0
+margin_right = -4.0
+margin_bottom = -4.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MarginContainer" type="MarginContainer" parent="v"]
+margin_right = 1016.0
+margin_bottom = 558.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="GridContainer" type="HBoxContainer" parent="v/MarginContainer"]
+margin_right = 1016.0
+margin_bottom = 558.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PanelContainer" type="MarginContainer" parent="v/MarginContainer/GridContainer"]
+margin_right = 200.0
+margin_bottom = 558.0
+rect_min_size = Vector2( 200, 0 )
+size_flags_vertical = 3
+custom_constants/margin_top = 20
+
+[node name="Panel" type="VBoxContainer" parent="v/MarginContainer/GridContainer/PanelContainer"]
+margin_top = 20.0
+margin_right = 200.0
+margin_bottom = 558.0
+grow_horizontal = 2
+rect_min_size = Vector2( 50, 100 )
+size_flags_horizontal = 3
+size_flags_vertical = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CenterContainer" type="CenterContainer" parent="v/MarginContainer/GridContainer/PanelContainer/Panel"]
+margin_right = 200.0
+margin_bottom = 120.0
+grow_horizontal = 2
+grow_vertical = 2
+rect_min_size = Vector2( 0, 120 )
+size_flags_horizontal = 3
+
+[node name="logo" type="TextureRect" parent="v/MarginContainer/GridContainer/PanelContainer/Panel/CenterContainer"]
+margin_left = 50.0
+margin_top = 10.0
+margin_right = 150.0
+margin_bottom = 110.0
+rect_min_size = Vector2( 100, 100 )
+size_flags_horizontal = 0
+size_flags_vertical = 4
+texture = ExtResource( 1 )
+expand = true
+stretch_mode = 1
+
+[node name="CenterContainer2" type="MarginContainer" parent="v/MarginContainer/GridContainer/PanelContainer/Panel"]
+use_parent_material = true
+margin_top = 124.0
+margin_right = 200.0
+margin_bottom = 154.0
+grow_horizontal = 2
+rect_min_size = Vector2( 0, 30 )
+size_flags_horizontal = 3
+
+[node name="version" type="RichTextLabel" parent="v/MarginContainer/GridContainer/PanelContainer/Panel/CenterContainer2"]
+use_parent_material = true
+margin_right = 200.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 200, 30 )
+rect_clip_content = false
+size_flags_horizontal = 3
+bbcode_enabled = true
+bbcode_text = "[center][color=#9887c4]gd[/color][color=#7a57d6]Unit[/color][color=#9887c4]3[/color] [color=#9887c4]1.0.2[/color][/center]"
+meta_underlined = false
+text = "gdUnit3 1.0.2"
+scroll_active = false
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="v/MarginContainer/GridContainer/PanelContainer"]
+margin_top = 20.0
+margin_right = 200.0
+margin_bottom = 558.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+alignment = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="btn_report_bug" type="Button" parent="v/MarginContainer/GridContainer/PanelContainer/VBoxContainer"]
+margin_top = 440.0
+margin_right = 200.0
+margin_bottom = 470.0
+rect_min_size = Vector2( 0, 30 )
+hint_tooltip = "Press to create a bug report"
+size_flags_horizontal = 3
+text = "Report Bug"
+
+[node name="btn_request_feature" type="Button" parent="v/MarginContainer/GridContainer/PanelContainer/VBoxContainer"]
+margin_top = 474.0
+margin_right = 200.0
+margin_bottom = 504.0
+rect_min_size = Vector2( 0, 30 )
+hint_tooltip = "Press to create a feature request"
+size_flags_horizontal = 3
+text = "Request Feature"
+
+[node name="btn_install_examples" type="Button" parent="v/MarginContainer/GridContainer/PanelContainer/VBoxContainer"]
+margin_top = 508.0
+margin_right = 200.0
+margin_bottom = 538.0
+rect_min_size = Vector2( 0, 30 )
+hint_tooltip = "Press to install the advanced test examples"
+size_flags_horizontal = 3
+text = "Install Examples"
+
+[node name="Properties" type="TabContainer" parent="v/MarginContainer/GridContainer"]
+margin_left = 204.0
+margin_right = 1016.0
+margin_bottom = 558.0
+size_flags_horizontal = 11
+size_flags_vertical = 11
+tab_align = 0
+
+[node name="Common" type="Tabs" parent="v/MarginContainer/GridContainer/Properties"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 4.0
+margin_top = 32.0
+margin_right = -4.0
+margin_bottom = -4.0
+rect_clip_content = true
+size_flags_horizontal = 3
+size_flags_vertical = 3
+tab_align = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="v/MarginContainer/GridContainer/Properties/Common"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 8.0
+margin_top = 8.0
+margin_right = -8.0
+margin_bottom = -8.0
+rect_clip_content = true
+size_flags_horizontal = 3
+size_flags_vertical = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Report" type="Tabs" parent="v/MarginContainer/GridContainer/Properties"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 4.0
+margin_top = 32.0
+margin_right = -4.0
+margin_bottom = -4.0
+rect_clip_content = true
+
+[node name="VBoxContainer" type="VBoxContainer" parent="v/MarginContainer/GridContainer/Properties/Report"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 8.0
+margin_top = 8.0
+margin_right = -8.0
+margin_bottom = -8.0
+rect_clip_content = true
+size_flags_horizontal = 3
+size_flags_vertical = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MarginContainer2" type="MarginContainer" parent="v"]
+margin_top = 562.0
+margin_right = 1016.0
+margin_bottom = 592.0
+size_flags_horizontal = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HBoxContainer" type="HBoxContainer" parent="v/MarginContainer2"]
+margin_right = 1016.0
+margin_bottom = 30.0
+size_flags_horizontal = 3
+alignment = 2
+
+[node name="ProgressBar" type="ProgressBar" parent="v/MarginContainer2/HBoxContainer"]
+visible = false
+margin_right = 812.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 0, 30 )
+size_flags_horizontal = 3
+size_flags_vertical = 3
+__meta__ = {
+"_edit_use_anchors_": true,
+"_editor_description_": ""
+}
+
+[node name="Label" type="Label" parent="v/MarginContainer2/HBoxContainer/ProgressBar"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+rect_min_size = Vector2( 0, 30 )
+size_flags_horizontal = 3
+size_flags_vertical = 3
+valign = 3
+clip_text = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="btn_close" type="Button" parent="v/MarginContainer2/HBoxContainer"]
+margin_left = 816.0
+margin_right = 1016.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 200, 30 )
+text = "Close"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[connection signal="pressed" from="v/MarginContainer/GridContainer/PanelContainer/VBoxContainer/btn_report_bug" to="." method="_on_btn_report_bug_pressed"]
+[connection signal="pressed" from="v/MarginContainer/GridContainer/PanelContainer/VBoxContainer/btn_request_feature" to="." method="_on_btn_request_feature_pressed"]
+[connection signal="pressed" from="v/MarginContainer/GridContainer/PanelContainer/VBoxContainer/btn_install_examples" to="." method="_on_btn_install_examples_pressed"]
+[connection signal="pressed" from="v/MarginContainer2/HBoxContainer/btn_close" to="." method="_on_btn_close_pressed"]

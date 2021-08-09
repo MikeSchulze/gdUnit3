@@ -5,14 +5,14 @@ extends WindowDialog
 const EAXAMPLE_URL := "https://github.com/MikeSchulze/gdUnit3-examples/archive/refs/heads/master.zip"
 
 onready var _update_client :GdUnitUpdateClient = $GdUnitUpdateClient
-onready var _version_label :RichTextLabel = $MarginContainer/GridContainer/PanelContainer/Panel/CenterContainer2/version
-onready var _btn_install :Button = $MarginContainer/GridContainer/PanelContainer/VBoxContainer/btn_install_examples
-onready var _progress :ProgressBar = $MarginContainer2/HBoxContainer/ProgressBar
-onready var _progress_text :Label = $MarginContainer2/HBoxContainer/ProgressBar/Label
+onready var _version_label :RichTextLabel = $v/MarginContainer/GridContainer/PanelContainer/Panel/CenterContainer2/version
+onready var _btn_install :Button = $v/MarginContainer/GridContainer/PanelContainer/VBoxContainer/btn_install_examples
+onready var _progress :ProgressBar = $v/MarginContainer2/HBoxContainer/ProgressBar
+onready var _progress_text :Label = $v/MarginContainer2/HBoxContainer/ProgressBar/Label
 
 onready var _properties_template :Node = $property_template
-onready var _properties_common :Node = $MarginContainer/GridContainer/Properties/Common/VBoxContainer
-onready var _properties_report :Node = $MarginContainer/GridContainer/Properties/Report/VBoxContainer
+onready var _properties_common :Node = $v/MarginContainer/GridContainer/Properties/Common/VBoxContainer
+onready var _properties_report :Node = $v/MarginContainer/GridContainer/Properties/Report/VBoxContainer
 
 func _ready():
 	GdUnit3Version.init_version_label(_version_label)
@@ -44,13 +44,16 @@ func setup_common_properties(properties_parent :Node, property_category) -> void
 		label.text = _to_human_readable(property.name())
 		label.set_custom_minimum_size(Vector2(300, 0))
 		grid.add_child(label)
+		
 		# property reset btn
 		var reset_btn :ToolButton = _properties_template.get_child(1).duplicate()
 		reset_btn.icon = _get_btn_icon("Reload")
 		reset_btn.disabled = property.value() == property.default()
 		grid.add_child(reset_btn)
 		# property type specific input element
-		grid.add_child(_create_input_element(property, reset_btn))
+		var input :Node = _create_input_element(property, reset_btn)
+		grid.add_child(input)
+		reset_btn.connect("pressed", self, "_on_btn_property_reset_pressed", [property, input, reset_btn])
 		# property help text
 		var info :Node = _properties_template.get_child(2).duplicate()
 		info.text = property.help()
@@ -60,13 +63,13 @@ func setup_common_properties(properties_parent :Node, property_category) -> void
 func _create_input_element(property: GdUnitSettings.GdUnitProperty, reset_btn :ToolButton) -> Node:
 	if property.type() == TYPE_BOOL: 
 		var check_btn := CheckButton.new()
-		check_btn.connect("toggled", self, "_on_ValueInput_text_changed", [property, reset_btn])
+		check_btn.connect("toggled", self, "_on_property_text_changed", [property, reset_btn])
 		check_btn.pressed = property.value()
 		check_btn.set_custom_minimum_size(Vector2(100, 0))
 		return check_btn
 	if property.type() in [TYPE_INT, TYPE_STRING]:
 			var input := LineEdit.new()
-			input.connect("text_changed", self, "_on_ValueInput_text_changed", [property, reset_btn])
+			input.connect("text_changed", self, "_on_property_text_changed", [property, reset_btn])
 			input.text = str(property.value())
 			input.set_custom_minimum_size(Vector2(100, 0))
 			return input 
@@ -144,7 +147,15 @@ func _on_btn_install_examples_pressed():
 func _on_btn_close_pressed():
 	hide()
 
-func _on_ValueInput_text_changed(new_value, property: GdUnitSettings.GdUnitProperty, reset_btn :ToolButton):
+func _on_btn_property_reset_pressed(property: GdUnitSettings.GdUnitProperty, input :Node, reset_btn :ToolButton):
+	if input is CheckButton:
+		input.pressed = property.default()
+	if input is LineEdit:
+		input.text = str(property.default())
+		# we have to update manually for text input fields because of no change event is emited
+		_on_property_text_changed(property.default(), property, reset_btn)
+
+func _on_property_text_changed(new_value, property: GdUnitSettings.GdUnitProperty, reset_btn :ToolButton):
 	property.set_value(new_value)
 	reset_btn.disabled = property.value() == property.default()
 	GdUnitSettings.update_property(property)

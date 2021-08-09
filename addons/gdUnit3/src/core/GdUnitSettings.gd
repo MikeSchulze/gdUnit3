@@ -162,3 +162,6 @@ static func list_settings(category :String) -> Array:
 
 static func update_property(property :GdUnitProperty) -> void:
 	ProjectSettings.set_setting(property.name(), property.value())
+
+static func reset_property(property :GdUnitProperty) -> void:
+	ProjectSettings.set_setting(property.name(), property.default())
