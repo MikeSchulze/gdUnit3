@@ -1,5 +1,5 @@
 
-# GdUnit3 - Godot Unit Test Framework 
+# GdUnit3 - Godot Unit Testing Framework 
 ![Godot v3.2.3](https://img.shields.io/badge/Godot-v3.2.3-%23478cbf?logo=godot-engine&logoColor=white)
 ![Godot v3.2.4](https://img.shields.io/badge/Godot-v3.2.4-%23478cbf?logo=godot-engine&logoColor=white)
 ![Godot v3.3](https://img.shields.io/badge/Godot-v3.3-%23478cbf?logo=godot-engine&logoColor=white)
@@ -24,7 +24,7 @@ You have to install the GdUnit3 plugin over the AssetLib in the Godot Editor.
 1. After activation the GdUnit3 inspector is displayed in the top left
 2. Done, GdUnit is ready to use
 
-# GdUnit3 V1.0.2
+# GdUnit3 Features
 * Fully integrated in the Godot editor
 * Run test-suite(s) by using the context menu on FileSystem, ScriptEditor or GdUnitInspector
 * Create test's directly from the ScriptEditor
