@@ -67,13 +67,6 @@ func request_zip_package(url :String, file :String) -> HttpResponse:
 		return HttpResponse.new(error, message.to_utf8())
 	return yield(self, "request_completed")
 
-func request_folder_content(folder :String) -> HttpResponse:
-	var error = _http_request.request("https://api.github.com/repos/MikeSchulze/gdUnit3/contents/%s" % folder)
-	if error != OK:
-		var message = "request_folder_content failed: %d" % error
-		return HttpResponse.new(error, message.to_utf8())
-	return yield(self, "request_completed")
-
 func _on_request_completed(result :int, response_code :int, headers :PoolStringArray, body :PoolByteArray):
 	if _http_request.get_http_client_status() != HTTPClient.STATUS_DISCONNECTED:
 		_http_request.set_download_file("")

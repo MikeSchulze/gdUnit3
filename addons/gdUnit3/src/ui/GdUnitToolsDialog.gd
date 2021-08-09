@@ -20,7 +20,7 @@ func _ready():
 	setup_common_properties(_properties_report, GdUnitSettings.REPORT_SETTINGS)
 	yield(get_tree(), "idle_frame")
 	#popup_centered()
-	
+
 func setup_common_properties(properties_parent :Node, property_category) -> void:
 	var category_properties := GdUnitSettings.list_settings(property_category)
 	var t := Theme.new()
