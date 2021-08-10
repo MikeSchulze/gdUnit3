@@ -34,12 +34,11 @@ func request_releases():
 		return
 	var latest_version := extract_latest_version(response)
 	# if same version exit here no update need
-	if _current_version.equals(latest_version):
-		return
-	_patcher.scan(_current_version)
-	_header.text = "A new version '%s' is available" % latest_version
-	_download_zip_url = extract_zip_url(response)
-	_show_update = true
+	if latest_version.is_greater(_current_version):
+		_patcher.scan(_current_version)
+		_header.text = "A new version '%s' is available" % latest_version
+		_download_zip_url = extract_zip_url(response)
+		_show_update = true
 
 func _colored(message :String, color :Color) -> String:
 	return "[color=#%s]%s[/color]" % [color.to_html(), message]
@@ -73,6 +72,7 @@ static func extract_zip_url(response :GdUnitUpdateClient.HttpResponse) -> String
 	return body[0]["zipball_url"]
 
 func extract_releases(response :GdUnitUpdateClient.HttpResponse, current_version :GdUnit3Version) -> String:
+	yield(get_tree(), "idle_frame")
 	var result :String = ""
 	for release in response.response():
 		if GdUnit3Version.parse(release["tag_name"]).equals(current_version):
@@ -84,6 +84,7 @@ func extract_releases(response :GdUnitUpdateClient.HttpResponse, current_version
 	return result
 
 func rescan(update_scripts :bool = false) -> void:
+	yield(get_tree(), "idle_frame")
 	var plugin := EditorPlugin.new()
 	var fs := plugin.get_editor_interface().get_resource_filesystem()
 	fs.scan_sources()

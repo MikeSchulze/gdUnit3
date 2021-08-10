@@ -39,6 +39,7 @@ func _notification(what):
 #		push_error("An error occurred in the HTTP request.")
 
 func request_latest_version() -> HttpResponse:
+	yield(get_tree(), "idle_frame")
 	var error = _http_request.request("https://api.github.com/repos/MikeSchulze/gdUnit3/tags")
 	if error != OK:
 		var message = "request_latest_version failed: %d" % error
@@ -46,6 +47,7 @@ func request_latest_version() -> HttpResponse:
 	return yield(self, "request_completed")
 
 func request_releases() -> HttpResponse:
+	yield(get_tree(), "idle_frame")
 	var error = _http_request.request("https://api.github.com/repos/MikeSchulze/gdUnit3/releases")
 	if error != OK:
 		var message = "request_releases failed: %d" % error
@@ -53,6 +55,7 @@ func request_releases() -> HttpResponse:
 	return yield(self, "request_completed")
 
 func request_image(url :String) -> HttpResponse:
+	yield(get_tree(), "idle_frame")
 	var error = _http_request.request(url)
 	if error != OK:
 		var message = "request_image failed: %d" % error
@@ -60,6 +63,7 @@ func request_image(url :String) -> HttpResponse:
 	return yield(self, "request_completed")
 
 func request_zip_package(url :String, file :String) -> HttpResponse:
+	yield(get_tree(), "idle_frame")
 	_http_request.set_download_file(file)
 	var error = _http_request.request(url)
 	if error != OK:
