@@ -549,6 +549,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/test/update/GdUnitPatcherTest.gd"
 }, {
+"base": "Reference",
+"class": "GdUnitProperty",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/src/core/GdUnitProperty.gd"
+}, {
 "base": "Node",
 "class": "GdUnitPushErrorHandler",
 "language": "GDScript",
@@ -1043,6 +1048,7 @@ _global_script_class_icons={
 "GdUnitPatch": "",
 "GdUnitPatcher": "",
 "GdUnitPatcherTest": "",
+"GdUnitProperty": "",
 "GdUnitPushErrorHandler": "",
 "GdUnitReport": "",
 "GdUnitReportCollector": "",
