@@ -45,7 +45,6 @@ __meta__ = {
 margin_right = 12.0
 margin_bottom = 40.0
 hint_tooltip = "Reset to default value"
-focus_mode = 0
 clip_text = true
 
 [node name="info" type="Label" parent="property_template"]
@@ -162,9 +161,9 @@ rect_min_size = Vector2( 200, 30 )
 rect_clip_content = false
 size_flags_horizontal = 3
 bbcode_enabled = true
-bbcode_text = "[center][color=#9887c4]gd[/color][color=#7a57d6]Unit[/color][color=#9887c4]3[/color] [color=#9887c4]1.0.2[/color][/center]"
+bbcode_text = "[center][color=#9887c4]gd[/color][color=#7a57d6]Unit[/color][color=#9887c4]3[/color] [color=#9887c4]1.0.3[/color][/center]"
 meta_underlined = false
-text = "gdUnit3 1.0.2"
+text = "gdUnit3 1.0.3"
 scroll_active = false
 __meta__ = {
 "_edit_use_anchors_": false

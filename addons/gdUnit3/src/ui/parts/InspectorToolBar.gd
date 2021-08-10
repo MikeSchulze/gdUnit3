@@ -11,7 +11,6 @@ onready var _tool_button := $Tools/tool
 onready var _button_run := $Tools/run
 onready var _button_run_debug := $Tools/debug
 onready var _button_stop := $Tools/stop
-onready var _tool_popup :WindowDialog = $GdUnitToolsDialog
 
 func _ready():
 	GdUnit3Version.init_version_label(_version_label)
@@ -44,5 +43,7 @@ func _on_wiki_pressed():
 
 
 func _on_btn_tool_pressed():
-	_tool_popup.popup_centered()
+	var tool_popup = load("res://addons/gdUnit3/src/ui/GdUnitToolsDialog.tscn").instance()
+	#tool_popup.request_ready()
+	add_child(tool_popup)
 

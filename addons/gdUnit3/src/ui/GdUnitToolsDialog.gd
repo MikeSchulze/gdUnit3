@@ -19,7 +19,7 @@ func _ready():
 	setup_common_properties(_properties_common, GdUnitSettings.COMMON_SETTINGS)
 	setup_common_properties(_properties_report, GdUnitSettings.REPORT_SETTINGS)
 	yield(get_tree(), "idle_frame")
-	#popup_centered()
+	popup_centered_ratio(.75)
 
 func setup_common_properties(properties_parent :Node, property_category) -> void:
 	var category_properties := GdUnitSettings.list_settings(property_category)
@@ -31,8 +31,7 @@ func setup_common_properties(properties_parent :Node, property_category) -> void
 		var grid := GridContainer.new()
 		grid.columns = 4
 		grid.theme = t
-		
-		var property : GdUnitSettings.GdUnitProperty = p
+		var property : GdUnitProperty = p
 		var current_category = property.category()
 		if current_category != last_category:
 			var sub_category :Node = _properties_template.get_child(3).duplicate()
@@ -50,6 +49,7 @@ func setup_common_properties(properties_parent :Node, property_category) -> void
 		reset_btn.icon = _get_btn_icon("Reload")
 		reset_btn.disabled = property.value() == property.default()
 		grid.add_child(reset_btn)
+		
 		# property type specific input element
 		var input :Node = _create_input_element(property, reset_btn)
 		grid.add_child(input)
@@ -60,7 +60,7 @@ func setup_common_properties(properties_parent :Node, property_category) -> void
 		grid.add_child(info)
 		properties_parent.add_child(grid)
 
-func _create_input_element(property: GdUnitSettings.GdUnitProperty, reset_btn :ToolButton) -> Node:
+func _create_input_element(property: GdUnitProperty, reset_btn :ToolButton) -> Node:
 	if property.type() == TYPE_BOOL: 
 		var check_btn := CheckButton.new()
 		check_btn.connect("toggled", self, "_on_property_text_changed", [property, reset_btn])
@@ -117,13 +117,13 @@ func _install_examples() -> void:
 	GdUnitTools.copy_directory(source_dir, "res://gdUnit3-examples/", true)
 	
 	update_progress("Refresh project")
-	yield(get_tree(), "idle_frame")
 	yield(rescan(true), "completed")
 	update_progress("Examples successfully installed")
 	yield(get_tree().create_timer(3), "timeout")
 	stop_progress()
 
 func rescan(update_scripts :bool = false) -> void:
+	yield(get_tree(), "idle_frame")
 	var plugin := EditorPlugin.new()
 	var fs := plugin.get_editor_interface().get_resource_filesystem()
 	fs.scan_sources()
@@ -147,7 +147,8 @@ func _on_btn_install_examples_pressed():
 func _on_btn_close_pressed():
 	hide()
 
-func _on_btn_property_reset_pressed(property: GdUnitSettings.GdUnitProperty, input :Node, reset_btn :ToolButton):
+
+func _on_btn_property_reset_pressed(property: GdUnitProperty, input :Node, reset_btn :ToolButton):
 	if input is CheckButton:
 		input.pressed = property.default()
 	if input is LineEdit:
@@ -155,7 +156,7 @@ func _on_btn_property_reset_pressed(property: GdUnitSettings.GdUnitProperty, inp
 		# we have to update manually for text input fields because of no change event is emited
 		_on_property_text_changed(property.default(), property, reset_btn)
 
-func _on_property_text_changed(new_value, property: GdUnitSettings.GdUnitProperty, reset_btn :ToolButton):
+func _on_property_text_changed(new_value, property: GdUnitProperty, reset_btn :ToolButton):
 	property.set_value(new_value)
 	reset_btn.disabled = property.value() == property.default()
 	GdUnitSettings.update_property(property)
