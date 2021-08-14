@@ -3,19 +3,20 @@ extends Node
 
 
 var _script_parser := GdScriptParser.new()
-var _extends_test_suite_classes:Array = Array()
+var _extends_test_suite_classes := Array()
 
 
-func scan(resource_path:String) -> Array:
-	# scan and cache extends GdUnitTestSuite classes
+func scan_testsuite_classes() -> void:
+	# scan and cache extends GdUnitTestSuite by class name an resource paths
 	_extends_test_suite_classes.append("GdUnitTestSuite")
 	if ProjectSettings.has_setting("_global_script_classes"):
 		var script_classes:Array = ProjectSettings.get_setting("_global_script_classes") as Array
 		for element in script_classes:
 			var script_meta = element as Dictionary
 			if script_meta["base"] == "GdUnitTestSuite":
-				_extends_test_suite_classes.append(script_meta["class"] )
+				_extends_test_suite_classes.append(script_meta["class"])
 
+func scan(resource_path :String) -> Array:
 	var base_dir := Directory.new()
 	# if single testsuite requested
 	if base_dir.file_exists(resource_path):
@@ -27,7 +28,7 @@ func scan(resource_path:String) -> Array:
 			return []
 	return _scan_test_suites(base_dir, [])
 
-func _scan_test_suites(dir:Directory, collected_suites:Array) -> Array:
+func _scan_test_suites(dir :Directory, collected_suites :Array) -> Array:
 	prints("Scanning for test suites in:", dir.get_current_dir())
 	dir.list_dir_begin(true, true)
 	var file_name := dir.get_next()
@@ -40,35 +41,19 @@ func _scan_test_suites(dir:Directory, collected_suites:Array) -> Array:
 		else:
 			if _is_test_suite(current):
 				collected_suites.append(_parse_test_suite(current))
-
 		file_name = dir.get_next()
 	return collected_suites
 
-func _is_test_suite(file_name:String) -> bool:
+func _is_test_suite(file_name :String) -> bool:
 	# only scan on gd scrip files
 	if not file_name.ends_with(".gd"):
 		return false
 	# exclude non test directories
 	if file_name.find("/test") == -1:
 		return false
+	return GdObjects.is_testsuite(ResourceLoader.load(file_name))
 
-	var file := File.new()
-	file.open(file_name, File.READ)
-	var found:bool = false
-	while not file.eof_reached():
-		var row := file.get_line().strip_edges()
-		# ignore comments and empty lines
-		if row.begins_with("#") || row.length() == 0:
-			continue
-		# if extends from GdUnitTestSuite
-		var clazz_name := row.trim_prefix("extends").strip_edges()
-		if _extends_test_suite_classes.has(clazz_name):
-			found = true
-			break
-	file.close()
-	return found
-
-func _parse_test_suite(resource_path:String) -> GdUnitTestSuite:
+func _parse_test_suite(resource_path :String) -> GdUnitTestSuite:
 	var test_suite := load(resource_path).new() as GdUnitTestSuite
 	test_suite.set_name(parse_test_suite_name(resource_path))
 	# find all test cases as array of names
@@ -78,8 +63,10 @@ func _parse_test_suite(resource_path:String) -> GdUnitTestSuite:
 	# not all test case parsed?
 	# we have to scan the base class to
 	if not test_case_names.empty():
-		var path = test_suite.get_script().get_base_script().resource_path
-		_parse_and_add_test_cases(test_suite, path, test_case_names)
+		var base_script :GDScript = test_suite.get_script().get_base_script()
+		while base_script is GDScript:
+			_parse_and_add_test_cases(test_suite, base_script.resource_path, test_case_names)
+			base_script = base_script.get_base_script()
 	return test_suite
 
 func _extract_test_case_names(test_suite :GdUnitTestSuite) -> PoolStringArray:

@@ -116,20 +116,6 @@ func _getEditorThemes(interface :EditorInterface) -> void:
 	#status_label.add_color_override("font_color", get_color("contrast_color_2", "Editor"))
 	#no_sessions_label.add_color_override("font_color", get_color("contrast_color_2", "Editor"))
 
-static func is_testsuite(script :GDScript) -> bool:
-	if not script:
-		return false
-	var stack := [script]
-	while not stack.empty():
-		var current := stack.pop_front() as Script
-		if current.get_base_script() == GdUnitTestSuite:
-			return true
-		var base := current.get_base_script() as Script
-		if base != null:
-			stack.push_back(base)
-	return false
-
-
 # Context menu registrations ----------------------------------------------------------------------
 func add_file_system_dock_context_menu() -> void:
 	var filesystem_dock = _editor_interface.get_file_system_dock()
@@ -194,7 +180,7 @@ func extend_script_editor_popup(tab_container :Control) -> void:
 
 func _on_script_editor_context_menu_show(context_menu :PopupMenu):
 	var current_script := _editor_interface.get_script_editor().get_current_script()
-	if is_testsuite(current_script):
+	if GdObjects.is_testsuite(current_script):
 		context_menu.add_separator()
 		# save menu entry index
 		var current_index := context_menu.get_item_count()

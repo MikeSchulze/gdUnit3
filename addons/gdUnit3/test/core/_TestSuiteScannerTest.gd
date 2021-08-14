@@ -134,3 +134,31 @@ func test_parse_and_add_test_cases() -> void:
 			tuple("test_with_fuzzer", default_time, PoolStringArray(["fuzzer:=Fuzzers.rangei(-10,22)"]), Fuzzer.ITERATION_DEFAULT_COUNT),
 			tuple("test_with_fuzzer_iterations", default_time, PoolStringArray(["fuzzer:=Fuzzers.rangei(-10,22)"]), 10),
 			tuple("test_with_multible_fuzzers", default_time, PoolStringArray(["fuzzer_a:=Fuzzers.rangei(-10,22)", "fuzzer_b:=Fuzzers.rangei(23,42)"]), 10)])
+
+func test_scan_by_inheritance_class_name() -> void:
+	var scanner :_TestSuiteScanner = auto_free(_TestSuiteScanner.new())
+	var test_suites := scanner.scan("res://addons/gdUnit3/test/core/resources/scan_testsuite_inheritance/by_class_name/")
+	
+	assert_array(test_suites).extractv(extr("get_name"), extr("get_script.get_path"), extr("get_children.get_name"))\
+		.contains_exactly_in_any_order([
+			tuple("BaseTest", "res://addons/gdUnit3/test/core/resources/scan_testsuite_inheritance/by_class_name/BaseTest.gd", ["test_foo1"]),
+			tuple("ExtendedTest","res://addons/gdUnit3/test/core/resources/scan_testsuite_inheritance/by_class_name/ExtendedTest.gd", ["test_foo2", "test_foo1"]), 
+			tuple("ExtendsExtendedTest", "res://addons/gdUnit3/test/core/resources/scan_testsuite_inheritance/by_class_name/ExtendsExtendedTest.gd", ["test_foo3", "test_foo2", "test_foo1"])
+		])
+	# finally free all scaned test suites
+	for ts in test_suites:
+		ts.free()
+
+func test_scan_by_inheritance_class_path() -> void:
+	var scanner :_TestSuiteScanner = auto_free(_TestSuiteScanner.new())
+	var test_suites := scanner.scan("res://addons/gdUnit3/test/core/resources/scan_testsuite_inheritance/by_class_path/")
+	
+	assert_array(test_suites).extractv(extr("get_name"), extr("get_script.get_path"), extr("get_children.get_name"))\
+		.contains_exactly_in_any_order([
+			tuple("BaseTest", "res://addons/gdUnit3/test/core/resources/scan_testsuite_inheritance/by_class_path/BaseTest.gd", ["test_foo1"]),
+			tuple("ExtendedTest","res://addons/gdUnit3/test/core/resources/scan_testsuite_inheritance/by_class_path/ExtendedTest.gd", ["test_foo2", "test_foo1"]), 
+			tuple("ExtendsExtendedTest", "res://addons/gdUnit3/test/core/resources/scan_testsuite_inheritance/by_class_path/ExtendsExtendedTest.gd", ["test_foo3", "test_foo2", "test_foo1"])
+		])
+	# finally free all scaned test suites
+	for ts in test_suites:
+		ts.free()
