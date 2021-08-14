@@ -300,6 +300,19 @@ static func is_object(value) -> bool:
 static func is_script(value) -> bool:
 	return is_object(value) and value is Script
 
+static func is_testsuite(script :GDScript) -> bool:
+	if not script:
+		return false
+	var stack := [script]
+	while not stack.empty():
+		var current := stack.pop_front() as Script
+		var base := current.get_base_script() as Script
+		if base != null:
+			if base.resource_path.find("GdUnitTestSuite") != -1:
+				return true
+			stack.push_back(base)
+	return false
+
 static func is_native_class(value) -> bool:
 	return is_object(value) and value.to_string() != null and value.to_string().find("GDScriptNativeClass") != -1
 
