@@ -255,7 +255,7 @@ static func any_class(clazz :Object) -> GdUnitArgumentMatcher:
 # === value extract utils ======================================================
 # Builds an extractor by given function name and optional arguments
 static func extr(func_name :String, args := Array()) -> GdUnitValueExtractor:
-	return GdUnitValueExtractor.new(func_name, args)
+	return GdUnitFuncValueExtractor.new(func_name, args)
 
 # Constructs a tuple by given arguments
 static func tuple(arg0, arg1=GdUnitTuple.NO_ARG, arg2=GdUnitTuple.NO_ARG, arg3=GdUnitTuple.NO_ARG, arg4=GdUnitTuple.NO_ARG, arg5=GdUnitTuple.NO_ARG, arg6=GdUnitTuple.NO_ARG, arg7=GdUnitTuple.NO_ARG, arg8=GdUnitTuple.NO_ARG, arg9=GdUnitTuple.NO_ARG) -> GdUnitTuple:
