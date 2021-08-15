@@ -5,16 +5,23 @@ extends GdUnitTestSuite
 # TestSuite generated from
 const __source = 'res://addons/gdUnit3/src/extractors/GdUnitFuncValueExtractor.gd'
 
-class TestNode:
+class TestNode extends Resource:
 	var _name :String
-	var _parent :TestNode = null
+	var _parent = null
 	var _children := Array()
 	
-	func _init(name :String, parent :TestNode = null):
+	func _init(name :String, parent = null):
+		prints("_init", self)
 		_name = name
 		_parent = parent
 		if _parent:
 			_parent._children.append(self)
+	
+	func _notification(what):
+		prints("_notification", self)
+		if what == NOTIFICATION_PREDELETE:
+			_parent = null
+			_children.clear()
 	
 	func get_name() -> String:
 		return _name
@@ -27,7 +34,7 @@ class TestNode:
 	
 
 func test_extract_value_success() -> void:
-	var node = TestNode.new("node_a")
+	var node = auto_free(TestNode.new("node_a"))
 	
 	assert_str(GdUnitFuncValueExtractor.new("get_name", []).extract_value(node)).is_equal("node_a")
 
@@ -42,16 +49,16 @@ func test_extract_value_on_null_value() -> void:
 
 func test_extract_value_chanined() -> void:
 	var parent = TestNode.new("parent")
-	var node = TestNode.new("node_a", parent)
+	var node = auto_free(TestNode.new("node_a", parent))
 	
 	assert_str(GdUnitFuncValueExtractor.new("get_name", []).extract_value(node)).is_equal("node_a")
 	assert_str(GdUnitFuncValueExtractor.new("get_parent.get_name", []).extract_value(node)).is_equal("parent")
 
 func test_extract_value_chanined_array_values() -> void:
 	var parent = TestNode.new("parent")
-	TestNode.new("node_a", parent)
-	TestNode.new("node_b", parent)
-	TestNode.new("node_c", parent)
+	auto_free(TestNode.new("node_a", parent))
+	auto_free(TestNode.new("node_b", parent))
+	auto_free(TestNode.new("node_c", parent))
 	
 	assert_array(GdUnitFuncValueExtractor.new("get_children.get_name", []).extract_value(parent))\
 		.contains_exactly(["node_a", "node_b", "node_c"])
