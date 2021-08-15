@@ -419,6 +419,16 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/test/asserts/GdUnitFloatAssertImplTest.gd"
 }, {
+"base": "GdUnitValueExtractor",
+"class": "GdUnitFuncValueExtractor",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/src/extractors/GdUnitFuncValueExtractor.gd"
+}, {
+"base": "GdUnitTestSuite",
+"class": "GdUnitFuncValueExtractorTest",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/test/extractors/GdUnitFuncValueExtractorTest.gd"
+}, {
 "base": "Reference",
 "class": "GdUnitHtmlPatterns",
 "language": "GDScript",
@@ -1022,6 +1032,8 @@ _global_script_class_icons={
 "GdUnitFloatAssert": "",
 "GdUnitFloatAssertImpl": "",
 "GdUnitFloatAssertImplTest": "",
+"GdUnitFuncValueExtractor": "",
+"GdUnitFuncValueExtractorTest": "",
 "GdUnitHtmlPatterns": "",
 "GdUnitHtmlReport": "",
 "GdUnitInit": "",

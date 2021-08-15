@@ -242,6 +242,44 @@ func test_extractv() -> void:
 		.extractv(extr("get_name"), extr("get_value"), extr("get_x"))\
 		.contains_exactly([tuple("A", 10, null), tuple("B", "foo", "bar"), tuple("C", 11, 42)])
 
+func test_extractv_chained_func() -> void:
+	var root_a = TestObj.new("root_a", null)
+	var obj_a = TestObj.new("A", root_a)
+	var obj_b = TestObj.new("B", root_a)
+	var obj_c = TestObj.new("C", root_a)
+	var root_b = TestObj.new("root_b", root_a)
+	var obj_x = TestObj.new("X", root_b)
+	var obj_y = TestObj.new("Y", root_b)
+	
+	assert_array([obj_a, obj_b, obj_c, obj_x, obj_y])\
+		.extractv(extr("get_name"), extr("get_value.get_name"))\
+		.contains_exactly([
+			tuple("A", "root_a"),
+			tuple("B", "root_a"),
+			tuple("C", "root_a"),
+			tuple("X", "root_b"),
+			tuple("Y", "root_b")
+			])
+
+func test_extract_chained_func() -> void:
+	var root_a = TestObj.new("root_a", null)
+	var obj_a = TestObj.new("A", root_a)
+	var obj_b = TestObj.new("B", root_a)
+	var obj_c = TestObj.new("C", root_a)
+	var root_b = TestObj.new("root_b", root_a)
+	var obj_x = TestObj.new("X", root_b)
+	var obj_y = TestObj.new("Y", root_b)
+	
+	assert_array([obj_a, obj_b, obj_c, obj_x, obj_y])\
+		.extract("get_value.get_name")\
+		.contains_exactly([
+			"root_a",
+			"root_a",
+			"root_a",
+			"root_b",
+			"root_b",
+			])
+
 func test_extractv_max_args() -> void:
 		assert_array([TestObj.new("A", 10), TestObj.new("B", "foo", "bar"), TestObj.new("C", 11, 42)])\
 		.extractv(\

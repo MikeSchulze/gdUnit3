@@ -180,7 +180,7 @@ func is_instanceof(expected) -> GdUnitAssert:
 # extracts all values by given function name or null if not exists
 func extract(func_name :String, args := Array()) -> GdUnitArrayAssert:
 	var extracted_elements: = Array()
-	var extractor := GdUnitValueExtractor.new(func_name, args)
+	var extractor := GdUnitFuncValueExtractor.new(func_name, args)
 	for element in __current():
 		extracted_elements.append(extractor.extract_value(element))
 	_base._current = extracted_elements
