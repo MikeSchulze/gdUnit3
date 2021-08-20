@@ -151,6 +151,8 @@ static func save_test_suite(path :String, source_path :String) -> Result:
 	var script := GDScript.new()
 	script.source_code +=\
 """# GdUnit generated TestSuite
+#warning-ignore-all:unused_argument
+#warning-ignore-all:return_value_discarded
 class_name ${class_name}
 extends GdUnitTestSuite
 
