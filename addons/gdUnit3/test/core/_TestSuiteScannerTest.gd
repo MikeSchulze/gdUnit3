@@ -56,6 +56,8 @@ func test_save_test_suite():
 		.is_script()\
 		.contains_exactly([
 			"# GdUnit generated TestSuite",
+			"#warning-ignore-all:unused_argument",
+			"#warning-ignore-all:return_value_discarded",
 			"class_name MyClassTest",
 			"extends GdUnitTestSuite",
 			"",
@@ -74,12 +76,14 @@ func test_create_test_case():
 	var result := _TestSuiteScanner.create_test_case(source_path, "last_name")
 	assert_that(result.is_success()).is_true()
 	var info :Dictionary = result.value()
-	assert_int(info.get("line")).is_equal(8)
+	assert_int(info.get("line")).is_equal(10)
 	assert_file(info.get("path")).exists()\
 		.is_file()\
 		.is_script()\
 		.contains_exactly([
 			"# GdUnit generated TestSuite",
+			"#warning-ignore-all:unused_argument",
+			"#warning-ignore-all:return_value_discarded",
 			"class_name PersonTest",
 			"extends GdUnitTestSuite",
 			"",
