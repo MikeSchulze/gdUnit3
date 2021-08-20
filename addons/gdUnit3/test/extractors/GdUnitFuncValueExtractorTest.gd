@@ -11,14 +11,12 @@ class TestNode extends Resource:
 	var _children := Array()
 	
 	func _init(name :String, parent = null):
-		prints("_init", self)
 		_name = name
 		_parent = parent
 		if _parent:
 			_parent._children.append(self)
 	
 	func _notification(what):
-		prints("_notification", self)
 		if what == NOTIFICATION_PREDELETE:
 			_parent = null
 			_children.clear()
