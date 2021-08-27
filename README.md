@@ -8,6 +8,7 @@
   <img src="https://img.shields.io/badge/Godot-v3.3-%23478cbf?logo=godot-engine&logoColor=white">
   <img src="https://img.shields.io/badge/Godot-v3.3.1-%23478cbf?logo=godot-engine&logoColor=white">
   <img src="https://img.shields.io/badge/Godot-v3.3.2-%23478cbf?logo=godot-engine&logoColor=white">
+  <img src="https://img.shields.io/badge/Godot-v3.3.3-%23478cbf?logo=godot-engine&logoColor=white">
 </p>
 
 <p align="center"><a href="https://github.com/MikeSchulze/gdUnit3"><img src="https://github.com/MikeSchulze/gdUnit3/blob/master/assets/gdUnit3-animated.gif" width="100%"/></p><br/>
