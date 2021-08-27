@@ -5,7 +5,7 @@ jobs:
   testing:
     strategy:
       matrix:
-        godot: [3.3, 3.3.1, 3.3.2]
+        godot: [3.3, 3.3.1, 3.3.2, 3.3.3, mono-3.3.3]
     
     name: GdUnit3 Selftest on Godot ${{ matrix.godot }}
     runs-on: ubuntu-latest
