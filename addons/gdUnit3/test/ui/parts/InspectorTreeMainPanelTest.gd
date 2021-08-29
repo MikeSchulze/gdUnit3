@@ -30,7 +30,7 @@ func after_test():
 	_inspector.free()
 
 
-static func toDto(test_suite :GdUnitTestSuite) -> GdUnitTestSuiteDto:
+static func toDto(test_suite :Node) -> GdUnitTestSuiteDto:
 	var dto := GdUnitTestSuiteDto.new()
 	return dto.deserialize(dto.serialize(test_suite)) as GdUnitTestSuiteDto
 

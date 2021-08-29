@@ -345,6 +345,10 @@ static func is_auto_free_registered(obj, pool :int) -> bool:
 static func is_yielded(obj) -> bool:
 	return obj is GDScriptFunctionState and obj.is_valid()
 
+# test is Godot mono running
+static func is_mono_supported() -> bool:
+	return ClassDB.class_exists("CSharpScript")
+
 # runs over all registered files and closes it
 static func run_auto_close():
 	while not _files_to_close.empty():
@@ -376,6 +380,8 @@ static func clear_push_errors() -> void:
 		runner.clear_push_errors()
 
 static func register_expect_interupted_by_timeout(test_suite :Node, test_case_name :String) -> void:
+	prints(test_suite.get_children())
+	
 	var test_case = test_suite.find_node(test_case_name, false, false)
 	test_case.expect_to_interupt()
 

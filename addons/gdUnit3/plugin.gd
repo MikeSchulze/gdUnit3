@@ -13,7 +13,7 @@ func _enter_tree():
 	# show possible update notification when is enabled
 	if GdUnitSettings.is_update_notification_enabled():
 		_update_tool = load("res://addons/gdUnit3/src/update/GdUnitUpdate.tscn").instance()
-		get_parent().add_child(_update_tool)
+		add_child(_update_tool)
 	
 	# install SignalHandler singleton
 	GdUnitSingleton.add_singleton(SignalHandler.SINGLETON_NAME, "res://addons/gdUnit3/src/core/event/SignalHandler.gd")

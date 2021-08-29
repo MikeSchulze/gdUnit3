@@ -110,7 +110,7 @@ func suite_after(test_suite :GdUnitTestSuite) -> GDScriptFunctionState:
 	_report_collector.clear_reports(STAGE_TEST_SUITE_BEFORE|STAGE_TEST_SUITE_AFTER)
 	return null
 
-func test_before(test_suite :GdUnitTestSuite, test_case :_TestCase) -> GDScriptFunctionState:
+func test_before(test_suite :GdUnitTestSuite, test_case :Node) -> GDScriptFunctionState:
 	set_stage(STAGE_TEST_CASE_BEFORE)
 	_memory_pool.set_pool(test_suite, GdUnitMemoryPool.TEST_SETUP, true)
 	
@@ -129,7 +129,7 @@ func test_before(test_suite :GdUnitTestSuite, test_case :_TestCase) -> GDScriptF
 	GdUnitTools.run_auto_close()
 	return null
 
-func test_after(test_suite :GdUnitTestSuite, test_case :_TestCase) -> GDScriptFunctionState:
+func test_after(test_suite :GdUnitTestSuite, test_case :Node) -> GDScriptFunctionState:
 	set_stage(STAGE_TEST_CASE_AFTER)
 	_memory_pool.set_pool(test_suite, GdUnitMemoryPool.TEST_SETUP)
 	
@@ -147,7 +147,7 @@ func test_after(test_suite :GdUnitTestSuite, test_case :_TestCase) -> GDScriptFu
 				.create(GdUnitReport.WARN, test_case.line_number(), GdAssertMessages.orphan_detected_on_test_setup(test_setup_orphan_nodes)))
 	
 	var reports := _report_collector.get_reports(STAGE_TEST_CASE_BEFORE|STAGE_TEST_CASE_EXECUTE|STAGE_TEST_CASE_AFTER)
-	var is_error := test_case.is_interupted() and not test_case.is_expect_interupted()
+	var is_error :bool = test_case.is_interupted() and not test_case.is_expect_interupted()
 	var error_count := _report_collector.count_errors(STAGE_TEST_CASE_BEFORE|STAGE_TEST_CASE_EXECUTE|STAGE_TEST_CASE_AFTER)
 	var failure_count := _report_collector.count_failures(STAGE_TEST_CASE_BEFORE|STAGE_TEST_CASE_EXECUTE|STAGE_TEST_CASE_AFTER)
 	var is_warning := _report_collector.has_warnings(STAGE_TEST_CASE_BEFORE|STAGE_TEST_CASE_EXECUTE|STAGE_TEST_CASE_AFTER)
@@ -171,7 +171,7 @@ func test_after(test_suite :GdUnitTestSuite, test_case :_TestCase) -> GDScriptFu
 	_report_collector.clear_reports(STAGE_TEST_CASE_BEFORE|STAGE_TEST_CASE_EXECUTE|STAGE_TEST_CASE_AFTER)
 	return null
 
-func execute_test_case(test_suite :GdUnitTestSuite, test_case :_TestCase) -> GDScriptFunctionState:
+func execute_test_case(test_suite :GdUnitTestSuite, test_case :Node) -> GDScriptFunctionState:
 	_test_run_state = test_before(test_suite, test_case)
 	if GdUnitTools.is_yielded(_test_run_state):
 		yield(_test_run_state, "completed")
@@ -234,6 +234,7 @@ func execute(test_suite :GdUnitTestSuite) -> GDScriptFunctionState:
 	
 	_report_collector.register_report_provider(test_suite)
 	add_child(test_suite)
+	
 	var fs = suite_before(test_suite, test_suite.get_child_count())
 	if GdUnitTools.is_yielded(fs):
 		yield(fs, "completed")
@@ -242,7 +243,7 @@ func execute(test_suite :GdUnitTestSuite) -> GDScriptFunctionState:
 		for test_case_index in test_suite.get_child_count():
 			var test_case = test_suite.get_child(test_case_index)
 			# only iterate over test case, we need to filter because of possible adding other child types on before() or before_test()
-			if not test_case is _TestCase:
+			if not test_case is _TestCase and not GdObjects.is_cs_script(test_case.get_script()):
 				continue
 			# stop on first error if fail fast enabled
 			if _fail_fast and _total_test_failed > 0:
@@ -272,7 +273,7 @@ func clone_test_suite(test_suite :GdUnitTestSuite) -> GdUnitTestSuite:
 	for property in test_suite.get_property_list():
 		var property_name = property["name"]
 		_test_suite.set(property_name, test_suite.get(property_name))
-	
+
 	# remove incomplete duplicated childs
 	for child in _test_suite.get_children():
 		_test_suite.remove_child(child)

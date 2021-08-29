@@ -670,6 +670,16 @@ _global_script_classes=[ {
 "path": "res://addons/gdUnit3/test/core/GdUnitSceneRunnerTest.gd"
 }, {
 "base": "Reference",
+"class": "GdUnitScriptType",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/src/core/GdUnitScriptType.gd"
+}, {
+"base": "GdUnitTestSuite",
+"class": "GdUnitScriptTypeTest",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/test/GdUnitScriptTypeTest.gd"
+}, {
+"base": "Reference",
 "class": "GdUnitSettings",
 "language": "GDScript",
 "path": "res://addons/gdUnit3/src/core/GdUnitSettings.gd"
@@ -1207,6 +1217,8 @@ _global_script_class_icons={
 "GdUnitRunnerConfigTest": "",
 "GdUnitSceneRunner": "",
 "GdUnitSceneRunnerTest": "",
+"GdUnitScriptType": "",
+"GdUnitScriptTypeTest": "",
 "GdUnitSettings": "",
 "GdUnitSettingsTest": "",
 "GdUnitSignalAssert": "",

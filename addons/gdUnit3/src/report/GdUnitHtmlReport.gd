@@ -13,21 +13,21 @@ func _init(path :String):
 func add_testsuite_report(suite_report :GdUnitTestSuiteReport):
 	_reports.append(suite_report)
 
-func add_testcase_report(suite_name :String, suite_report :GdUnitTestCaseReport) -> void:
+func add_testcase_report(resource_path :String, suite_report :GdUnitTestCaseReport) -> void:
 	for report in _reports:
-		if report.name() == suite_name:
+		if report.resource_path() == resource_path:
 			report.add_report(suite_report)
 
-func update_test_suite_report(suite_name :String, skipped :int, orphans :int, duration :int) -> void:
+func update_test_suite_report(resource_path :String, skipped :int, orphans :int, duration :int) -> void:
 	for report in _reports:
-		if report.name() == suite_name:
+		if report.resource_path() == resource_path:
 			report.set_duration(duration)
 			report.set_skipped(skipped)
 			report.set_orphans(orphans)
 
-func update_testcase_report(suite_name :String, test_report :GdUnitTestCaseReport):
+func update_testcase_report(resource_path :String, test_report :GdUnitTestCaseReport):
 	for report in _reports:
-		if report.name() == suite_name:
+		if report.resource_path() == resource_path:
 			report.update(test_report)
 
 func write() -> String:

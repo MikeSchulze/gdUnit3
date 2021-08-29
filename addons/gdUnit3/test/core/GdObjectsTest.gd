@@ -5,8 +5,8 @@ func test_equals_string():
 	var b := ""
 	var c := "abc"
 	var d := "abC"
-	
-	assert_bool(GdObjects.equals("", "")).is_true()	
+
+	assert_bool(GdObjects.equals("", "")).is_true()
 	assert_bool(GdObjects.equals(a, "")).is_true()
 	assert_bool(GdObjects.equals("", a)).is_true()
 	assert_bool(GdObjects.equals(a, a)).is_true()
@@ -14,7 +14,7 @@ func test_equals_string():
 	assert_bool(GdObjects.equals(b, a)).is_true()
 	assert_bool(GdObjects.equals(c, c)).is_true()
 	assert_bool(GdObjects.equals(c, String(c))).is_true()
-	
+
 	assert_bool(GdObjects.equals(a, null)).is_false()
 	assert_bool(GdObjects.equals(null, a)).is_false()
 	assert_bool(GdObjects.equals("", c)).is_false()
@@ -34,7 +34,7 @@ func test_equals_array():
 	var d := [1,2,3,4,5]
 	var e := [1,2,3,4,5]
 	var x := [1,2,3,6,4,5]
-	
+
 	assert_bool(GdObjects.equals(a, a)).is_true()
 	assert_bool(GdObjects.equals(a, b)).is_true()
 	assert_bool(GdObjects.equals(b, a)).is_true()
@@ -43,7 +43,7 @@ func test_equals_array():
 	assert_bool(GdObjects.equals(d, d)).is_true()
 	assert_bool(GdObjects.equals(d, e)).is_true()
 	assert_bool(GdObjects.equals(e, d)).is_true()
-	
+
 	assert_bool(GdObjects.equals(a, null)).is_false()
 	assert_bool(GdObjects.equals(null, a)).is_false()
 	assert_bool(GdObjects.equals(a, d)).is_false()
@@ -55,8 +55,8 @@ func test_equals_array():
 	assert_bool(GdObjects.equals(a, Dictionary())).is_false()
 	assert_bool(GdObjects.equals(a, Vector2.ONE)).is_false()
 	assert_bool(GdObjects.equals(a, Vector3.ONE)).is_false()
-	
-	
+
+
 func test_equals_dictionary():
 	var a := {}
 	var b := {}
@@ -64,7 +64,7 @@ func test_equals_dictionary():
 	var d := {"a":"foo"}
 	var e1 := {"a":"foo", "b":"bar"}
 	var e2 := {"b":"bar", "a":"foo"}
-	
+
 	assert_bool(GdObjects.equals(a, a)).is_true()
 	assert_bool(GdObjects.equals(a, b)).is_true()
 	assert_bool(GdObjects.equals(b, a)).is_true()
@@ -72,7 +72,7 @@ func test_equals_dictionary():
 	assert_bool(GdObjects.equals(c, d)).is_true()
 	assert_bool(GdObjects.equals(e1, e2)).is_true()
 	assert_bool(GdObjects.equals(e2, e1)).is_true()
-	
+
 	assert_bool(GdObjects.equals(a, null)).is_false()
 	assert_bool(GdObjects.equals(null, a)).is_false()
 	assert_bool(GdObjects.equals(a, c)).is_false()
@@ -83,17 +83,17 @@ func test_equals_dictionary():
 	assert_bool(GdObjects.equals(e1, c)).is_false()
 
 class TestClass extends Resource:
-	
+
 	enum {
 		A,
 		B
 	}
-	
+
 	var _type := A
 	var _a:int
 	var _b:String
 	var _c:Array
-	
+
 	func _init(a:int = 0, b:String = "", c:Array = []):
 		_a = a
 		_b = b
@@ -105,21 +105,21 @@ func test_equals_class():
 	var c := TestClass.new(1, "foo", ["bar", "xxx"])
 	var d := TestClass.new(1, "foo", ["bar", "xxx"])
 	var x := TestClass.new(1, "foo", ["bar", "xsxx"])
-	
+
 	assert_bool(GdObjects.equals(a, a)).is_true()
 	assert_bool(GdObjects.equals(a, b)).is_true()
 	assert_bool(GdObjects.equals(b, a)).is_true()
 	assert_bool(GdObjects.equals(c, d)).is_true()
 	assert_bool(GdObjects.equals(d, c)).is_true()
-	
-	
+
+
 	assert_bool(GdObjects.equals(a, null)).is_false()
 	assert_bool(GdObjects.equals(null, a)).is_false()
 	assert_bool(GdObjects.equals(a, c)).is_false()
 	assert_bool(GdObjects.equals(c, a)).is_false()
 	assert_bool(GdObjects.equals(d, x)).is_false()
 	assert_bool(GdObjects.equals(x, d)).is_false()
-	
+
 	# more extended version
 	var x2 := TestClass.new(1, "foo", [TestClass.new(22, "foo"), TestClass.new(22, "foo")])
 	var x3 := TestClass.new(1, "foo", [TestClass.new(22, "foo"), TestClass.new(23, "foo")])
@@ -128,7 +128,7 @@ func test_equals_class():
 func test_equals_Node_with_deep_check():
 	var nodeA = auto_free(Node.new())
 	var nodeB = auto_free(Node.new())
-	
+
 	# compares by default with deep ckeck on
 	assert_bool(GdObjects.equals(nodeA, nodeA)).is_true()
 	assert_bool(GdObjects.equals(nodeB, nodeB)).is_true()
@@ -159,7 +159,7 @@ func test_is_array_type():
 	assert_bool(GdObjects.is_array_type(PoolStringArray())).is_true()
 	assert_bool(GdObjects.is_array_type(PoolVector2Array())).is_true()
 	assert_bool(GdObjects.is_array_type(PoolVector3Array())).is_true()
-	
+
 	assert_bool(GdObjects.is_array_type(false)).is_false()
 
 func test_string_diff_empty():
@@ -167,12 +167,12 @@ func test_string_diff_empty():
 	assert_array(diffs).has_size(2)
 	assert_array(diffs[0].to_ascii()).is_empty()
 	assert_array(diffs[1].to_ascii()).is_empty()
-	
+
 func test_string_diff_equals():
 	var diffs := GdObjects.string_diff("Abc", "Abc")
 	var expected_l_diff = PoolByteArray([ord('A'), ord('b'), ord('c')])
 	var expected_r_diff = PoolByteArray([ord('A'), ord('b'), ord('c')])
-	
+
 	assert_array(diffs).has_size(2)
 	assert_array(diffs[0].to_ascii()).contains_exactly(expected_l_diff)
 	assert_array(diffs[1].to_ascii()).contains_exactly(expected_r_diff)
@@ -181,10 +181,10 @@ func test_string_diff_equals():
 func test_string_diff():
 	# tests the result of string diff function like assert_str("Abc").is_equal("abc")
 	var diffs := GdObjects.string_diff("Abc", "abc")
-	
+
 	var expected_l_diff = PoolByteArray([GdObjects.DIV_SUB, ord('A'), GdObjects.DIV_ADD, ord('a'), ord('b'), ord('c')])
 	var expected_r_diff = PoolByteArray([GdObjects.DIV_ADD, ord('A'), GdObjects.DIV_SUB, ord('a'), ord('b'), ord('c')])
-	
+
 	assert_array(diffs).has_size(2)
 	assert_array(diffs[0].to_ascii()).contains_exactly(expected_l_diff)
 	assert_array(diffs[1].to_ascii()).contains_exactly(expected_r_diff)
@@ -205,8 +205,8 @@ func test_is_type():
 	assert_bool(GdObjects.is_type(false)).is_false()
 	assert_bool(GdObjects.is_type([])).is_false()
 	assert_bool(GdObjects.is_type("abc")).is_false()
-	
-	
+
+
 	assert_bool(GdObjects.is_type(null)).is_false()
 	# an object type
 	assert_bool(GdObjects.is_type(Node)).is_true()
@@ -219,8 +219,8 @@ func test_is_type():
 	# on inner class type
 	assert_bool(GdObjects.is_type(CustomClass.InnerClassA)).is_true()
 	assert_bool(GdObjects.is_type(CustomClass.InnerClassC)).is_true()
-	
-	
+
+
 	# for instances must allways endup with false
 	assert_bool(GdObjects.is_type(auto_free(Node.new()))).is_false()
 	assert_bool(GdObjects.is_type(AStar.new())).is_false()
@@ -331,7 +331,7 @@ func test_extract_class_name_from_instance():
 	assert_result(extract_class_name(Camera.new())).is_equal("Camera")
 	assert_result(extract_class_name(GDScript.new())).is_equal("GDScript")
 	assert_result(extract_class_name(Node.new())).is_equal("Node")
-	
+
 	# extract class name from custom classes
 	assert_result(extract_class_name(Person.new())).is_equal("Person")
 	assert_result(extract_class_name(ClassWithNameA.new())).is_equal("ClassWithNameA")
@@ -368,7 +368,7 @@ func test_extract_class_path_by_clazz():
 	assert_array(GdObjects.extract_class_path(Camera)).is_empty()
 	assert_array(GdObjects.extract_class_path(Tree)).is_empty()
 	assert_array(GdObjects.extract_class_path(Node)).is_empty()
-	
+
 	# script classes
 	assert_array(GdObjects.extract_class_path(Person))\
 		.contains_exactly(["res://addons/gdUnit3/test/resources/core/Person.gd"])
@@ -380,7 +380,7 @@ func test_extract_class_path_by_clazz():
 		.contains_exactly(["res://addons/gdUnit3/test/mocker/resources/CustomResourceTestClass.gd"])
 	assert_array(GdObjects.extract_class_path(OverridenGetClassTestClass))\
 		.contains_exactly(["res://addons/gdUnit3/test/mocker/resources/OverridenGetClassTestClass.gd"])
-	
+
 	# script inner classes
 	assert_array(GdObjects.extract_class_path(CustomClass.InnerClassA))\
 		.contains_exactly(["res://addons/gdUnit3/test/resources/core/CustomClass.gd", "InnerClassA"])
@@ -394,7 +394,7 @@ func test_extract_class_path_by_clazz():
 		.contains_exactly(["res://addons/gdUnit3/test/mocker/resources/AdvancedTestClass.gd", "AtmosphereData"])
 	assert_array(GdObjects.extract_class_path(AdvancedTestClass.Area4D))\
 	.contains_exactly(["res://addons/gdUnit3/test/mocker/resources/AdvancedTestClass.gd", "Area4D"])
-	
+
 	# inner inner class
 	assert_array(GdObjects.extract_class_path(CustomClass.InnerClassD.InnerInnerClassA))\
 		.contains_exactly(["res://addons/gdUnit3/test/resources/core/CustomClass.gd", "InnerClassD", "InnerInnerClassA"])
@@ -404,7 +404,7 @@ func test_is_same():
 	assert_bool(GdObjects.is_same(1, 2)).is_false()
 	assert_bool(GdObjects.is_same(1.0, 1.0)).is_true()
 	assert_bool(GdObjects.is_same(1, 1.0)).is_false()
-	
+
 	var obj1 = auto_free(Camera.new())
 	var obj2 = auto_free(Camera.new())
 	var obj3 = auto_free(obj2.duplicate())
@@ -425,7 +425,7 @@ func test_can_instance():
 	assert_bool(GdObjects.can_instance(Camera)).is_true()
 	assert_bool(GdObjects.can_instance(Person)).is_true()
 	assert_bool(GdObjects.can_instance(CustomClass.InnerClassA)).is_true()
-	
+
 	assert_bool(GdObjects.can_instance(TreeItem)).is_true()
 
 # creates a test instance by given class name or resource path
@@ -477,13 +477,13 @@ func test_build_string_as_typeof_mapping():
 func test_array_filter_value() -> void:
 	assert_array(GdObjects.array_filter_value([], null)).is_empty()
 	assert_array(GdObjects.array_filter_value([], "")).is_empty()
-	
+
 	var current := [null, "a", "b", null, "c", null]
 	var filtered := GdObjects.array_filter_value(current, null)
 	assert_array(filtered).contains_exactly(["a", "b", "c"])
 	# verify the source is not affected
 	assert_array(current).contains_exactly([null, "a", "b", null, "c", null])
-	
+
 	current = [null, "a", "xxx", null, "xx", null]
 	filtered = GdObjects.array_filter_value(current, "xxx")
 	assert_array(filtered).contains_exactly([null, "a", null, "xx", null])
@@ -494,11 +494,11 @@ func test_array_erase_value() -> void:
 	var current := []
 	GdObjects.array_erase_value(current, null)
 	assert_array(current).is_empty()
-	
+
 	current = [null]
 	GdObjects.array_erase_value(current, null)
 	assert_array(current).is_empty()
-	
+
 	current = [null, "a", "b", null, "c", null]
 	GdObjects.array_erase_value(current, null)
 	# verify the source is affected
@@ -509,7 +509,7 @@ func test_is_instance_scene() -> void:
 	assert_bool(GdObjects.is_instance_scene(Reference.new())).is_false()
 	assert_bool(GdObjects.is_instance_scene(CustomClass.new())).is_false()
 	assert_bool(GdObjects.is_instance_scene(auto_free(Control.new()))).is_false()
-	
+
 	# now check on a loaded scene
 	var resource = load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
 	assert_bool(GdObjects.is_instance_scene(resource)).is_false()
@@ -520,7 +520,7 @@ func test_is_scene_resource_path() -> void:
 	assert_bool(GdObjects.is_scene_resource_path(Reference.new())).is_false()
 	assert_bool(GdObjects.is_scene_resource_path(CustomClass.new())).is_false()
 	assert_bool(GdObjects.is_scene_resource_path(auto_free(Control.new()))).is_false()
-	
+
 	# check on a loaded scene
 	var resource = load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
 	assert_bool(GdObjects.is_scene_resource_path(resource)).is_false()
@@ -591,3 +591,13 @@ func test_is_snake_case() -> void:
 	assert_bool(GdObjects.is_snake_case("myclassname")).is_true()
 	assert_bool(GdObjects.is_snake_case("MyClassName")).is_false()
 	assert_bool(GdObjects.is_snake_case("my_class_nameTest")).is_false()
+
+func test_is_test_suite() -> void:
+	assert_bool(GdObjects.is_test_suite(GdUnitTestResourceLoader.load_gd_script("res://addons/gdUnit3/test/core/ResultTest.gd"))).is_true()
+	if GdUnitTools.is_mono_supported():
+		assert_bool(GdObjects.is_test_suite(GdUnitTestResourceLoader.load_cs_script("res://addons/gdUnit3/test/core/ExampleTest.cs"))).is_true()
+	assert_bool(GdObjects.is_test_suite(GdUnitTestResourceLoader.load_cs_script("res://addons/gdUnit3/test/core/resources/testsuites/mono/NotATestSuite.cs"))).is_false()
+	# currently not supported
+	assert_bool(GdObjects.is_test_suite(NativeScript.new())).is_false()
+	assert_bool(GdObjects.is_test_suite(PluginScript.new())).is_false()
+	assert_bool(GdObjects.is_test_suite(VisualScript.new())).is_false()

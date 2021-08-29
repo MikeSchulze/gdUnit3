@@ -31,8 +31,12 @@ func test_is_instanceof():
 	assert_object(auto_free(Path.new()), GdUnitAssert.EXPECT_FAIL)\
 		.is_instanceof(Tree)\
 		.has_failure_message("Expected instance of:\n 'Tree'\n But it was 'Path'")
+	assert_object(null, GdUnitAssert.EXPECT_FAIL)\
+		.is_instanceof(Tree)\
+		.has_failure_message("Expected instance of:\n 'Tree'\n But it was 'Null'")
 
 func test_is_not_instanceof():
+	assert_object(null).is_not_instanceof(Node)
 	# engine class test
 	assert_object(auto_free(Path.new())).is_not_instanceof(Tree)
 	# script class test
@@ -45,12 +49,6 @@ func test_is_not_instanceof():
 	assert_object(auto_free(Path.new()), GdUnitAssert.EXPECT_FAIL)\
 		.is_not_instanceof(Node)\
 		.has_failure_message("Expected not be a instance of <Node>")
-
-func test_is_not_instanceof_on_null_value():
-	assert_object(null, GdUnitAssert.EXPECT_FAIL)\
-		.is_not_null()\
-		.is_instanceof(Node)\
-		.has_failure_message("Expected instance of:\n 'Node'\n But it was 'Null'")
 
 func test_is_null():
 	assert_object(null).is_null()
