@@ -13,13 +13,13 @@ func before():
 	Engine.get_main_loop().root.add_child(_executor)
 	_executor.connect("send_event_debug", self, "_on_executor_event")
 
-func resource(resource_path :String) -> GdUnitTestSuite:
+func resource(resource_path :String) -> Node:
 	return GdUnitTestResourceLoader.load_test_suite(resource_path)
 
 func _on_executor_event(event :GdUnitEvent) -> void:
 	_events.append(event)
 
-func execute(test_suite :GdUnitTestSuite, enable_orphan_detection := true):
+func execute(test_suite :Node, enable_orphan_detection := true):
 	yield(get_tree(), "idle_frame")
 	_events.clear()
 	_executor._memory_pool.configure(enable_orphan_detection)

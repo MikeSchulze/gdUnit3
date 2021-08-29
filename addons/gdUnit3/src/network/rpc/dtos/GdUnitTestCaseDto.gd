@@ -3,7 +3,7 @@ extends GdUnitResourceDto
 
 var _line_number :int = -1
 
-func serialize(test_case :Object) -> Dictionary:
+func serialize(test_case) -> Dictionary:
 	var serialized := .serialize(test_case)
 	serialized["line_number"] = test_case.line_number()
 	return serialized

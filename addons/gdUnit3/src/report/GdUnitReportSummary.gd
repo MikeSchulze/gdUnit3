@@ -18,6 +18,9 @@ func name() -> String:
 func path() -> String:
 	return _resource_path.get_base_dir().replace("res://", "")
 
+func resource_path() -> String:
+	return _resource_path
+
 func suite_count() -> int:
 	return _reports.size()
 

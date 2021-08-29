@@ -38,7 +38,8 @@ enum STATE {
 	WARNING,
 	FAILED,
 	ERROR,
-	ABORDED
+	ABORDED,
+	SKIPPED
 }
 const META_GDUNIT_NAME := "gdUnit_name"
 const META_GDUNIT_STATE := "gdUnit_state"
@@ -163,6 +164,13 @@ func set_state_succeded(item :TreeItem) -> void:
 	item.set_icon(0, ICON_TEST_SUCCESS)
 	item.collapsed = true
 
+func set_state_skipped(item :TreeItem) -> void:
+	item.set_meta(META_GDUNIT_STATE, STATE.SKIPPED)
+	item.set_custom_color(0, Color.lightgray)
+	item.set_suffix(0, "(skipped)")
+	item.set_icon(0, ICON_TEST_SUCCESS)
+	item.collapsed = false
+
 func set_state_warnings(item :TreeItem) -> void:
 	item.set_meta(META_GDUNIT_STATE, STATE.WARNING)
 	item.set_custom_color(0, Color.yellow)
@@ -204,20 +212,22 @@ func set_state_orphan(item :TreeItem, event: GdUnitEvent) -> void:
 	item.set_tooltip(0, "Total <%d> orphan nodes detected." % orphan_count)
 	if is_state_warning(item):
 		item.set_icon(0, ICON_TEST_SUCCESS_ORPHAN)
-	if is_state_failed(item):
+	elif is_state_failed(item):
 		item.set_icon(0, ICON_TEST_FAILED_ORPHAN)
-	if is_state_error(item):
+	elif is_state_error(item):
 		item.set_icon(0, ICON_TEST_ERRORS_ORPHAN)
 
 func update_state(item: TreeItem, event :GdUnitEvent) -> void:
 	if is_state_running(item) and event.is_success():
 		set_state_succeded(item)
 	else:
-		if event.is_warning():
+		if event.is_skipped():
+			set_state_skipped(item)
+		elif event.is_warning():
 			set_state_warnings(item)
-		if event.is_failed():
+		elif event.is_failed():
 			set_state_failed(item)
-		if event.is_error():
+		elif event.is_error():
 			set_state_error(item)
 		for report in event.reports():
 			add_report(item, report)

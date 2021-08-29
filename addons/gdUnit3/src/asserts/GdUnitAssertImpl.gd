@@ -37,6 +37,7 @@ static func _get_line_number() -> int:
 func _init(caller :Object, current, expect_result :int = EXPECT_SUCCESS):
 	assert(caller != null, "missing argument caller!")
 	assert(caller.has_meta(GdUnitReportConsumer.META_PARAM), "caller must register a report consumer!")
+	
 	_report_consumer = weakref(caller.get_meta(GdUnitReportConsumer.META_PARAM))
 	_current = current
 	# we expect the test will fail

@@ -1,0 +1,39 @@
+name: Run selftest Godot 3.3.x - Mono
+on: [push]
+
+jobs:
+  testing:
+    strategy:
+      matrix:
+        godot: [mono-3.3.1, mono-3.3.2, mono-3.3.3]
+
+    name: GdUnit3 Selftest on Godot ${{ matrix.godot }}
+    runs-on: ubuntu-latest
+    container:
+      image: barichello/godot-ci:${{ matrix.godot }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+
+      - name: Compile
+        run: |
+          nuget restore
+          mkdir -p .mono/assemblies/Debug
+          cp /usr/local/bin/GodotSharp/Api/Release/* .mono/assemblies/Debug
+          msbuild
+
+      - name: Run Selftes
+        timeout-minutes: 7
+        env: 
+          GODOT_BIN: "/usr/local/bin/godot"
+        shell: bash
+        run: ./runtest.sh --selftest
+
+      - name: Collect Test Reports
+        uses: actions/upload-artifact@v2
+        with:
+          name: Report_${{ matrix.godot }}
+          path: reports/**

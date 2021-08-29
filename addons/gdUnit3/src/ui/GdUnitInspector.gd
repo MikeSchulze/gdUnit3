@@ -180,7 +180,7 @@ func extend_script_editor_popup(tab_container :Control) -> void:
 
 func _on_script_editor_context_menu_show(context_menu :PopupMenu):
 	var current_script := _editor_interface.get_script_editor().get_current_script()
-	if GdObjects.is_testsuite(current_script):
+	if GdObjects.is_test_suite(current_script):
 		context_menu.add_separator()
 		# save menu entry index
 		var current_index := context_menu.get_item_count()

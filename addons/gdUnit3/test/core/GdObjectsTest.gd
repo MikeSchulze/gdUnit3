@@ -551,3 +551,14 @@ func test_all_types() -> void:
 		GdObjects.TYPE_VOID,
 		GdObjects.TYPE_VARARG,
 	])
+
+func test_is_test_suite() -> void:
+	assert_bool(GdObjects.is_test_suite(GdUnitTestResourceLoader.load_gd_script("res://addons/gdUnit3/test/core/ResultTest.gd"))).is_true()
+	if GdUnitTools.is_mono_supported():
+		assert_bool(GdObjects.is_test_suite(GdUnitTestResourceLoader.load_cs_script("res://addons/gdUnit3/test/core/ExampleTest.cs"))).is_true()
+	assert_bool(GdObjects.is_test_suite(GdUnitTestResourceLoader.load_cs_script("res://addons/gdUnit3/test/core/resources/testsuites/mono/NotATestSuite.cs"))).is_false()
+	# currently not supported
+	assert_bool(GdObjects.is_test_suite(NativeScript.new())).is_false()
+	assert_bool(GdObjects.is_test_suite(PluginScript.new())).is_false()
+	assert_bool(GdObjects.is_test_suite(VisualScript.new())).is_false()
+
