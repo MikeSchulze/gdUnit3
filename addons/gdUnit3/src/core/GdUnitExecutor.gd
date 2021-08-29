@@ -1,6 +1,7 @@
 class_name GdUnitExecutor
 extends Node
 
+signal ExecutionCompleted()
 signal send_event(event)
 signal send_event_debug(event)
 
@@ -161,7 +162,7 @@ func test_after(test_suite :GdUnitTestSuite, test_case :_TestCase, fire_event :=
 			.create(GdUnitReport.WARN, test_case.line_number(), GdAssertMessages.orphan_detected_on_test_setup(test_setup_orphan_nodes)))
 	
 	var reports := _report_collector.get_reports(STAGE_TEST_CASE_BEFORE|STAGE_TEST_CASE_EXECUTE|STAGE_TEST_CASE_AFTER)
-	var is_error := test_case.is_interupted() and not test_case.is_expect_interupted()
+	var is_error :bool = test_case.is_interupted() and not test_case.is_expect_interupted()
 	var error_count := _report_collector.count_errors(STAGE_TEST_CASE_BEFORE|STAGE_TEST_CASE_EXECUTE|STAGE_TEST_CASE_AFTER)
 	var failure_count := _report_collector.count_failures(STAGE_TEST_CASE_BEFORE|STAGE_TEST_CASE_EXECUTE|STAGE_TEST_CASE_AFTER)
 	var is_warning := _report_collector.has_warnings(STAGE_TEST_CASE_BEFORE|STAGE_TEST_CASE_EXECUTE|STAGE_TEST_CASE_AFTER)
@@ -241,18 +242,26 @@ func execute_test_case_iterative(test_suite :GdUnitTestSuite, test_case :_TestCa
 	return _test_run_state
 
 func execute(test_suite :GdUnitTestSuite) -> GDScriptFunctionState:
+	return Execute(test_suite)
+
+func Execute(test_suite :GdUnitTestSuite) -> GDScriptFunctionState:
 	# stop on first error if fail fast enabled
 	if _fail_fast and _total_test_failed > 0:
 		test_suite.free()
+		emit_signal("ExecutionCompleted")
 		return null
 	
 	_report_collector.register_report_provider(test_suite)
-	add_child(test_suite)
+	
 	var fs = suite_before(test_suite, test_suite.get_child_count())
 	if GdUnitTools.is_yielded(fs):
 		yield(fs, "completed")
 	
 	if not test_suite.is_skipped():
+		# needs at least one yielding otherwise the waiting funxtion is blocked
+		if test_suite.get_child_count() == 0:
+			yield(get_tree(), "idle_frame")
+		
 		for test_case_index in test_suite.get_child_count():
 			var test_case = test_suite.get_child(test_case_index)
 			# only iterate over test case, we need to filter because of possible adding other child types on before() or before_test()
@@ -279,12 +288,13 @@ func execute(test_suite :GdUnitTestSuite) -> GDScriptFunctionState:
 	fs = suite_after(test_suite)
 	if GdUnitTools.is_yielded(fs):
 		yield(fs, "completed")
-	remove_child(test_suite)
 	test_suite.free()
+	emit_signal("ExecutionCompleted")
 	return null
 
 # clones a test suite and moves the test cases to new instance
 func clone_test_suite(test_suite :GdUnitTestSuite) -> GdUnitTestSuite:
+	var parent := test_suite.get_parent()
 	var _test_suite = test_suite.duplicate()
 	# copy all property values
 	for property in test_suite.get_property_list():
@@ -301,9 +311,9 @@ func clone_test_suite(test_suite :GdUnitTestSuite) -> GdUnitTestSuite:
 		child.get_parent().remove_child(child)
 		_test_suite.add_child(child)
 	# finally free current test suite instance
-	remove_child(test_suite)
+	parent.remove_child(test_suite)
 	test_suite.free()
-	add_child(_test_suite)
+	parent.add_child(_test_suite)
 	return _test_suite
 
 static func create_fuzzers(test_suite :GdUnitTestSuite, test_case :_TestCase) -> Array:

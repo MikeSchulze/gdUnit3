@@ -45,7 +45,6 @@ func duration() -> int:
 
 func set_skipped(skipped :int) -> void:
 	_skipped_count = skipped
-	_test_count += skipped
 
 func set_orphans(orphans :int) -> void:
 	_orphan_count = orphans

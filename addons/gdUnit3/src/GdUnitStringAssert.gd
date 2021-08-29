@@ -51,5 +51,5 @@ func ends_with(expected: String) -> GdUnitStringAssert:
 	return self
 
 # Verifies that the current String has the expected length by used comparator.
-func has_length(lenght: int, comparator: int = Comparator.EXACTLY) -> GdUnitStringAssert:
+func has_length(lenght: int, comparator: int = Comparator.EQUAL) -> GdUnitStringAssert:
 	return self

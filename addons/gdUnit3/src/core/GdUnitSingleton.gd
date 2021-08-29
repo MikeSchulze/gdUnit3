@@ -17,9 +17,10 @@ static func get_singleton(name: String) -> Object:
 
 static func add_singleton(name: String, path: String) -> Object:
 	var singleton:Object = load(path).new()
-	singleton.set_name(name)
+	if singleton.has_method("set_name"):
+		singleton.set_name(name)
 	_singletons[name] = singleton
-	#print_debug("Added singleton", name, singleton)
+	#print_debug("Added singleton ", name, " ",singleton)
 	return singleton
 
 static func get_or_create_singleton(name: String, path: String) -> Object:

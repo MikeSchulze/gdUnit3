@@ -3,7 +3,7 @@ extends GdUnitResourceDto
 
 var _test_cases_by_name := Dictionary()
 
-func serialize(test_suite :Object) -> Dictionary:
+func serialize(test_suite :Node) -> Dictionary:
 	var serialized := .serialize(test_suite)
 	var test_cases := Array()
 	serialized["test_cases"] = test_cases

@@ -4,7 +4,7 @@ extends Resource
 var _name :String
 var _path :String
 
-func serialize(resource :Object) -> Dictionary:
+func serialize(resource) -> Dictionary:
 	var serialized := Dictionary()
 	serialized["name"] = resource.get_name()
 	var script = resource.get_script()

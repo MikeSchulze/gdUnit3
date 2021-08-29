@@ -23,3 +23,6 @@ gdUnit3-examples/
 # temporary generated files
 GdUnitRunner.cfg
 reports/
+
+.fake
+.ionide

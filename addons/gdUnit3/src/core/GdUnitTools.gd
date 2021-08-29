@@ -345,6 +345,10 @@ static func is_auto_free_registered(obj, pool :int) -> bool:
 static func is_yielded(obj) -> bool:
 	return obj is GDScriptFunctionState and obj.is_valid()
 
+# test is Godot mono running
+static func is_mono_supported() -> bool:
+	return ClassDB.class_exists("CSharpScript")
+
 # runs over all registered files and closes it
 static func run_auto_close():
 	while not _files_to_close.empty():
