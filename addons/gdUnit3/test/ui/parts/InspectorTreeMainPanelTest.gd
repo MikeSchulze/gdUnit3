@@ -20,7 +20,7 @@ func before_test():
 	
 	# load a testsuite 
 	for test_suite in setup_test_env():
-		_inspector.add_test_suite(test_suite)
+		_inspector.add_test_suite(toDto(test_suite))
 	# verify no failures are exists
 	assert_array(_inspector.collect_failures_and_errors()).is_empty()
 
@@ -29,11 +29,17 @@ func after_test():
 	remove_child(_inspector)
 	_inspector.free()
 
+
+static func toDto(test_suite :GdUnitTestSuite) -> GdUnitTestSuiteDto:
+	var dto := GdUnitTestSuiteDto.new()
+	return dto.deserialize(dto.serialize(test_suite)) as GdUnitTestSuiteDto
+
+
 func setup_test_env() -> Array:
 	return Array([
-		GdUnitTestResourceLoader.load_test_suite(TEST_SUITE_A),
-		GdUnitTestResourceLoader.load_test_suite(TEST_SUITE_B),
-		GdUnitTestResourceLoader.load_test_suite(TEST_SUITE_C),
+		auto_free(GdUnitTestResourceLoader.load_test_suite(TEST_SUITE_A)),
+		auto_free(GdUnitTestResourceLoader.load_test_suite(TEST_SUITE_B)),
+		auto_free(GdUnitTestResourceLoader.load_test_suite(TEST_SUITE_C)),
 	])
 
 func mark_as_failure(inspector, test_cases :Array) -> void:
@@ -214,7 +220,8 @@ func test_suite_text_responds_to_test_case_events() -> void:
 # test coverage for issue GD-117
 func test_update_test_case_on_multiple_test_suite_with_same_name() -> void:
 	# add a second test suite where has same name as TEST_SUITE_A
-	_inspector.add_test_suite(GdUnitTestResourceLoader.load_test_suite(TEST_SUITE_AA))
+	var test_suite = auto_free(GdUnitTestResourceLoader.load_test_suite(TEST_SUITE_AA))
+	_inspector.add_test_suite(toDto(test_suite))
 	
 	# verify the items exists on the tree
 	assert_str(TEST_SUITE_A).is_not_equal(TEST_SUITE_AA)

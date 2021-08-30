@@ -274,11 +274,6 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/src/core/parse/GdScriptParser.gd"
 }, {
-"base": "Resource",
-"class": "GdSerde",
-"language": "GDScript",
-"path": "res://addons/gdUnit3/src/network/GdSerde.gd"
-}, {
 "base": "Reference",
 "class": "GdUnit3Version",
 "language": "GDScript",
@@ -599,6 +594,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/src/report/GdUnitReportSummary.gd"
 }, {
+"base": "Resource",
+"class": "GdUnitResourceDto",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/src/network/rpc/dtos/GdUnitResourceDto.gd"
+}, {
 "base": "GdUnitAssert",
 "class": "GdUnitResultAssert",
 "language": "GDScript",
@@ -704,6 +704,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/src/network/GdUnitTcpServer.gd"
 }, {
+"base": "GdUnitResourceDto",
+"class": "GdUnitTestCaseDto",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/src/network/rpc/dtos/GdUnitTestCaseDto.gd"
+}, {
 "base": "GdUnitReportSummary",
 "class": "GdUnitTestCaseReport",
 "language": "GDScript",
@@ -718,6 +723,11 @@ _global_script_classes=[ {
 "class": "GdUnitTestSuite",
 "language": "GDScript",
 "path": "res://addons/gdUnit3/src/GdUnitTestSuite.gd"
+}, {
+"base": "GdUnitResourceDto",
+"class": "GdUnitTestSuiteDto",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/src/network/rpc/dtos/GdUnitTestSuiteDto.gd"
 }, {
 "base": "GdUnitReportSummary",
 "class": "GdUnitTestSuiteReport",
@@ -1013,7 +1023,6 @@ _global_script_class_icons={
 "GdMarkDownReaderTest": "",
 "GdObjects": "",
 "GdScriptParser": "",
-"GdSerde": "",
 "GdUnit3Version": "",
 "GdUnit3VersionTest": "",
 "GdUnitArgumentMatcher": "",
@@ -1078,6 +1087,7 @@ _global_script_class_icons={
 "GdUnitReportCollector": "",
 "GdUnitReportConsumer": "",
 "GdUnitReportSummary": "",
+"GdUnitResourceDto": "",
 "GdUnitResultAssert": "",
 "GdUnitResultAssertImpl": "",
 "GdUnitResultAssertImplTest": "",
@@ -1099,9 +1109,11 @@ _global_script_class_icons={
 "GdUnitTask": "",
 "GdUnitTcpClient": "",
 "GdUnitTcpServer": "",
+"GdUnitTestCaseDto": "",
 "GdUnitTestCaseReport": "",
 "GdUnitTestResourceLoader": "",
 "GdUnitTestSuite": "",
+"GdUnitTestSuiteDto": "",
 "GdUnitTestSuiteReport": "",
 "GdUnitTestSuiteTest": "",
 "GdUnitTools": "",

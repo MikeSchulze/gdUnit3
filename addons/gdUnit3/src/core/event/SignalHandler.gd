@@ -37,7 +37,7 @@ func register_on_message(target:Object, eventFunc:String) -> void:
 		push_error("Can't connect signal <send_message> to %s:%s.\n%s" % [target, eventFunc, GdUnitTools.error_as_string(err)])
 
 # add test suite to current running
-func send_add_test_suite(test_suite) -> void:
+func send_add_test_suite(test_suite :GdUnitTestSuiteDto) -> void:
 	emit_signal("test_suite_added", test_suite)
 
 func register_on_test_suite_added(target :Object, eventFunc :String) -> void:

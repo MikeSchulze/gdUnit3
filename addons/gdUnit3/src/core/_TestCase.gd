@@ -108,29 +108,5 @@ func skip(skipped :bool) -> void:
 func is_skipped() -> bool:
 	return _skipped
 
-static func serialize(test_case: _TestCase) -> Dictionary:
-	var serialized := Dictionary()
-	serialized["name"] = test_case.get_name()
-	serialized["line_number"] = test_case.line_number()
-	serialized["script_path"] = test_case.script_path()
-	serialized["timeout"] = test_case.timeout()
-	serialized["fuzzers"] = test_case.fuzzers()
-	serialized["iterations"] = test_case.iterations()
-	serialized["seed"] = test_case.seed_value()
-	serialized["skipped"] = test_case.is_skipped()
-	return serialized
-
-static func deserialize(serialized: Dictionary) -> _TestCase:
-	var instance = load("res://addons/gdUnit3/src/core/_TestCase.gd")
-	return instance.new().configure(
-		serialized["name"], 
-		serialized["line_number"],
-		serialized["script_path"],
-		serialized["timeout"],
-		serialized["fuzzers"],
-		serialized["iterations"],
-		serialized["seed"],
-		serialized["skipped"])
-
 func _to_string():
 	return "%s :%d (%dms)" % [get_name(), _line_number, _timeout]
