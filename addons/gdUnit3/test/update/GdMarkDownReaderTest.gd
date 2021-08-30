@@ -83,7 +83,7 @@ func test_process_image_by_reference() -> void:
 
 ![alt text2](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png)
 
-"""
+""".replace("\r", "")
 	
 	# without tooltip
 	assert_str(_reader.process_image_references(reg_ex, input))\
