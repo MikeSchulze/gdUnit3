@@ -239,6 +239,7 @@ func process_image_references(regex :RegEx, input :String) -> String:
 	var references := Dictionary()
 	var link_regex := regex("\\[(\\S+)\\]:(\\S+)([ ]\"(.*)\")?")
 	# create copy of original source to replace on it
+	input = input.replace("\r", "")
 	var extracted_references := input
 	for reg_match in link_regex.search_all(input):
 		var line = reg_match.get_string(0) + "\n"
