@@ -310,7 +310,7 @@ func show_failed_report(selected_item :TreeItem) -> void:
 	for child in _report_list.get_children():
 		_report_list.remove_child(child)
 
-	if not selected_item.has_meta(META_GDUNIT_REPORT):
+	if selected_item == null or not selected_item.has_meta(META_GDUNIT_REPORT):
 		return
 	# add new reports
 	for r in selected_item.get_meta(META_GDUNIT_REPORT):
@@ -347,10 +347,10 @@ func update_test_case(event :GdUnitEvent) -> void:
 			_update_test_suite_with_successful_case(event.resource_path())
 	update_state(item, event)
 
-func add_test_suite(test_suite :GdUnitTestSuite) -> void:
+func add_test_suite(test_suite :GdUnitTestSuiteDto) -> void:
 	var item := _tree.create_item(_tree_root)
-	var suite_name := test_suite.get_name()
-	var test_count := test_suite.get_child_count()
+	var suite_name := test_suite.name()
+	var test_count := test_suite.test_case_count()
 	
 	item.set_icon(0, ICON_TEST_DEFAULT)
 	item.set_meta(META_GDUNIT_STATE, STATE.INITIAL)
@@ -358,16 +358,14 @@ func add_test_suite(test_suite :GdUnitTestSuite) -> void:
 	item.set_meta(META_GDUNIT_TYPE, GdUnitType.TEST_SUITE)
 	item.set_meta(META_GDUNIT_SUITE_TOTAL_TESTS, test_count)
 	item.set_meta(META_GDUNIT_SUITE_SUCCESS_TESTS, 0)
-	item.set_meta(META_RESOURCE_PATH, test_suite.get_script().resource_path)
+	item.set_meta(META_RESOURCE_PATH, test_suite.path())
 	item.set_meta(META_LINE_NUMBER, 1)
 	item.collapsed = true
 	
 	_update_test_suite_item_text(item)
 	
-	for test_case in test_suite.get_children():
-		_add_test_case(item, test_case)
-		test_case.free()
-	test_suite.free()
+	for test_case in test_suite.test_cases():
+		add_test_case(item, test_case)
 
 func _update_test_suite_item_text(item: TreeItem):
 	item.set_text(0, "(%s/%s) %s" % [
@@ -384,16 +382,16 @@ func _update_test_suite_with_successful_case(resource_path: String):
 	else:
 		push_error("Internal Error: Can't find test suite %s" % resource_path)
 
-func _add_test_case(parent :TreeItem, test_case :_TestCase) -> void:
+func add_test_case(parent :TreeItem, test_case :GdUnitTestCaseDto) -> void:
 	var item := _tree.create_item(parent)
-	var test_name := test_case.get_name()
+	var test_name := test_case.name()
 	
 	item.set_text(0, test_name)
 	item.set_icon(0, ICON_TEST_DEFAULT)
 	item.set_meta(META_GDUNIT_STATE, STATE.INITIAL)
 	item.set_meta(META_GDUNIT_NAME, test_name)
 	item.set_meta(META_GDUNIT_TYPE, GdUnitType.TEST_CASE)
-	item.set_meta(META_RESOURCE_PATH, test_case.script_path())
+	item.set_meta(META_RESOURCE_PATH, parent.get_meta(META_RESOURCE_PATH))
 	item.set_meta(META_LINE_NUMBER, test_case.line_number())
 
 
@@ -460,7 +458,7 @@ func _on_GdUnit_gdunit_runner_stop(client_id :int):
 	collect_failures_and_errors()
 	select_first_failure()
 
-func _on_test_suite_added(test_suite :GdUnitTestSuite) -> void:
+func _on_test_suite_added(test_suite :GdUnitTestSuiteDto) -> void:
 	add_test_suite(test_suite)
 
 func _on_event(event:GdUnitEvent) -> void:

@@ -73,4 +73,4 @@ func _receive_rpc_data(rpc :RPC) -> void:
 		_signal_handler.send_event(rpc.event())
 		return
 	if rpc is RPCGdUnitTestSuite:
-		_signal_handler.send_add_test_suite(rpc.data())
+		_signal_handler.send_add_test_suite(rpc.dto())
