@@ -3,12 +3,12 @@
 <h2 align="center">A Godot Integrated Unit Testing Framework </h2>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Godot-v3.2.3-%23478cbf?logo=godot-engine&logoColor=cyian&color=green">
-  <img src="https://img.shields.io/badge/Godot-v3.2.4-%23478cbf?logo=godot-engine&logoColor=cyian&color=green">
-  <img src="https://img.shields.io/badge/Godot-v3.3-%23478cbf?logo=godot-engine&logoColor=cyian&color=green">
-  <img src="https://img.shields.io/badge/Godot-v3.3.1-%23478cbf?logo=godot-engine&logoColor=cyian&color=green">
-  <img src="https://img.shields.io/badge/Godot-v3.3.2-%23478cbf?logo=godot-engine&logoColor=cyian&color=green">
-  <img src="https://img.shields.io/badge/Godot-v3.3.3-%23478cbf?logo=godot-engine&logoColor=cyian&color=green">
+  <img src="https://img.shields.io/badge/Godot-v3.2.3-%23478cbf?logo=godot-engine&logoColor=cyian&color=brightgreen">
+  <img src="https://img.shields.io/badge/Godot-v3.2.4-%23478cbf?logo=godot-engine&logoColor=cyian&color=brightgreen">
+  <img src="https://img.shields.io/badge/Godot-v3.3-%23478cbf?logo=godot-engine&logoColor=cyian&color=brightgreen">
+  <img src="https://img.shields.io/badge/Godot-v3.3.1-%23478cbf?logo=godot-engine&logoColor=cyian&color=brightgreen">
+  <img src="https://img.shields.io/badge/Godot-v3.3.2-%23478cbf?logo=godot-engine&logoColor=cyian&color=brightgreen">
+  <img src="https://img.shields.io/badge/Godot-v3.3.3-%23478cbf?logo=godot-engine&logoColor=cyian&color=brightgreen">
   <img src="https://img.shields.io/badge/Godot-v4.x.x-%23478cbf?logo=godot-engine&logoColor=cyian&color=red">
 </p>
 
