@@ -3,15 +3,25 @@
 <h2 align="center">A Godot Integrated Unit Testing Framework </h2>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Godot-v3.2.3-%23478cbf?logo=godot-engine&logoColor=white">
-  <img src="https://img.shields.io/badge/Godot-v3.2.4-%23478cbf?logo=godot-engine&logoColor=white">
-  <img src="https://img.shields.io/badge/Godot-v3.3-%23478cbf?logo=godot-engine&logoColor=white">
-  <img src="https://img.shields.io/badge/Godot-v3.3.1-%23478cbf?logo=godot-engine&logoColor=white">
-  <img src="https://img.shields.io/badge/Godot-v3.3.2-%23478cbf?logo=godot-engine&logoColor=white">
-  <img src="https://img.shields.io/badge/Godot-v3.3.3-%23478cbf?logo=godot-engine&logoColor=white">
+  <img src="https://img.shields.io/badge/Godot-v3.2.3-%23478cbf?logo=godot-engine&logoColor=cyian&color=green">
+  <img src="https://img.shields.io/badge/Godot-v3.2.4-%23478cbf?logo=godot-engine&logoColor=cyian&color=green">
+  <img src="https://img.shields.io/badge/Godot-v3.3-%23478cbf?logo=godot-engine&logoColor=cyian&color=green">
+  <img src="https://img.shields.io/badge/Godot-v3.3.1-%23478cbf?logo=godot-engine&logoColor=cyian&color=green">
+  <img src="https://img.shields.io/badge/Godot-v3.3.2-%23478cbf?logo=godot-engine&logoColor=cyian&color=green">
+  <img src="https://img.shields.io/badge/Godot-v3.3.3-%23478cbf?logo=godot-engine&logoColor=cyian&color=green">
+  <img src="https://img.shields.io/badge/Godot-v4.x.x-%23478cbf?logo=godot-engine&logoColor=cyian&color=red">
 </p>
 
 <p align="center"><a href="https://github.com/MikeSchulze/gdUnit3"><img src="https://github.com/MikeSchulze/gdUnit3/blob/master/assets/gdUnit3-animated.gif" width="100%"/></p><br/>
+
+
+<p align="center">
+  <img src="https://github.com/MikeSchulze/gdUnit3/actions/workflows/selftest-3.2.x.yml/badge.svg?branch=master"></br>
+  <img src="https://github.com/MikeSchulze/gdUnit3/actions/workflows/selftest-3.3.x.yml/badge.svg?branch=master"></br>
+  <img src="https://github.com/MikeSchulze/gdUnit3/actions/workflows/selftest-3.3.x-mono.yml/badge.svg?branch=master"></br>
+
+</p>
+
 
 
 ## What is GdUnit3
@@ -68,3 +78,11 @@ I would also appreciate feedback.
 
 
 [Documentation](https://github.com/MikeSchulze/gdUnit3/wiki)
+
+<h1 align="center"></h1>
+<p align="left">
+  <img src="https://img.shields.io/packagecontrol/dm/SwitchDictionary.svg">
+  <img src="https://img.shields.io/packagecontrol/dt/SwitchDictionary.svg">
+  <img src="https://img.shields.io/badge/License-MIT-blue.svg">
+</p>
+
