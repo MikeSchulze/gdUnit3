@@ -24,11 +24,28 @@ const STDOUT_ENABLE_TO_FILE = CATEGORY_LOGGING + "enable_file_logging"
 const STDOUT_WITE_TO_FILE = CATEGORY_LOGGING + "log_path"
 
 
+# GdUnit Templates
+const TEMPLATES = MAIN_CATEGORY + "/templates"
+const TEMPLATES_TS = TEMPLATES + "/testsuite"
+const TEMPLATE_TS_GD = TEMPLATES_TS + "/GDScript"
+const TEMPLATE_TS_CS = TEMPLATES_TS + "/CSharpScript"
+
 # defaults
 # server connection timeout in minutes
 const DEFAULT_SERVER_TIMEOUT :int = 30
 # test case runtime timeout in seconds
 const DEFAULT_TEST_TIMEOUT :int = 60*5
+
+
+const DEFAULT_TEMP_TS_GD = """# GdUnit generated TestSuite
+#warning-ignore-all:unused_argument
+#warning-ignore-all:return_value_discarded
+class_name ${class_name}
+extends GdUnitTestSuite
+
+# TestSuite generated from
+const __source = '${source_path}'
+"""
 
 static func setup():
 	create_property_if_need(UPDATE_NOTIFICATION_ENABLED, true, "Enables/Disables the update notification on startup.")
@@ -38,6 +55,7 @@ static func setup():
 	create_property_if_need(REPORT_ORPHANS, true, "Enables/Disables orphan reporting.")
 	create_property_if_need(REPORT_ASSERT_ERRORS, true, "Enables/Disables error reporting on asserts.")
 	create_property_if_need(REPORT_ASSERT_WARNINGS, true, "Enables/Disables warning reporting on asserts")
+	create_property_if_need(TEMPLATE_TS_GD, DEFAULT_TEMP_TS_GD, "Defines the test suite template")
 
 static func create_property_if_need(name :String, default, help :="") -> void:
 	if not ProjectSettings.has_setting(name):
@@ -112,6 +130,12 @@ static func list_settings(category :String) -> Array:
 
 static func update_property(property :GdUnitProperty) -> void:
 	ProjectSettings.set_setting(property.name(), property.value())
+	ProjectSettings.save()
 
 static func reset_property(property :GdUnitProperty) -> void:
 	ProjectSettings.set_setting(property.name(), property.default())
+	ProjectSettings.save()
+
+static func save_property(name :String, value) -> void:
+	ProjectSettings.set_setting(name, value)
+	ProjectSettings.save()
