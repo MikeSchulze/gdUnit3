@@ -1,0 +1,192 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://addons/gdUnit3/src/ui/templates/TestSuiteTemplate.gd" type="Script" id=1]
+[ext_resource path="res://addons/gdUnit3/src/update/assets/fonts/RobotoMono-14.tres" type="DynamicFont" id=2]
+
+[node name="TestSuiteTemplate" type="MarginContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
+margin_right = 1024.0
+margin_bottom = 600.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ScrollContainer"]
+margin_right = 1024.0
+margin_bottom = 600.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="sub_category" type="Panel" parent="ScrollContainer/VBoxContainer"]
+margin_right = 1024.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 0, 30 )
+size_flags_horizontal = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/sub_category"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 4.0
+margin_right = 4.0
+margin_bottom = 1.0
+custom_colors/font_color = Color( 0.196078, 0.631373, 0.639216, 1 )
+text = "Test Suite Template
+"
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Editor" type="TextEdit" parent="ScrollContainer/VBoxContainer"]
+margin_top = 34.0
+margin_right = 1024.0
+margin_bottom = 434.0
+rect_min_size = Vector2( 0, 400 )
+size_flags_horizontal = 3
+custom_fonts/font = ExtResource( 2 )
+custom_colors/font_color_selected = Color( 0.41, 0.61, 0.91, 0.35 )
+custom_colors/font_color = Color( 0.8, 0.8075, 0.8275, 1 )
+custom_colors/background_color = Color( 0.125, 0.14375, 0.19375, 1 )
+custom_colors/font_color_readonly = Color( 0.8, 0.8075, 0.8275, 1 )
+text = "# GdUnit generated TestSuite
+#warning-ignore-all:unused_argument
+#warning-ignore-all:return_value_discarded
+class_name ${class_name}
+extends GdUnitTestSuite
+
+# TestSuite generated from
+const __source = '${source_path}'
+"
+syntax_highlighting = true
+
+[node name="MarginContainer" type="MarginContainer" parent="ScrollContainer/VBoxContainer/Editor"]
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = -31.0
+margin_bottom = -1.0
+rect_min_size = Vector2( 0, 20 )
+size_flags_horizontal = 3
+size_flags_vertical = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/Editor/MarginContainer"]
+margin_right = 1024.0
+margin_bottom = 30.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+alignment = 2
+
+[node name="Tags" type="Button" parent="ScrollContainer/VBoxContainer/Editor/MarginContainer/HBoxContainer"]
+margin_left = 780.0
+margin_right = 820.0
+margin_bottom = 30.0
+hint_tooltip = "Shows supported tags."
+text = "Tags"
+
+[node name="SelectType" type="OptionButton" parent="ScrollContainer/VBoxContainer/Editor/MarginContainer/HBoxContainer"]
+margin_left = 824.0
+margin_right = 1024.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 200, 0 )
+hint_tooltip = "Select the script type specific template."
+text = "GD - GDScript"
+items = [ "GD - GDScript", null, false, 0, null, "C# - CSharpScript", null, true, 1, null, "GD - GDScript", null, false, 2, null, "C# - CSharpScript", null, false, 3, null ]
+selected = 0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Panel" type="MarginContainer" parent="ScrollContainer/VBoxContainer"]
+margin_top = 438.0
+margin_right = 1024.0
+margin_bottom = 468.0
+size_flags_horizontal = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/Panel"]
+margin_right = 1024.0
+margin_bottom = 30.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+alignment = 2
+
+[node name="Restore" type="Button" parent="ScrollContainer/VBoxContainer/Panel/HBoxContainer"]
+margin_left = 820.0
+margin_right = 920.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 100, 30 )
+text = "Restore"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Save" type="Button" parent="ScrollContainer/VBoxContainer/Panel/HBoxContainer"]
+margin_left = 924.0
+margin_right = 1024.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 100, 30 )
+disabled = true
+text = "Save"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Tags" type="PopupDialog" parent="."]
+margin_right = 1024.0
+margin_bottom = 600.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="Tags"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 8.0
+margin_top = 8.0
+margin_right = -8.0
+margin_bottom = -8.0
+
+[node name="TextEdit" type="TextEdit" parent="Tags/MarginContainer"]
+margin_right = 1008.0
+margin_bottom = 584.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_fonts/font = ExtResource( 2 )
+custom_colors/font_color_selected = Color( 0.41, 0.61, 0.91, 0.35 )
+custom_colors/font_color = Color( 0.8, 0.8075, 0.8275, 1 )
+custom_colors/background_color = Color( 0.125, 0.14375, 0.19375, 1 )
+custom_colors/font_color_readonly = Color( 0.8, 0.8075, 0.8275, 1 )
+text = "
+Tags are replaced when the test-suite is created.
+
+# The test suite class name based on source which the file was generated.
+${class_name}
+
+# The resource path of the source from which the file was generated.
+${source_path}
+"
+readonly = true
+syntax_highlighting = true
+context_menu_enabled = false
+shortcut_keys_enabled = false
+virtual_keyboard_enabled = false
+
+[connection signal="text_changed" from="ScrollContainer/VBoxContainer/Editor" to="." method="_on_Editor_text_changed"]
+[connection signal="pressed" from="ScrollContainer/VBoxContainer/Editor/MarginContainer/HBoxContainer/Tags" to="." method="_on_Tags_pressed"]
+[connection signal="pressed" from="ScrollContainer/VBoxContainer/Panel/HBoxContainer/Restore" to="." method="_on_Restore_pressed"]
+[connection signal="pressed" from="ScrollContainer/VBoxContainer/Panel/HBoxContainer/Save" to="." method="_on_Save_pressed"]

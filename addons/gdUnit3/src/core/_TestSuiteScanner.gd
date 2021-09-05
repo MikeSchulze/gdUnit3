@@ -149,17 +149,8 @@ static func save_test_suite(path :String, source_path :String) -> Result:
 	var file_extension := path.get_extension()
 	var clazz_name = path.get_file().replace("." + file_extension, "")
 	var script := GDScript.new()
-	script.source_code +=\
-"""# GdUnit generated TestSuite
-#warning-ignore-all:unused_argument
-#warning-ignore-all:return_value_discarded
-class_name ${class_name}
-extends GdUnitTestSuite
-
-# TestSuite generated from
-const __source = '${source_path}'
-""".replace("${class_name}", clazz_name)\
-	.replace("${source_path}", source_path)
+	var test_suite_template = GdUnitSettings.get_setting(GdUnitSettings.TEMPLATE_TS_GD, GdUnitSettings.DEFAULT_TEMP_TS_GD)
+	script.source_code = test_suite_template.replace("${class_name}", clazz_name).replace("${source_path}", source_path)
 	var error := ResourceSaver.save(path, script)
 	if error != OK:
 		return Result.error("Can't create test suite at: %s. Error code %s" % [path, error])
