@@ -84,8 +84,9 @@ I would also appreciate feedback.
 <p align="left">
   <img alt="GitHub issues" src="https://img.shields.io/github/issues/MikeSchulze/gdunit3">
   <img alt="GitHub closed issues" src="https://img.shields.io/github/issues-closed-raw/MikeSchulze/gdunit3"></br>
-  <img src="https://img.shields.io/packagecontrol/dm/SwitchDictionary.svg">
+  <!-- <img src="https://img.shields.io/packagecontrol/dm/SwitchDictionary.svg">
   <img src="https://img.shields.io/packagecontrol/dt/SwitchDictionary.svg">
+   -->
   <img alt="GitHub top language" src="https://img.shields.io/github/languages/top/MikeSchulze/gdunit3">
   <img alt="GitHub code size in bytes" src="https://img.shields.io/github/languages/code-size/MikeSchulze/gdunit3">
   <img src="https://img.shields.io/badge/License-MIT-blue.svg">
