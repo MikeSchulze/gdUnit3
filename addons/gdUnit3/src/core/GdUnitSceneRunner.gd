@@ -179,12 +179,11 @@ func simulate_frames(frames: int) -> GdUnitSceneRunner:
 func simulate_until_signal(signal_name :String, arg0 = null, arg1 = null, arg2 = null, arg3 = null, arg4 = null, arg5 = null) -> GdUnitSceneRunner:
 	return simulate_until_object_signal(_scene, signal_name, arg0, arg1, arg2, arg3, arg4, arg5)
 
-	
 # Simulates scene processing until the given signal is emitted by the given object
 # source: the object that should emit the signal
 # signal_name: the signal to stop the simulation
 # arg..: optional signal arguments to be matched for stop	
-func simulate_until_object_signal(source:Object, signal_name: String, arg0 = null, arg1 = null, arg2 = null, arg3 = null, arg4 = null, arg5 = null) -> GdUnitSceneRunner:
+func simulate_until_object_signal(source :Object, signal_name :String, arg0 = null, arg1 = null, arg2 = null, arg3 = null, arg4 = null, arg5 = null) -> GdUnitSceneRunner:
 	source.connect(signal_name, self, "__interupt_simulate")
 	_expected_signal_args = [arg0, arg1, arg2, arg3, arg4, arg5]
 	_is_simulate_runnig = true
@@ -193,7 +192,6 @@ func simulate_until_object_signal(source:Object, signal_name: String, arg0 = nul
 		yield(get_tree(), "idle_frame")
 	__deactivate_time_factor()
 	return self
-		
 
 func __interupt_simulate(arg0 = null, arg1 = null, arg2 = null, arg3 = null, arg4 = null, arg5 = null):
 	var current_signal_args = [arg0, arg1, arg2, arg3, arg4, arg5]
