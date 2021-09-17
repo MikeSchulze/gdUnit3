@@ -5,11 +5,11 @@ var _base: GdUnitAssert
 
 func _init(caller :Object, current, expect_result :int):
 	_base = GdUnitAssertImpl.new(caller, current, expect_result)
-	if current != null and typeof(current) != TYPE_VECTOR3:
+	if not _base.__validate_value_type(current, TYPE_VECTOR3):
 		report_error("GdUnitVector3Assert inital error, unexpected type <%s>" % GdObjects.typeof_as_string(current))
 
 func __current() -> Vector3:
-	return _base._current
+	return _base.__current()
 
 func report_success() -> GdUnitVector3Assert:
 	_base.report_success()

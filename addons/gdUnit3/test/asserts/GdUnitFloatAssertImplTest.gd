@@ -152,3 +152,12 @@ func test_override_failure_message() -> void:
 		.override_failure_message("Custom failure message")\
 		.is_null()\
 		.has_failure_message("Custom failure message")
+
+var _value :float = 0
+func next_value() -> float:
+	_value += 1.1
+	return _value
+
+func test_with_value_provider() -> void:
+	assert_float(CallBackValueProvider.new(self, "next_value"))\
+		.is_equal(1.1).is_equal(2.2)

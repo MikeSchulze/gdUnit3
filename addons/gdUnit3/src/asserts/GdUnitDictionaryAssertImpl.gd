@@ -6,11 +6,12 @@ var _extract :FuncRef = null
 
 func _init(caller :Object, current, expect_result: int):
 	_base = GdUnitAssertImpl.new(caller, current, expect_result)
-	if current != null and typeof(current) != TYPE_DICTIONARY:
+	if not _base.__validate_value_type(current, TYPE_DICTIONARY):
 		report_error("GdUnitDictionaryAssert inital error, unexpected type <%s>" % GdObjects.typeof_as_string(current))
 
 func __current() -> Dictionary:
-	return null if _base._current == null else Dictionary(_base._current)
+	var current = _base.__current()
+	return null if current == null else current as Dictionary
 
 func __expected(expected) -> Dictionary:
 	return null if expected == null else Dictionary(expected)

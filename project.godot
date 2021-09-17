@@ -49,6 +49,16 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/test/core/resources/scan_testsuite_inheritance/by_class_name/BaseTest.gd"
 }, {
+"base": "ValueProvider",
+"class": "CallBackValueProvider",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/src/asserts/CallBackValueProvider.gd"
+}, {
+"base": "GdUnitTestSuite",
+"class": "CallBackValueProviderTest",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/test/asserts/CallBackValueProviderTest.gd"
+}, {
 "base": "GdUnitArgumentMatcher",
 "class": "ChainedArgumentMatcher",
 "language": "GDScript",
@@ -193,6 +203,11 @@ _global_script_classes=[ {
 "class": "DeepStubTestClass",
 "language": "GDScript",
 "path": "res://addons/gdUnit3/test/mocker/resources/DeepStubTestClass.gd"
+}, {
+"base": "ValueProvider",
+"class": "DefaultValueProvider",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/src/asserts/DefaultValueProvider.gd"
 }, {
 "base": "GdUnitArgumentMatcher",
 "class": "EqualsArgumentMatcher",
@@ -939,6 +954,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/test/resources/core/Udo.gd"
 }, {
+"base": "Reference",
+"class": "ValueProvider",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/src/asserts/ValueProvider.gd"
+}, {
 "base": "Fuzzer",
 "class": "Vector2Fuzzer",
 "language": "GDScript",
@@ -983,6 +1003,8 @@ _global_script_class_icons={
 "AnyClazzArgumentMatcher": "",
 "AnyClazzArgumentMatcherTest": "",
 "BaseTest": "",
+"CallBackValueProvider": "",
+"CallBackValueProviderTest": "",
 "ChainedArgumentMatcher": "",
 "ChainedArgumentMatcherTest": "",
 "City": "",
@@ -1012,6 +1034,7 @@ _global_script_class_icons={
 "CustomNodeTestClass": "",
 "CustomResourceTestClass": "",
 "DeepStubTestClass": "",
+"DefaultValueProvider": "",
 "EqualsArgumentMatcher": "",
 "ExtendedTest": "",
 "Fuzzer": "",
@@ -1161,6 +1184,7 @@ _global_script_class_icons={
 "TestSuiteTemplateTest": "",
 "TimeUnit": "",
 "Udo": "",
+"ValueProvider": "",
 "Vector2Fuzzer": "",
 "Vector3Fuzzer": "",
 "_TestCase": "",

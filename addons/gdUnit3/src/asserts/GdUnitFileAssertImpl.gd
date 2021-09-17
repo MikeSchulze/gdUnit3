@@ -7,8 +7,11 @@ var _caller :Object
 func _init(caller :Object, current, expect_result: int):
 	_caller = caller
 	_base = GdUnitAssertImpl.new(caller, current, expect_result)
-	if typeof(current) != TYPE_STRING:
+	if not _base.__validate_value_type(current, TYPE_STRING):
 		report_error("GdUnitFileAssert inital error, unexpected type <%s>" % GdObjects.typeof_as_string(current))
+
+func __current() -> String:
+	return _base.__current() as String
 
 func report_success() -> GdUnitFileAssert:
 	_base.report_success()
@@ -47,36 +50,40 @@ func is_not_equal(expected) -> GdUnitFileAssert:
 	return self
 
 func is_file() -> GdUnitFileAssert:
+	var current := __current()
 	var file := File.new()
-	var ret = file.open(_base._current, File.READ)
+	var ret = file.open(current, File.READ)
 	if ret != OK:
-		return report_error("Is not a file '%s', error code %s" % [_base._current, ret])
+		return report_error("Is not a file '%s', error code %s" % [current, ret])
 	return report_success()
 
 func exists() -> GdUnitFileAssert:
+	var current := __current()
 	var file := File.new()
-	if not file.file_exists(_base._current):
-		return report_error("The file '%s' not exists" %_base._current)
+	if not file.file_exists(current):
+		return report_error("The file '%s' not exists" %current)
 	return report_success()
 
 func is_script() -> GdUnitFileAssert:
+	var current := __current()
 	var file := File.new()
-	var ret = file.open(_base._current, File.READ)
+	var ret = file.open(current, File.READ)
 	if ret != OK:
-		return report_error("Can't acces the file '%s'! Error code %s" % [_base._current, ret])
+		return report_error("Can't acces the file '%s'! Error code %s" % [current, ret])
 	
-	var script = load(_base._current)
+	var script = load(current)
 	if not script is GDScript:
-		return report_error("The file '%s' is not a GdScript" % _base._current)
+		return report_error("The file '%s' is not a GdScript" % current)
 	return report_success()
 
 func contains_exactly(expected_rows :Array) -> GdUnitFileAssert:
+	var current := __current()
 	var file := File.new()
-	var ret = file.open(_base._current, File.READ)
+	var ret = file.open(current, File.READ)
 	if ret != OK:
-		return report_error("Can't acces the file '%s'! Error code %s" % [_base._current, ret])
+		return report_error("Can't acces the file '%s'! Error code %s" % [current, ret])
 	
-	var script = load(_base._current)
+	var script = load(current)
 	if script is GDScript:
 		var instance = script.new()
 		var source_code = GdScriptParser.to_unix_format(instance.get_script().source_code)

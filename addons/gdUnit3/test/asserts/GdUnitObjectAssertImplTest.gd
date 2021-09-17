@@ -106,3 +106,14 @@ func test_override_failure_message() -> void:
 		.override_failure_message("Custom failure message")\
 		.is_null()\
 		.has_failure_message("Custom failure message")
+
+
+var _index = -1
+var _values := [Reference.new(), Reference.new(), Reference.new()]
+func next_value() -> Object:
+	_index += 1
+	return _values[_index]
+
+func test_with_value_provider() -> void:
+	assert_object(CallBackValueProvider.new(self, "next_value"))\
+		.is_equal(_values[0]).is_equal(_values[1]).is_equal(_values[2])

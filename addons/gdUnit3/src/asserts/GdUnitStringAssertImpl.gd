@@ -5,13 +5,14 @@ var _base :GdUnitAssert
 
 func _init(caller :Object, current, expect_result :int):
 	_base = GdUnitAssertImpl.new(caller, current, expect_result)
-	if current != null and typeof(current) != TYPE_STRING:
+	if not _base.__validate_value_type(current, TYPE_STRING):
 		report_error("GdUnitStringAssert inital error, unexpected type <%s>" % GdObjects.typeof_as_string(current))
 
 func __current() -> String:
-	if _base._current == null:
+	var current = _base.__current()
+	if current == null:
 		return "<Null>"
-	return _base._current as String
+	return current as String
 
 func report_success() -> GdUnitStringAssert:
 	_base.report_success()
@@ -91,53 +92,60 @@ func is_not_empty() -> GdUnitStringAssert:
 	return report_success()
 
 func contains(expected :String) -> GdUnitStringAssert:
-	if __current().find(expected) == -1:
-		return report_error(GdAssertMessages.error_contains(__current(), expected))
+	var current := __current()
+	if current.find(expected) == -1:
+		return report_error(GdAssertMessages.error_contains(current, expected))
 	return report_success()
 
 func not_contains(expected :String) -> GdUnitStringAssert:
-	if __current().find(expected) != -1:
-		return report_error(GdAssertMessages.error_not_contains(__current(), expected))
+	var current := __current()
+	if current.find(expected) != -1:
+		return report_error(GdAssertMessages.error_not_contains(current, expected))
 	return report_success()
 
 func contains_ignoring_case(expected :String) -> GdUnitStringAssert:
-	if __current().findn(expected) == -1:
-		return report_error(GdAssertMessages.error_contains_ignoring_case(__current(), expected))
+	var current := __current()
+	if current.findn(expected) == -1:
+		return report_error(GdAssertMessages.error_contains_ignoring_case(current, expected))
 	return report_success()
 
 func not_contains_ignoring_case(expected :String) -> GdUnitStringAssert:
-	if __current().findn(expected) != -1:
-		return report_error(GdAssertMessages.error_not_contains_ignoring_case(__current(), expected))
+	var current := __current()
+	if current.findn(expected) != -1:
+		return report_error(GdAssertMessages.error_not_contains_ignoring_case(current, expected))
 	return report_success()
 
 func starts_with(expected :String) -> GdUnitStringAssert:
-	if __current().find(expected) != 0:
-		return report_error(GdAssertMessages.error_starts_with(__current(), expected))
+	var current := __current()
+	if current.find(expected) != 0:
+		return report_error(GdAssertMessages.error_starts_with(current, expected))
 	return report_success()
 
 func ends_with(expected :String) -> GdUnitStringAssert:
-	var find = __current().length() - expected.length()
-	if __current().rfind(expected) != find:
-		return report_error(GdAssertMessages.error_ends_with(__current(), expected))
+	var current := __current()
+	var find = current.length() - expected.length()
+	if current.rfind(expected) != find:
+		return report_error(GdAssertMessages.error_ends_with(current, expected))
 	return report_success()
 
 func has_length(expected :int, comparator :int = Comparator.EQUAL) -> GdUnitStringAssert:
+	var current := __current()
 	match comparator:
 		Comparator.EQUAL:
-			if __current().length() != expected:
-				return report_error(GdAssertMessages.error_has_length(__current(), expected, comparator))
+			if current.length() != expected:
+				return report_error(GdAssertMessages.error_has_length(current, expected, comparator))
 		Comparator.LESS_THAN:
-			if __current().length() >= expected:
-				return report_error(GdAssertMessages.error_has_length(__current(), expected, comparator))
+			if current.length() >= expected:
+				return report_error(GdAssertMessages.error_has_length(current, expected, comparator))
 		Comparator.LESS_EQUAL:
-			if __current().length() > expected:
-				return report_error(GdAssertMessages.error_has_length(__current(), expected, comparator))
+			if current.length() > expected:
+				return report_error(GdAssertMessages.error_has_length(current, expected, comparator))
 		Comparator.GREATER_THAN:
-			if __current().length() <= expected:
-				return report_error(GdAssertMessages.error_has_length(__current(), expected, comparator))
+			if current.length() <= expected:
+				return report_error(GdAssertMessages.error_has_length(current, expected, comparator))
 		Comparator.GREATER_EQUAL:
-			if __current().length() < expected:
-				return report_error(GdAssertMessages.error_has_length(__current(), expected, comparator))
+			if current.length() < expected:
+				return report_error(GdAssertMessages.error_has_length(current, expected, comparator))
 		_:
 			return report_error("Comparator '%d' not implemented!" % comparator)
 	return report_success()

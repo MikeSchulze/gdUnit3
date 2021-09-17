@@ -319,7 +319,7 @@ func assert_file(current, expect_result: int = GdUnitAssert.EXPECT_SUCCESS) -> G
 func assert_object(current, expect_result: int = GdUnitAssert.EXPECT_SUCCESS) -> GdUnitObjectAssert:
 	return GdUnitObjectAssertImpl.new(self, current, expect_result)
 
-func assert_result(current :Result, expect_result: int = GdUnitAssert.EXPECT_SUCCESS) -> GdUnitResultAssert:
+func assert_result(current, expect_result: int = GdUnitAssert.EXPECT_SUCCESS) -> GdUnitResultAssert:
 	return GdUnitResultAssertImpl.new(self, current, expect_result)
 
 func assert_not_yet_implemented():

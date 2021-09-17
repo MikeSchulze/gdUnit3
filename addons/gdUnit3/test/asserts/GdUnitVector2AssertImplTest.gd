@@ -127,3 +127,13 @@ func test_override_failure_message() -> void:
 		.override_failure_message("Custom failure message")\
 		.is_null()\
 		.has_failure_message("Custom failure message")
+
+var _index = -1
+var _values := [Vector2.ZERO, Vector2.ONE, Vector2.INF]
+func next_value() -> Vector2:
+	_index += 1
+	return _values[_index]
+
+func test_with_value_provider() -> void:
+	assert_vector2(CallBackValueProvider.new(self, "next_value"))\
+		.is_equal(Vector2.ZERO).is_equal(Vector2.ONE).is_equal(Vector2.INF)

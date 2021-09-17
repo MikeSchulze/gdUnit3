@@ -5,11 +5,14 @@ var _base :GdUnitAssert
 
 func _init(caller :Object, current, expect_result: int):
 	_base = GdUnitAssertImpl.new(caller, current, expect_result)
-	if current != null and not GdObjects.is_array_type(current):
+	if not __validate_value_type(current):
 		report_error("GdUnitArrayAssert inital error, unexpected type <%s>" % GdObjects.typeof_as_string(current))
 
+func __validate_value_type(value) -> bool:
+	return value is ValueProvider or value == null or GdObjects.is_array_type(value)
+
 func __current() -> Array:
-	return Array(_base._current)
+	return Array(_base.__current())
 
 func __expected(expected) -> Array:
 	if typeof(expected) == TYPE_ARRAY:
@@ -183,7 +186,7 @@ func extract(func_name :String, args := Array()) -> GdUnitArrayAssert:
 	var extractor := GdUnitFuncValueExtractor.new(func_name, args)
 	for element in __current():
 		extracted_elements.append(extractor.extract_value(element))
-	_base._current = extracted_elements
+	_base._current_value_provider = DefaultValueProvider.new(extracted_elements)
 	return self
 
 # Extracts all values by given extractors into a new ArrayAssert
@@ -210,5 +213,5 @@ func extractv(
 			extracted_elements.append(GdUnitTuple.new(ev[0], ev[1], ev[2], ev[3], ev[4], ev[5], ev[6], ev[7], ev[8], ev[9]))
 		else:
 			extracted_elements.append(ev[0])
-	_base._current = extracted_elements
+	_base._current_value_provider = DefaultValueProvider.new(extracted_elements)
 	return self

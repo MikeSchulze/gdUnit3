@@ -5,11 +5,11 @@ var _base: GdUnitAssert
 
 func _init(caller :Object, current, expect_result: int):
 	_base = GdUnitAssertImpl.new(caller, current, expect_result)
-	if current != null and typeof(current) != TYPE_BOOL:
+	if not _base.__validate_value_type(current, TYPE_BOOL):
 		report_error("GdUnitBoolAssert inital error, unexpected type <%s>" % GdObjects.typeof_as_string(current))
 
 func __current() -> bool:
-	return _base._current as bool
+	return _base.__current() as bool
 
 func report_success() -> GdUnitBoolAssert:
 	_base.report_success()

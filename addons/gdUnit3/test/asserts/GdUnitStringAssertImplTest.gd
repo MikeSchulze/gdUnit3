@@ -183,3 +183,12 @@ func test_override_failure_message() -> void:
 		.override_failure_message("Custom failure message")\
 		.is_null()\
 		.has_failure_message("Custom failure message")
+
+var _value := 0
+func next_value() -> String:
+	_value += 1
+	return "value_%d" % _value
+
+func test_with_value_provider() -> void:
+	assert_str(CallBackValueProvider.new(self, "next_value"))\
+		.is_equal("value_1").is_equal("value_2").is_equal("value_3")
