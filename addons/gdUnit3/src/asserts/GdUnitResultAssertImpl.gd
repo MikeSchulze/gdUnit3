@@ -5,11 +5,14 @@ var _base :GdUnitAssert
 
 func _init(caller :Object, current, expect_result :int):
 	_base = GdUnitAssertImpl.new(caller, current, expect_result)
-	if current != null and not (current is Result):
-		report_error("GdUnitObjectAssert inital error, unexpected type <%s>" % GdObjects.typeof_as_string(current))
+	if not __validate_value_type(current):
+		report_error("GdUnitResultAssert inital error, unexpected type <%s>" % GdObjects.typeof_as_string(current))
+
+func __validate_value_type(value) -> bool:
+	return value is ValueProvider or value == null or value is Result
 
 func __current() -> Result:
-	return _base._current as Result
+	return _base.__current() as Result
 
 func report_success() -> GdUnitResultAssert:
 	_base.report_success()
@@ -51,32 +54,36 @@ func is_not_null() -> GdUnitResultAssert:
 
 # Verifies that the result is ends up with empty 
 func is_empty() -> GdUnitResultAssert:
-	if not __current().is_empty():
-		report_error(GdAssertMessages.error_result_is_empty(__current()))
+	var result := __current()
+	if not result.is_empty():
+		report_error(GdAssertMessages.error_result_is_empty(result))
 	else:
 		report_success()
 	return self
 
 # Verifies that the result is ends up with success
 func is_success() -> GdUnitResultAssert:
-	if not __current().is_success():
-		report_error(GdAssertMessages.error_result_is_success(__current()))
+	var result := __current()
+	if not result.is_success():
+		report_error(GdAssertMessages.error_result_is_success(result))
 	else:
 		report_success()
 	return self
 
 # Verifies that the result is ends up with warning
 func is_warning() -> GdUnitResultAssert:
-	if not __current().is_warn():
-		report_error(GdAssertMessages.error_result_is_warning(__current()))
+	var result := __current()
+	if not result.is_warn():
+		report_error(GdAssertMessages.error_result_is_warning(result))
 	else:
 		report_success()
 	return self
 
 # Verifies that the result is ends up with error
 func is_error() -> GdUnitResultAssert:
-	if not __current().is_error():
-		report_error(GdAssertMessages.error_result_is_error(__current()))
+	var current := __current()
+	if not current.is_error():
+		report_error(GdAssertMessages.error_result_is_error(current))
 	else:
 		report_success()
 	return self

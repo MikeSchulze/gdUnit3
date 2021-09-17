@@ -5,11 +5,11 @@ var _base: GdUnitAssert
 
 func _init(caller :Object, current, expect_result :int):
 	_base = GdUnitAssertImpl.new(caller, current, expect_result)
-	if current != null and typeof(current) != TYPE_REAL:
+	if not _base.__validate_value_type(current, TYPE_REAL):
 		report_error("GdUnitFloatAssert inital error, unexpected type <%s>" % GdObjects.typeof_as_string(current))
 
 func __current() -> float:
-	return _base._current
+	return _base.__current()
 
 func report_success() -> GdUnitFloatAssert:
 	_base.report_success()

@@ -97,3 +97,13 @@ func test_override_failure_message() -> void:
 		.override_failure_message("Custom failure message")\
 		.is_null()\
 		.has_failure_message("Custom failure message")
+
+var _index = -1
+var _values := [Result.success(""), Result.error("error"), Result.warn("warn")]
+func next_value() -> Result:
+	_index += 1
+	return _values[_index]
+
+func test_with_value_provider() -> void:
+	assert_result(CallBackValueProvider.new(self, "next_value"))\
+		.is_success().is_error().is_warning()

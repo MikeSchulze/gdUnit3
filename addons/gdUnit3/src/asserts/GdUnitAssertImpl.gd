@@ -1,8 +1,7 @@
 class_name GdUnitAssertImpl
 extends GdUnitAssert
 
-
-var _current
+var _current_value_provider :ValueProvider
 var _is_failed :bool = false
 var _current_error_message :String = ""
 var _expect_fail :bool = false
@@ -38,10 +37,16 @@ func _init(caller :Object, current, expect_result :int = EXPECT_SUCCESS):
 	assert(caller != null, "missing argument caller!")
 	assert(caller.has_meta(GdUnitReportConsumer.META_PARAM), "caller must register a report consumer!")
 	_report_consumer = weakref(caller.get_meta(GdUnitReportConsumer.META_PARAM))
-	_current = current
+	_current_value_provider = current if current is ValueProvider else DefaultValueProvider.new(current)
 	# we expect the test will fail
 	if expect_result == EXPECT_FAIL:
 		_expect_fail = true
+
+func __current():
+	return _current_value_provider.get_value()
+
+func __validate_value_type(value, type :int) -> bool:
+	return value is ValueProvider or value == null or typeof(value) == type
 
 func report_success() -> GdUnitAssert:
 	return GdAssertReports.report_success(self)
@@ -69,7 +74,6 @@ func has_failure_message(expected :String):
 		report_error(GdAssertMessages.error_not_same_error(current, expected))
 	return self
 
-
 func starts_with_failure_message(expected :String):
 	var rtl := RichTextLabel.new()
 	rtl.bbcode_enabled = true
@@ -88,29 +92,28 @@ func override_failure_message(message :String):
 	return self
 
 func is_equal(expected) -> GdUnitAssert:
-	if not GdObjects.equals(_current, expected):
-		return report_error(GdAssertMessages.error_equal(_current, expected))
+	var current = __current()
+	if not GdObjects.equals(current, expected):
+		return report_error(GdAssertMessages.error_equal(current, expected))
 	return report_success()
 
 func is_not_equal(expected) -> GdUnitAssert:
-	if GdObjects.equals(_current, expected):
-		return report_error(GdAssertMessages.error_not_equal(_current, expected))
+	var current = __current()
+	if GdObjects.equals(current, expected):
+		return report_error(GdAssertMessages.error_not_equal(current, expected))
 	return report_success()
 
 func is_null() -> GdUnitAssert:
-	if _current != null:
-		return report_error(GdAssertMessages.error_is_null(_current))
+	var current = __current()
+	if current != null:
+		return report_error(GdAssertMessages.error_is_null(current))
 	return report_success()
 
 func is_not_null() -> GdUnitAssert:
-	if _current == null:
+	var current = __current()
+	if current == null:
 		return report_error(GdAssertMessages.error_is_not_null())
 	return report_success()
-
-# is important to remove holding reference
-func _notification(event):
-	if event == NOTIFICATION_PREDELETE:
-		_current = null
 
 func send_report(report :GdUnitReport)-> void:
 	_report_consumer.get_ref().consume(report)

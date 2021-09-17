@@ -123,7 +123,17 @@ func test_is_not_between_fail():
 		.has_failure_message("Expecting:\n '(1, 1, 1)'\n not in range between\n '(0, 0, 0)' <> '(1, 1, 1)'")
 
 func test_override_failure_message() -> void:
-	assert_vector2(Vector3.ONE, GdUnitAssert.EXPECT_FAIL)\
+	assert_vector3(Vector3.ONE, GdUnitAssert.EXPECT_FAIL)\
 		.override_failure_message("Custom failure message")\
 		.is_null()\
 		.has_failure_message("Custom failure message")
+
+var _index = -1
+var _values := [Vector3.ZERO, Vector3.ONE, Vector3.INF]
+func next_value() -> Vector2:
+	_index += 1
+	return _values[_index]
+
+func test_with_value_provider() -> void:
+	assert_vector3(CallBackValueProvider.new(self, "next_value"))\
+		.is_equal(Vector3.ZERO).is_equal(Vector3.ONE).is_equal(Vector3.INF)
