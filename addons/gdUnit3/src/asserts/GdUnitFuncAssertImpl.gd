@@ -22,10 +22,11 @@ class ReportCollector extends GdUnitReportConsumer:
 var _wait_timeout : int = 2000
 var _report_consumer : ReportCollector
 var _assert : GdUnitAssert
-var _caller : Object
+var _caller : Node
 var _original_report_consumer :WeakRef
 
-func _init(caller :Object, instance :Object, func_name :String, args := Array(), expect := EXPECT_SUCCESS):
+func _init(caller :Node, instance :Object, func_name :String, args := Array(), expect := EXPECT_SUCCESS):
+	_caller = caller
 	# save current report consumer to be use to report the final result
 	_original_report_consumer = weakref(caller.get_meta(GdUnitReportConsumer.META_PARAM))
 	# assign a new report collector to catch all reports
@@ -104,10 +105,10 @@ func is_not_equal(value) -> GdUnitAssert:
 	
 func _validate_callback(assert_cb :FuncRef, args = Array()):
 	var timer = Timer.new()
-	Engine.get_main_loop().current_scene.add_child(timer)
+	_caller.add_child(timer)
 	timer.set_one_shot(true)
 	timer.start(_wait_timeout/1000)
-	yield(Engine.get_main_loop(), "idle_frame")
+	yield(_caller.get_tree(), "idle_frame")
 	while timer.time_left > 0:
 		_report_consumer.clear()
 		if args.empty():
@@ -116,11 +117,21 @@ func _validate_callback(assert_cb :FuncRef, args = Array()):
 			assert_cb.call_funcv(args)
 		if not _report_consumer.has_error():
 			break
-		yield(Engine.get_main_loop().create_timer(0.05), "timeout")
+		yield(_caller.get_tree().create_timer(0.05), "timeout")
+	_caller.remove_child(timer)
 	timer.free()
 	if _report_consumer.has_error():
 		var report := _report_consumer.report()
 		_original_report_consumer.get_ref().consume(report)
 	else:
 		_assert.report_success()
+		
+	dispose()
 	return self
+
+func dispose() -> void:
+	_report_consumer.clear()
+	_report_consumer = null
+	_original_report_consumer = null
+	_caller = null
+	_assert = null
