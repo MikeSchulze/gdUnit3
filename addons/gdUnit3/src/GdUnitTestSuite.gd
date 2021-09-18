@@ -322,5 +322,8 @@ func assert_object(current, expect_result: int = GdUnitAssert.EXPECT_SUCCESS) ->
 func assert_result(current, expect_result: int = GdUnitAssert.EXPECT_SUCCESS) -> GdUnitResultAssert:
 	return GdUnitResultAssertImpl.new(self, current, expect_result)
 
+func assert_func(instance :Object, func_name :String, args := Array()) -> GdUnitFuncAssert:
+	return GdUnitFuncAssertImpl.new(self, instance, func_name, args)
+
 func assert_not_yet_implemented():
 	GdUnitAssertImpl.new(self, null).test_fail()

@@ -17,5 +17,6 @@ func test_get_value() -> void:
 
 
 func test_construct_invalid() -> void:
-	var vp := CallBackValueProvider.new(self, "invalid_cunc")
+	var vp := CallBackValueProvider.new(self, "invalid_func", Array(), false)
+	# will return null because of invalid function name
 	assert_str(vp.get_value()).is_null()

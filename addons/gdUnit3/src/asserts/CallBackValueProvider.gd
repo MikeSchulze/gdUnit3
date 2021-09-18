@@ -3,11 +3,15 @@ class_name CallBackValueProvider
 extends ValueProvider
 
 var _fr :FuncRef
+var _args :Array
 
-func _init(instance :Object, func_name :String):
+func _init(instance :Object, func_name :String, args :Array = Array(), force_error :=true):
 	_fr = funcref(instance, func_name);
-	if not _fr.is_valid():
+	_args = args
+	if force_error and not _fr.is_valid():
 		push_error("Can't find function '%s' on instance %s" % [func_name, instance])
 	
 func get_value():
-	return _fr.call_func() if _fr.is_valid() else null
+	if not _fr.is_valid():
+		return null
+	return _fr.call_func() if _args.empty() else _fr.call_funcv(_args)
