@@ -41,7 +41,6 @@ func skip(skipped :bool) -> void:
 func is_skipped() -> bool:
 	return get_meta("gd_skipped") if has_meta("gd_skipped") else false
 
-
 var __active_test_case :String
 func set_active_test_case(test_case :String) -> void:
 	__active_test_case = test_case
@@ -322,8 +321,11 @@ func assert_object(current, expect_result: int = GdUnitAssert.EXPECT_SUCCESS) ->
 func assert_result(current, expect_result: int = GdUnitAssert.EXPECT_SUCCESS) -> GdUnitResultAssert:
 	return GdUnitResultAssertImpl.new(self, current, expect_result)
 
-func assert_func(instance :Object, func_name :String, args := Array()) -> GdUnitFuncAssert:
-	return GdUnitFuncAssertImpl.new(self, instance, func_name, args)
+func assert_func(instance :Object, func_name :String, args := Array(), expect_result :int = GdUnitAssert.EXPECT_SUCCESS) -> GdUnitFuncAssert:
+	return GdUnitFuncAssertImpl.new(self, instance, func_name, args, expect_result)
 
 func assert_not_yet_implemented():
 	GdUnitAssertImpl.new(self, null).test_fail()
+
+func fail(message :String):
+	GdUnitAssertImpl.new(self, null).report_error(message)

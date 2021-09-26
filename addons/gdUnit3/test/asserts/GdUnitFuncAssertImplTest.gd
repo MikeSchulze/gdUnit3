@@ -123,19 +123,19 @@ class TestIterativeValueProvider:
 	
 	func bool_value() -> bool:
 		_current_itteration += 1
-		if _current_itteration == _max_iterations:
+		if _current_itteration >= _max_iterations:
 			return _final_value
 		return _inital_value
 	
 	func int_value() -> int:
 		_current_itteration += 1
-		if _current_itteration == _max_iterations:
+		if _current_itteration >= _max_iterations:
 			return _final_value
 		return _inital_value
 	
 	func obj_value() -> Object:
 		_current_itteration += 1
-		if _current_itteration == _max_iterations:
+		if _current_itteration >= _max_iterations:
 			return _final_value
 		return _inital_value
 		
@@ -151,83 +151,113 @@ class TestIterativeValueProvider:
 	func iteration() -> int:
 		return _current_itteration
 
-func test_is_null(timeout = 1300) -> void:
-	var value_provider := TestIterativeValueProvider.new(Reference.new(), 10, null)
+func test_is_null(timeout = 2000) -> void:
+	var value_provider := TestIterativeValueProvider.new(Reference.new(), 5, null)
 	# without default timeout od 2000ms
 	assert_func(value_provider, "obj_value").is_not_null()
 	yield(assert_func(value_provider, "obj_value").is_null(), "completed")
-	assert_int(value_provider.iteration()).is_equal(10)
+	assert_int(value_provider.iteration()).is_equal(5)
 	
 	# with a timeout of 5s
 	value_provider.reset()
 	assert_func(value_provider, "obj_value").is_not_null()
 	yield(assert_func(value_provider, "obj_value").wait_until(5000).is_null(), "completed")
-	assert_int(value_provider.iteration()).is_equal(10)
+	assert_int(value_provider.iteration()).is_equal(5)
+	
+	# failure case
+	value_provider = TestIterativeValueProvider.new(Reference.new(), 1, Reference.new())
+	yield(assert_func(value_provider, "obj_value", [], GdUnitAssert.EXPECT_FAIL).wait_until(500).is_null(), "completed")\
+		.has_failure_message("Expecting: 'Null' but was <Reference>")
 
-func test_is_not_null(timeout = 1300) -> void:
-	var value_provider := TestIterativeValueProvider.new(null, 10, Reference.new())
+func test_is_not_null(timeout = 2000) -> void:
+	var value_provider := TestIterativeValueProvider.new(null, 5, Reference.new())
 	# without default timeout od 2000ms
 	assert_func(value_provider, "obj_value").is_null()
 	yield(assert_func(value_provider, "obj_value").is_not_null(), "completed")
-	assert_int(value_provider.iteration()).is_equal(10)
+	assert_int(value_provider.iteration()).is_equal(5)
 	
 	# with a timeout of 5s
 	value_provider.reset()
 	assert_func(value_provider, "obj_value").is_null()
 	yield(assert_func(value_provider, "obj_value").wait_until(5000).is_not_null(), "completed")
-	assert_int(value_provider.iteration()).is_equal(10)
+	assert_int(value_provider.iteration()).is_equal(5)
+	
+	# failure case
+	value_provider = TestIterativeValueProvider.new(null, 1, null)
+	yield(assert_func(value_provider, "obj_value", [], GdUnitAssert.EXPECT_FAIL).wait_until(500).is_not_null(), "completed")\
+		.has_failure_message("Expecting: not to be 'Null'")
 
-func test_is_true(timeout = 1300) -> void:
-	var value_provider := TestIterativeValueProvider.new(false, 10, true)
+func test_is_true(timeout = 2000) -> void:
+	var value_provider := TestIterativeValueProvider.new(false, 5, true)
 	# without default timeout od 2000ms
 	assert_func(value_provider, "bool_value").is_false()
 	yield(assert_func(value_provider, "bool_value").is_true(), "completed")
-	assert_int(value_provider.iteration()).is_equal(10)
+	assert_int(value_provider.iteration()).is_equal(5)
 	
 	# with a timeout of 5s
 	value_provider.reset()
 	assert_func(value_provider, "bool_value").is_false()
 	yield(assert_func(value_provider, "bool_value").wait_until(5000).is_true(), "completed")
-	assert_int(value_provider.iteration()).is_equal(10)
+	assert_int(value_provider.iteration()).is_equal(5)
+	
+	# failure case
+	value_provider = TestIterativeValueProvider.new(false, 1, false)
+	yield(assert_func(value_provider, "bool_value", [], GdUnitAssert.EXPECT_FAIL).wait_until(500).is_true(), "completed")\
+		.has_failure_message("Expecting: 'True' but is 'False'")
 
-func test_is_false(timeout = 1300) -> void:
-	var value_provider := TestIterativeValueProvider.new(true, 10, false)
+func test_is_false(timeout = 2000) -> void:
+	var value_provider := TestIterativeValueProvider.new(true, 5, false)
 	# without default timeout od 2000ms
 	assert_func(value_provider, "bool_value").is_true()
 	yield(assert_func(value_provider, "bool_value").is_false(), "completed")
-	assert_int(value_provider.iteration()).is_equal(10)
+	assert_int(value_provider.iteration()).is_equal(5)
 	
 	# with a timeout of 5s
 	value_provider.reset()
 	assert_func(value_provider, "bool_value").is_true()
 	yield(assert_func(value_provider, "bool_value").wait_until(5000).is_false(), "completed")
-	assert_int(value_provider.iteration()).is_equal(10)
+	assert_int(value_provider.iteration()).is_equal(5)
+	
+	# failure case
+	value_provider = TestIterativeValueProvider.new(true, 1, true)
+	yield(assert_func(value_provider, "bool_value", [], GdUnitAssert.EXPECT_FAIL).wait_until(500).is_false(), "completed")\
+		.has_failure_message("Expecting: 'False' but is 'True'")
 
-func test_is_equal(timeout = 1300) -> void:
-	var value_provider := TestIterativeValueProvider.new(42, 10, 23)
+func test_is_equal(timeout = 2000) -> void:
+	var value_provider := TestIterativeValueProvider.new(42, 5, 23)
 	# without default timeout od 2000ms
 	assert_func(value_provider, "int_value").is_equal(42)
 	yield(assert_func(value_provider, "int_value").is_equal(23), "completed")
-	assert_int(value_provider.iteration()).is_equal(10)
+	assert_int(value_provider.iteration()).is_equal(5)
 	
 	# with a timeout of 5s
 	value_provider.reset()
 	assert_func(value_provider, "int_value").is_equal(42)
 	yield(assert_func(value_provider, "int_value").wait_until(5000).is_equal(23), "completed")
-	assert_int(value_provider.iteration()).is_equal(10)
+	assert_int(value_provider.iteration()).is_equal(5)
+	
+	# failing case
+	value_provider = TestIterativeValueProvider.new(23, 1, 23)
+	yield(assert_func(value_provider, "int_value", [], GdUnitAssert.EXPECT_FAIL).wait_until(1000).is_equal(25), "completed")\
+		.has_failure_message("Expecting:\n '25'\n but was\n '23'")
 
-func test_is_not_equal(timeout = 1300) -> void:
-	var value_provider := TestIterativeValueProvider.new(42, 10, 23)
+func test_is_not_equal(timeout = 2000) -> void:
+	var value_provider := TestIterativeValueProvider.new(42, 5, 23)
 	# without default timeout od 2000ms
 	assert_func(value_provider, "int_value").is_equal(42)
 	yield(assert_func(value_provider, "int_value").is_not_equal(42), "completed")
-	assert_int(value_provider.iteration()).is_equal(10)
+	assert_int(value_provider.iteration()).is_equal(5)
 	
 	# with a timeout of 5s
 	value_provider.reset()
 	assert_func(value_provider, "int_value").is_equal(42)
 	yield(assert_func(value_provider, "int_value").wait_until(5000).is_not_equal(42), "completed")
-	assert_int(value_provider.iteration()).is_equal(10)
+	assert_int(value_provider.iteration()).is_equal(5)
+	
+	# failing case
+	value_provider = TestIterativeValueProvider.new(23, 1, 23)
+	yield(assert_func(value_provider, "int_value", [], GdUnitAssert.EXPECT_FAIL).wait_until(1000).is_not_equal(23), "completed")\
+		.has_failure_message("Expecting:\n '23'\n not equal to\n '23'")
 
 func test_is_equal_wiht_func_arg(timeout = 1300) -> void:
 	var value_provider := TestIterativeValueProvider.new(42, 10, 23)
@@ -241,3 +271,25 @@ func test_is_equal_wiht_func_arg(timeout = 1300) -> void:
 	assert_func(value_provider, "has_type", [1]).is_equal(42)
 	yield(assert_func(value_provider, "has_type", [10]).wait_until(5000).is_equal(23), "completed")
 	assert_int(value_provider.iteration()).is_equal(10)
+
+# abort test after 500ms to fail
+func test_timeout_and_assert_fails(timeout = 500) -> void:
+	# disable temporary the timeout errors for this test
+	discard_error_interupted_by_timeout()
+	var value_provider := TestIterativeValueProvider.new(1, 10, 10)
+	# wait longer than test timeout, the value will be never '42' 
+	yield(assert_func(value_provider, "obj_value").wait_until(1000).is_equal(42), "completed")
+	fail("The test must be interrupted after 500ms")
+
+func test_has_failure_message() -> void:
+	var value_provider := TestIterativeValueProvider.new(10, 1, 10)
+	yield(assert_func(value_provider, "int_value", [], GdUnitAssert.EXPECT_FAIL).wait_until(500).is_equal(42), "completed")\
+		.has_failure_message("Expecting:\n '42'\n but was\n '10'")
+
+func test_override_failure_message() -> void:
+	var value_provider := TestIterativeValueProvider.new(10, 1, 20)
+	yield(assert_func(value_provider, "int_value", [], GdUnitAssert.EXPECT_FAIL)\
+		.override_failure_message("Custom failure message")\
+		.wait_until(100)\
+		.is_equal(42), "completed")\
+		.has_failure_message("Custom failure message")

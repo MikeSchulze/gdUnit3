@@ -27,12 +27,17 @@ func is_true() -> GdUnitAssert:
 func is_false() -> GdUnitAssert:
 	return self
 
-func override_failure_message(message :String) -> GdUnitAssert:
+# Verifies the failure message is equal to expected one.
+func has_failure_message(expected: String):
 	return self
 
-# Sets the assert into a `wait until` mode to verifiy the current value has a expected value until a given timeout.
-# If the timeout is happen an failure will be reported
-# e.g. assert_func(instance, "is_state").wait_until(5000).is_equal(10)
-# will verify the `is_state` is set to 10 until 5s 
+# Overrides the default failure message by given custom message.
+func override_failure_message(message :String):
+	return self
+
+# Sets the timeout in ms to wait the function returnd the expected value, if the time over a failure is emitted
+# e.g.
+# do wait until 5s the function `is_state` is returns 10 
+# assert_func(instance, "is_state").wait_until(5000).is_equal(10)
 func wait_until(timeout :int) -> GdUnitAssert:
 	return self

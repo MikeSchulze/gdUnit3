@@ -57,15 +57,14 @@ func update_fuzzers(fuzzers :Array, iteration :int):
 
 func set_timeout():
 	var time :float = _timeout / 1000.0
-	#prints(get_name(), "set testcase timeout to %d ms" % _timeout)
 	_timer.set_wait_time(time)
 	_timer.set_autostart(false)
 	_timer.start()
 
 func _test_case_timeout():
+	_timer.stop()
 	_interupted = true
 	if _fs is GDScriptFunctionState:
-		yield(get_tree(), "idle_frame")
 		_fs.emit_signal("completed")
 
 func is_interupted() -> bool:

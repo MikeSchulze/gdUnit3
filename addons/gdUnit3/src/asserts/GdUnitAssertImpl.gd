@@ -7,31 +7,20 @@ var _current_error_message :String = ""
 var _expect_fail :bool = false
 var _custom_failure_message = null
 var _report_consumer :WeakRef
+var _line_number := -1
 
 # Scans the current stack trace for the root cause to extract the line number
 static func _get_line_number() -> int:
 	var stack_trace := get_stack()
 	if stack_trace == null or stack_trace.empty():
 		return -1
-	
-	var failure_line := -1
-	while not stack_trace.empty():
-		var stack_info = stack_trace.pop_front()
+	for stack_info in stack_trace:
 		var function :String = stack_info.get("function")
 		var source :String = stack_info.get("source")
-		# is test execution error?
-		if function == "execute" and source.find("/_TestCase.gd"):
-			return failure_line
-		# is test before/after error
-		if function == "after_test" or function == "before_test" and source.find("/GdUnitExecutor.gd"):
-			return stack_info.get("line")
-		# is suite before/after error
-		if function == "after" or function == "before" and source.find("/GdUnitExecutor.gd"):
-			return stack_info.get("line")
-		failure_line = stack_info.get("line")
-	# if no GdUnitExecutor in the stacktrace then is possible called in a yield stack
-	var stack_info = get_stack()[-1]
-	return stack_info.get("line")
+		if source.ends_with("AssertImpl.gd") or source.ends_with("GdUnitTestSuite.gd"):
+			continue
+		return stack_info.get("line")
+	return -1
 
 func _init(caller :Object, current, expect_result :int = EXPECT_SUCCESS):
 	assert(caller != null, "missing argument caller!")
@@ -41,6 +30,9 @@ func _init(caller :Object, current, expect_result :int = EXPECT_SUCCESS):
 	# we expect the test will fail
 	if expect_result == EXPECT_FAIL:
 		_expect_fail = true
+
+func set_line_number(line_number :int) -> void:
+	_line_number = line_number
 
 func __current():
 	return _current_value_provider.get_value()
@@ -52,8 +44,7 @@ func report_success() -> GdUnitAssert:
 	return GdAssertReports.report_success(self)
 
 func report_error(error_message :String) -> GdUnitAssert:
-	var line_number := _get_line_number()
-
+	var line_number := _line_number if _line_number != -1 else _get_line_number()
 	if _custom_failure_message == null:
 		return GdAssertReports.report_error(error_message, self, line_number)
 	return GdAssertReports.report_error(_custom_failure_message, self, line_number)
