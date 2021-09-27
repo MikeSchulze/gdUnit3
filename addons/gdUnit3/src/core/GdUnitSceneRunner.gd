@@ -2,6 +2,7 @@
 class_name GdUnitSceneRunner
 extends Node
 
+var _test_suite :WeakRef
 var _scene_tree :SceneTree = null
 var _scene :Node = null
 var _scene_name :String
@@ -16,7 +17,8 @@ var _time_factor := 1.0
 var _saved_time_scale :float
 var _saved_iterations_per_second :float
 
-func _init(scene :Node, verbose :bool):
+func _init(test_suite :Node, scene :Node, verbose :bool):
+	_test_suite = weakref(test_suite)
 	assert(scene != null, "Scene must be not null!")
 	_scene_tree = Engine.get_main_loop()
 	_scene_tree.root.add_child(self)
@@ -192,6 +194,11 @@ func simulate_until_object_signal(source :Object, signal_name :String, arg0 = nu
 		yield(get_tree(), "idle_frame")
 	__deactivate_time_factor()
 	return self
+
+func wait_func(instance :Object, func_name :String, args := [], expeced := GdUnitAssert.EXPECT_SUCCESS) -> GdUnitFuncAssert:
+	__activate_time_factor()
+	return GdUnitFuncAssertImpl.new(_test_suite.get_ref(), instance, func_name, args, expeced)
+
 
 func __interupt_simulate(arg0 = null, arg1 = null, arg2 = null, arg3 = null, arg4 = null, arg5 = null):
 	var current_signal_args = [arg0, arg1, arg2, arg3, arg4, arg5]

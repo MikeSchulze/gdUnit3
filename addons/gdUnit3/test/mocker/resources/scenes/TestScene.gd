@@ -35,13 +35,13 @@ func _on_panel_color_changed(box :ColorRect, color :Color):
 func color_cycle() -> String:
 	prints("color_cycle")
 	emit_signal("panel_color_change", _box1, Color.red)
-	yield(get_tree().create_timer(1), "timeout")
+	yield(get_tree().create_timer(0.500), "timeout")
 	prints("timer1")
 	emit_signal("panel_color_change", _box1, Color.blue)
-	yield(get_tree().create_timer(1), "timeout")
+	yield(get_tree().create_timer(0.500), "timeout")
 	prints("timer2")
 	emit_signal("panel_color_change", _box1, Color.green)
-	yield(get_tree().create_timer(1), "timeout")
+	yield(get_tree().create_timer(0.500), "timeout")
 	prints("cycle end")
 	return "black"
 

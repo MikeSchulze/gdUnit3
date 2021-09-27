@@ -84,27 +84,37 @@ func override_failure_message(message :String):
 
 func is_equal(expected) -> GdUnitAssert:
 	var current = __current()
+	if current is GDScriptFunctionState:
+		current = yield(current, "completed")
 	if not GdObjects.equals(current, expected):
 		return report_error(GdAssertMessages.error_equal(current, expected))
 	return report_success()
 
 func is_not_equal(expected) -> GdUnitAssert:
 	var current = __current()
+	if current is GDScriptFunctionState:
+		return current
 	if GdObjects.equals(current, expected):
 		return report_error(GdAssertMessages.error_not_equal(current, expected))
 	return report_success()
 
 func is_null() -> GdUnitAssert:
 	var current = __current()
+	if current is GDScriptFunctionState:
+		return current
 	if current != null:
 		return report_error(GdAssertMessages.error_is_null(current))
 	return report_success()
 
 func is_not_null() -> GdUnitAssert:
 	var current = __current()
+	if current is GDScriptFunctionState:
+		return current
 	if current == null:
 		return report_error(GdAssertMessages.error_is_not_null())
 	return report_success()
 
 func send_report(report :GdUnitReport)-> void:
-	_report_consumer.get_ref().consume(report)
+	var consumer = _report_consumer.get_ref()
+	if is_instance_valid(consumer):
+		consumer.consume(report)

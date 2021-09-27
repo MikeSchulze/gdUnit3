@@ -97,7 +97,7 @@ func clear_push_errors() -> void:
 
 # Creates a new scene runner to allow simulate interactions on a scene
 func scene_runner(scene :Node, verbose := false) -> GdUnitSceneRunner:
-	return auto_free(GdUnitSceneRunner.new(scene, verbose))
+	return auto_free(GdUnitSceneRunner.new(self, scene, verbose))
 
 # === Mocking  & Spy ===========================================================
 
