@@ -7,7 +7,6 @@ var _current_error_message :String = ""
 var _expect_fail :bool = false
 var _custom_failure_message = null
 var _report_consumer :WeakRef
-var _line_number := -1
 
 # Scans the current stack trace for the root cause to extract the line number
 static func _get_line_number() -> int:
@@ -31,9 +30,6 @@ func _init(caller :Object, current, expect_result :int = EXPECT_SUCCESS):
 	if expect_result == EXPECT_FAIL:
 		_expect_fail = true
 
-func set_line_number(line_number :int) -> void:
-	_line_number = line_number
-
 func __current():
 	return _current_value_provider.get_value()
 
@@ -44,7 +40,7 @@ func report_success() -> GdUnitAssert:
 	return GdAssertReports.report_success(self)
 
 func report_error(error_message :String) -> GdUnitAssert:
-	var line_number := _line_number if _line_number != -1 else _get_line_number()
+	var line_number := _get_line_number()
 	if _custom_failure_message == null:
 		return GdAssertReports.report_error(error_message, self, line_number)
 	return GdAssertReports.report_error(_custom_failure_message, self, line_number)
@@ -84,32 +80,24 @@ func override_failure_message(message :String):
 
 func is_equal(expected) -> GdUnitAssert:
 	var current = __current()
-	if current is GDScriptFunctionState:
-		current = yield(current, "completed")
 	if not GdObjects.equals(current, expected):
 		return report_error(GdAssertMessages.error_equal(current, expected))
 	return report_success()
 
 func is_not_equal(expected) -> GdUnitAssert:
 	var current = __current()
-	if current is GDScriptFunctionState:
-		return current
 	if GdObjects.equals(current, expected):
 		return report_error(GdAssertMessages.error_not_equal(current, expected))
 	return report_success()
 
 func is_null() -> GdUnitAssert:
 	var current = __current()
-	if current is GDScriptFunctionState:
-		return current
 	if current != null:
 		return report_error(GdAssertMessages.error_is_null(current))
 	return report_success()
 
 func is_not_null() -> GdUnitAssert:
 	var current = __current()
-	if current is GDScriptFunctionState:
-		return current
 	if current == null:
 		return report_error(GdAssertMessages.error_is_not_null())
 	return report_success()

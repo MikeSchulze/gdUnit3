@@ -62,54 +62,6 @@ class ValueProvidersWithArguments:
 	func get_index2(instance :Object, name :String, recursive := false) -> int:
 		return 1
 
-func test_get_return_type() -> void:
-	var value_provider := TestValueProvider.new()
-	
-	# GdScript functions
-	assert_int(GdUnitFuncAssertImpl.get_return_type(value_provider, "bool_value")).is_equal(TYPE_BOOL)
-	assert_int(GdUnitFuncAssertImpl.get_return_type(value_provider, "int_value")).is_equal(TYPE_INT)
-	assert_int(GdUnitFuncAssertImpl.get_return_type(value_provider, "float_value")).is_equal(TYPE_REAL)
-	assert_int(GdUnitFuncAssertImpl.get_return_type(value_provider, "string_value")).is_equal(TYPE_STRING)
-	assert_int(GdUnitFuncAssertImpl.get_return_type(value_provider, "object_value")).is_equal(TYPE_OBJECT)
-	assert_int(GdUnitFuncAssertImpl.get_return_type(value_provider, "array_value")).is_equal(TYPE_ARRAY)
-	assert_int(GdUnitFuncAssertImpl.get_return_type(value_provider, "dict_value")).is_equal(TYPE_DICTIONARY)
-	assert_int(GdUnitFuncAssertImpl.get_return_type(value_provider, "vec2_value")).is_equal(TYPE_VECTOR2)
-	assert_int(GdUnitFuncAssertImpl.get_return_type(value_provider, "vec3_value")).is_equal(TYPE_VECTOR3)
-	assert_int(GdUnitFuncAssertImpl.get_return_type(value_provider, "unknown_value")).is_equal(TYPE_NIL)
-	assert_int(GdUnitFuncAssertImpl.get_return_type(value_provider, "no_value")).is_equal(TYPE_NIL)
-	var vp_args := ValueProvidersWithArguments.new()
-	assert_int(GdUnitFuncAssertImpl.get_return_type(vp_args, "is_type")).is_equal(TYPE_BOOL)
-	assert_int(GdUnitFuncAssertImpl.get_return_type(vp_args, "get_index")).is_equal(TYPE_INT)
-	
-	# Godot base class functions
-	var node :Node = auto_free(Node.new())
-	assert_int(GdUnitFuncAssertImpl.get_return_type(node, "get_name")).is_equal(TYPE_STRING)
-	assert_int(GdUnitFuncAssertImpl.get_return_type(node, "can_process")).is_equal(TYPE_BOOL)
-	assert_int(GdUnitFuncAssertImpl.get_return_type(node, "get_child_count")).is_equal(TYPE_INT)
-	assert_int(GdUnitFuncAssertImpl.get_return_type(node, "find_node")).is_equal(TYPE_OBJECT)
-	assert_int(GdUnitFuncAssertImpl.get_return_type(node, "remove_and_skip")).is_equal(TYPE_NIL)
-	assert_int(GdUnitFuncAssertImpl.get_return_type(node, "has_node")).is_equal(TYPE_BOOL)
-
-func test_create_assert_by_return_type() -> void:
-	var value_provider := TestValueProvider.new()
-	
-	assert_object(GdUnitFuncAssertImpl.create_assert_by_return_type(self, value_provider, "bool_value")).is_instanceof(GdUnitBoolAssert)
-	assert_object(GdUnitFuncAssertImpl.create_assert_by_return_type(self, value_provider, "int_value")).is_instanceof(GdUnitIntAssert)
-	assert_object(GdUnitFuncAssertImpl.create_assert_by_return_type(self, value_provider, "float_value")).is_instanceof(GdUnitFloatAssert)
-	assert_object(GdUnitFuncAssertImpl.create_assert_by_return_type(self, value_provider, "string_value")).is_instanceof(GdUnitStringAssert)
-	assert_object(GdUnitFuncAssertImpl.create_assert_by_return_type(self, value_provider, "object_value")).is_instanceof(GdUnitObjectAssert)
-	assert_object(GdUnitFuncAssertImpl.create_assert_by_return_type(self, value_provider, "array_value")).is_instanceof(GdUnitArrayAssert)
-	assert_object(GdUnitFuncAssertImpl.create_assert_by_return_type(self, value_provider, "dict_value")).is_instanceof(GdUnitDictionaryAssert)
-	assert_object(GdUnitFuncAssertImpl.create_assert_by_return_type(self, value_provider, "vec2_value")).is_instanceof(GdUnitVector2Assert)
-	assert_object(GdUnitFuncAssertImpl.create_assert_by_return_type(self, value_provider, "vec3_value")).is_instanceof(GdUnitVector3Assert)
-
-func test_create_assert_by_return_type_with_args() -> void:
-	var vp_args := ValueProvidersWithArguments.new()
-	assert_object(GdUnitFuncAssertImpl.create_assert_by_return_type(self, vp_args, "is_type")).is_instanceof(GdUnitBoolAssert)
-	assert_object(GdUnitFuncAssertImpl.create_assert_by_return_type(self, vp_args, "get_index")).is_instanceof(GdUnitIntAssert)
-	assert_object(GdUnitFuncAssertImpl.create_assert_by_return_type(self, vp_args, "get_index2")).is_instanceof(GdUnitIntAssert)
-
-
 class TestIterativeValueProvider:
 	var _max_iterations :int
 	var _current_itteration := 0
@@ -176,7 +128,7 @@ func test_is_null(timeout = 2000) -> void:
 	# failure case
 	value_provider = TestIterativeValueProvider.new(Reference.new(), 1, Reference.new())
 	yield(assert_func(value_provider, "obj_value", [], GdUnitAssert.EXPECT_FAIL).wait_until(500).is_null(), "completed")\
-		.has_failure_message("Expected: is_null but is interrupted after 500ms")
+		.has_failure_message("Expected: is null but timed out after 500ms")
 
 func test_is_not_null(timeout = 2000) -> void:
 	var value_provider := TestIterativeValueProvider.new(null, 5, Reference.new())
@@ -194,7 +146,7 @@ func test_is_not_null(timeout = 2000) -> void:
 	# failure case
 	value_provider = TestIterativeValueProvider.new(null, 1, null)
 	yield(assert_func(value_provider, "obj_value", [], GdUnitAssert.EXPECT_FAIL).wait_until(500).is_not_null(), "completed")\
-		.has_failure_message("Expected: is_not_null but is interrupted after 500ms")
+		.has_failure_message("Expected: is not null but timed out after 500ms")
 
 func test_is_true(timeout = 2000) -> void:
 	var value_provider := TestIterativeValueProvider.new(false, 5, true)
@@ -212,7 +164,7 @@ func test_is_true(timeout = 2000) -> void:
 	# failure case
 	value_provider = TestIterativeValueProvider.new(false, 1, false)
 	yield(assert_func(value_provider, "bool_value", [], GdUnitAssert.EXPECT_FAIL).wait_until(500).is_true(), "completed")\
-		.has_failure_message("Expected: is_true but is interrupted after 500ms")
+		.has_failure_message("Expected: is true but timed out after 500ms")
 
 func test_is_false(timeout = 2000) -> void:
 	var value_provider := TestIterativeValueProvider.new(true, 5, false)
@@ -230,7 +182,7 @@ func test_is_false(timeout = 2000) -> void:
 	# failure case
 	value_provider = TestIterativeValueProvider.new(true, 1, true)
 	yield(assert_func(value_provider, "bool_value", [], GdUnitAssert.EXPECT_FAIL).wait_until(500).is_false(), "completed")\
-		.has_failure_message("Expected: is_false but is interrupted after 500ms")
+		.has_failure_message("Expected: is false but timed out after 500ms")
 
 func test_is_equal(timeout = 2000) -> void:
 	var value_provider := TestIterativeValueProvider.new(42, 5, 23)
@@ -248,7 +200,7 @@ func test_is_equal(timeout = 2000) -> void:
 	# failing case
 	value_provider = TestIterativeValueProvider.new(23, 1, 23)
 	yield(assert_func(value_provider, "int_value", [], GdUnitAssert.EXPECT_FAIL).wait_until(1000).is_equal(25), "completed")\
-		.has_failure_message("Expected: is_equal '25' but is interrupted after 1s 0ms")
+		.has_failure_message("Expected: is equal '25' but timed out after 1s 0ms")
 
 func test_is_not_equal(timeout = 2000) -> void:
 	var value_provider := TestIterativeValueProvider.new(42, 5, 23)
@@ -266,7 +218,7 @@ func test_is_not_equal(timeout = 2000) -> void:
 	# failing case
 	value_provider = TestIterativeValueProvider.new(23, 1, 23)
 	yield(assert_func(value_provider, "int_value", [], GdUnitAssert.EXPECT_FAIL).wait_until(1000).is_not_equal(23), "completed")\
-		.has_failure_message("Expected: is_not_equal '23' but is interrupted after 1s 0ms")
+		.has_failure_message("Expected: is not equal '23' but timed out after 1s 0ms")
 
 func test_is_equal_wiht_func_arg(timeout = 1300) -> void:
 	var value_provider := TestIterativeValueProvider.new(42, 10, 23)
@@ -306,11 +258,11 @@ func test_timer_yielded_function() -> void:
 	yield(assert_func(self, "timed_function").wait_until(500).is_not_equal(Color.red), "completed")
 	# failure case
 	yield(assert_func(self, "timed_function", [], GdUnitAssert.EXPECT_FAIL).wait_until(500).is_equal(Color.red), "completed")\
-		.has_failure_message("Expected: is_equal '1,0,0,1' but is interrupted after 500ms")
+		.has_failure_message("Expected: is equal '1,0,0,1' but timed out after 500ms")
 
 func test_timer_yielded_function_timeout() -> void:
 	yield(assert_func(self, "timed_function", [], GdUnitAssert.EXPECT_FAIL).wait_until(100).is_equal(Color.black), "completed")\
-		.has_failure_message("Expected: is_equal '0,0,0,1' but is interrupted after 100ms")
+		.has_failure_message("Expected: is equal '0,0,0,1' but timed out after 100ms")
 
 func yielded_function() -> String:
 	var color = Color.red
@@ -323,11 +275,13 @@ func yielded_function() -> String:
 
 func test_idle_frame_yielded_function() -> void:
 	yield(assert_func(self, "yielded_function").is_equal(Color.black), "completed")
+	yield(assert_func(self, "yielded_function", [], GdUnitAssert.EXPECT_FAIL).wait_until(500).is_equal(Color.red), "completed")\
+		.has_failure_message("Expected: is equal '1,0,0,1' but timed out after 500ms")
 
 func test_has_failure_message() -> void:
 	var value_provider := TestIterativeValueProvider.new(10, 1, 10)
 	yield(assert_func(value_provider, "int_value", [], GdUnitAssert.EXPECT_FAIL).wait_until(500).is_equal(42), "completed")\
-		.has_failure_message("Expected: is_equal '42' but is interrupted after 500ms")
+		.has_failure_message("Expected: is equal '42' but timed out after 500ms")
 
 func test_override_failure_message() -> void:
 	var value_provider := TestIterativeValueProvider.new(10, 1, 20)

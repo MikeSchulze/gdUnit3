@@ -100,15 +100,15 @@ func test_simulate_mouse_events():
 	yield(get_tree().create_timer(1), "timeout")
 	verify(spyed_scene)._on_panel_color_changed(spyed_scene._box3, Color.gray)
 
-func test_wait_func_without_time_factor() -> void:
+func _test_wait_func_without_time_factor() -> void:
 	var scene = auto_free(load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn").instance())
 	var runner := scene_runner(scene)
 	
 	yield(runner.wait_func(scene, "color_cycle").is_equal("black"), "completed")
 	yield(runner.wait_func(scene, "color_cycle", [], GdUnitAssert.EXPECT_FAIL).is_equal("red"), "completed")\
-		.has_failure_message("Expected: is_equal 'red' but is interrupted after 2s 0ms")
+		.has_failure_message("Expected: is equal 'red' but timed out after 2s 0ms")
 
-func test_wait_func_with_time_factor() -> void:
+func _test_wait_func_with_time_factor() -> void:
 	var scene = auto_free(load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn").instance())
 	var runner := scene_runner(scene)
 	runner.set_time_factor(10)
@@ -116,4 +116,11 @@ func test_wait_func_with_time_factor() -> void:
 	# wait_until < 300ms by time factor 10
 	yield(runner.wait_func(scene, "color_cycle").wait_until(2000).is_equal("black"), "completed")
 	yield(runner.wait_func(scene, "color_cycle", [], GdUnitAssert.EXPECT_FAIL).wait_until(100).is_equal("red"), "completed")\
-		.has_failure_message("Expected: is_equal 'red' but is interrupted after 100ms")
+		.has_failure_message("Expected: is equal 'red' but timed out after 100ms")
+
+func test_orphan_issue() -> void:
+	var scene = load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn").instance()
+	add_child(scene)
+	yield(assert_func(scene, "color_cycle").is_equal("red"), "completed")
+	remove_child(scene)
+	scene.free()

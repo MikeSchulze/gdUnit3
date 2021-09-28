@@ -269,6 +269,12 @@ static func _result_error_message(current :Result, expected_type :int) -> String
 	var error = "Expecting the result must be a %s but was %s:" % [result_type(expected_type), result_type(current._state)]
 	return "%s\n %s" % [_error(error), _current(result_message(current))]
 
+static func error_interrupted(func_name :String, args :Array, elapsed :String) -> String:
+	func_name = humanized(func_name)
+	if args.empty():
+		return "%s %s but timed out after %s" % [_error("Expected:"), func_name, elapsed]
+	return "%s %s %s but timed out after %s" % [_error("Expected:"), func_name, _current(args[-1]), elapsed]
+
 static func result_type(type :int) -> String:
 	match type:
 		Result.SUCCESS: return "SUCCESS"
@@ -375,3 +381,6 @@ static func format_chars(characters :PoolByteArray, type :Color) -> PoolByteArra
 	else:
 		result.append_array(("[color=#%s][s]%s[/s][/color]" % [type.to_html(), characters.get_string_from_ascii()]).to_utf8())
 	return result
+
+static func humanized(value :String) -> String:
+	return value.replace("_", " ")

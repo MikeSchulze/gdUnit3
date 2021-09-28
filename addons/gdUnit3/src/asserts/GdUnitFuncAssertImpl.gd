@@ -3,98 +3,77 @@ extends GdUnitFuncAssert
 
 signal completed
 
-class ReportCollector extends GdUnitReportConsumer:
-	var _reports = Array()
+class FailureCollector:
+	var _failure := false
 	
-	func consume(report :GdUnitReport) -> void:
-		_reports.append(report)
+	func set_error() -> void:
+		_failure = true
 	
 	func clear():
-		_reports.clear()
+		_failure = false
 	
 	func has_error() -> bool:
-		return not _reports.empty()
-	
-	func report() -> GdUnitReport:
-		return _reports[-1] if not _reports.empty() else null
+		return _failure
 
+var _current_value_provider :ValueProvider
+var _current_error_message = null
+var _custom_failure_message = null
+var _line_number := -1
+var _expect_fail := false
+var _is_failed := false
 # default timeout 2s
 var _default_timeout : int = 2000
-var _expect :int
-var _report_consumer : ReportCollector
-var _assert : GdUnitAssert
+var _expect_result :int
+var _failure_collector := FailureCollector.new()
+var _report_consumer : GdUnitReportConsumer
 var _caller : WeakRef
-var _original_report_consumer :WeakRef
 var _interrupted := false
 
-func _init(caller :Node, instance :Object, func_name :String, args := Array(), expect := EXPECT_SUCCESS):
-	_expect = expect
-	_caller = weakref(caller)
-	# save current report consumer to be use to report the final result
-	_original_report_consumer = weakref(caller.get_meta(GdUnitReportConsumer.META_PARAM))
-	# assign a new report collector to catch all reports
-	_report_consumer = ReportCollector.new()
-	set_meta(GdUnitReportConsumer.META_PARAM, _report_consumer)
-	_assert = create_assert_by_return_type(self, instance, func_name, args, expect)
-	if _assert is GdUnitAssertImpl:
-		_assert.set_line_number(GdUnitAssertImpl._get_line_number())
-	else:
-		_assert._base.set_line_number(GdUnitAssertImpl._get_line_number())
+
+func _init(caller :WeakRef, instance :Object, func_name :String, args := Array(), expect_result := EXPECT_SUCCESS):
+	_line_number = GdUnitAssertImpl._get_line_number()
+	_expect_result = expect_result
+	_caller = caller
+	# set report consumer to be use to report the final result
+	_report_consumer = caller.get_ref().get_meta(GdUnitReportConsumer.META_PARAM)
+	_current_value_provider =  CallBackValueProvider.new(instance, func_name, args)
+	# we expect the test will fail
+	if expect_result == EXPECT_FAIL:
+		_expect_fail = true
+
+func __current():
+	return _current_value_provider.get_value()
+
+func report_success() -> GdUnitAssert:
+	return GdAssertReports.report_success(self)
+
+func report_error(error_message :String) -> GdUnitAssert:
+	if _custom_failure_message == null:
+		return GdAssertReports.report_error(error_message, self, _line_number)
+	return GdAssertReports.report_error(_custom_failure_message, self, _line_number)
+
+func send_report(report :GdUnitReport)-> void:
+	if is_instance_valid(_report_consumer):
+		_report_consumer.consume(report)
 
 # -------- Base Assert wrapping ------------------------------------------------
-func set_report_consumer(report_consumer :WeakRef) -> void:
-	if _assert is GdUnitAssertImpl:
-		_assert._report_consumer = report_consumer
-	else:
-		_assert._base._report_consumer = report_consumer
-
 func has_failure_message(expected: String) -> GdUnitAssert:
-	_assert.has_failure_message(expected)
+	var rtl := RichTextLabel.new()
+	rtl.bbcode_enabled = true
+	rtl.parse_bbcode(_current_error_message)
+	var current_error := rtl.get_text()
+	rtl.free()
+	if current_error != expected:
+		_expect_fail = false
+		var diffs := GdObjects.string_diff(current_error, expected)
+		var current := GdAssertMessages.colorDiff(diffs[1])
+		_custom_failure_message = null
+		report_error(GdAssertMessages.error_not_same_error(current, expected))
 	return self
 
 func override_failure_message(message :String) -> GdUnitAssert:
-	_assert.override_failure_message(message)
+	_custom_failure_message = message
 	return self
-
-static func create_assert_by_return_type(caller :Object, instance :Object, func_name :String, args := Array(),  expect := EXPECT_SUCCESS) -> GdUnitAssert:
-	var value_provider := CallBackValueProvider.new(instance, func_name, args)
-	var return_type := get_return_type(instance, func_name)
-	if GdObjects.is_array_type(return_type):
-		return GdUnitArrayAssertImpl.new(caller, value_provider, expect)
-	
-	match return_type:
-		TYPE_BOOL:
-			return GdUnitBoolAssertImpl.new(caller, value_provider, expect)
-		TYPE_INT:
-			return GdUnitIntAssertImpl.new(caller, value_provider, expect)
-		TYPE_REAL:
-			return GdUnitFloatAssertImpl.new(caller, value_provider, expect)
-		TYPE_STRING:
-			return GdUnitStringAssertImpl.new(caller, value_provider, expect)
-		TYPE_ARRAY:
-			return GdUnitArrayAssertImpl.new(caller, value_provider, expect)
-		TYPE_DICTIONARY:
-			return GdUnitDictionaryAssertImpl.new(caller, value_provider, expect)
-		TYPE_OBJECT:
-			return GdUnitObjectAssertImpl.new(caller, value_provider, expect)
-		TYPE_VECTOR2:
-			return GdUnitVector2AssertImpl.new(caller, value_provider, expect)
-		TYPE_VECTOR3:
-			return GdUnitVector3AssertImpl.new(caller, value_provider, expect)
-		TYPE_NIL:
-			return  GdUnitAssertImpl.new(caller, value_provider, expect);
-	return  null;
-
-static func get_return_type(instance :Object, func_name :String) -> int:
-	if instance.get_script() is GDScript:
-		for method in instance.get_script().get_script_method_list():
-			if method["name"] == func_name:
-				return method["return"]["type"]
-	else: 
-		for method in instance.get_method_list():
-			if method["name"] == func_name:
-				return method["return"]["type"]
-	return TYPE_NIL
 
 func wait_until(timeout := 2000) -> GdUnitAssert:
 	if timeout <= 0:
@@ -121,9 +100,53 @@ func is_equal(value) -> GdUnitAssert:
 
 func is_not_equal(value) -> GdUnitAssert:
 	return _validate_callback("is_not_equal", [value])
-	
+
+# -------- assert implementations
+func _is_null() -> GdUnitAssert:
+	var current = __current()
+	if current is GDScriptFunctionState:
+		return current
+	if current != null:
+		_failure_collector.set_error()
+	return self
+
+func _is_not_null() -> GdUnitAssert:
+	var current = __current()
+	if current is GDScriptFunctionState:
+		return current
+	if current == null:
+		_failure_collector.set_error()
+	return self
+
+func _is_equal(expected) -> GdUnitAssert:
+	var current = __current()
+	if current is GDScriptFunctionState:
+		current = yield(current, "completed")
+		#return current
+	if not GdObjects.equals(current, expected):
+		_failure_collector.set_error()
+	return self
+
+func _is_not_equal(expected) -> GdUnitAssert:
+	var current = __current()
+	if current is GDScriptFunctionState:
+		return current
+	if GdObjects.equals(current, expected):
+		_failure_collector.set_error()
+	return self
+
+func _is_true() -> GdUnitAssert:
+	if __current() != true:
+		_failure_collector.set_error()
+	return self
+
+func _is_false() -> GdUnitAssert:
+	if __current() == true:
+		_failure_collector.set_error()
+	return self
+
 func _validate_callback(func_name :String, args = Array()):
-	var assert_cb = funcref(_assert, func_name)
+	var assert_cb = funcref(self, "_" + func_name)
 	var timeout = Timer.new()
 	var caller = _caller.get_ref()
 	var fs :GDScriptFunctionState = null
@@ -136,7 +159,7 @@ func _validate_callback(func_name :String, args = Array()):
 	var sleep := Timer.new()
 	caller.add_child(sleep)
 	while not _interrupted:
-		_report_consumer.clear()
+		_failure_collector.clear()
 		if args.empty():
 			fs = execute(assert_cb.call_func())
 		else:
@@ -147,7 +170,7 @@ func _validate_callback(func_name :String, args = Array()):
 			if not fs.is_connected("completed", self, "_on_completed"):
 				fs.connect("completed", self, "_on_completed")
 		yield(self, "completed")
-		if _expect != EXPECT_FAIL and not _report_consumer.has_error():
+		if _expect_result != EXPECT_FAIL and not _failure_collector.has_error():
 			break
 		sleep.start(0.05)
 		yield(sleep, "timeout")
@@ -157,19 +180,13 @@ func _validate_callback(func_name :String, args = Array()):
 	timeout.queue_free()
 	#if caller deleted? the test is intrrupted by a timeout
 	if not is_instance_valid(caller):
+		dispose()
 		return
-	set_report_consumer(_original_report_consumer)
 	if _interrupted:
-		if not args.empty():
-			_assert.report_error("Expected: %s '%s' but is interrupted after %s" % [func_name, args[-1], LocalTime.elapsed(_default_timeout)])
-		else:
-			_assert.report_error("Expected: %s but is interrupted after %s" % [func_name, LocalTime.elapsed(_default_timeout)])
-		return self
-	if _report_consumer.has_error():
-		var report := _report_consumer.report()
-		_assert.report_error(report.message())
+		report_error(GdAssertMessages.error_interrupted(func_name, args, LocalTime.elapsed(_default_timeout)))
 	else:
-		_assert.report_success()
+		report_success()
+	dispose()
 	return self
 
 func execute(value):
@@ -178,18 +195,17 @@ func execute(value):
 	call_deferred("emit_signal", "completed")
 
 func _on_completed(value):
+	prints("_on_completed", value)
 	emit_signal("completed")
 
 func _on_timeout(fs :GDScriptFunctionState):
-	#prints("assert timed out")
 	_interrupted = true
 	if fs != null:
 		fs.emit_signal("completed", fs)
 
-func _notification(what):
-	if what == NOTIFICATION_PREDELETE:
-		_report_consumer.clear()
-		_report_consumer = null
-		_original_report_consumer = null
-		_caller = null
-		_assert = null
+func dispose():
+	prints("dispose", self)
+	_caller = null
+	_current_value_provider = null
+	_report_consumer = null
+	notification(NOTIFICATION_PREDELETE)

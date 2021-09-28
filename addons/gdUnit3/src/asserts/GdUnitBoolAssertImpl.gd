@@ -9,7 +9,7 @@ func _init(caller :Object, current, expect_result: int):
 		report_error("GdUnitBoolAssert inital error, unexpected type <%s>" % GdObjects.typeof_as_string(current))
 
 func __current() -> bool:
-	return _base.__current()
+	return _base.__current() as bool
 
 func report_success() -> GdUnitBoolAssert:
 	_base.report_success()

@@ -97,7 +97,7 @@ func clear_push_errors() -> void:
 
 # Creates a new scene runner to allow simulate interactions on a scene
 func scene_runner(scene :Node, verbose := false) -> GdUnitSceneRunner:
-	return auto_free(GdUnitSceneRunner.new(self, scene, verbose))
+	return auto_free(GdUnitSceneRunner.new(weakref(self), scene, verbose))
 
 # === Mocking  & Spy ===========================================================
 
@@ -322,7 +322,7 @@ func assert_result(current, expect_result: int = GdUnitAssert.EXPECT_SUCCESS) ->
 	return GdUnitResultAssertImpl.new(self, current, expect_result)
 
 func assert_func(instance :Object, func_name :String, args := Array(), expect_result :int = GdUnitAssert.EXPECT_SUCCESS) -> GdUnitFuncAssert:
-	return GdUnitFuncAssertImpl.new(self, instance, func_name, args, expect_result)
+	return GdUnitFuncAssertImpl.new(weakref(self), instance, func_name, args, expect_result)
 
 func assert_not_yet_implemented():
 	GdUnitAssertImpl.new(self, null).test_fail()

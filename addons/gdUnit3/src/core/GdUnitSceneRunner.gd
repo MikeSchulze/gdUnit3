@@ -17,8 +17,8 @@ var _time_factor := 1.0
 var _saved_time_scale :float
 var _saved_iterations_per_second :float
 
-func _init(test_suite :Node, scene :Node, verbose :bool):
-	_test_suite = weakref(test_suite)
+func _init(test_suite :WeakRef, scene :Node, verbose :bool):
+	_test_suite = test_suite
 	assert(scene != null, "Scene must be not null!")
 	_scene_tree = Engine.get_main_loop()
 	_scene_tree.root.add_child(self)
@@ -38,9 +38,12 @@ func _init(test_suite :Node, scene :Node, verbose :bool):
 func _tree_exiting():
 	if is_instance_valid(_scene):
 		self.remove_child(_scene)
+	_test_suite = null
 
 func _notification(what):
 	if what == NOTIFICATION_PREDELETE:
+		prints("delete scene runner")
+		_test_suite = null
 		# reset time factor to normal
 		__deactivate_time_factor()
 		# we hide the scene/main window after runner is finished 
@@ -197,8 +200,7 @@ func simulate_until_object_signal(source :Object, signal_name :String, arg0 = nu
 
 func wait_func(instance :Object, func_name :String, args := [], expeced := GdUnitAssert.EXPECT_SUCCESS) -> GdUnitFuncAssert:
 	__activate_time_factor()
-	return GdUnitFuncAssertImpl.new(_test_suite.get_ref(), instance, func_name, args, expeced)
-
+	return GdUnitFuncAssertImpl.new(_test_suite, instance, func_name, args, expeced)
 
 func __interupt_simulate(arg0 = null, arg1 = null, arg2 = null, arg3 = null, arg4 = null, arg5 = null):
 	var current_signal_args = [arg0, arg1, arg2, arg3, arg4, arg5]
