@@ -1,7 +1,7 @@
 class_name GdUnitFuncAssertImpl
 extends GdUnitFuncAssert
 
-signal completed
+signal assert_completed
 
 class FailureCollector:
 	var _failure := false
@@ -153,7 +153,7 @@ func _validate_callback(func_name :String, args = Array()):
 	_interrupted = false
 	caller.add_child(timeout)
 	timeout.set_one_shot(true)
-	timeout.connect("timeout", self, "_on_timeout", [null])
+	timeout.connect("timeout", self, "_on_timeout")
 	timeout.start(_default_timeout/1000.0)
 	# sleep timer
 	var sleep := Timer.new()
@@ -165,11 +165,9 @@ func _validate_callback(func_name :String, args = Array()):
 		else:
 			fs = execute(assert_cb.call_funcv(args))
 		if fs is GDScriptFunctionState:
-			timeout.disconnect("timeout", self, "_on_timeout")
-			timeout.connect("timeout", self, "_on_timeout", [fs])
 			if not fs.is_connected("completed", self, "_on_completed"):
 				fs.connect("completed", self, "_on_completed")
-		yield(self, "completed")
+		yield(self, "assert_completed")
 		if _expect_result != EXPECT_FAIL and not _failure_collector.has_error():
 			break
 		sleep.start(0.05)
@@ -192,20 +190,18 @@ func _validate_callback(func_name :String, args = Array()):
 func execute(value):
 	if value is GDScriptFunctionState:
 		return value
-	call_deferred("emit_signal", "completed")
+	call_deferred("emit_signal", "assert_completed")
 
 func _on_completed(value):
 	prints("_on_completed", value)
-	emit_signal("completed")
+	emit_signal("assert_completed")
 
-func _on_timeout(fs :GDScriptFunctionState):
+func _on_timeout():
+	prints("_on_timeout")
 	_interrupted = true
-	if fs != null:
-		fs.emit_signal("completed", fs)
+	call_deferred("emit_signal", "assert_completed")
 
 func dispose():
-	prints("dispose", self)
 	_caller = null
 	_current_value_provider = null
 	_report_consumer = null
-	notification(NOTIFICATION_PREDELETE)

@@ -5,7 +5,7 @@ extends GdUnitTestSuite
 # TestSuite generated from
 const __source = 'res://addons/gdUnit3/src/core/GdUnitSceneRunner.gd'
 
-func test_simulate_key_pressed_on_mock():
+func _test_simulate_key_pressed_on_mock():
 	var mocked_scene :Control = mock("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
 	assert_object(mocked_scene).is_not_null()
 	assert_array(mocked_scene.get_children())\
@@ -24,7 +24,7 @@ func test_simulate_key_pressed_on_mock():
 		.extract("get_name")\
 		.contains_exactly(["VBoxContainer", "Spell"])
 
-func test_simulate_key_pressed_on_spy():
+func _test_simulate_key_pressed_on_spy():
 	var scene := load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
 	var spyed_scene = spy(scene)
 	assert_object(spyed_scene).is_not_null()
@@ -45,7 +45,7 @@ func test_simulate_key_pressed_on_spy():
 		.contains_exactly(["VBoxContainer", "Spell"])
 
 # mock on a scene and spy on created spell
-func test_simulate_key_pressed_in_combination_with_spy():
+func _test_simulate_key_pressed_in_combination_with_spy():
 	var mocked_scene :Control = mock("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
 	assert_object(mocked_scene).is_not_null()
 	# create a scene runner
@@ -62,7 +62,7 @@ func test_simulate_key_pressed_in_combination_with_spy():
 	verify(mocked_scene).add_child(spell_spy)
 	verify(spell_spy).connect("spell_explode", mocked_scene, "_destroy_spell")
 
-func test_simulate_mouse_events():
+func _test_simulate_mouse_events():
 	var spyed_scene = spy("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
 	var runner := scene_runner(spyed_scene)
 	# enable for visualisize
@@ -118,9 +118,17 @@ func _test_wait_func_with_time_factor() -> void:
 	yield(runner.wait_func(scene, "color_cycle", [], GdUnitAssert.EXPECT_FAIL).wait_until(100).is_equal("red"), "completed")\
 		.has_failure_message("Expected: is equal 'red' but timed out after 100ms")
 
+func test_x():
+	assert_bool(true).is_true()
+
 func test_orphan_issue() -> void:
+	# TODO check wy is produces orphan
+	
 	var scene = load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn").instance()
 	add_child(scene)
-	yield(assert_func(scene, "color_cycle").is_equal("red"), "completed")
+	yield(assert_func(scene, "color_cycle").wait_until(500).is_equal("red"), "completed")
 	remove_child(scene)
 	scene.free()
+
+func test_y():
+	assert_bool(true).is_true()
