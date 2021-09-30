@@ -28,6 +28,7 @@ var _failure_collector := FailureCollector.new()
 var _report_consumer : GdUnitReportConsumer
 var _caller : WeakRef
 var _interrupted := false
+var _completed := false
 
 
 func _init(caller :WeakRef, instance :Object, func_name :String, args := Array(), expect_result := EXPECT_SUCCESS):
@@ -151,6 +152,7 @@ func _validate_callback(func_name :String, args = Array()):
 	var caller = _caller.get_ref()
 	var fs :GDScriptFunctionState = null
 	_interrupted = false
+	_completed = false
 	caller.add_child(timeout)
 	timeout.set_one_shot(true)
 	timeout.connect("timeout", self, "_on_timeout")
@@ -178,13 +180,13 @@ func _validate_callback(func_name :String, args = Array()):
 	timeout.queue_free()
 	#if caller deleted? the test is intrrupted by a timeout
 	if not is_instance_valid(caller):
-		dispose()
+		dispose(fs)
 		return
 	if _interrupted:
 		report_error(GdAssertMessages.error_interrupted(func_name, args, LocalTime.elapsed(_default_timeout)))
 	else:
 		report_success()
-	dispose()
+	dispose(fs)
 	return self
 
 func execute(value):
@@ -193,15 +195,18 @@ func execute(value):
 	call_deferred("emit_signal", "assert_completed")
 
 func _on_completed(value):
+	_completed = true
 	prints("_on_completed", value)
-	emit_signal("assert_completed")
+	call_deferred("emit_signal", "assert_completed")
 
 func _on_timeout():
 	prints("_on_timeout")
 	_interrupted = true
 	call_deferred("emit_signal", "assert_completed")
 
-func dispose():
+func dispose(fs :GDScriptFunctionState):
+	prints("dispose", fs, _completed, _interrupted)
+	if is_instance_valid(fs) and fs.is_valid() and not _completed:
+		fs.resume()
 	_caller = null
 	_current_value_provider = null
-	_report_consumer = null
