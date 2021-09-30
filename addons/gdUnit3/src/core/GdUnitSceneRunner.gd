@@ -42,7 +42,6 @@ func _tree_exiting():
 
 func _notification(what):
 	if what == NOTIFICATION_PREDELETE:
-		prints("delete scene runner")
 		_test_suite = null
 		# reset time factor to normal
 		__deactivate_time_factor()

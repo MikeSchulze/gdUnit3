@@ -196,17 +196,21 @@ func execute(value):
 
 func _on_completed(value):
 	_completed = true
-	prints("_on_completed", value)
 	call_deferred("emit_signal", "assert_completed")
 
 func _on_timeout():
-	prints("_on_timeout")
 	_interrupted = true
 	call_deferred("emit_signal", "assert_completed")
 
+# it is important to free all references to prevent orphan nodes
 func dispose(fs :GDScriptFunctionState):
-	prints("dispose", fs, _completed, _interrupted)
-	if is_instance_valid(fs) and fs.is_valid() and not _completed:
-		fs.resume()
+	if is_instance_valid(fs):
+		# disconnect from all connected signals to force freeing, otherwise it ends up in orphans
+		for connection in fs.get_incoming_connections():
+			prints( "disconnect", connection)
+			var source_ :Object = connection["source"]
+			var signal_ :String = connection["signal_name"]
+			var method_name_ :String = connection["method_name"]
+			source_.disconnect(signal_, fs, method_name_)
 	_caller = null
 	_current_value_provider = null
