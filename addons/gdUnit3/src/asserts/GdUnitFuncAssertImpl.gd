@@ -2,6 +2,7 @@ class_name GdUnitFuncAssertImpl
 extends GdUnitFuncAssert
 
 signal value_provided(value)
+const DEFAULT_TIMEOUT := 2000
 
 var _current_value_provider :ValueProvider
 var _current_error_message = null
@@ -9,8 +10,7 @@ var _custom_failure_message = null
 var _line_number := -1
 var _expect_fail := false
 var _is_failed := false
-# default timeout 2s
-var _default_timeout : int = 2000
+var _timeout := DEFAULT_TIMEOUT
 var _expect_result :int
 var _report_consumer : GdUnitReportConsumer
 var _caller : WeakRef
@@ -62,9 +62,9 @@ func override_failure_message(message :String) -> GdUnitAssert:
 func wait_until(timeout := 2000) -> GdUnitAssert:
 	if timeout <= 0:
 		push_warning("Invalid timeout param, alloed timeouts must be grater than 0. Use default timeout instead")
-		_default_timeout = _default_timeout
+		_timeout = DEFAULT_TIMEOUT
 	else:
-		_default_timeout = timeout
+		_timeout = timeout
 	return self
 
 func is_null() -> GdUnitAssert:
@@ -105,17 +105,19 @@ func _is_false(current, expected) -> bool:
 	return current == false
 
 func _validate_callback(func_name :String, expected = null):
-	var assert_cb = funcref(self, "_" + func_name)
-	var timeout = Timer.new()
 	var caller = _caller.get_ref()
-	_interrupted = false
+	var assert_cb = funcref(self, "_" + func_name)
+	var time_scale = Engine.get_time_scale()
+	var timeout = Timer.new()
 	caller.add_child(timeout)
 	timeout.set_one_shot(true)
 	timeout.connect("timeout", self, "_on_timeout")
-	timeout.start(_default_timeout/1000.0)
+	timeout.start((_timeout/1000.0)*time_scale)
 	# sleep timer
 	var sleep := Timer.new()
 	caller.add_child(sleep)
+	_interrupted = false
+	
 	while true:
 		var current = yield(next_current_value(), "value_provided")
 		if _interrupted:
@@ -135,7 +137,7 @@ func _validate_callback(func_name :String, expected = null):
 		dispose(_fs)
 		return
 	if _interrupted:
-		report_error(GdAssertMessages.error_interrupted(func_name, expected, LocalTime.elapsed(_default_timeout)))
+		report_error(GdAssertMessages.error_interrupted(func_name, expected, LocalTime.elapsed(_timeout)))
 	else:
 		report_success()
 	dispose(_fs)
