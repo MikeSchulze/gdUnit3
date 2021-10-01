@@ -1,19 +1,7 @@
 class_name GdUnitFuncAssertImpl
 extends GdUnitFuncAssert
 
-signal assert_completed
-
-class FailureCollector:
-	var _failure := false
-	
-	func set_error() -> void:
-		_failure = true
-	
-	func clear():
-		_failure = false
-	
-	func has_error() -> bool:
-		return _failure
+signal value_provided(value)
 
 var _current_value_provider :ValueProvider
 var _current_error_message = null
@@ -24,12 +12,10 @@ var _is_failed := false
 # default timeout 2s
 var _default_timeout : int = 2000
 var _expect_result :int
-var _failure_collector := FailureCollector.new()
 var _report_consumer : GdUnitReportConsumer
 var _caller : WeakRef
 var _interrupted := false
-var _completed := false
-
+var _fs :GDScriptFunctionState = null
 
 func _init(caller :WeakRef, instance :Object, func_name :String, args := Array(), expect_result := EXPECT_SUCCESS):
 	_line_number = GdUnitAssertImpl._get_line_number()
@@ -41,9 +27,6 @@ func _init(caller :WeakRef, instance :Object, func_name :String, args := Array()
 	# we expect the test will fail
 	if expect_result == EXPECT_FAIL:
 		_expect_fail = true
-
-func __current():
-	return _current_value_provider.get_value()
 
 func report_success() -> GdUnitAssert:
 	return GdAssertReports.report_success(self)
@@ -96,63 +79,36 @@ func is_false() -> GdUnitAssert:
 func is_true() -> GdUnitAssert:
 	return _validate_callback("is_true")
 
-func is_equal(value) -> GdUnitAssert:
-	return _validate_callback("is_equal", [value])
+func is_equal(expected) -> GdUnitAssert:
+	return _validate_callback("is_equal", expected)
 
-func is_not_equal(value) -> GdUnitAssert:
-	return _validate_callback("is_not_equal", [value])
+func is_not_equal(expected) -> GdUnitAssert:
+	return _validate_callback("is_not_equal", expected)
 
 # -------- assert implementations
-func _is_null() -> GdUnitAssert:
-	var current = __current()
-	if current is GDScriptFunctionState:
-		return current
-	if current != null:
-		_failure_collector.set_error()
-	return self
+func _is_null(current, expected) -> bool:
+	return current == null
 
-func _is_not_null() -> GdUnitAssert:
-	var current = __current()
-	if current is GDScriptFunctionState:
-		return current
-	if current == null:
-		_failure_collector.set_error()
-	return self
+func _is_not_null(current, expected) -> bool:
+	return current != null
 
-func _is_equal(expected) -> GdUnitAssert:
-	var current = __current()
-	if current is GDScriptFunctionState:
-		current = yield(current, "completed")
-		#return current
-	if not GdObjects.equals(current, expected):
-		_failure_collector.set_error()
-	return self
+func _is_equal(current, expected) -> bool:
+	return GdObjects.equals(current, expected)
 
-func _is_not_equal(expected) -> GdUnitAssert:
-	var current = __current()
-	if current is GDScriptFunctionState:
-		return current
-	if GdObjects.equals(current, expected):
-		_failure_collector.set_error()
-	return self
+func _is_not_equal(current, expected) -> bool:
+	return not GdObjects.equals(current, expected)
 
-func _is_true() -> GdUnitAssert:
-	if __current() != true:
-		_failure_collector.set_error()
-	return self
+func _is_true(current, expected) -> bool:
+	return current == true
 
-func _is_false() -> GdUnitAssert:
-	if __current() == true:
-		_failure_collector.set_error()
-	return self
+func _is_false(current, expected) -> bool:
+	return current == false
 
-func _validate_callback(func_name :String, args = Array()):
+func _validate_callback(func_name :String, expected = null):
 	var assert_cb = funcref(self, "_" + func_name)
 	var timeout = Timer.new()
 	var caller = _caller.get_ref()
-	var fs :GDScriptFunctionState = null
 	_interrupted = false
-	_completed = false
 	caller.add_child(timeout)
 	timeout.set_one_shot(true)
 	timeout.connect("timeout", self, "_on_timeout")
@@ -160,17 +116,13 @@ func _validate_callback(func_name :String, args = Array()):
 	# sleep timer
 	var sleep := Timer.new()
 	caller.add_child(sleep)
-	while not _interrupted:
-		_failure_collector.clear()
-		if args.empty():
-			fs = execute(assert_cb.call_func())
-		else:
-			fs = execute(assert_cb.call_funcv(args))
-		if fs is GDScriptFunctionState:
-			if not fs.is_connected("completed", self, "_on_completed"):
-				fs.connect("completed", self, "_on_completed")
-		yield(self, "assert_completed")
-		if _expect_result != EXPECT_FAIL and not _failure_collector.has_error():
+	while true:
+		var current = yield(next_current_value(), "value_provided")
+		if _interrupted:
+			break
+		var is_success = assert_cb.call_func(current, expected)
+		
+		if _expect_result != EXPECT_FAIL and is_success:
 			break
 		sleep.start(0.05)
 		yield(sleep, "timeout")
@@ -180,37 +132,44 @@ func _validate_callback(func_name :String, args = Array()):
 	timeout.queue_free()
 	#if caller deleted? the test is intrrupted by a timeout
 	if not is_instance_valid(caller):
-		dispose(fs)
+		dispose(_fs)
 		return
 	if _interrupted:
-		report_error(GdAssertMessages.error_interrupted(func_name, args, LocalTime.elapsed(_default_timeout)))
+		report_error(GdAssertMessages.error_interrupted(func_name, expected, LocalTime.elapsed(_default_timeout)))
 	else:
 		report_success()
-	dispose(fs)
+	dispose(_fs)
 	return self
 
-func execute(value):
-	if value is GDScriptFunctionState:
-		return value
-	call_deferred("emit_signal", "assert_completed")
+func next_current_value():
+	var current = _current_value_provider.get_value()
+	if current is GDScriptFunctionState:
+		_fs = current
+		if not current.is_connected("completed", self, "_on_completed"):
+			current.connect("completed", self, "_on_completed")
+	else:
+		call_deferred("emit_signal", "value_provided", current)
+	return self
 
 func _on_completed(value):
-	_completed = true
-	call_deferred("emit_signal", "assert_completed")
+	call_deferred("emit_signal", "value_provided", value)
 
 func _on_timeout():
 	_interrupted = true
-	call_deferred("emit_signal", "assert_completed")
+	call_deferred("emit_signal", "value_provided", null)
 
-# it is important to free all references to prevent orphan nodes
+# it is important to free all references/connections to prevent orphan nodes
 func dispose(fs :GDScriptFunctionState):
-	if is_instance_valid(fs):
+	disconnect_connections(fs)
+	disconnect_connections(self)
+	_caller = null
+	_current_value_provider = null
+
+func disconnect_connections(obj :Object):
+	if is_instance_valid(obj):
 		# disconnect from all connected signals to force freeing, otherwise it ends up in orphans
-		for connection in fs.get_incoming_connections():
-			prints( "disconnect", connection)
+		for connection in obj.get_incoming_connections():
 			var source_ :Object = connection["source"]
 			var signal_ :String = connection["signal_name"]
 			var method_name_ :String = connection["method_name"]
-			source_.disconnect(signal_, fs, method_name_)
-	_caller = null
-	_current_value_provider = null
+			source_.disconnect(signal_, obj, method_name_)
