@@ -63,9 +63,7 @@ func test_simulate_key_pressed_in_combination_with_spy():
 	verify(spell_spy).connect("spell_explode", mocked_scene, "_destroy_spell")
 
 func test_simulate_mouse_events():
-	#var mocked_scene :Control = mock("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
-	var scene := load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
-	var spyed_scene = spy(scene)
+	var spyed_scene = spy("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
 	var runner := scene_runner(spyed_scene)
 	# enable for visualisize
 	runner.maximize_view()
@@ -101,3 +99,20 @@ func test_simulate_mouse_events():
 	# after one second is changed to gray
 	yield(get_tree().create_timer(1), "timeout")
 	verify(spyed_scene)._on_panel_color_changed(spyed_scene._box3, Color.gray)
+
+func test_wait_func_without_time_factor() -> void:
+	var scene = auto_free(load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn").instance())
+	var runner := scene_runner(scene)
+	
+	yield(runner.wait_func(scene, "color_cycle").is_equal("black"), "completed")
+	yield(runner.wait_func(scene, "color_cycle", [], GdUnitAssert.EXPECT_FAIL).wait_until(500).is_equal("red"), "completed")\
+		.has_failure_message("Expected: is equal 'red' but timed out after 500ms")
+
+func test_wait_func_with_time_factor() -> void:
+	var scene = auto_free(load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn").instance())
+	var runner := scene_runner(scene)
+	# set max time factor to minimize waiting time on `runner.wait_func`
+	runner.set_time_factor(10)
+	yield(runner.wait_func(scene, "color_cycle").wait_until(200).is_equal("black"), "completed")
+	yield(runner.wait_func(scene, "color_cycle", [], GdUnitAssert.EXPECT_FAIL).wait_until(100).is_equal("red"), "completed")\
+		.has_failure_message("Expected: is equal 'red' but timed out after 100ms")

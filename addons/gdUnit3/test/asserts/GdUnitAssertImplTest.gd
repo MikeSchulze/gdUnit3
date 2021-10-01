@@ -5,20 +5,32 @@ extends GdUnitTestSuite
 # TestSuite generated from
 const __source = 'res://addons/gdUnit3/src/asserts/GdUnitAssertImpl.gd'
 
+func before():
+	assert_int(GdUnitAssertImpl._get_line_number()).is_equal(9)
+
+func after():
+	assert_int(GdUnitAssertImpl._get_line_number()).is_equal(12)
+
+func before_test():
+	assert_int(GdUnitAssertImpl._get_line_number()).is_equal(15)
+
+func after_test():
+	assert_int(GdUnitAssertImpl._get_line_number()).is_equal(18)
+
 func test_get_line_number():
 	# test to return the current line number for an failure
-	assert_int(GdUnitAssertImpl._get_line_number()).is_equal(10)
+	assert_int(GdUnitAssertImpl._get_line_number()).is_equal(22)
 
 func test_get_line_number_yielded():
 	# test to return the current line number after using yield
 	yield(get_tree().create_timer(0.100), "timeout")
-	assert_int(GdUnitAssertImpl._get_line_number()).is_equal(15)
+	assert_int(GdUnitAssertImpl._get_line_number()).is_equal(27)
 
 func test_get_line_number_multiline():
 	# test to return the current line number for an failure
 	# https://github.com/godotengine/godot/issues/43326
 	assert_int(GdUnitAssertImpl\
-		._get_line_number()).is_equal(20)
+		._get_line_number()).is_equal(32)
 
 func test_is_null():
 	assert_that(null).is_null()

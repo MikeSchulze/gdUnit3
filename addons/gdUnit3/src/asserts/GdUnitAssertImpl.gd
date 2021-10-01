@@ -13,25 +13,13 @@ static func _get_line_number() -> int:
 	var stack_trace := get_stack()
 	if stack_trace == null or stack_trace.empty():
 		return -1
-	
-	var failure_line := -1
-	while not stack_trace.empty():
-		var stack_info = stack_trace.pop_front()
+	for stack_info in stack_trace:
 		var function :String = stack_info.get("function")
 		var source :String = stack_info.get("source")
-		# is test execution error?
-		if function == "execute" and source.find("/_TestCase.gd"):
-			return failure_line
-		# is test before/after error
-		if function == "after_test" or function == "before_test" and source.find("/GdUnitExecutor.gd"):
-			return stack_info.get("line")
-		# is suite before/after error
-		if function == "after" or function == "before" and source.find("/GdUnitExecutor.gd"):
-			return stack_info.get("line")
-		failure_line = stack_info.get("line")
-	# if no GdUnitExecutor in the stacktrace then is possible called in a yield stack
-	var stack_info = get_stack()[-1]
-	return stack_info.get("line")
+		if source.ends_with("AssertImpl.gd") or source.ends_with("GdUnitTestSuite.gd"):
+			continue
+		return stack_info.get("line")
+	return -1
 
 func _init(caller :Object, current, expect_result :int = EXPECT_SUCCESS):
 	assert(caller != null, "missing argument caller!")
@@ -53,7 +41,6 @@ func report_success() -> GdUnitAssert:
 
 func report_error(error_message :String) -> GdUnitAssert:
 	var line_number := _get_line_number()
-
 	if _custom_failure_message == null:
 		return GdAssertReports.report_error(error_message, self, line_number)
 	return GdAssertReports.report_error(_custom_failure_message, self, line_number)
@@ -116,4 +103,6 @@ func is_not_null() -> GdUnitAssert:
 	return report_success()
 
 func send_report(report :GdUnitReport)-> void:
-	_report_consumer.get_ref().consume(report)
+	var consumer = _report_consumer.get_ref()
+	if is_instance_valid(consumer):
+		consumer.consume(report)
