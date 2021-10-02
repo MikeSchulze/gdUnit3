@@ -116,3 +116,28 @@ func test_wait_func_with_time_factor() -> void:
 	yield(runner.wait_func(scene, "color_cycle").wait_until(200).is_equal("black"), "completed")
 	yield(runner.wait_func(scene, "color_cycle", [], GdUnitAssert.EXPECT_FAIL).wait_until(100).is_equal("red"), "completed")\
 		.has_failure_message("Expected: is equal 'red' but timed out after 100ms")
+
+func test_wait_signal_without_time_factor() -> void:
+	var scene = auto_free(load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn").instance())
+	var runner := scene_runner(scene)
+	
+	scene.start_color_cycle()
+	yield(runner.wait_emit_signal(scene, "panel_color_change", [scene._box1, Color.red], 600), "completed")
+	yield(runner.wait_emit_signal(scene, "panel_color_change", [scene._box1, Color.blue], 600), "completed")
+	yield(runner.wait_emit_signal(scene, "panel_color_change", [scene._box1, Color.green], 600), "completed")
+	yield(runner.wait_emit_signal(scene, "panel_color_change", [scene._box1, Color.khaki], 300, GdUnitAssert.EXPECT_FAIL), "completed")\
+		.starts_with_failure_message("Expecting emit signal: 'panel_color_change([[ColorRect")
+
+func test_wait_signal_with_time_factor() -> void:
+	var scene = auto_free(load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn").instance())
+	var runner := scene_runner(scene)
+	# set max time factor to minimize waiting time on `runner.wait_func`
+	runner.set_time_factor(10)
+	
+	scene.start_color_cycle()
+	
+	yield(runner.wait_emit_signal(scene, "panel_color_change", [scene._box1, Color.red], 100), "completed")
+	yield(runner.wait_emit_signal(scene, "panel_color_change", [scene._box1, Color.blue], 100), "completed")
+	yield(runner.wait_emit_signal(scene, "panel_color_change", [scene._box1, Color.green], 100), "completed")
+	yield(runner.wait_emit_signal(scene, "panel_color_change", [scene._box1, Color.khaki], 30, GdUnitAssert.EXPECT_FAIL), "completed")\
+		.starts_with_failure_message("Expecting emit signal: 'panel_color_change([[ColorRect")
