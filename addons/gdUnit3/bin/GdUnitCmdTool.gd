@@ -29,6 +29,7 @@ class CLIRunner extends Node:
 			CmdOption.new("-a, --add", "-a <directory|path of testsuite>", "Adds the given test suite or directory to the execution pipeline.", TYPE_STRING),
 			CmdOption.new("-i, --ignore", "-i <testsuite_name|testsuite_name:test-name>", "Adds the given test suite or test case to the ignore list.", TYPE_STRING),
 			CmdOption.new("-c, --continue", "", "By default GdUnit will abort on first test failure to be fail fast, instead of stop after first failure you can use this option to run the complete test set."),
+			CmdOption.new("-conf, --config", "-conf [testconfiguration.cfg]", "Run all tests by given test configuration. Default is 'GdUnitRunner.cfg'", TYPE_STRING, true),
 		], [
 			# advanced options
 			CmdOption.new("-rd, --report-directory", "-rd <directory>", "Specifies the output directory in which the reports are to be written. The default is res://reports/.", TYPE_STRING, true),
@@ -124,6 +125,10 @@ class CLIRunner extends Node:
 		if not cmd_option.help().empty():
 			_console.prints_color("%-4s %s" % ["", cmd_option.help()], Color.darkturquoise)
 		_console.new_line()
+		
+	func load_test_config(path :String = "GdUnitRunner.cfg") -> void:
+		_console.print_color("Loading test configuration %s\n" % path, Color.cornflower)
+		_runner_config.load(path)
 	
 	func show_help() -> void:
 		show_options()
@@ -164,6 +169,7 @@ class CLIRunner extends Node:
 			.register_cb("-rc", funcref(self, "set_report_count"))\
 			.register_cb("--selftest", funcref(self, "run_self_test"))\
 			.register_cb("-c", funcref(self, "disable_fail_fast"))\
+			.register_cb("-conf", funcref(self, "load_test_config"))\
 			.register_cb("--info", funcref(self, "show_version"))\
 			.execute(result.value())
 		if result.is_error():
@@ -190,11 +196,23 @@ class CLIRunner extends Node:
 		# scan for the requested test suites
 		var _scanner := _TestSuiteScanner.new()
 		for resource_path in to_execute.keys():
-			test_suites_to_process += _scanner.scan(resource_path)
+			var selected_tests :Array = to_execute.get(resource_path)
+			var scaned_suites = _scanner.scan(resource_path)
+			skip_test_case(scaned_suites, selected_tests)
+			test_suites_to_process += scaned_suites
 		_scanner.free()
 		
 		skip_suites(test_suites_to_process, config)
 		return test_suites_to_process
+	
+	func skip_test_case(test_suites :Array, test_case_names :Array) -> void:
+		if test_case_names.empty():
+			return
+		for test_suite in test_suites:
+			for test_case in test_suite.get_children():
+				if not test_case_names.has(test_case.get_name()):
+					test_suite.remove_child(test_case)
+					test_case.free()
 	
 	func skip_suites(test_suites :Array, config :GdUnitRunnerConfig) -> void:
 		var skipped := config.skipped()
