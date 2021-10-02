@@ -22,9 +22,6 @@ var _interrupted := false
 func _init(caller :WeakRef, instance :Object, expect_result := EXPECT_SUCCESS):
 	_line_number = GdUnitAssertImpl._get_line_number()
 	_caller = caller
-	if instance == null:
-		report_error("Can't wait for a signal on a NULL object.")
-		return
 	_instance =  instance
 	_expect_result = expect_result
 	# set report consumer to be use to report the final result
@@ -97,9 +94,14 @@ func _verify_signal_args(current :Array, expected :Array) -> bool:
 	return  GdObjects.equals(current, expected)
 
 func _wail_until_signal(signal_name :String, expected_args :Array, expect_not_emitted: bool):
+	if _instance == null:
+		report_error("Can't wait for signal on a NULL object.")
+		yield(Engine.get_main_loop(), "idle_frame")
+		return self
 	# first verify the signal to wait is defined
 	if not _instance.has_signal(signal_name):
-		report_error("The object %s has no signal %s defined" % [_instance, signal_name])
+		report_error("Can't wait for non-existion signal '%s' on object '%s'." % [signal_name,_instance.get_class()])
+		yield(Engine.get_main_loop(), "idle_frame")
 		return self
 	# register on signal to wait for
 	_instance.connect(signal_name, self, "_on_signal_emmited")

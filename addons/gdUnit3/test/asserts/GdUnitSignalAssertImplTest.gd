@@ -33,6 +33,16 @@ func before_test():
 	signal_emitter = TestEmitter.new()
 	add_child(signal_emitter)
 
+func test_invalid_arg() -> void:
+	yield(assert_signal(null, GdUnitAssert.EXPECT_FAIL).wait_until(50).is_emitted("test_signal_counted"), "completed")\
+		.has_failure_message("Can't wait for signal on a NULL object.")
+	yield(assert_signal(null, GdUnitAssert.EXPECT_FAIL).wait_until(50).is_not_emitted("test_signal_counted"), "completed")\
+		.has_failure_message("Can't wait for signal on a NULL object.")
+
+func test_unknown_signal() -> void:
+	yield(assert_signal(signal_emitter, GdUnitAssert.EXPECT_FAIL).wait_until(50).is_emitted("unknown"), "completed")\
+		.has_failure_message("Can't wait for non-existion signal 'unknown' on object 'Node'.")
+
 func test_signal_is_emitted_without_args() -> void:
 	# wait until signal 'test_signal_counted' without args
 	yield(assert_signal(signal_emitter).is_emitted("test_signal"), "completed")
