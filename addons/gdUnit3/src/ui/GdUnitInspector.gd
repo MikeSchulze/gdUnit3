@@ -285,7 +285,7 @@ func _gdUnit_run(debug :bool) -> void:
 	var output = []
 #	_running_debug_mode = false
 	#prints("execute ", OS.get_executable_path(), arguments)
-	_current_runner_process_id = OS.execute(OS.get_executable_path(), arguments, false, output, true);
+	_current_runner_process_id = OS.execute(OS.get_executable_path(), arguments, false, output, false);
 
 
 func _gdUnit_stop(client_id :int) -> void:
@@ -301,7 +301,6 @@ func _gdUnit_stop(client_id :int) -> void:
 		var result = OS.kill(_current_runner_process_id)
 		if result != OK:
 			push_error("ERROR on stopping GdUnit Test Runner. error code: %s" % result)
-
 	_current_runner_process_id = -1
 
 func save_test_suites_before_run() -> void:

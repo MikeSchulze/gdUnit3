@@ -46,8 +46,6 @@ class CLIRunner extends Node:
 		_report_dir = GdUnitTools.current_dir() + "reports"
 		
 		_executor = GdUnitExecutor.new()
-		# needs to disable the default yielding, it is only need when run in client/server context 
-		_executor.disable_default_yield()
 		# stop on first test failure to fail fast
 		_executor.fail_fast(true)
 		var err := _executor.connect("send_event", self, "_on_executor_event")

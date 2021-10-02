@@ -4,7 +4,6 @@ extends Node
 signal send_event(event)
 signal send_event_debug(event)
 
-
 const INIT = 0
 const STAGE_TEST_SUITE_BEFORE = GdUnitReportCollector.STAGE_TEST_SUITE_BEFORE
 const STAGE_TEST_SUITE_AFTER = GdUnitReportCollector.STAGE_TEST_SUITE_AFTER
@@ -26,7 +25,6 @@ var _total_test_failed :int
 var _total_test_errors :int
 
 var _test_run_state :GDScriptFunctionState
-var _with_yielding := true
 var _fail_fast := false
 
 var _x = GdUnitArgumentMatchers.new()
@@ -39,11 +37,6 @@ func _ready():
 	_report_errors_enabled = GdUnitSettings.is_report_push_errors()
 	_memory_pool = GdUnitMemoryPool.new()
 	add_child(_memory_pool)
-
-# disable yielding for CLI tool where results in unneccesary waits
-# the default yield is only set when the executer is runnung in context of client/server
-func disable_default_yield():
-	_with_yielding = false
 
 func fail_fast(enabled :bool) -> void:
 	_fail_fast = enabled
@@ -197,9 +190,6 @@ func execute_test_case(test_suite :GdUnitTestSuite, test_case :_TestCase) -> GDS
 		else:
 			var fuzzers := create_fuzzers(test_suite, test_case)
 			for iteration in test_case.iterations():
-				if _with_yielding:
-					# give main thread time to sync to prevent network timeouts
-					yield(get_tree(), "idle_frame")
 				# interrupt at first failure
 				var reports := _report_collector.get_reports(STAGE_TEST_CASE_EXECUTE)
 				if not reports.empty():
