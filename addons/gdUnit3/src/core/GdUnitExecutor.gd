@@ -2,6 +2,7 @@ class_name GdUnitExecutor
 extends Node
 
 signal send_event(event)
+signal send_event_debug(event)
 
 const INIT = 0
 const STAGE_TEST_SUITE_BEFORE = GdUnitReportCollector.STAGE_TEST_SUITE_BEFORE
@@ -27,6 +28,10 @@ var _test_run_state :GDScriptFunctionState
 var _fail_fast := false
 
 var _x = GdUnitArgumentMatchers.new()
+var _debug_mode :bool
+
+func _init(debug_mode := false):
+	_debug_mode = debug_mode
 
 func _ready():
 	_report_errors_enabled = GdUnitSettings.is_report_push_errors()
@@ -40,7 +45,10 @@ func set_stage(stage :int) -> void:
 	_report_collector.set_stage(stage)
 
 func fire_event(event :GdUnitEvent) -> void:
-	emit_signal("send_event", event)
+	if _debug_mode:
+		emit_signal("send_event_debug", event)
+	else:
+		emit_signal("send_event", event)
 
 func suite_before(test_suite :GdUnitTestSuite, total_count :int) -> GDScriptFunctionState:
 	set_stage(STAGE_TEST_SUITE_BEFORE)
