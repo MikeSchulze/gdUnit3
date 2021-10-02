@@ -324,6 +324,9 @@ func assert_result(current, expect_result: int = GdUnitAssert.EXPECT_SUCCESS) ->
 func assert_func(instance :Object, func_name :String, args := Array(), expect_result :int = GdUnitAssert.EXPECT_SUCCESS) -> GdUnitFuncAssert:
 	return GdUnitFuncAssertImpl.new(weakref(self), instance, func_name, args, expect_result)
 
+func assert_signal(instance :Object, expect_result :int = GdUnitAssert.EXPECT_SUCCESS) -> GdUnitSignalAssert:
+	return GdUnitSignalAssertImpl.new(weakref(self), instance, expect_result)
+
 func assert_not_yet_implemented():
 	GdUnitAssertImpl.new(self, null).test_fail()
 

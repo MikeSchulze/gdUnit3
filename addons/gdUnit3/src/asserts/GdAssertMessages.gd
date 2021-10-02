@@ -275,6 +275,17 @@ static func error_interrupted(func_name :String, expected, elapsed :String) -> S
 		return "%s %s but timed out after %s" % [_error("Expected:"), func_name, elapsed]
 	return "%s %s %s but timed out after %s" % [_error("Expected:"), func_name, _current(expected), elapsed]
 
+static func error_wait_signal(signal_name :String, args :Array, elapsed :String) -> String:
+	if args.empty():
+		return "%s %s but timed out after %s" % [_error("Expecting emit signal:"), _current(signal_name + "()"), elapsed]
+	return "%s %s but timed out after %s" % [_error("Expecting emit signal:"), _current(signal_name + "(" + str(args) + ")"), elapsed]
+
+static func error_signal_emitted(signal_name :String, args :Array, elapsed :String) -> String:
+	if args.empty():
+		return "%s %s but is emitted after %s" % [_error("Expecting do not emit signal:"), _current(signal_name + "()"), elapsed]
+	return "%s %s but is emitted after %s" % [_error("Expecting do not emit signal:"), _current(signal_name + "(" + str(args) + ")"), elapsed]
+
+
 static func result_type(type :int) -> String:
 	match type:
 		Result.SUCCESS: return "SUCCESS"
