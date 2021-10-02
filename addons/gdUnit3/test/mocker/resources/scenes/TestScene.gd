@@ -1,6 +1,6 @@
 extends Control
 
-signal panel_color_change
+signal panel_color_change(box, color)
 
 const COLOR_CYCLE := [Color.royalblue, Color.chartreuse, Color.yellowgreen]
 
@@ -34,16 +34,19 @@ func _on_panel_color_changed(box :ColorRect, color :Color):
 
 func color_cycle() -> String:
 	prints("color_cycle")
+	yield(get_tree().create_timer(0.500), "timeout")
 	emit_signal("panel_color_change", _box1, Color.red)
-	yield(get_tree().create_timer(0.500), "timeout")
 	prints("timer1")
+	yield(get_tree().create_timer(0.500), "timeout")
 	emit_signal("panel_color_change", _box1, Color.blue)
-	yield(get_tree().create_timer(0.500), "timeout")
 	prints("timer2")
-	emit_signal("panel_color_change", _box1, Color.green)
 	yield(get_tree().create_timer(0.500), "timeout")
+	emit_signal("panel_color_change", _box1, Color.green)
 	prints("cycle end")
 	return "black"
+
+func start_color_cycle():
+	color_cycle()
 
 # used for manuall spy on created spy
 func _create_spell() -> Spell:
