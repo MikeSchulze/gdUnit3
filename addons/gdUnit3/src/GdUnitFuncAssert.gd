@@ -31,6 +31,10 @@ func is_false() -> GdUnitAssert:
 func has_failure_message(expected: String):
 	return self
 
+# Verifies that the failure starts with the given prefix.
+func starts_with_failure_message(expected: String):
+	return self
+
 # Overrides the default failure message by given custom message.
 func override_failure_message(message :String):
 	return self

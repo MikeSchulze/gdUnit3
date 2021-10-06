@@ -23,10 +23,14 @@ func _init(caller :WeakRef, instance :Object, func_name :String, args := Array()
 	_caller = caller
 	# set report consumer to be use to report the final result
 	_report_consumer = caller.get_ref().get_meta(GdUnitReportConsumer.META_PARAM)
-	_current_value_provider =  CallBackValueProvider.new(instance, func_name, args)
 	# we expect the test will fail
 	if expect_result == EXPECT_FAIL:
 		_expect_fail = true
+	# verify at first the function name exists
+	if not instance.has_method(func_name):
+		report_error("The function '%s' do not exists on instance '%s'." % [func_name, instance])
+	else:
+		_current_value_provider = CallBackValueProvider.new(instance, func_name, args)
 
 func report_success() -> GdUnitAssert:
 	return GdAssertReports.report_success(self)
@@ -41,12 +45,8 @@ func send_report(report :GdUnitReport)-> void:
 		_report_consumer.consume(report)
 
 # -------- Base Assert wrapping ------------------------------------------------
-func has_failure_message(expected: String) -> GdUnitAssert:
-	var rtl := RichTextLabel.new()
-	rtl.bbcode_enabled = true
-	rtl.parse_bbcode(_current_error_message)
-	var current_error := rtl.get_text()
-	rtl.free()
+func has_failure_message(expected: String) -> GdUnitFuncAssert:
+	var current_error := _extract_plain_message(_current_error_message)
 	if current_error != expected:
 		_expect_fail = false
 		var diffs := GdObjects.string_diff(current_error, expected)
@@ -54,6 +54,23 @@ func has_failure_message(expected: String) -> GdUnitAssert:
 		_custom_failure_message = null
 		report_error(GdAssertMessages.error_not_same_error(current, expected))
 	return self
+
+func starts_with_failure_message(expected: String) -> GdUnitFuncAssert:
+	var current_error := _extract_plain_message(_current_error_message)
+	if not current_error.begins_with(expected):
+		_expect_fail = false
+		var diffs := GdObjects.string_diff(current_error, expected)
+		var current := GdAssertMessages.colorDiff(diffs[1])
+		_custom_failure_message = null
+		report_error(GdAssertMessages.error_not_same_error(current, expected))
+	return self
+
+func _extract_plain_message(message) -> String:
+	var rtl := RichTextLabel.new()
+	rtl.bbcode_enabled = true
+	rtl.parse_bbcode(message if message else "")
+	rtl.queue_free()
+	return rtl.get_text()
 
 func override_failure_message(message :String) -> GdUnitAssert:
 	_custom_failure_message = message
@@ -105,6 +122,10 @@ func _is_false(current, expected) -> bool:
 	return current == false
 
 func _validate_callback(func_name :String, expected = null):
+	# if initial failed?
+	if _is_failed:
+		yield(Engine.get_main_loop(), "idle_frame")
+		return self
 	var caller = _caller.get_ref()
 	var assert_cb = funcref(self, "_" + func_name)
 	var time_scale = Engine.get_time_scale()
