@@ -9,28 +9,39 @@ func before():
 	assert_int(GdUnitAssertImpl._get_line_number()).is_equal(9)
 
 func after():
-	assert_int(GdUnitAssertImpl._get_line_number()).is_equal(12)
+	assert_int(10, GdUnitAssert.EXPECT_FAIL).is_equal(42)
+	assert_int(GdAssertReports.get_last_error_line_number()).is_equal(12)
 
 func before_test():
-	assert_int(GdUnitAssertImpl._get_line_number()).is_equal(15)
+	assert_int(10, GdUnitAssert.EXPECT_FAIL).is_equal(42)
+	assert_int(GdAssertReports.get_last_error_line_number()).is_equal(16)
 
 func after_test():
-	assert_int(GdUnitAssertImpl._get_line_number()).is_equal(18)
+	assert_int(10, GdUnitAssert.EXPECT_FAIL).is_equal(42)
+	assert_int(GdAssertReports.get_last_error_line_number()).is_equal(20)
 
 func test_get_line_number():
 	# test to return the current line number for an failure
-	assert_int(GdUnitAssertImpl._get_line_number()).is_equal(22)
+	assert_int(10, GdUnitAssert.EXPECT_FAIL).is_equal(42)
+	assert_int(GdAssertReports.get_last_error_line_number()).is_equal(25)
 
 func test_get_line_number_yielded():
 	# test to return the current line number after using yield
 	yield(get_tree().create_timer(0.100), "timeout")
-	assert_int(GdUnitAssertImpl._get_line_number()).is_equal(27)
+	assert_int(10, GdUnitAssert.EXPECT_FAIL).is_equal(42)
+	assert_int(GdAssertReports.get_last_error_line_number()).is_equal(31)
 
 func test_get_line_number_multiline():
 	# test to return the current line number for an failure
 	# https://github.com/godotengine/godot/issues/43326
-	assert_int(GdUnitAssertImpl\
-		._get_line_number()).is_equal(32)
+	assert_int(10, GdUnitAssert.EXPECT_FAIL).is_not_negative()\
+		.is_equal(42)
+	assert_int(GdAssertReports.get_last_error_line_number()).is_equal(37)
+
+func test_get_line_number_verify():
+	var obj = mock(Reference)
+	verify(obj, 1, GdUnitAssert.EXPECT_FAIL)._to_string()
+	assert_int(GdAssertReports.get_last_error_line_number()).is_equal(43)
 
 func test_is_null():
 	assert_that(null).is_null()

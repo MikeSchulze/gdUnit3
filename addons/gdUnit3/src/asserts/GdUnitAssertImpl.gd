@@ -16,7 +16,7 @@ static func _get_line_number() -> int:
 	for stack_info in stack_trace:
 		var function :String = stack_info.get("function")
 		var source :String = stack_info.get("source")
-		if source.ends_with("AssertImpl.gd") or source.ends_with("GdUnitTestSuite.gd"):
+		if source.empty() or source.ends_with("AssertImpl.gd") or source.ends_with("GdUnitTestSuite.gd"):
 			continue
 		return stack_info.get("line")
 	return -1
@@ -26,6 +26,7 @@ func _init(caller :Object, current, expect_result :int = EXPECT_SUCCESS):
 	assert(caller.has_meta(GdUnitReportConsumer.META_PARAM), "caller must register a report consumer!")
 	_report_consumer = weakref(caller.get_meta(GdUnitReportConsumer.META_PARAM))
 	_current_value_provider = current if current is ValueProvider else DefaultValueProvider.new(current)
+	GdAssertReports.reset_last_error_line_number()
 	# we expect the test will fail
 	if expect_result == EXPECT_FAIL:
 		_expect_fail = true
@@ -41,6 +42,7 @@ func report_success() -> GdUnitAssert:
 
 func report_error(error_message :String) -> GdUnitAssert:
 	var line_number := _get_line_number()
+	GdAssertReports.set_last_error_line_number(line_number)
 	if _custom_failure_message == null:
 		return GdAssertReports.report_error(error_message, self, line_number)
 	return GdAssertReports.report_error(_custom_failure_message, self, line_number)

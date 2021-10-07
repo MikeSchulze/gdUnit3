@@ -2,6 +2,7 @@ class_name GdAssertReports
 extends Reference
 
 const LAST_ERROR = "last_assert_error_message"
+const LAST_ERROR_LINE = "last_assert_error_line"
 
 # if a test success but we expect to fail map to an error
 static func report_success(gd_assert :GdUnitAssert) -> GdUnitAssert:
@@ -23,3 +24,14 @@ static func report_error(message:String, gd_assert :GdUnitAssert, line_number :i
 			return gd_assert
 	gd_assert.send_report(GdUnitReport.new().create(GdUnitReport.FAILURE, line_number, message))
 	return gd_assert
+
+static func reset_last_error_line_number() -> void:
+	Engine.remove_meta(LAST_ERROR_LINE)
+
+static func set_last_error_line_number(line_number :int) -> void:
+	Engine.set_meta(LAST_ERROR_LINE, line_number)
+
+static func get_last_error_line_number() -> int:
+	if Engine.has_meta(LAST_ERROR_LINE):
+		return Engine.get_meta(LAST_ERROR_LINE)
+	return -1
