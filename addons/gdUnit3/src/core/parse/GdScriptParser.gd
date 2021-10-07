@@ -509,7 +509,8 @@ func load_source_code(script :GDScript, script_path :PoolStringArray) -> PoolStr
 		var value = map.get(key)
 		if value is GDScript:
 			var class_path := GdObjects.extract_class_path(value)
-			_scanned_inner_classes.append(class_path[1])
+			if class_path.size() > 1:
+				_scanned_inner_classes.append(class_path[1])
 
 	var source_code := to_unix_format(script.source_code)
 	var source_rows := source_code.split("\n")

@@ -307,6 +307,18 @@ func test_spy_snake_case_named_class_by_class():
 	verify(spy_tcp_server).is_connection_available()
 	verify_no_more_interactions(spy_tcp_server)
 
+const Issue = preload("res://addons/gdUnit3/test/resources/issues/gd-166/issue.gd")
+const Type = preload("res://addons/gdUnit3/test/resources/issues/gd-166/types.gd")
+
+func test_spy_preload_class_GD_166() -> void:
+	var instance = auto_free(Issue.new())
+	var spy_instance = spy(instance)
+	
+	spy_instance.type = Type.FOO
+	verify(spy_instance, 1)._set_type(Type.FOO)
+	assert_int(spy_instance.type).is_equal(Type.FOO)
+	assert_str(spy_instance.type_name).is_equal("FOO")
+
 var _test_signal_is_emited := false
 func _emit_ready(a, b, c):
 	prints("_emit_ready", a, b, c)

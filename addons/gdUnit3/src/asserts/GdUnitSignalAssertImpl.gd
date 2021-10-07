@@ -24,6 +24,7 @@ func _init(caller :WeakRef, instance :Object, expect_result := EXPECT_SUCCESS):
 	_caller = caller
 	_instance =  instance
 	_expect_result = expect_result
+	GdAssertReports.reset_last_error_line_number()
 	# set report consumer to be use to report the final result
 	_report_consumer = caller.get_ref().get_meta(GdUnitReportConsumer.META_PARAM)
 	# we expect the test will fail
