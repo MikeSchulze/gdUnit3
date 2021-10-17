@@ -77,6 +77,7 @@ You have to install the GdUnit3 plugin over the AssetLib in the Godot Editor.
 You are welcome to report bugs or create new feature requests.
 I would also appreciate feedback.
 
+<a href="https://discord.gg/pANKR7UQ"><img src="https://img.shields.io/discord/885149082119733269?style=style=flat-square&label=Join GdUnit3 on Discord&color=7289DA" alt="Join GdUnit3 Server"/></a>
 
 [Documentation](https://github.com/MikeSchulze/gdUnit3/wiki)
 
