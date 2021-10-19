@@ -10,6 +10,7 @@ const UPDATE_NOTIFICATION_ENABLED = COMMON_SETTINGS + "/update_notification_enab
 
 const SERVER_TIMEOUT = COMMON_SETTINGS + "/server_connection_timeout_minutes"
 const TEST_TIMEOUT = COMMON_SETTINGS + "/test_timeout_seconds"
+const TEST_ROOT_FOLDER = COMMON_SETTINGS + "/test_root_folder"
 
 # Report Setiings
 const REPORT_SETTINGS = MAIN_CATEGORY + "/report"
@@ -35,6 +36,8 @@ const TEMPLATE_TS_CS = TEMPLATES_TS + "/CSharpScript"
 const DEFAULT_SERVER_TIMEOUT :int = 30
 # test case runtime timeout in seconds
 const DEFAULT_TEST_TIMEOUT :int = 60*5
+# the folder to create new test-suites
+const DEFAULT_TEST_ROOT_FOLDER := "test"
 
 
 const DEFAULT_TEMP_TS_GD = """# GdUnit generated TestSuite
@@ -51,6 +54,7 @@ static func setup():
 	create_property_if_need(UPDATE_NOTIFICATION_ENABLED, true, "Enables/Disables the update notification on startup.")
 	create_property_if_need(SERVER_TIMEOUT, DEFAULT_SERVER_TIMEOUT, "Sets the server connection timeout in minutes.")
 	create_property_if_need(TEST_TIMEOUT, DEFAULT_TEST_TIMEOUT, "Sets the test case runtime timeout in seconds.")
+	create_property_if_need(TEST_ROOT_FOLDER, DEFAULT_TEST_ROOT_FOLDER, "Sets the root folder where test-suites located/generated.")
 	create_property_if_need(REPORT_ERROR_NOTIFICATIONS, false, "Current not supported!")
 	create_property_if_need(REPORT_ORPHANS, true, "Enables/Disables orphan reporting.")
 	create_property_if_need(REPORT_ASSERT_ERRORS, true, "Enables/Disables error reporting on asserts.")
@@ -108,6 +112,10 @@ static func server_timeout() -> int:
 # the configured test case timeout in ms
 static func test_timeout() -> int:
 	return get_setting(TEST_TIMEOUT, DEFAULT_TEST_TIMEOUT) * 1000
+
+# the root folder to store/generate test-suites
+static func test_root_folder() -> String:
+	return get_setting(TEST_ROOT_FOLDER, DEFAULT_TEST_ROOT_FOLDER) 
 
 static func is_verbose_assert_warnings() -> bool:
 	return get_setting(REPORT_ASSERT_WARNINGS, true)

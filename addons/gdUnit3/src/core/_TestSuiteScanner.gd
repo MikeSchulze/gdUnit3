@@ -112,49 +112,72 @@ func _parse_and_add_test_cases(test_suite :GdUnitTestSuite, resource_path :Strin
 	
 	file.close()
 
-static func build_test_suite_path(resource_path :String) -> String:
-	var file_extension := resource_path.get_extension()
-	var file_name = resource_path.get_file().replace("." + file_extension, "")
-	var test_suite_path :String
+static func to_class_name(file_name :String) -> String:
+	return file_name.capitalize().replace(" ", "")
+
+static func resolve_test_suite_path(source_script_path :String, test_root_folder :String = "test") -> String:
+	var file_extension := source_script_path.get_extension()
+	var file_name = source_script_path.get_file().replace("." + file_extension, "")
+	if test_root_folder.empty():
+		return source_script_path.replace(file_name, file_name + "Test")
 	
 	# is user tmp
-	if resource_path.begins_with("user://tmp"):
-		return resource_path.replace("user://tmp", "user://tmp/test").replace(file_name, "%sTest" % file_name)
+	if source_script_path.begins_with("user://tmp"):
+		return source_script_path.replace("user://tmp", "user://tmp/" + test_root_folder).replace(file_name, "%sTest" % file_name)
 	
 	# at first look up is the script under a "src" folder located
-	var src_folder = resource_path.find("/src/")
+	var test_suite_path :String
+	var src_folder = source_script_path.find("/src/")
 	if src_folder != -1:
-		test_suite_path = resource_path.replace("/src/", "/test/")
+		test_suite_path = source_script_path.replace("/src/", "/"+test_root_folder+"/")
 	else:
-		var paths = resource_path.split("/", false)
+		var paths = source_script_path.split("/", false)
 		# is a plugin script?
 		if paths[1] == "addons":
-			test_suite_path = "%s//addons/%s/%s" % [paths[0], paths[2], "test"]
+			test_suite_path = "%s//addons/%s/%s" % [paths[0], paths[2], test_root_folder]
 			# rebuild plugin path
 			for index in range(3, paths.size()):
 				test_suite_path += "/" + paths[index]
 		else:
-			test_suite_path = paths[0] + "//" + "test"
+			test_suite_path = paths[0] + "//" + test_root_folder
 			for index in range(1, paths.size()):
 				test_suite_path += "/" + paths[index]
 	return test_suite_path.replace(file_name, "%sTest" % file_name)
 
-static func save_test_suite(path :String, source_path :String) -> Result:
+static func create_test_suite(test_suite_path :String, source_path :String) -> Result:
 	# create directory if not exists
-	if not Directory.new().dir_exists(path.get_base_dir()):
-		var error := Directory.new().make_dir_recursive(path.get_base_dir())
+	if not Directory.new().dir_exists(test_suite_path.get_base_dir()):
+		var error := Directory.new().make_dir_recursive(test_suite_path.get_base_dir())
 		if error != OK:
-			return Result.error("Can't create directoy  at: %s. Error code %s" % [path.get_base_dir(), error])
+			return Result.error("Can't create directoy  at: %s. Error code %s" % [test_suite_path.get_base_dir(), error])
 
-	var file_extension := path.get_extension()
-	var clazz_name = path.get_file().replace("." + file_extension, "")
+	var file_extension := test_suite_path.get_extension()
+	var clazz_name := to_class_name(test_suite_path.get_file().replace("." + file_extension, ""))
 	var script := GDScript.new()
 	var test_suite_template = GdUnitSettings.get_setting(GdUnitSettings.TEMPLATE_TS_GD, GdUnitSettings.DEFAULT_TEMP_TS_GD)
 	script.source_code = test_suite_template.replace("${class_name}", clazz_name).replace("${source_path}", source_path)
-	var error := ResourceSaver.save(path, script)
+	var error := ResourceSaver.save(test_suite_path, script)
 	if error != OK:
-		return Result.error("Can't create test suite at: %s. Error code %s" % [path, error])
-	return Result.success(path)
+		return Result.error("Can't create test suite at: %s. Error code %s" % [test_suite_path, error])
+	return Result.success(test_suite_path)
+
+static func get_test_case_line_number(resource_path :String, func_name :String) -> int:
+	var file := File.new()
+	file.open(resource_path, File.READ)
+	var script_parser := GdScriptParser.new()
+	var line_number = 0
+	while not file.eof_reached():
+		var row := GdScriptParser.clean_up_row(file.get_line())
+		line_number += 1
+		# ignore comments and empty lines and not test functions
+		if row.begins_with("#") || row.length() == 0 || row.find("functest") == -1:
+			continue
+		# abort if test case name found
+		if script_parser.parse_func_name(row) == "test_" + func_name:
+			file.close()
+			return line_number
+	file.close()
+	return -1
 
 static func add_test_case(resource_path :String, func_name :String)  -> Result:
 	var file := File.new()
@@ -180,25 +203,26 @@ func test_${func_name}() -> void:
 		return Result.error("Can't add test case at: %s to '%s'. Error code %s" % [func_name, resource_path, error])
 	return Result.success({ "path" : resource_path, "line" : line_number})
 
-static func test_suite_exists(path :String) -> bool:
-	return File.new().file_exists(path)
+static func test_suite_exists(test_suite_path :String) -> bool:
+	return File.new().file_exists(test_suite_path)
 
-static func test_case_exists(resource_path :String, func_name :String) -> bool:
-	var test_suite := ResourceLoader.load(resource_path).new() as GdUnitTestSuite
-	var script := test_suite.get_script() as GDScript
-	test_suite.free()
+static func test_case_exists(test_suite_path :String, func_name :String) -> bool:
+	if not test_suite_exists(test_suite_path):
+		return false
+	var script := ResourceLoader.load(test_suite_path) as GDScript
 	for f in script.get_script_method_list():
 		if f["name"] == "test_" + func_name:
+			prints(f)
 			return true
 	return false
 
-static func create_test_case(source_path :String, func_name :String) -> Result:
-	var path := build_test_suite_path(source_path)
-	if not test_suite_exists(path):
-		var result := save_test_suite(path, source_path)
+static func create_test_case(test_suite_path :String, func_name :String, source_script_path :String) -> Result:
+	if test_case_exists(test_suite_path, func_name):
+		var line_number := get_test_case_line_number(test_suite_path, func_name)
+		return Result.success({ "path" : test_suite_path, "line" : line_number})
+	
+	if not test_suite_exists(test_suite_path):
+		var result := create_test_suite(test_suite_path, source_script_path)
 		if result.is_error():
 			return result
-	if test_case_exists(path, func_name):
-		return Result.warn("Test Case 'test_%s' already exists in '%s'" % [func_name, path], path)
-
-	return add_test_case(path, func_name)
+	return add_test_case(test_suite_path, func_name)

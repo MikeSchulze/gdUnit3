@@ -212,7 +212,7 @@ func _on_fscript_editor_context_menu_pressed(id :int, text_edit :TextEdit):
 	if id == MENU_ID_CREATE_TEST:
 		var func_name := parser.parse_func_name(current_line)
 		if not func_name.empty():
-			add_test_to_test_suite(func_name, current_script.resource_path)
+			add_test_to_test_suite(current_script, func_name)
 		return
 
 	# run test case?
@@ -310,7 +310,7 @@ func save_test_suites_before_run() -> void:
 	# TODO find a way to detect only modified files to save
 	script_editor._menu_option(EDITOR_ACTIONS.FILE_SAVE_ALL)
 
-func close_script(script_path :String):
+func save_and_close_script(script_path :String):
 	var script_editor :ScriptEditor = _editor_interface.get_script_editor()
 	# is already opened?
 	var open_file_index = 0
@@ -328,32 +328,41 @@ func close_script(script_path :String):
 func open_script(script_path :String, line_number :int):
 	var file_system := _editor_interface.get_resource_filesystem()
 	file_system.update_file(script_path)
-
+	
+	var script_editor :ScriptEditor = _editor_interface.get_script_editor()
+	var script_is_loaded := false
+	var open_file_index = 0
+	for open_script in script_editor.get_open_scripts():
+		if open_script.resource_path == script_path:
+			script_editor._script_selected(open_file_index)
+			script_editor.goto_line(line_number)
+			script_is_loaded = true
+			break
+		open_file_index += 1
+	
 	var file_system_dock := _editor_interface.get_file_system_dock()
 	file_system_dock.navigate_to_path(script_path)
 	_editor_interface.select_file(script_path)
 
-	var script = load(script_path)
-	_editor_interface.edit_resource(script)
-	var script_editor :ScriptEditor = _editor_interface.get_script_editor()
-	script_editor.goto_line(line_number)
+	if not script_is_loaded:
+		var script = load(script_path)
+		_editor_interface.edit_resource(script)
+		script_editor.goto_line(line_number)
 
-func add_test_to_test_suite(func_name :String, source_path :String):
-	var path := _TestSuiteScanner.build_test_suite_path(source_path)
-	close_script(path)
-	var result := _TestSuiteScanner.create_test_case(source_path, func_name)
+func add_test_to_test_suite(source_script :Script, func_name :String) -> void:
+	var source_script_path := source_script.resource_path
+	var test_suite_path := _TestSuiteScanner.resolve_test_suite_path(source_script_path, GdUnitSettings.test_root_folder())
+	
+	save_and_close_script(test_suite_path)
+	var result := _TestSuiteScanner.create_test_case(test_suite_path, func_name, source_script_path)
 	if result.is_error():
 		# show error dialog
 		prints("add_test_to_test_suite", result.error_message())
 		return
-	if result.is_warn():
-		# show warn dialog
-		prints("add_test_to_test_suite", result.warn_message())
-		return
 	var info := result.value() as Dictionary
 	var suite_path := info.get("path") as String
 	var line_number := info.get("line") as int
-	open_script(path, line_number)
+	open_script(test_suite_path, line_number)
 
 ################################################################################
 # Event signal receiver

@@ -55,8 +55,8 @@ func test_signal_is_emitted_with_args() -> void:
 	# wait until signal 'test_signal' is emitted with value 30
 	yield(assert_signal(signal_emitter).is_emitted("test_signal_counted", [20]), "completed")
 	
-	yield(assert_signal(signal_emitter, GdUnitAssert.EXPECT_FAIL).wait_until(500).is_emitted("test_signal_counted", [500]), "completed")\
-		.has_failure_message("Expecting emit signal: 'test_signal_counted([500])' but timed out after 500ms")
+	yield(assert_signal(signal_emitter, GdUnitAssert.EXPECT_FAIL).wait_until(50).is_emitted("test_signal_counted", [500]), "completed")\
+		.has_failure_message("Expecting emit signal: 'test_signal_counted([500])' but timed out after 50ms")
 
 func test_signal_is_not_emitted() -> void:
 	# wait to verify signal 'test_signal_counted()' is not emitted until the first 50ms
