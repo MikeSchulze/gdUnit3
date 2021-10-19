@@ -212,7 +212,6 @@ static func test_case_exists(test_suite_path :String, func_name :String) -> bool
 	var script := ResourceLoader.load(test_suite_path) as GDScript
 	for f in script.get_script_method_list():
 		if f["name"] == "test_" + func_name:
-			prints(f)
 			return true
 	return false
 
