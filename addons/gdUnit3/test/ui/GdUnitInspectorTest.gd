@@ -7,7 +7,6 @@ extends GdUnitTestSuite
 # TestSuite generated from
 const __source = 'res://addons/gdUnit3/src/ui/GdUnitInspector.gd'
 
-
 func test__check_test_run_stopped_manually() -> void:
 	var inspector :GdUnitInspecor = mock(GdUnitInspecor, CALL_REAL_FUNC)
 	inspector._client_id = 1
