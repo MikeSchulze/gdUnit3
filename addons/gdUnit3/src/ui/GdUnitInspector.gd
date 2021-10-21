@@ -84,6 +84,18 @@ func _ready():
 	# preload previous test execution
 	_runner_config.load()
 
+func _process(_delta):
+	_check_test_run_stopped_manually()
+	
+# is checking if the user has press the editor stop scene 
+func _check_test_run_stopped_manually():
+	if _is_test_running_but_stop_pressed():
+		push_warning("Test Runner scene was stopped manually, force stopping the current test run!")
+		_gdUnit_stop(_client_id)
+
+func _is_test_running_but_stop_pressed():
+	return _editor_interface and _running_debug_mode and _is_running and not _editor_interface.is_playing_scene()
+
 func set_editor_interface(editor_interface :EditorInterface) -> void:
 	_editor_interface = editor_interface
 
