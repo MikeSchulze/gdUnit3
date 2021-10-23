@@ -10,6 +10,7 @@ func scan(current :GdUnit3Version) -> void:
 	_scan(_base_dir, current)
 
 func _scan(scan_path :String, current :GdUnit3Version) -> void:
+	_patches = Dictionary()
 	var patch_paths := _collect_patch_versions(scan_path, current)
 	for path in patch_paths:
 		prints("scan for patches on '%s'" % path)

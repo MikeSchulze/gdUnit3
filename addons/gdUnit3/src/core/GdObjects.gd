@@ -597,8 +597,8 @@ static func _diff(lb: PoolByteArray, rb: PoolByteArray, lookup: Array, ldiff: Ar
 		break
 
 static func string_diff(left, right) -> Array:
-	var lb := PoolByteArray() if left == null else left.to_ascii()
-	var rb := PoolByteArray() if right == null else right.to_ascii()
+	var lb := PoolByteArray() if left == null else str(left).to_ascii()
+	var rb := PoolByteArray() if right == null else str(right).to_ascii()
 	var ldiff := Array()
 	var rdiff := Array()
 	var lookup =  _buildLookup(lb, rb);

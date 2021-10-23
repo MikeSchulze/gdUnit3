@@ -16,6 +16,12 @@ const TEST_PROPERTY_E = CATEGORY_B + "/c/prop_e"
 const TEST_PROPERTY_F = CATEGORY_B + "/c/prop_f"
 const TEST_PROPERTY_G = CATEGORY_B + "/a/prop_g"
 
+func before() -> void:
+	GdUnitSettings.dump_to_tmp()
+
+func after() -> void:
+	GdUnitSettings.restore_dump_from_tmp()
+
 func before_test() -> void:
 	GdUnitSettings.create_property_if_need(TEST_PROPERTY_A, true, "helptext TEST_PROPERTY_A.")
 	GdUnitSettings.create_property_if_need(TEST_PROPERTY_B, false, "helptext TEST_PROPERTY_B.")
@@ -58,12 +64,20 @@ func test_migrate_property_change_key() -> void:
 	GdUnitSettings.create_property_if_need(old_property_X, "foo")
 	assert_str(GdUnitSettings.get_setting(old_property_X, null)).is_equal("foo")
 	assert_str(GdUnitSettings.get_setting(new_property_X, null)).is_null()
+	var old_property := GdUnitSettings.get_property(old_property_X)
 	
 	# migrate
 	GdUnitSettings.migrate_property(old_property_X, new_property_X)
 	
+	var new_property := GdUnitSettings.get_property(new_property_X)
 	assert_str(GdUnitSettings.get_setting(old_property_X, null)).is_null()
 	assert_str(GdUnitSettings.get_setting(new_property_X, null)).is_equal("foo")
+	assert_object(new_property).is_not_equal(old_property)
+	assert_str(new_property.value()).is_equal(old_property.value())
+	assert_array(new_property.value_set()).is_equal(old_property.value_set())
+	assert_int(new_property.type()).is_equal(old_property.type())
+	assert_str(new_property.default()).is_equal(old_property.default())
+	assert_str(new_property.help()).is_equal(old_property.help())
 
 	# cleanup
 	ProjectSettings.clear(new_property_X)
@@ -75,15 +89,23 @@ func test_migrate_property_change_value() -> void:
 	# setup old property
 	var old_property_X = "/category_patch/group_old/name"
 	var new_property_X = "/category_patch/group_new/name"
-	GdUnitSettings.create_property_if_need(old_property_X, "foo")
+	GdUnitSettings.create_property_if_need(old_property_X, "foo", "help to foo")
 	assert_str(GdUnitSettings.get_setting(old_property_X, null)).is_equal("foo")
 	assert_str(GdUnitSettings.get_setting(new_property_X, null)).is_null()
+	var old_property := GdUnitSettings.get_property(old_property_X)
 	
 	# migrate property
 	GdUnitSettings.migrate_property(old_property_X, new_property_X, funcref(self, "convert_value"))
 	
+	var new_property := GdUnitSettings.get_property(new_property_X)
 	assert_str(GdUnitSettings.get_setting(old_property_X, null)).is_null()
 	assert_str(GdUnitSettings.get_setting(new_property_X, null)).is_equal("bar")
+	assert_object(new_property).is_not_equal(old_property)
+	assert_str(new_property.value()).is_equal("bar")
+	assert_array(new_property.value_set()).is_equal(old_property.value_set())
+	assert_int(new_property.type()).is_equal(old_property.type())
+	assert_str(new_property.default()).is_equal(old_property.default())
+	assert_str(new_property.help()).is_equal(old_property.help())
 
 	# cleanup
 	ProjectSettings.clear(new_property_X)

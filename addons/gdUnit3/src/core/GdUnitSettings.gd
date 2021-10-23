@@ -189,3 +189,9 @@ static func migrate_property(old_property :String, new_property :String, convert
 	ProjectSettings.set_setting(new_property, value)
 	ProjectSettings.clear(old_property)
 	prints("Succesfull migrated property '%s' -> '%s' value: %s" % [old_property, new_property, value])
+
+static func dump_to_tmp() -> void:
+	ProjectSettings.save_custom("user://project_settings.godot")
+
+static func restore_dump_from_tmp() -> void:
+	Directory.new().copy("user://project_settings.godot", "res://project.godot")

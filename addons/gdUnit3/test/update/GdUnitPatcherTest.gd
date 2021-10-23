@@ -101,3 +101,32 @@ func test_execute_v_150() -> void:
 	
 	_patcher.execute()
 	assert_array(Engine.get_meta(GdUnitPatch.PATCH_VERSION)).is_empty()
+
+
+func test_execute_update_v106_to_v107() -> void:
+	# save project settings before modify by patching
+	GdUnitSettings.dump_to_tmp()
+	assert_array(Engine.get_meta(GdUnitPatch.PATCH_VERSION)).is_empty()
+	_patcher.scan(GdUnit3Version.parse("v1.0.6"))
+	
+	# add v1.0.6 properties
+	var old_test_timeout = "gdunit3/settings/test_timeout_seconds"
+	var old_test_root_folder = "gdunit3/settings/test_root_folder"
+	GdUnitSettings.create_property_if_need(old_test_timeout, GdUnitSettings.DEFAULT_TEST_TIMEOUT, "Sets the test case runtime timeout in seconds.")
+	GdUnitSettings.create_property_if_need(old_test_root_folder, GdUnitSettings.DEFAULT_TEST_ROOT_FOLDER, "Sets the root folder where test-suites located/generated.")
+	assert_bool(ProjectSettings.has_setting(old_test_timeout)).is_true()
+	assert_bool(ProjectSettings.has_setting(old_test_root_folder)).is_true()
+	
+	# execute the patch
+	_patcher.execute()
+	
+	# verify
+	var new_test_timeout = "gdunit3/settings/test/test_timeout_seconds"
+	var new_test_root_folder = "gdunit3/settings/test/test_root_folder"
+	assert_bool(ProjectSettings.has_setting(old_test_timeout)).is_false()
+	assert_bool(ProjectSettings.has_setting(old_test_root_folder)).is_false()
+	assert_bool(ProjectSettings.has_setting(new_test_timeout)).is_true()
+	assert_bool(ProjectSettings.has_setting(new_test_root_folder)).is_true()
+	# restore orignal project settings
+	GdUnitSettings.restore_dump_from_tmp()
+	yield(get_tree(), "idle_frame")
