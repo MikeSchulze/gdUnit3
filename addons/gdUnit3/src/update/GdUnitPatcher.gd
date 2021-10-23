@@ -25,9 +25,9 @@ func execute() -> void:
 	for key in _patches.keys():
 		var patch_root :String = key
 		for path in _patches[key]:
-			prints("execute patch ", path)
 			var patch :GdUnitPatch = load(patch_root + "/" + path).new()
 			if patch:
+				prints("execute patch", patch.version(), patch.get_script().resource_path)
 				if not patch.execute():
 					prints("error on execution patch %s" % patch_root + "/" + path)
 

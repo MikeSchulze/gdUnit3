@@ -12,6 +12,10 @@ var _patcher :GdUnitPatcher
 func before():
 	_patcher = auto_free(GdUnitPatcher.new())
 
+func before_test():
+	Engine.set_meta(GdUnitPatch.PATCH_VERSION, [])
+	_patcher._patches.clear()
+
 func test__collect_patch_versions_no_patches() -> void:
 	# using higher version than patches exists in patch folder
 	assert_array(_patcher._collect_patch_versions(_patches, GdUnit3Version.new(3,0,0))).is_empty()
@@ -53,4 +57,47 @@ func test_scan_patches() -> void:
 		.contains_key_value("res://addons/gdUnit3/test/update/resources/patches/v1.1.4", PoolStringArray(["patch_a.gd"]))
 	assert_int(_patcher.patch_count()).is_equal(4)
 	
+func test_execute_no_patches() -> void:
+	assert_array(Engine.get_meta(GdUnitPatch.PATCH_VERSION)).is_empty()
+	
 	_patcher.execute()
+	assert_array(Engine.get_meta(GdUnitPatch.PATCH_VERSION)).is_empty()
+
+func test_execute_v_095() -> void:
+	assert_array(Engine.get_meta(GdUnitPatch.PATCH_VERSION)).is_empty()
+	_patcher._scan(_patches, GdUnit3Version.parse("v0.9.5"))
+	
+	_patcher.execute()
+	assert_array(Engine.get_meta(GdUnitPatch.PATCH_VERSION)).is_equal([
+		GdUnit3Version.parse("v0.9.6"),
+		GdUnit3Version.parse("v0.9.9-a"),
+		GdUnit3Version.parse("v0.9.9-b"),
+		GdUnit3Version.parse("v1.1.4"),
+	])
+
+func test_execute_v_096() -> void:
+	assert_array(Engine.get_meta(GdUnitPatch.PATCH_VERSION)).is_empty()
+	_patcher._scan(_patches, GdUnit3Version.parse("v0.9.6"))
+	
+	_patcher.execute()
+	assert_array(Engine.get_meta(GdUnitPatch.PATCH_VERSION)).is_equal([
+		GdUnit3Version.parse("v0.9.9-a"),
+		GdUnit3Version.parse("v0.9.9-b"),
+		GdUnit3Version.parse("v1.1.4"),
+	])
+
+func test_execute_v_099() -> void:
+	assert_array(Engine.get_meta(GdUnitPatch.PATCH_VERSION)).is_empty()
+	_patcher._scan(_patches, GdUnit3Version.new(0,9,9))
+	
+	_patcher.execute()
+	assert_array(Engine.get_meta(GdUnitPatch.PATCH_VERSION)).is_equal([
+		GdUnit3Version.parse("v1.1.4"),
+	])
+
+func test_execute_v_150() -> void:
+	assert_array(Engine.get_meta(GdUnitPatch.PATCH_VERSION)).is_empty()
+	_patcher._scan(_patches, GdUnit3Version.parse("v1.5.0"))
+	
+	_patcher.execute()
+	assert_array(Engine.get_meta(GdUnitPatch.PATCH_VERSION)).is_empty()

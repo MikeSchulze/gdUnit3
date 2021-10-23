@@ -61,6 +61,17 @@ func setup_common_properties(properties_parent :Node, property_category) -> void
 		properties_parent.add_child(grid)
 
 func _create_input_element(property: GdUnitProperty, reset_btn :ToolButton) -> Node:
+	if property.is_selectable_value():
+		var options := OptionButton.new()
+		var values_set := Array(property.value_set())
+		for value in values_set:
+			options.add_item(value)
+		options.connect("item_selected", self, "_on_option_selected", [property, reset_btn])
+		var index := values_set.find(property.value())
+		options.select(index)
+		options.set_custom_minimum_size(Vector2(100, 0))
+		return options
+	
 	if property.type() == TYPE_BOOL: 
 		var check_btn := CheckButton.new()
 		check_btn.connect("toggled", self, "_on_property_text_changed", [property, reset_btn])
@@ -151,13 +162,20 @@ func _on_btn_close_pressed():
 func _on_btn_property_reset_pressed(property: GdUnitProperty, input :Node, reset_btn :ToolButton):
 	if input is CheckButton:
 		input.pressed = property.default()
-	if input is LineEdit:
+	elif input is LineEdit:
 		input.text = str(property.default())
 		# we have to update manually for text input fields because of no change event is emited
 		_on_property_text_changed(property.default(), property, reset_btn)
+	elif input is OptionButton:
+		input.select(0)
 
 func _on_property_text_changed(new_value, property: GdUnitProperty, reset_btn :ToolButton):
 	property.set_value(new_value)
+	reset_btn.disabled = property.value() == property.default()
+	GdUnitSettings.update_property(property)
+
+func _on_option_selected(index :int, property: GdUnitProperty, reset_btn :ToolButton):
+	property.set_value(property.value_set()[index])
 	reset_btn.disabled = property.value() == property.default()
 	GdUnitSettings.update_property(property)
 

@@ -50,3 +50,40 @@ func test_list_settings() -> void:
 		tuple(TEST_PROPERTY_F, TYPE_STRING, "abc", "abc", "helptext TEST_PROPERTY_F."),
 		tuple(TEST_PROPERTY_G, TYPE_INT, 200, 200, "helptext TEST_PROPERTY_G.")
 	])
+
+func test_migrate_property_change_key() -> void:
+	# setup old property
+	var old_property_X = "/category_patch/group_old/name"
+	var new_property_X = "/category_patch/group_new/name"
+	GdUnitSettings.create_property_if_need(old_property_X, "foo")
+	assert_str(GdUnitSettings.get_setting(old_property_X, null)).is_equal("foo")
+	assert_str(GdUnitSettings.get_setting(new_property_X, null)).is_null()
+	
+	# migrate
+	GdUnitSettings.migrate_property(old_property_X, new_property_X)
+	
+	assert_str(GdUnitSettings.get_setting(old_property_X, null)).is_null()
+	assert_str(GdUnitSettings.get_setting(new_property_X, null)).is_equal("foo")
+
+	# cleanup
+	ProjectSettings.clear(new_property_X)
+
+func convert_value(value :String) -> String:
+	return "bar"
+
+func test_migrate_property_change_value() -> void:
+	# setup old property
+	var old_property_X = "/category_patch/group_old/name"
+	var new_property_X = "/category_patch/group_new/name"
+	GdUnitSettings.create_property_if_need(old_property_X, "foo")
+	assert_str(GdUnitSettings.get_setting(old_property_X, null)).is_equal("foo")
+	assert_str(GdUnitSettings.get_setting(new_property_X, null)).is_null()
+	
+	# migrate property
+	GdUnitSettings.migrate_property(old_property_X, new_property_X, funcref(self, "convert_value"))
+	
+	assert_str(GdUnitSettings.get_setting(old_property_X, null)).is_null()
+	assert_str(GdUnitSettings.get_setting(new_property_X, null)).is_equal("bar")
+
+	# cleanup
+	ProjectSettings.clear(new_property_X)
