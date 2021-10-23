@@ -1,5 +1,5 @@
 name: Run selftest Godot 3.2.x
-on: [push, pull_request]
+on: [push]
 
 jobs:
   testing:
