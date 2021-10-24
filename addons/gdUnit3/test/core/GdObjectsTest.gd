@@ -281,6 +281,20 @@ func test_get_class_name_from_class_path():
 	assert_result(extract_class_name("res://addons/gdUnit3/test/mocker/resources/OverridenGetClassTestClass.gd"))\
 		.is_success().is_value("OverridenGetClassTestClass")
 
+func test_get_class_name_from_snake_case_class_path():
+	assert_result(extract_class_name("res://addons/gdUnit3/test/core/resources/naming_conventions/snake_case_with_class_name.gd"))\
+		.is_success().is_value("SnakeCaseWithClassName")
+	# without class_name
+	assert_result(extract_class_name("res://addons/gdUnit3/test/core/resources/naming_conventions/snake_case_without_class_name.gd"))\
+		.is_success().is_value("SnakeCaseWithoutClassName")
+
+func test_get_class_name_from_pascal_case_class_path():
+	assert_result(extract_class_name("res://addons/gdUnit3/test/core/resources/naming_conventions/PascalCaseWithClassName.gd"))\
+		.is_success().is_value("PascalCaseWithClassName")
+	# without class_name
+	assert_result(extract_class_name("res://addons/gdUnit3/test/core/resources/naming_conventions/PascalCaseWithoutClassName.gd"))\
+		.is_success().is_value("PascalCaseWithoutClassName")
+
 func test_get_class_name_from_type():
 	assert_result(extract_class_name(Animation)).is_success().is_value("Animation")
 	assert_result(extract_class_name(GDScript)).is_success().is_value("GDScript")
@@ -333,6 +347,11 @@ func test_extract_class_name_from_instance():
 	assert_result(extract_class_name(AdvancedTestClass.AtmosphereData.new())).is_equal("AdvancedTestClass.AtmosphereData")
 	# assert_result(extract_class_name(AdvancedTestClass.Area4D.new())).is_equal("AdvancedTestClass.Area4D")
 	assert_result(extract_class_name(CustomClass.InnerClassC.new())).is_equal("CustomClass.InnerClassC")
+
+# verify enigne class names are not converted by configured naming convention
+func test_extract_class_name_from_class_path(fuzzer=GodotClassNameFuzzer.new(true, true), fuzzer_iterations = 100) -> void:
+	var clazz_name :String = fuzzer.next_value()
+	assert_str(GdObjects.extract_class_name_from_class_path(PoolStringArray([clazz_name]))).is_equal(clazz_name)
 
 func test_extract_class_name_godot_classes(fuzzer=GodotClassNameFuzzer.new(true, true)):
 	var extract_class_name := fuzzer.next_value() as String
@@ -442,7 +461,7 @@ func test_extract_class_name_on_null_value():
 
 func test_is_public_script_class() -> void:
 	# snake case format class names
-	assert_bool(GdObjects.is_public_script_class("script_with_class_name")).is_true()
+	assert_bool(GdObjects.is_public_script_class("ScriptWithClassName")).is_true()
 	assert_bool(GdObjects.is_public_script_class("script_without_class_name")).is_false()
 	assert_bool(GdObjects.is_public_script_class("CustomClass")).is_true()
 	# inner classes not listed as public classes
@@ -551,3 +570,18 @@ func test_all_types() -> void:
 		GdObjects.TYPE_VOID,
 		GdObjects.TYPE_VARARG,
 	])
+
+func test_to_camel_case() -> void:
+	assert_str(GdObjects.to_camel_case("MyClassName")).is_equal("myClassName")
+	assert_str(GdObjects.to_camel_case("my_class_name")).is_equal("myClassName")
+	assert_str(GdObjects.to_camel_case("myClassName")).is_equal("myClassName")
+
+func test_to_pascal_case() -> void:
+	assert_str(GdObjects.to_pascal_case("MyClassName")).is_equal("MyClassName")
+	assert_str(GdObjects.to_pascal_case("my_class_name")).is_equal("MyClassName")
+	assert_str(GdObjects.to_pascal_case("myClassName")).is_equal("MyClassName")
+
+func test_to_snake_case() -> void:
+	assert_str(GdObjects.to_snake_case("MyClassName")).is_equal("my_class_name")
+	assert_str(GdObjects.to_snake_case("my_class_name")).is_equal("my_class_name")
+	assert_str(GdObjects.to_snake_case("myClassName")).is_equal("my_class_name")

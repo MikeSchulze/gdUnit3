@@ -407,3 +407,15 @@ func test_parse_class_inherits():
 	# no other class extends
 	clazz_desccriptor = clazz_desccriptor.parent()
 	assert_object(clazz_desccriptor).is_null()
+
+func test_get_class_name_pascal_case() -> void:
+	assert_str(_parser.get_class_name(load("res://addons/gdUnit3/test/core/resources/naming_conventions/PascalCaseWithClassName.gd")))\
+		.is_equal("PascalCaseWithClassName")
+	assert_str(_parser.get_class_name(load("res://addons/gdUnit3/test/core/resources/naming_conventions/PascalCaseWithoutClassName.gd")))\
+		.is_equal("PascalCaseWithoutClassName")
+
+func test_get_class_name_snake_case() -> void:
+	assert_str(_parser.get_class_name(load("res://addons/gdUnit3/test/core/resources/naming_conventions/snake_case_with_class_name.gd")))\
+		.is_equal("SnakeCaseWithClassName")
+	assert_str(_parser.get_class_name(load("res://addons/gdUnit3/test/core/resources/naming_conventions/snake_case_without_class_name.gd")))\
+		.is_equal("SnakeCaseWithoutClassName")

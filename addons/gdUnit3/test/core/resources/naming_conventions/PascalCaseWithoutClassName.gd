@@ -1,5 +1,4 @@
-class_name ScriptWithClassName
-extends Resource
+extends Reference
 
 # Called when the node enters the scene tree for the first time.
 func _ready():

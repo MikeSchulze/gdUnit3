@@ -212,6 +212,24 @@ static func string_to_type(value :String) -> int:
 			return type
 	return TYPE_NIL
 
+static func to_camel_case(value :String) -> String:
+	var p := to_pascal_case(value)
+	if not p.empty():
+		p[0] = p[0].to_lower()
+	return p
+
+static func to_pascal_case(value :String) -> String:
+	return value.capitalize().replace(" ", "")
+
+static func to_snake_case(value :String) -> String:
+	var result = PoolStringArray()
+	for ch in value:
+		var lower_ch = ch.to_lower()
+		if ch != lower_ch and result.size() > 1:
+			result.append('_')
+		result.append(lower_ch)
+	return result.join('')
+
 static func type_as_string(type :int) -> String:
 	return TYPE_AS_STRING_MAPPINGS.get(type, "Unknown type")
 
@@ -409,7 +427,11 @@ static func extract_class_path(clazz) -> PoolStringArray:
 	return clazz_path
 
 static func extract_class_name_from_class_path(clazz_path :PoolStringArray) -> String:
-	var clazz_name := clazz_path[0].get_file().replace(".gd", "")
+	var base_clazz := clazz_path[0]
+	# return original class name if engine class
+	if ClassDB.class_exists(base_clazz):
+		return base_clazz
+	var clazz_name := to_pascal_case(base_clazz.get_basename().get_file())
 	for path_index in range(1, clazz_path.size()):
 		clazz_name += "." + clazz_path[path_index]
 	return  clazz_name
@@ -428,7 +450,9 @@ static func extract_class_name(clazz) -> Result:
 
 	# extract name form full qualified class path
 	if clazz is String:
-		return Result.success(clazz.get_file().replace(".gd", ""))
+		var source_sript :Script = load(clazz)
+		var clazz_name = load("res://addons/gdUnit3/src/core/parse/GdScriptParser.gd").new().get_class_name(source_sript)
+		return Result.success(to_pascal_case(clazz_name))
 
 	if is_primitive_type(clazz):
 		return Result.error("Can't extract class name for an primitive '%s'" % type_as_string(typeof(clazz)))

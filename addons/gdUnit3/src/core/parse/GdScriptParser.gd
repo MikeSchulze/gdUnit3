@@ -521,14 +521,18 @@ func load_source_code(script :GDScript, script_path :PoolStringArray) -> PoolStr
 		source_rows = extract_inner_class(source_rows, inner_clazz)
 	return PoolStringArray(source_rows)
 
-func parse_extends_clazz(rows :PoolStringArray ) -> String:
-	for index in min( 10, rows.size()):
-		var input = clean_up_row(rows[index])
+func get_class_name(script :GDScript) -> String:
+	var source_code := to_unix_format(script.source_code)
+	var source_rows := source_code.split("\n")
+	
+	for index in min(10, source_rows.size()):
+		var input = clean_up_row(source_rows[index])
 		var token := next_token(input, 0)
-		if token == TOKEN_EXTENDS:
+		if token == TOKEN_CLASS_NAME:
 			token = next_token(input, token._consumed)
 			return token.value()
-	return ""
+	# if no class_name found extract from file name
+	return GdObjects.to_pascal_case(script.resource_path.get_basename().get_file())
 
 func parse_func_name(row :String) -> String:
 	var input = clean_up_row(row)

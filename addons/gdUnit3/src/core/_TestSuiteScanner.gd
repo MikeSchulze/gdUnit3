@@ -112,9 +112,6 @@ func _parse_and_add_test_cases(test_suite :GdUnitTestSuite, resource_path :Strin
 	
 	file.close()
 
-static func to_class_name(file_name :String) -> String:
-	return file_name.capitalize().replace(" ", "")
-
 static func resolve_test_suite_path(source_script_path :String, test_root_folder :String = "test") -> String:
 	var file_extension := source_script_path.get_extension()
 	var file_name = source_script_path.get_file().replace("." + file_extension, "")
@@ -150,12 +147,12 @@ static func create_test_suite(test_suite_path :String, source_path :String) -> R
 		var error := Directory.new().make_dir_recursive(test_suite_path.get_base_dir())
 		if error != OK:
 			return Result.error("Can't create directoy  at: %s. Error code %s" % [test_suite_path.get_base_dir(), error])
-
 	var file_extension := test_suite_path.get_extension()
-	var clazz_name := to_class_name(test_suite_path.get_file().replace("." + file_extension, ""))
+	var clazz_name :String = GdObjects.extract_class_name(source_path).value()
+	var suite_name := clazz_name + "Test"
 	var script := GDScript.new()
 	var test_suite_template = GdUnitSettings.get_setting(GdUnitSettings.TEMPLATE_TS_GD, GdUnitSettings.DEFAULT_TEMP_TS_GD)
-	script.source_code = test_suite_template.replace("${class_name}", clazz_name).replace("${source_path}", source_path)
+	script.source_code = test_suite_template.replace("${class_name}", suite_name).replace("${source_path}", source_path)
 	var error := ResourceSaver.save(test_suite_path, script)
 	if error != OK:
 		return Result.error("Can't create test suite at: %s. Error code %s" % [test_suite_path, error])
