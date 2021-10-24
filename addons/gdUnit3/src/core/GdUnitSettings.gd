@@ -6,8 +6,10 @@ const MAIN_CATEGORY = "gdunit3"
 # Common Settings
 const COMMON_SETTINGS = MAIN_CATEGORY + "/settings"
 
-const UPDATE_NOTIFICATION_ENABLED = COMMON_SETTINGS + "/update_notification_enabled"
-const SERVER_TIMEOUT = COMMON_SETTINGS + "/server_connection_timeout_minutes"
+const GROUP_COMMON = COMMON_SETTINGS + "/common"
+const UPDATE_NOTIFICATION_ENABLED = GROUP_COMMON + "/update_notification_enabled"
+const SERVER_TIMEOUT = GROUP_COMMON + "/server_connection_timeout_minutes"
+
 const GROUP_TEST = COMMON_SETTINGS + "/test"
 const TEST_TIMEOUT = GROUP_TEST + "/test_timeout_seconds"
 const TEST_ROOT_FOLDER = GROUP_TEST + "/test_root_folder"
@@ -41,11 +43,11 @@ const DEFAULT_TEST_TIMEOUT :int = 60*5
 # the folder to create new test-suites
 const DEFAULT_TEST_ROOT_FOLDER := "test"
 
-const NAMING_CONVENTIONS := [
-	"autodetect",
-	"snake_case",
-	"camel_case",
-]
+enum NAMING_CONVENTIONS {
+	AUTO_DETECT,
+	SNAKE_CASE,
+	PASCAL_CASE,
+}
 
 
 const DEFAULT_TEMP_TS_GD = """# GdUnit generated TestSuite
@@ -63,26 +65,27 @@ static func setup():
 	create_property_if_need(SERVER_TIMEOUT, DEFAULT_SERVER_TIMEOUT, "Sets the server connection timeout in minutes.")
 	create_property_if_need(TEST_TIMEOUT, DEFAULT_TEST_TIMEOUT, "Sets the test case runtime timeout in seconds.")
 	create_property_if_need(TEST_ROOT_FOLDER, DEFAULT_TEST_ROOT_FOLDER, "Sets the root folder where test-suites located/generated.")
-	create_property_if_need(TEST_SITE_NAMING_CONVENTION, NAMING_CONVENTIONS[0], "Sets test-suite genrate script name convention. %s" % str(NAMING_CONVENTIONS), NAMING_CONVENTIONS)
+	create_property_if_need(TEST_SITE_NAMING_CONVENTION, NAMING_CONVENTIONS.AUTO_DETECT, "Sets test-suite genrate script name convention.", NAMING_CONVENTIONS.keys())
 	create_property_if_need(REPORT_ERROR_NOTIFICATIONS, false, "Current not supported!")
 	create_property_if_need(REPORT_ORPHANS, true, "Enables/Disables orphan reporting.")
 	create_property_if_need(REPORT_ASSERT_ERRORS, true, "Enables/Disables error reporting on asserts.")
 	create_property_if_need(REPORT_ASSERT_WARNINGS, true, "Enables/Disables warning reporting on asserts")
 	create_property_if_need(TEMPLATE_TS_GD, DEFAULT_TEMP_TS_GD, "Defines the test suite template")
 
-static func create_property_if_need(name :String, default, help :="", value_set := Array()) -> void:
+static func create_property_if_need(name :String, default, help :="", value_set := PoolStringArray()) -> void:
 	if not ProjectSettings.has_setting(name):
 		#prints("GdUnit3: Set inital settings '%s' to '%s'." % [name, str(default)])
 		ProjectSettings.set_setting(name, default)
 		
-		ProjectSettings.set_initial_value(name, default)
-		var info = {
-				"name": name,
-				"type": typeof(default),
-				"hint": PROPERTY_HINT_LENGTH,
-				"hint_string": help,
-			}
-		ProjectSettings.add_property_info(info)
+	ProjectSettings.set_initial_value(name, default)
+	var hint_string := help + ("" if value_set.empty() else " %s" % value_set)
+	var info = {
+			"name": name,
+			"type": typeof(default),
+			"hint": PROPERTY_HINT_LENGTH,
+			"hint_string": hint_string,
+		}
+	ProjectSettings.add_property_info(info)
 
 static func get_setting(name :String, default) :
 	if ProjectSettings.has_setting(name):

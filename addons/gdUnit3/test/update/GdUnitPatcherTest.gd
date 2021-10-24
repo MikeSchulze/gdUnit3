@@ -110,10 +110,16 @@ func test_execute_update_v106_to_v107() -> void:
 	_patcher.scan(GdUnit3Version.parse("v1.0.6"))
 	
 	# add v1.0.6 properties
+	var old_update_notification_enabled = "gdunit3/settings/update_notification_enabled"
+	var old_server_connection_timeout_minutes = "gdunit3/settings/server_connection_timeout_minutes"
 	var old_test_timeout = "gdunit3/settings/test_timeout_seconds"
 	var old_test_root_folder = "gdunit3/settings/test_root_folder"
+	GdUnitSettings.create_property_if_need(old_update_notification_enabled, true, "Enables/Disables the update notification on startup.")
+	GdUnitSettings.create_property_if_need(old_server_connection_timeout_minutes, GdUnitSettings.DEFAULT_SERVER_TIMEOUT, "Sets the server connection timeout in minutes.")
 	GdUnitSettings.create_property_if_need(old_test_timeout, GdUnitSettings.DEFAULT_TEST_TIMEOUT, "Sets the test case runtime timeout in seconds.")
 	GdUnitSettings.create_property_if_need(old_test_root_folder, GdUnitSettings.DEFAULT_TEST_ROOT_FOLDER, "Sets the root folder where test-suites located/generated.")
+	assert_bool(ProjectSettings.has_setting(old_update_notification_enabled)).is_true()
+	assert_bool(ProjectSettings.has_setting(old_server_connection_timeout_minutes)).is_true()
 	assert_bool(ProjectSettings.has_setting(old_test_timeout)).is_true()
 	assert_bool(ProjectSettings.has_setting(old_test_root_folder)).is_true()
 	
@@ -121,6 +127,13 @@ func test_execute_update_v106_to_v107() -> void:
 	_patcher.execute()
 	
 	# verify
+	var new_update_notification_enabled = "gdunit3/settings/common/update_notification_enabled"
+	var new_server_connection_timeout_minutes = "gdunit3/settings/common/server_connection_timeout_minutes"
+	assert_bool(ProjectSettings.has_setting(old_update_notification_enabled)).is_false()
+	assert_bool(ProjectSettings.has_setting(old_server_connection_timeout_minutes)).is_false()
+	assert_bool(ProjectSettings.has_setting(new_update_notification_enabled)).is_true()
+	assert_bool(ProjectSettings.has_setting(new_server_connection_timeout_minutes)).is_true()
+	
 	var new_test_timeout = "gdunit3/settings/test/test_timeout_seconds"
 	var new_test_root_folder = "gdunit3/settings/test/test_root_folder"
 	assert_bool(ProjectSettings.has_setting(old_test_timeout)).is_false()

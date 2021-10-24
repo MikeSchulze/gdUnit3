@@ -6,6 +6,7 @@ extends GdUnitTestSuite
 const __source = 'res://addons/gdUnit3/src/core/_TestSuiteScanner.gd'
 
 func before_test():
+	ProjectSettings.set_setting(GdUnitSettings.TEST_SITE_NAMING_CONVENTION, GdUnitSettings.NAMING_CONVENTIONS.AUTO_DETECT)
 	GdUnitTools.clear_tmp()
 	
 
@@ -185,21 +186,21 @@ func test_create_test_case():
 # https://github.com/MikeSchulze/gdUnit3/issues/25
 func test_build_test_suite_path() -> void:
 	# on project root
-	assert_str(_TestSuiteScanner.resolve_test_suite_path("res://new_script.gd")).is_equal("res://test/new_scriptTest.gd")
+	assert_str(_TestSuiteScanner.resolve_test_suite_path("res://new_script.gd")).is_equal("res://test/new_script_test.gd")
 	
 	# on project without src folder
-	assert_str(_TestSuiteScanner.resolve_test_suite_path("res://foo/bar/new_script.gd")).is_equal("res://test/foo/bar/new_scriptTest.gd")
+	assert_str(_TestSuiteScanner.resolve_test_suite_path("res://foo/bar/new_script.gd")).is_equal("res://test/foo/bar/new_script_test.gd")
 	
 	# project code structured by 'src'
-	assert_str(_TestSuiteScanner.resolve_test_suite_path("res://src/new_script.gd")).is_equal("res://test/new_scriptTest.gd")
-	assert_str(_TestSuiteScanner.resolve_test_suite_path("res://src/foo/bar/new_script.gd")).is_equal("res://test/foo/bar/new_scriptTest.gd")
+	assert_str(_TestSuiteScanner.resolve_test_suite_path("res://src/new_script.gd")).is_equal("res://test/new_script_test.gd")
+	assert_str(_TestSuiteScanner.resolve_test_suite_path("res://src/foo/bar/new_script.gd")).is_equal("res://test/foo/bar/new_script_test.gd")
 	# folder name contains 'src' in name
-	assert_str(_TestSuiteScanner.resolve_test_suite_path("res://foo/srcare/new_script.gd")).is_equal("res://test/foo/srcare/new_scriptTest.gd")
+	assert_str(_TestSuiteScanner.resolve_test_suite_path("res://foo/srcare/new_script.gd")).is_equal("res://test/foo/srcare/new_script_test.gd")
 	
 	# on plugins without src folder
-	assert_str(_TestSuiteScanner.resolve_test_suite_path("res://addons/plugin/foo/bar/new_script.gd")).is_equal("res://addons/plugin/test/foo/bar/new_scriptTest.gd")
+	assert_str(_TestSuiteScanner.resolve_test_suite_path("res://addons/plugin/foo/bar/new_script.gd")).is_equal("res://addons/plugin/test/foo/bar/new_script_test.gd")
 	# plugin code structured by 'src'
-	assert_str(_TestSuiteScanner.resolve_test_suite_path("res://addons/plugin/src/foo/bar/new_script.gd")).is_equal("res://addons/plugin/test/foo/bar/new_scriptTest.gd")
+	assert_str(_TestSuiteScanner.resolve_test_suite_path("res://addons/plugin/src/foo/bar/new_script.gd")).is_equal("res://addons/plugin/test/foo/bar/new_script_test.gd")
 	
 	# on user temp folder
 	var tmp_path := GdUnitTools.create_temp_dir("projectX/entity")
@@ -251,5 +252,21 @@ func test_scan_by_inheritance_class_path() -> void:
 		ts.free()
 
 func test_get_test_case_line_number() -> void:
-	assert_int(_TestSuiteScanner.get_test_case_line_number("res://addons/gdUnit3/test/core/_TestSuiteScannerTest.gd", "get_test_case_line_number")).is_equal(253)
+	assert_int(_TestSuiteScanner.get_test_case_line_number("res://addons/gdUnit3/test/core/_TestSuiteScannerTest.gd", "get_test_case_line_number")).is_equal(254)
 	assert_int(_TestSuiteScanner.get_test_case_line_number("res://addons/gdUnit3/test/core/_TestSuiteScannerTest.gd", "unknown")).is_equal(-1)
+
+func test__to_naming_convention() -> void:
+	ProjectSettings.set_setting(GdUnitSettings.TEST_SITE_NAMING_CONVENTION, GdUnitSettings.NAMING_CONVENTIONS.AUTO_DETECT)
+	assert_str(_TestSuiteScanner._to_naming_convention("MyClass")).is_equal("MyClassTest")
+	assert_str(_TestSuiteScanner._to_naming_convention("my_class")).is_equal("my_class_test")
+	assert_str(_TestSuiteScanner._to_naming_convention("myclass")).is_equal("myclass_test")
+	
+	ProjectSettings.set_setting(GdUnitSettings.TEST_SITE_NAMING_CONVENTION, GdUnitSettings.NAMING_CONVENTIONS.SNAKE_CASE)
+	assert_str(_TestSuiteScanner._to_naming_convention("MyClass")).is_equal("my_class_test")
+	assert_str(_TestSuiteScanner._to_naming_convention("my_class")).is_equal("my_class_test")
+	assert_str(_TestSuiteScanner._to_naming_convention("myclass")).is_equal("myclass_test")
+	
+	ProjectSettings.set_setting(GdUnitSettings.TEST_SITE_NAMING_CONVENTION, GdUnitSettings.NAMING_CONVENTIONS.PASCAL_CASE)
+	assert_str(_TestSuiteScanner._to_naming_convention("MyClass")).is_equal("MyClassTest")
+	assert_str(_TestSuiteScanner._to_naming_convention("my_class")).is_equal("MyClassTest")
+	assert_str(_TestSuiteScanner._to_naming_convention("myclass")).is_equal("MyclassTest")

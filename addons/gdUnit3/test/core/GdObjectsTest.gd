@@ -585,3 +585,9 @@ func test_to_snake_case() -> void:
 	assert_str(GdObjects.to_snake_case("MyClassName")).is_equal("my_class_name")
 	assert_str(GdObjects.to_snake_case("my_class_name")).is_equal("my_class_name")
 	assert_str(GdObjects.to_snake_case("myClassName")).is_equal("my_class_name")
+
+func test_is_snake_case() -> void:
+	assert_bool(GdObjects.is_snake_case("my_class_name")).is_true()
+	assert_bool(GdObjects.is_snake_case("myclassname")).is_true()
+	assert_bool(GdObjects.is_snake_case("MyClassName")).is_false()
+	assert_bool(GdObjects.is_snake_case("my_class_nameTest")).is_false()

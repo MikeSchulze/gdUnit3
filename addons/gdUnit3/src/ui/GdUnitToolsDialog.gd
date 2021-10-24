@@ -21,8 +21,13 @@ func _ready():
 	yield(get_tree(), "idle_frame")
 	popup_centered_ratio(.75)
 
+func _sort_by_key(left :GdUnitProperty, right :GdUnitProperty) -> bool:
+	return left.name() < right.name()
+
 func setup_common_properties(properties_parent :Node, property_category) -> void:
 	var category_properties := GdUnitSettings.list_settings(property_category)
+	# sort by key
+	category_properties.sort_custom(self, "_sort_by_key")
 	var t := Theme.new()
 	t.set_constant("hseparation", "GridContainer", 12)
 	
@@ -67,22 +72,21 @@ func _create_input_element(property: GdUnitProperty, reset_btn :ToolButton) -> N
 		for value in values_set:
 			options.add_item(value)
 		options.connect("item_selected", self, "_on_option_selected", [property, reset_btn])
-		var index := values_set.find(property.value())
-		options.select(index)
-		options.set_custom_minimum_size(Vector2(100, 0))
+		options.select(property.value())
+		options.set_custom_minimum_size(Vector2(120, 0))
 		return options
-	
 	if property.type() == TYPE_BOOL: 
 		var check_btn := CheckButton.new()
 		check_btn.connect("toggled", self, "_on_property_text_changed", [property, reset_btn])
 		check_btn.pressed = property.value()
-		check_btn.set_custom_minimum_size(Vector2(100, 0))
+		check_btn.set_custom_minimum_size(Vector2(120, 0))
 		return check_btn
 	if property.type() in [TYPE_INT, TYPE_STRING]:
 			var input := LineEdit.new()
 			input.connect("text_changed", self, "_on_property_text_changed", [property, reset_btn])
 			input.text = str(property.value())
-			input.set_custom_minimum_size(Vector2(100, 0))
+			input.set_align(HALIGN_RIGHT)
+			input.set_custom_minimum_size(Vector2(120, 0))
 			return input 
 	return Control.new()
 
@@ -158,7 +162,6 @@ func _on_btn_install_examples_pressed():
 func _on_btn_close_pressed():
 	hide()
 
-
 func _on_btn_property_reset_pressed(property: GdUnitProperty, input :Node, reset_btn :ToolButton):
 	if input is CheckButton:
 		input.pressed = property.default()
@@ -168,6 +171,7 @@ func _on_btn_property_reset_pressed(property: GdUnitProperty, input :Node, reset
 		_on_property_text_changed(property.default(), property, reset_btn)
 	elif input is OptionButton:
 		input.select(0)
+		_on_option_selected(0, property, reset_btn)
 
 func _on_property_text_changed(new_value, property: GdUnitProperty, reset_btn :ToolButton):
 	property.set_value(new_value)
@@ -175,7 +179,7 @@ func _on_property_text_changed(new_value, property: GdUnitProperty, reset_btn :T
 	GdUnitSettings.update_property(property)
 
 func _on_option_selected(index :int, property: GdUnitProperty, reset_btn :ToolButton):
-	property.set_value(property.value_set()[index])
+	property.set_value(index)
 	reset_btn.disabled = property.value() == property.default()
 	GdUnitSettings.update_property(property)
 

@@ -230,6 +230,14 @@ static func to_snake_case(value :String) -> String:
 		result.append(lower_ch)
 	return result.join('')
 
+static func is_snake_case(value :String) -> bool:
+	for ch in value:
+		if ch == '_':
+			continue
+		if ch == ch.to_upper():
+			return false
+	return true
+
 static func type_as_string(type :int) -> String:
 	return TYPE_AS_STRING_MAPPINGS.get(type, "Unknown type")
 

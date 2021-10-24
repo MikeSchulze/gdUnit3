@@ -57,6 +57,19 @@ func test_list_settings() -> void:
 		tuple(TEST_PROPERTY_G, TYPE_INT, 200, 200, "helptext TEST_PROPERTY_G.")
 	])
 
+
+func test_enum_property() -> void:
+	var value_set := GdUnitSettings.NAMING_CONVENTIONS.keys()
+	prints(value_set)
+	GdUnitSettings.create_property_if_need("test/enum", GdUnitSettings.NAMING_CONVENTIONS.AUTO_DETECT, "help", value_set)
+	
+	var property := GdUnitSettings.get_property("test/enum")
+	assert_that(property.default()).is_equal(GdUnitSettings.NAMING_CONVENTIONS.AUTO_DETECT)
+	assert_that(property.value()).is_equal(GdUnitSettings.NAMING_CONVENTIONS.AUTO_DETECT)
+	assert_that(property.type()).is_equal(TYPE_INT)
+	assert_that(property.help()).is_equal("help [AUTO_DETECT, SNAKE_CASE, PASCAL_CASE]")
+	assert_that(property.value_set()).is_equal(value_set)
+
 func test_migrate_property_change_key() -> void:
 	# setup old property
 	var old_property_X = "/category_patch/group_old/name"
