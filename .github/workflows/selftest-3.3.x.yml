@@ -1,4 +1,4 @@
-name: Run selftest Godot 3.3.x
+name: CI GdUnit3 on Godot 3.3.x
 on: [push]
 
 jobs:
