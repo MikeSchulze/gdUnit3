@@ -1,5 +1,5 @@
 name: CI GdUnit3 on Godot 3.3.x
-on: [push]
+on: [push, workflow_dispatch]
 
 jobs:
   testing:
