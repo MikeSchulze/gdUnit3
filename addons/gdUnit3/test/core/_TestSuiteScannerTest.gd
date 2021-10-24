@@ -251,5 +251,5 @@ func test_scan_by_inheritance_class_path() -> void:
 		ts.free()
 
 func test_get_test_case_line_number() -> void:
-	assert_int(_TestSuiteScanner.get_test_case_line_number("res://addons/gdUnit3/test/core/_TestSuiteScannerTest.gd", "get_test_case_line_number")).is_equal(256)
+	assert_int(_TestSuiteScanner.get_test_case_line_number("res://addons/gdUnit3/test/core/_TestSuiteScannerTest.gd", "get_test_case_line_number")).is_equal(253)
 	assert_int(_TestSuiteScanner.get_test_case_line_number("res://addons/gdUnit3/test/core/_TestSuiteScannerTest.gd", "unknown")).is_equal(-1)
