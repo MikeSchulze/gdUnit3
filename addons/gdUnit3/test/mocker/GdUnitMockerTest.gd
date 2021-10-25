@@ -63,15 +63,6 @@ func test_mock_godot_class_fullcheck(fuzzer=GodotClassNameFuzzer.new(), fuzzer_i
 			.override_failure_message("The class %s should be mockable" % clazz_name)\
 			.is_not_null()
 
-func test_mock():
-	var clazz_name = "CSGPolygon"
-	# try to create a mock
-	if GdUnitMockBuilder.is_mockable(clazz_name):
-		var mock = mock(clazz_name, CALL_REAL_FUNC)
-		assert_that(mock)\
-			.override_failure_message("The class %s should be mockable" % clazz_name)\
-			.is_not_null()
-
 func test_mock_by_script_path():
 	assert_that(mock(resource_path + "CustomResourceTestClass.gd")).is_not_null()
 	assert_that(mock(resource_path + "CustomNodeTestClass.gd")).is_not_null()

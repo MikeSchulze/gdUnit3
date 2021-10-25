@@ -60,7 +60,6 @@ func test_list_settings() -> void:
 
 func test_enum_property() -> void:
 	var value_set := GdUnitSettings.NAMING_CONVENTIONS.keys()
-	prints(value_set)
 	GdUnitSettings.create_property_if_need("test/enum", GdUnitSettings.NAMING_CONVENTIONS.AUTO_DETECT, "help", value_set)
 	
 	var property := GdUnitSettings.get_property("test/enum")

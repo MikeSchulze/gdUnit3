@@ -102,7 +102,6 @@ func test_execute_v_150() -> void:
 	_patcher.execute()
 	assert_array(Engine.get_meta(GdUnitPatch.PATCH_VERSION)).is_empty()
 
-
 func test_execute_update_v106_to_v107() -> void:
 	# save project settings before modify by patching
 	GdUnitSettings.dump_to_tmp()
