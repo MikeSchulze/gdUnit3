@@ -12,6 +12,10 @@ var _patcher :GdUnitPatcher
 func before():
 	_patcher = auto_free(GdUnitPatcher.new())
 
+func before_test():
+	Engine.set_meta(GdUnitPatch.PATCH_VERSION, [])
+	_patcher._patches.clear()
+
 func test__collect_patch_versions_no_patches() -> void:
 	# using higher version than patches exists in patch folder
 	assert_array(_patcher._collect_patch_versions(_patches, GdUnit3Version.new(3,0,0))).is_empty()
@@ -53,4 +57,88 @@ func test_scan_patches() -> void:
 		.contains_key_value("res://addons/gdUnit3/test/update/resources/patches/v1.1.4", PoolStringArray(["patch_a.gd"]))
 	assert_int(_patcher.patch_count()).is_equal(4)
 	
+func test_execute_no_patches() -> void:
+	assert_array(Engine.get_meta(GdUnitPatch.PATCH_VERSION)).is_empty()
+	
 	_patcher.execute()
+	assert_array(Engine.get_meta(GdUnitPatch.PATCH_VERSION)).is_empty()
+
+func test_execute_v_095() -> void:
+	assert_array(Engine.get_meta(GdUnitPatch.PATCH_VERSION)).is_empty()
+	_patcher._scan(_patches, GdUnit3Version.parse("v0.9.5"))
+	
+	_patcher.execute()
+	assert_array(Engine.get_meta(GdUnitPatch.PATCH_VERSION)).is_equal([
+		GdUnit3Version.parse("v0.9.6"),
+		GdUnit3Version.parse("v0.9.9-a"),
+		GdUnit3Version.parse("v0.9.9-b"),
+		GdUnit3Version.parse("v1.1.4"),
+	])
+
+func test_execute_v_096() -> void:
+	assert_array(Engine.get_meta(GdUnitPatch.PATCH_VERSION)).is_empty()
+	_patcher._scan(_patches, GdUnit3Version.parse("v0.9.6"))
+	
+	_patcher.execute()
+	assert_array(Engine.get_meta(GdUnitPatch.PATCH_VERSION)).is_equal([
+		GdUnit3Version.parse("v0.9.9-a"),
+		GdUnit3Version.parse("v0.9.9-b"),
+		GdUnit3Version.parse("v1.1.4"),
+	])
+
+func test_execute_v_099() -> void:
+	assert_array(Engine.get_meta(GdUnitPatch.PATCH_VERSION)).is_empty()
+	_patcher._scan(_patches, GdUnit3Version.new(0,9,9))
+	
+	_patcher.execute()
+	assert_array(Engine.get_meta(GdUnitPatch.PATCH_VERSION)).is_equal([
+		GdUnit3Version.parse("v1.1.4"),
+	])
+
+func test_execute_v_150() -> void:
+	assert_array(Engine.get_meta(GdUnitPatch.PATCH_VERSION)).is_empty()
+	_patcher._scan(_patches, GdUnit3Version.parse("v1.5.0"))
+	
+	_patcher.execute()
+	assert_array(Engine.get_meta(GdUnitPatch.PATCH_VERSION)).is_empty()
+
+func test_execute_update_v106_to_v107() -> void:
+	# save project settings before modify by patching
+	GdUnitSettings.dump_to_tmp()
+	assert_array(Engine.get_meta(GdUnitPatch.PATCH_VERSION)).is_empty()
+	_patcher.scan(GdUnit3Version.parse("v1.0.6"))
+	
+	# add v1.0.6 properties
+	var old_update_notification_enabled = "gdunit3/settings/update_notification_enabled"
+	var old_server_connection_timeout_minutes = "gdunit3/settings/server_connection_timeout_minutes"
+	var old_test_timeout = "gdunit3/settings/test_timeout_seconds"
+	var old_test_root_folder = "gdunit3/settings/test_root_folder"
+	GdUnitSettings.create_property_if_need(old_update_notification_enabled, true, "Enables/Disables the update notification on startup.")
+	GdUnitSettings.create_property_if_need(old_server_connection_timeout_minutes, GdUnitSettings.DEFAULT_SERVER_TIMEOUT, "Sets the server connection timeout in minutes.")
+	GdUnitSettings.create_property_if_need(old_test_timeout, GdUnitSettings.DEFAULT_TEST_TIMEOUT, "Sets the test case runtime timeout in seconds.")
+	GdUnitSettings.create_property_if_need(old_test_root_folder, GdUnitSettings.DEFAULT_TEST_ROOT_FOLDER, "Sets the root folder where test-suites located/generated.")
+	assert_bool(ProjectSettings.has_setting(old_update_notification_enabled)).is_true()
+	assert_bool(ProjectSettings.has_setting(old_server_connection_timeout_minutes)).is_true()
+	assert_bool(ProjectSettings.has_setting(old_test_timeout)).is_true()
+	assert_bool(ProjectSettings.has_setting(old_test_root_folder)).is_true()
+	
+	# execute the patch
+	_patcher.execute()
+	
+	# verify
+	var new_update_notification_enabled = "gdunit3/settings/common/update_notification_enabled"
+	var new_server_connection_timeout_minutes = "gdunit3/settings/common/server_connection_timeout_minutes"
+	assert_bool(ProjectSettings.has_setting(old_update_notification_enabled)).is_false()
+	assert_bool(ProjectSettings.has_setting(old_server_connection_timeout_minutes)).is_false()
+	assert_bool(ProjectSettings.has_setting(new_update_notification_enabled)).is_true()
+	assert_bool(ProjectSettings.has_setting(new_server_connection_timeout_minutes)).is_true()
+	
+	var new_test_timeout = "gdunit3/settings/test/test_timeout_seconds"
+	var new_test_root_folder = "gdunit3/settings/test/test_root_folder"
+	assert_bool(ProjectSettings.has_setting(old_test_timeout)).is_false()
+	assert_bool(ProjectSettings.has_setting(old_test_root_folder)).is_false()
+	assert_bool(ProjectSettings.has_setting(new_test_timeout)).is_true()
+	assert_bool(ProjectSettings.has_setting(new_test_root_folder)).is_true()
+	# restore orignal project settings
+	GdUnitSettings.restore_dump_from_tmp()
+	yield(get_tree(), "idle_frame")

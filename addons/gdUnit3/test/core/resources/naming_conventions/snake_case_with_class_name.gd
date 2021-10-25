@@ -1,4 +1,4 @@
-class_name ScriptWithClassName
+class_name SnakeCaseWithClassName
 extends Resource
 
 # Called when the node enters the scene tree for the first time.

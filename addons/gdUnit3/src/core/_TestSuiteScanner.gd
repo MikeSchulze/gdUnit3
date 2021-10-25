@@ -112,18 +112,31 @@ func _parse_and_add_test_cases(test_suite :GdUnitTestSuite, resource_path :Strin
 	
 	file.close()
 
-static func to_class_name(file_name :String) -> String:
-	return file_name.capitalize().replace(" ", "")
+# converts given file name by configured naming convention
+static func _to_naming_convention(file_name :String) -> String:
+	var nc :int = GdUnitSettings.get_setting(GdUnitSettings.TEST_SITE_NAMING_CONVENTION, 0)
+	match nc:
+		GdUnitSettings.NAMING_CONVENTIONS.AUTO_DETECT:
+			if GdObjects.is_snake_case(file_name):
+				return GdObjects.to_snake_case(file_name + "Test")
+			return GdObjects.to_pascal_case(file_name + "Test")
+		GdUnitSettings.NAMING_CONVENTIONS.SNAKE_CASE:
+			return GdObjects.to_snake_case(file_name + "Test")
+		GdUnitSettings.NAMING_CONVENTIONS.PASCAL_CASE:
+			return GdObjects.to_pascal_case(file_name + "Test")
+	push_error("Unexpected case")
+	return "-<Unexpected>-"
 
 static func resolve_test_suite_path(source_script_path :String, test_root_folder :String = "test") -> String:
 	var file_extension := source_script_path.get_extension()
-	var file_name = source_script_path.get_file().replace("." + file_extension, "")
+	var file_name = source_script_path.get_basename().get_file()
+	var suite_name := _to_naming_convention(file_name)
 	if test_root_folder.empty():
-		return source_script_path.replace(file_name, file_name + "Test")
+		return source_script_path.replace(file_name, suite_name)
 	
 	# is user tmp
 	if source_script_path.begins_with("user://tmp"):
-		return source_script_path.replace("user://tmp", "user://tmp/" + test_root_folder).replace(file_name, "%sTest" % file_name)
+		return source_script_path.replace("user://tmp", "user://tmp/" + test_root_folder).replace(file_name, suite_name)
 	
 	# at first look up is the script under a "src" folder located
 	var test_suite_path :String
@@ -142,7 +155,7 @@ static func resolve_test_suite_path(source_script_path :String, test_root_folder
 			test_suite_path = paths[0] + "//" + test_root_folder
 			for index in range(1, paths.size()):
 				test_suite_path += "/" + paths[index]
-	return test_suite_path.replace(file_name, "%sTest" % file_name)
+	return test_suite_path.replace(file_name, suite_name)
 
 static func create_test_suite(test_suite_path :String, source_path :String) -> Result:
 	# create directory if not exists
@@ -150,12 +163,12 @@ static func create_test_suite(test_suite_path :String, source_path :String) -> R
 		var error := Directory.new().make_dir_recursive(test_suite_path.get_base_dir())
 		if error != OK:
 			return Result.error("Can't create directoy  at: %s. Error code %s" % [test_suite_path.get_base_dir(), error])
-
 	var file_extension := test_suite_path.get_extension()
-	var clazz_name := to_class_name(test_suite_path.get_file().replace("." + file_extension, ""))
+	var clazz_name :String = GdObjects.extract_class_name(source_path).value()
+	var clazz_suite_name := clazz_name + "Test"
 	var script := GDScript.new()
 	var test_suite_template = GdUnitSettings.get_setting(GdUnitSettings.TEMPLATE_TS_GD, GdUnitSettings.DEFAULT_TEMP_TS_GD)
-	script.source_code = test_suite_template.replace("${class_name}", clazz_name).replace("${source_path}", source_path)
+	script.source_code = test_suite_template.replace("${class_name}", clazz_suite_name).replace("${source_path}", source_path)
 	var error := ResourceSaver.save(test_suite_path, script)
 	if error != OK:
 		return Result.error("Can't create test suite at: %s. Error code %s" % [test_suite_path, error])

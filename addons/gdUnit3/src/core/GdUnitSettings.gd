@@ -6,18 +6,22 @@ const MAIN_CATEGORY = "gdunit3"
 # Common Settings
 const COMMON_SETTINGS = MAIN_CATEGORY + "/settings"
 
-const UPDATE_NOTIFICATION_ENABLED = COMMON_SETTINGS + "/update_notification_enabled"
+const GROUP_COMMON = COMMON_SETTINGS + "/common"
+const UPDATE_NOTIFICATION_ENABLED = GROUP_COMMON + "/update_notification_enabled"
+const SERVER_TIMEOUT = GROUP_COMMON + "/server_connection_timeout_minutes"
 
-const SERVER_TIMEOUT = COMMON_SETTINGS + "/server_connection_timeout_minutes"
-const TEST_TIMEOUT = COMMON_SETTINGS + "/test_timeout_seconds"
-const TEST_ROOT_FOLDER = COMMON_SETTINGS + "/test_root_folder"
+const GROUP_TEST = COMMON_SETTINGS + "/test"
+const TEST_TIMEOUT = GROUP_TEST + "/test_timeout_seconds"
+const TEST_ROOT_FOLDER = GROUP_TEST + "/test_root_folder"
+const TEST_SITE_NAMING_CONVENTION = GROUP_TEST + "/test_suite_naming_convention"
 
 # Report Setiings
 const REPORT_SETTINGS = MAIN_CATEGORY + "/report"
 const REPORT_ERROR_NOTIFICATIONS = REPORT_SETTINGS + "/error_notification"
 const REPORT_ORPHANS  = REPORT_SETTINGS + "/verbose_orphans"
-const REPORT_ASSERT_WARNINGS = REPORT_SETTINGS + "/assert/verbose_warnings"
-const REPORT_ASSERT_ERRORS   = REPORT_SETTINGS + "/assert/verbose_errors"
+const GROUP_ASSERT = REPORT_SETTINGS + "/assert"
+const REPORT_ASSERT_WARNINGS = GROUP_ASSERT + "/verbose_warnings"
+const REPORT_ASSERT_ERRORS   = GROUP_ASSERT + "/verbose_errors"
 
 # Godot stdout/logging settings
 const CATEGORY_LOGGING := "logging/file_logging/"
@@ -39,6 +43,12 @@ const DEFAULT_TEST_TIMEOUT :int = 60*5
 # the folder to create new test-suites
 const DEFAULT_TEST_ROOT_FOLDER := "test"
 
+enum NAMING_CONVENTIONS {
+	AUTO_DETECT,
+	SNAKE_CASE,
+	PASCAL_CASE,
+}
+
 
 const DEFAULT_TEMP_TS_GD = """# GdUnit generated TestSuite
 #warning-ignore-all:unused_argument
@@ -55,23 +65,25 @@ static func setup():
 	create_property_if_need(SERVER_TIMEOUT, DEFAULT_SERVER_TIMEOUT, "Sets the server connection timeout in minutes.")
 	create_property_if_need(TEST_TIMEOUT, DEFAULT_TEST_TIMEOUT, "Sets the test case runtime timeout in seconds.")
 	create_property_if_need(TEST_ROOT_FOLDER, DEFAULT_TEST_ROOT_FOLDER, "Sets the root folder where test-suites located/generated.")
+	create_property_if_need(TEST_SITE_NAMING_CONVENTION, NAMING_CONVENTIONS.AUTO_DETECT, "Sets test-suite genrate script name convention.", NAMING_CONVENTIONS.keys())
 	create_property_if_need(REPORT_ERROR_NOTIFICATIONS, false, "Current not supported!")
 	create_property_if_need(REPORT_ORPHANS, true, "Enables/Disables orphan reporting.")
 	create_property_if_need(REPORT_ASSERT_ERRORS, true, "Enables/Disables error reporting on asserts.")
 	create_property_if_need(REPORT_ASSERT_WARNINGS, true, "Enables/Disables warning reporting on asserts")
 	create_property_if_need(TEMPLATE_TS_GD, DEFAULT_TEMP_TS_GD, "Defines the test suite template")
 
-static func create_property_if_need(name :String, default, help :="") -> void:
+static func create_property_if_need(name :String, default, help :="", value_set := PoolStringArray()) -> void:
 	if not ProjectSettings.has_setting(name):
-		prints("GdUnit3: Set inital settings '%s' to '%s'." % [name, str(default)])
+		#prints("GdUnit3: Set inital settings '%s' to '%s'." % [name, str(default)])
 		ProjectSettings.set_setting(name, default)
 		
 	ProjectSettings.set_initial_value(name, default)
+	var hint_string := help + ("" if value_set.empty() else " %s" % value_set)
 	var info = {
 			"name": name,
 			"type": typeof(default),
 			"hint": PROPERTY_HINT_LENGTH,
-			"hint_string": help,
+			"hint_string": hint_string,
 		}
 	ProjectSettings.add_property_info(info)
 
@@ -133,8 +145,19 @@ static func list_settings(category :String) -> Array:
 		if property_name.begins_with(category):
 			var value = ProjectSettings.get_setting(property_name)
 			var default = ProjectSettings.property_get_revert(property_name)
-			settings.append(GdUnitProperty.new(property_name, property["type"], value, default, property["hint_string"]))
+			var help :String = property["hint_string"]
+			var value_set := extract_value_set_from_help(help)
+			settings.append(GdUnitProperty.new(property_name, property["type"], value, default, help, value_set))
 	return settings
+
+static func extract_value_set_from_help(value :String) -> PoolStringArray:
+	var regex := RegEx.new()
+	regex.compile("\\[(.+)\\]")
+	var matches := regex.search_all(value)
+	if matches.empty():
+		return PoolStringArray()
+	var values :String =  matches[0].get_string(1)
+	return values.replacen(" ", "").split(",", false)
 
 static func update_property(property :GdUnitProperty) -> void:
 	ProjectSettings.set_setting(property.name(), property.value())
@@ -147,3 +170,31 @@ static func reset_property(property :GdUnitProperty) -> void:
 static func save_property(name :String, value) -> void:
 	ProjectSettings.set_setting(name, value)
 	ProjectSettings.save()
+
+static func get_property(name :String) -> GdUnitProperty:
+	for property in ProjectSettings.get_property_list():
+		var property_name = property["name"]
+		if property_name == name:
+			var value = ProjectSettings.get_setting(property_name)
+			var default = ProjectSettings.property_get_revert(property_name)
+			var help :String = property["hint_string"]
+			var value_set := extract_value_set_from_help(help)
+			return GdUnitProperty.new(property_name, property["type"], value, default, help, value_set)
+	return null
+
+static func migrate_property(old_property :String, new_property :String, converter :FuncRef = null ) -> void:
+	var property := get_property(old_property)
+	if property == null:
+		prints("Migration not possible, property '%s' not found", old_property)
+		return
+	var value = property.value() if converter == null else converter.call_func(property.value())
+	create_property_if_need(new_property, property.default(), property.help(), property.value_set())
+	ProjectSettings.set_setting(new_property, value)
+	ProjectSettings.clear(old_property)
+	prints("Succesfull migrated property '%s' -> '%s' value: %s" % [old_property, new_property, value])
+
+static func dump_to_tmp() -> void:
+	ProjectSettings.save_custom("user://project_settings.godot")
+
+static func restore_dump_from_tmp() -> void:
+	Directory.new().copy("user://project_settings.godot", "res://project.godot")

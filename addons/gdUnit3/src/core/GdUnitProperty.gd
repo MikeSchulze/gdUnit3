@@ -5,12 +5,14 @@ var _name :String
 var _help :String
 var _type :int
 var _value
+var _value_set :PoolStringArray
 var _default
 
-func _init(name :String, type :int, value, default_value, help :="" ):
+func _init(name :String, type :int, value, default_value, help :="", value_set := PoolStringArray() ):
 	_name = name
 	_type = type
 	_value = value
+	_value_set = value_set
 	_default = default_value
 	_help = help
 
@@ -22,6 +24,12 @@ func type() -> int:
 
 func value():
 	return _value
+
+func value_set() -> PoolStringArray:
+	return _value_set
+
+func is_selectable_value() -> bool:
+	return not _value_set.empty()
 
 func set_value(value) -> void:
 	match _type:
@@ -47,4 +55,4 @@ func help() -> String:
 	return _help
 
 func _to_string() -> String:
-	return "%-64s %-10s %-10s (%s) help:%s" % [name(), GdObjects.type_as_string(type()), value(), default(), help()]
+	return "%-64s %-10s %-10s (%s) help:%s set:%s" % [name(), GdObjects.type_as_string(type()), value(), default(), help(), _value_set]

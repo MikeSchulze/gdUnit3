@@ -10,6 +10,7 @@ func scan(current :GdUnit3Version) -> void:
 	_scan(_base_dir, current)
 
 func _scan(scan_path :String, current :GdUnit3Version) -> void:
+	_patches = Dictionary()
 	var patch_paths := _collect_patch_versions(scan_path, current)
 	for path in patch_paths:
 		prints("scan for patches on '%s'" % path)
@@ -25,9 +26,9 @@ func execute() -> void:
 	for key in _patches.keys():
 		var patch_root :String = key
 		for path in _patches[key]:
-			prints("execute patch ", path)
 			var patch :GdUnitPatch = load(patch_root + "/" + path).new()
 			if patch:
+				prints("execute patch", patch.version(), patch.get_script().resource_path)
 				if not patch.execute():
 					prints("error on execution patch %s" % patch_root + "/" + path)
 
