@@ -53,6 +53,7 @@ const META_LINE_NUMBER := "line_number"
 var _editor :EditorPlugin
 var _tree_root :TreeItem
 var _current_failures := Array()
+var _item_hash := Dictionary()
 
 static func find_item(parent :TreeItem, resource_path :String, test_case :String = "") -> TreeItem:
 	var item = _find_by_resource_path(parent, resource_path)
@@ -120,6 +121,7 @@ func init_tree() -> void:
 	_tree.ensure_cursor_is_visible()
 	_tree.allow_rmb_select = true
 	_tree_root = _tree.create_item()
+	_item_hash.clear()
 
 func cleanup_tree() -> void:
 	clear_failures()
@@ -333,7 +335,13 @@ func update_test_suite(event :GdUnitEvent) -> void:
 	update_state(item, event)
 
 func update_test_case(event :GdUnitEvent) -> void:
-	var item := find_item(_tree_root, event.resource_path(), event.test_name())
+	var key := "%s-%s" % [event.resource_path(), event.test_name()]
+	var item :TreeItem = _item_hash.get(key, null)
+	if item == null:
+		prints("search item")
+		item = find_item(_tree_root, event.resource_path(), event.test_name())
+		_item_hash[key] = item
+		
 	if not item:
 		push_error("Internal Error: Can't find test case %s:%s" % [event.suite_name(), event.test_name()])
 		return
@@ -393,7 +401,9 @@ func add_test_case(parent :TreeItem, test_case :GdUnitTestCaseDto) -> void:
 	item.set_meta(META_GDUNIT_TYPE, GdUnitType.TEST_CASE)
 	item.set_meta(META_RESOURCE_PATH, parent.get_meta(META_RESOURCE_PATH))
 	item.set_meta(META_LINE_NUMBER, test_case.line_number())
-
+	
+	var key := "%s-%s" % [parent.get_meta(META_RESOURCE_PATH), test_name]
+	_item_hash[key] = item
 
 ################################################################################
 # Tree signal receiver
@@ -476,7 +486,6 @@ func _on_event(event:GdUnitEvent) -> void:
 			update_test_suite(event)
 		GdUnitEvent.TESTSUITE_AFTER:
 			update_test_suite(event)
-
 
 func _on_Monitor_jump_to_orphan_nodes():
 	select_first_orphan()

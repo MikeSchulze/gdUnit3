@@ -484,6 +484,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/src/ui/GdUnitInspector.gd"
 }, {
+"base": "GdUnitTestSuite",
+"class": "GdUnitInspectorTest",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/test/ui/GdUnitInspectorTest.gd"
+}, {
 "base": "GdUnitAssert",
 "class": "GdUnitIntAssert",
 "language": "GDScript",
@@ -860,6 +865,11 @@ _global_script_classes=[ {
 "path": "res://addons/gdUnit3/test/mocker/GodotClassNameFuzzer.gd"
 }, {
 "base": "GdUnitTestSuite",
+"class": "InspectorTreeMainPanelPerformanceTest",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/test/ui/parts/InspectorTreeMainPanelPerformanceTest.gd"
+}, {
+"base": "GdUnitTestSuite",
 "class": "InspectorTreeMainPanelTest",
 "language": "GDScript",
 "path": "res://addons/gdUnit3/test/ui/parts/InspectorTreeMainPanelTest.gd"
@@ -1130,6 +1140,7 @@ _global_script_class_icons={
 "GdUnitHtmlReport": "",
 "GdUnitInit": "",
 "GdUnitInspecor": "",
+"GdUnitInspectorTest": "",
 "GdUnitIntAssert": "",
 "GdUnitIntAssertImpl": "",
 "GdUnitIntAssertImplTest": "",
@@ -1205,6 +1216,7 @@ _global_script_class_icons={
 "GdUnitVector3AssertImplTest": "",
 "GeneratedPersonTest": "",
 "GodotClassNameFuzzer": "",
+"InspectorTreeMainPanelPerformanceTest": "",
 "InspectorTreeMainPanelTest": "",
 "IntFuzzer": "",
 "LocalTime": "",
@@ -1262,17 +1274,9 @@ enabled=PoolStringArray( "res://addons/gdUnit3/plugin.cfg" )
 
 [gdunit3]
 
-templates/testsuite/GDScript="# GdUnit generated TestSuite
-#warning-ignore-all:unused_argument
-#warning-ignore-all:return_value_discarded
-class_name ${class_name}
-extends GdUnitTestSuite
-
-# TestSuite generated from
-const __source = '${source_path}'
-"
 report/assert/verbose_errors=false
 report/assert/verbose_warnings=false
+settings/test/test_suite_naming_convention=2
 
 [network]
 

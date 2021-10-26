@@ -96,7 +96,7 @@ func process_rpc() -> void:
 
 func rpc_send(rpc :RPC) -> void:
 	if _stream != null:
-		_stream.put_var(rpc.serialize(), true)
+		_stream.put_data(("%s|" % rpc.serialize()).to_ascii())
 
 func rpc_receive() -> RPC:
 	if _stream != null:

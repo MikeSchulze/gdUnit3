@@ -21,7 +21,7 @@ enum  {
 	TESTCASE_AFTER,
 }
 
-var _event_type
+var _event_type :int
 var _resource_path :String
 var _suite_name :String
 var _test_name :String
@@ -62,7 +62,7 @@ func test_after(resource_path :String, suite_name :String, test_name :String, st
 	_reports = reports
 	return self
 
-func type():
+func type() -> int:
 	return _event_type
 
 func suite_name() -> String:
