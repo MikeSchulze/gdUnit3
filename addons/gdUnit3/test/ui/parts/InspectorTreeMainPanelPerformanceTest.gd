@@ -5,12 +5,9 @@ extends GdUnitTestSuite
 # TestSuite generated from
 const __source = 'res://addons/gdUnit3/src/ui/parts/InspectorTreeMainPanel.gd'
 
+# this test-suite contains only empty test to run as performance indicator
 
 func test_01() -> void:
-	for i in 600:
-		var event := RPCGdUnitEvent.of(GdUnitEvent.new())
-		var x = inst2dict(event)
-		dict2inst(x)
 	pass
 
 func test_02() -> void:
