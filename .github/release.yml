@@ -8,11 +8,11 @@ changelog:
   categories:
     - title: Improvements
       labels:
-        - bug
+        - enhancement
 
     - title: Bug Fixes
       labels:
-        - enhancement
+        - bug
 
     - title: Other Changes
       labels:
