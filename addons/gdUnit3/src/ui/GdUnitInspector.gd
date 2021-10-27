@@ -268,7 +268,7 @@ func _gdUnit_run(debug :bool) -> void:
 	# don't start is already running
 	if _is_running:
 		return
-	_is_running = true
+	
 	grab_focus()
 	show()
 	# save current selected excution config
@@ -286,6 +286,7 @@ func _gdUnit_run(debug :bool) -> void:
 	emit_signal("gdunit_runner_start")
 	if debug:
 		_editor_interface.play_custom_scene("res://addons/gdUnit3/src/core/GdUnitRunner.tscn")
+		_is_running = true
 		return
 
 	var arguments := Array()
@@ -298,6 +299,7 @@ func _gdUnit_run(debug :bool) -> void:
 #	_running_debug_mode = false
 	#prints("execute ", OS.get_executable_path(), arguments)
 	_current_runner_process_id = OS.execute(OS.get_executable_path(), arguments, false, output, false);
+	_is_running = true
 
 
 func _gdUnit_stop(client_id :int) -> void:

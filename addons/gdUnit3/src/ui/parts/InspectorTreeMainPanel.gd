@@ -53,8 +53,24 @@ const META_LINE_NUMBER := "line_number"
 var _editor :EditorPlugin
 var _tree_root :TreeItem
 var _current_failures := Array()
+var _item_hash := Dictionary()
 
-static func find_item(parent :TreeItem, resource_path :String, test_case :String = "") -> TreeItem:
+
+func _build_cache_key(resource_path :String, test_name :String) -> Array:
+	return [resource_path, test_name]
+
+func get_tree_item(event :GdUnitEvent) -> TreeItem:
+	var key := _build_cache_key(event.resource_path(), event.test_name())
+	return _item_hash.get(key, null)
+
+func add_tree_item_to_cache(resource_path :String, test_name :String, item :TreeItem) -> void:
+	var key := _build_cache_key(resource_path, test_name)
+	_item_hash[key] = item
+
+func clear_tree_item_cache() -> void:
+	_item_hash.clear()
+
+static func _find_item(parent :TreeItem, resource_path :String, test_case :String = "") -> TreeItem:
 	var item = _find_by_resource_path(parent, resource_path)
 	if not item:
 		return null
@@ -123,6 +139,7 @@ func init_tree() -> void:
 
 func cleanup_tree() -> void:
 	clear_failures()
+	clear_tree_item_cache()
 	if not _tree_root:
 		return
 	var parent := _tree_root.get_children()
@@ -333,7 +350,7 @@ func update_test_suite(event :GdUnitEvent) -> void:
 	update_state(item, event)
 
 func update_test_case(event :GdUnitEvent) -> void:
-	var item := find_item(_tree_root, event.resource_path(), event.test_name())
+	var item := get_tree_item(event)
 	if not item:
 		push_error("Internal Error: Can't find test case %s:%s" % [event.suite_name(), event.test_name()])
 		return
@@ -393,7 +410,7 @@ func add_test_case(parent :TreeItem, test_case :GdUnitTestCaseDto) -> void:
 	item.set_meta(META_GDUNIT_TYPE, GdUnitType.TEST_CASE)
 	item.set_meta(META_RESOURCE_PATH, parent.get_meta(META_RESOURCE_PATH))
 	item.set_meta(META_LINE_NUMBER, test_case.line_number())
-
+	add_tree_item_to_cache(parent.get_meta(META_RESOURCE_PATH), test_name, item)
 
 ################################################################################
 # Tree signal receiver
@@ -476,7 +493,6 @@ func _on_event(event:GdUnitEvent) -> void:
 			update_test_suite(event)
 		GdUnitEvent.TESTSUITE_AFTER:
 			update_test_suite(event)
-
 
 func _on_Monitor_jump_to_orphan_nodes():
 	select_first_orphan()
