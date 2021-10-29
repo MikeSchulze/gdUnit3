@@ -137,3 +137,21 @@ func next_value() -> Vector2:
 func test_with_value_provider() -> void:
 	assert_vector3(CallBackValueProvider.new(self, "next_value"))\
 		.is_equal(Vector3.ZERO).is_equal(Vector3.ONE).is_equal(Vector3.INF)
+
+# tests if an assert fails the 'is_failure' reflects the failure status
+func test_is_failure() -> void:
+	# initial is false
+	assert_bool(is_failure()).is_false()
+	
+	# on success assert
+	assert_vector3(null).is_null()
+	assert_bool(is_failure()).is_false()
+	
+	# on faild assert
+	assert_vector3(Reference.new(), GdUnitAssert.EXPECT_FAIL).is_null()
+	assert_bool(is_failure()).is_true()
+	
+	# on next success assert
+	assert_vector3(null).is_null()
+	# is true because we have an already failed assert
+	assert_bool(is_failure()).is_true()

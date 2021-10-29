@@ -119,6 +119,7 @@ func test_before(test_suite :GdUnitTestSuite, test_case :_TestCase) -> GDScriptF
 	fire_event(GdUnitEvent.new()\
 		.test_before(test_suite.get_script().resource_path, test_suite.get_name(), test_case.get_name()))
 	
+	test_suite.set_meta(GdUnitAssertImpl.GD_TEST_FAILURE, false)
 	if not test_case.is_skipped():
 		var fstate = test_suite.before_test()
 		if GdUnitTools.is_yielded(fstate):

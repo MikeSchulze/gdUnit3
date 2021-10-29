@@ -38,6 +38,9 @@ func after_test() -> void:
 func skip(skipped :bool) -> void:
 	set_meta("gd_skipped", skipped)
 
+func is_failure() -> bool:
+	return get_meta(GdUnitAssertImpl.GD_TEST_FAILURE) if has_meta(GdUnitAssertImpl.GD_TEST_FAILURE) else false
+
 func is_skipped() -> bool:
 	return get_meta("gd_skipped") if has_meta("gd_skipped") else false
 
