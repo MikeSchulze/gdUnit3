@@ -107,3 +107,21 @@ func next_value() -> Result:
 func test_with_value_provider() -> void:
 	assert_result(CallBackValueProvider.new(self, "next_value"))\
 		.is_success().is_error().is_warning()
+
+# tests if an assert fails the 'is_failure' reflects the failure status
+func test_is_failure() -> void:
+	# initial is false
+	assert_bool(is_failure()).is_false()
+	
+	# on success assert
+	assert_result(null).is_null()
+	assert_bool(is_failure()).is_false()
+	
+	# on faild assert
+	assert_result(Reference.new(), GdUnitAssert.EXPECT_FAIL).is_null()
+	assert_bool(is_failure()).is_true()
+	
+	# on next success assert
+	assert_result(null).is_null()
+	# is true because we have an already failed assert
+	assert_bool(is_failure()).is_true()

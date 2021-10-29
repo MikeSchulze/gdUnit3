@@ -1,12 +1,15 @@
 class_name GdUnitAssertImpl
 extends GdUnitAssert
 
+const GD_TEST_FAILURE = "gd_test_failure"
+
 var _current_value_provider :ValueProvider
 var _is_failed :bool = false
 var _current_error_message :String = ""
 var _expect_fail :bool = false
 var _custom_failure_message = null
 var _report_consumer :WeakRef
+var _caller :WeakRef
 
 # Scans the current stack trace for the root cause to extract the line number
 static func _get_line_number() -> int:
@@ -24,12 +27,19 @@ static func _get_line_number() -> int:
 func _init(caller :Object, current, expect_result :int = EXPECT_SUCCESS):
 	assert(caller != null, "missing argument caller!")
 	assert(caller.has_meta(GdUnitReportConsumer.META_PARAM), "caller must register a report consumer!")
+	_caller = weakref(caller)
 	_report_consumer = weakref(caller.get_meta(GdUnitReportConsumer.META_PARAM))
 	_current_value_provider = current if current is ValueProvider else DefaultValueProvider.new(current)
 	GdAssertReports.reset_last_error_line_number()
+	_set_test_failure(false)
 	# we expect the test will fail
 	if expect_result == EXPECT_FAIL:
 		_expect_fail = true
+
+func _set_test_failure(failure :bool) -> void:
+	if _caller.get_ref().has_meta(GD_TEST_FAILURE) and _caller.get_ref().get_meta(GD_TEST_FAILURE) == true:
+		return
+	_caller.get_ref().set_meta(GD_TEST_FAILURE, failure)
 
 func __current():
 	return _current_value_provider.get_value()
@@ -41,6 +51,7 @@ func report_success() -> GdUnitAssert:
 	return GdAssertReports.report_success(self)
 
 func report_error(error_message :String) -> GdUnitAssert:
+	_set_test_failure(true)
 	var line_number := _get_line_number()
 	GdAssertReports.set_last_error_line_number(line_number)
 	if _custom_failure_message == null:

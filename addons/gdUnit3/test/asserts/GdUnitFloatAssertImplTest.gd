@@ -161,3 +161,26 @@ func next_value() -> float:
 func test_with_value_provider() -> void:
 	assert_float(CallBackValueProvider.new(self, "next_value"))\
 		.is_equal(1.1).is_equal(2.2)
+
+# tests if an assert fails the 'is_failure' reflects the failure status
+func test_is_failure() -> void:
+	# initial is false
+	assert_bool(is_failure()).is_false()
+	
+	# on success assert
+	assert_float(0.0).is_zero()
+	assert_bool(is_failure()).is_false()
+	
+	# on faild assert
+	assert_float(1.0, GdUnitAssert.EXPECT_FAIL).is_zero()
+	assert_bool(is_failure()).is_true()
+	
+	# on next success assert
+	assert_float(0.0).is_zero()
+	# is true because we have an already failed assert
+	assert_bool(is_failure()).is_true()
+	
+	# should abort here because we had an failing assert
+	if is_failure():
+		return
+	assert_bool(true).override_failure_message("This line shold never be called").is_false()
