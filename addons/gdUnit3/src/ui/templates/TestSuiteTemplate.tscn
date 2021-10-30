@@ -62,15 +62,6 @@ custom_colors/font_color_selected = Color( 0.41, 0.61, 0.91, 0.35 )
 custom_colors/font_color = Color( 0.8, 0.8075, 0.8275, 1 )
 custom_colors/background_color = Color( 0.125, 0.14375, 0.19375, 1 )
 custom_colors/font_color_readonly = Color( 0.8, 0.8075, 0.8275, 1 )
-text = "# GdUnit generated TestSuite
-#warning-ignore-all:unused_argument
-#warning-ignore-all:return_value_discarded
-class_name ${class_name}
-extends GdUnitTestSuite
-
-# TestSuite generated from
-const __source = '${source_path}'
-"
 syntax_highlighting = true
 
 [node name="MarginContainer" type="MarginContainer" parent="ScrollContainer/VBoxContainer/Editor"]
@@ -106,7 +97,6 @@ margin_right = 1024.0
 margin_bottom = 30.0
 rect_min_size = Vector2( 200, 0 )
 hint_tooltip = "Select the script type specific template."
-text = "GD - GDScript"
 items = [ "GD - GDScript", null, false, 0, null, "C# - CSharpScript", null, true, 1, null ]
 selected = 0
 __meta__ = {
@@ -171,44 +161,11 @@ custom_colors/font_color_selected = Color( 0.41, 0.61, 0.91, 0.35 )
 custom_colors/font_color = Color( 0.8, 0.8075, 0.8275, 1 )
 custom_colors/background_color = Color( 0.125, 0.14375, 0.19375, 1 )
 custom_colors/font_color_readonly = Color( 0.8, 0.8075, 0.8275, 1 )
-text = "
-Tags are replaced when the test-suite is created.
-
-# The class name of the test-suite, formed from the source script.
-${suite_class_name}
-# is used to build the test suite class name
-	class_name ${suite_class_name}
-	extends GdUnitTestSuite
-
-
-# The class name in pascal case, formed from the source script.
-${source_class}
-	# can be used to create the class e.g. for source 'MyClass'
-	var my_test_class := ${source_class}.new()
-	# will be result in
-	var my_test_class := MyClass.new()
-
-# The class as variable name in snake case, formed from the source script.
-${source_var}
-	# Can be used to build the variable name e.g. for source 'MyClass'
-	var ${source_var} := ${source_class}.new()
-	# will be result in
-	var my_class := MyClass.new()
-
-# The full resource path from which the file was created.
-${source_resource_path}
-	# Can be used to load the script in your test
-	var my_script := load(${source_resource_path})
-	# will be result in
-	var my_script := load(\"res://folder/my_class.gd\")
-	
-"
 readonly = true
 syntax_highlighting = true
 context_menu_enabled = false
 shortcut_keys_enabled = false
 virtual_keyboard_enabled = false
-scroll_vertical = 7.0
 
 [connection signal="text_changed" from="ScrollContainer/VBoxContainer/Editor" to="." method="_on_Editor_text_changed"]
 [connection signal="pressed" from="ScrollContainer/VBoxContainer/Editor/MarginContainer/HBoxContainer/Tags" to="." method="_on_Tags_pressed"]

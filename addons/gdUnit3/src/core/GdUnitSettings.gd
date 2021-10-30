@@ -81,7 +81,6 @@ static func create_property_if_need(name :String, default, help :="", value_set 
 static func get_setting(name :String, default) :
 	if ProjectSettings.has_setting(name):
 		return ProjectSettings.get_setting(name)
-	prints("return default: ", name)
 	return default
 
 static func is_update_notification_enabled() -> bool:
