@@ -8,7 +8,7 @@ const OLD_SERVER_TIMEOUT = GdUnitSettings.COMMON_SETTINGS + "/server_connection_
 const OLD_TEST_TIMEOUT = GdUnitSettings.COMMON_SETTINGS + "/test_timeout_seconds"
 const OLD_TEST_ROOT_FOLDER = GdUnitSettings.COMMON_SETTINGS + "/test_root_folder"
 
-func _init() .(GdUnit3Version.parse("v1.0.7")):
+func _init() .(GdUnit3Version.parse("v1.1.0")):
 	pass
 
 func execute() -> bool:

@@ -50,17 +50,8 @@ enum NAMING_CONVENTIONS {
 }
 
 
-const DEFAULT_TEMP_TS_GD = """# GdUnit generated TestSuite
-#warning-ignore-all:unused_argument
-#warning-ignore-all:return_value_discarded
-class_name ${class_name}
-extends GdUnitTestSuite
-
-# TestSuite generated from
-const __source = '${source_path}'
-"""
-
 static func setup():
+	prints("setup")
 	create_property_if_need(UPDATE_NOTIFICATION_ENABLED, true, "Enables/Disables the update notification on startup.")
 	create_property_if_need(SERVER_TIMEOUT, DEFAULT_SERVER_TIMEOUT, "Sets the server connection timeout in minutes.")
 	create_property_if_need(TEST_TIMEOUT, DEFAULT_TEST_TIMEOUT, "Sets the test case runtime timeout in seconds.")
@@ -70,7 +61,7 @@ static func setup():
 	create_property_if_need(REPORT_ORPHANS, true, "Enables/Disables orphan reporting.")
 	create_property_if_need(REPORT_ASSERT_ERRORS, true, "Enables/Disables error reporting on asserts.")
 	create_property_if_need(REPORT_ASSERT_WARNINGS, true, "Enables/Disables warning reporting on asserts")
-	create_property_if_need(TEMPLATE_TS_GD, DEFAULT_TEMP_TS_GD, "Defines the test suite template")
+	create_property_if_need(TEMPLATE_TS_GD, GdUnitTestSuiteDefaultTemplate.DEFAULT_TEMP_TS_GD, "Defines the test suite template")
 
 static func create_property_if_need(name :String, default, help :="", value_set := PoolStringArray()) -> void:
 	if not ProjectSettings.has_setting(name):
@@ -90,6 +81,7 @@ static func create_property_if_need(name :String, default, help :="", value_set 
 static func get_setting(name :String, default) :
 	if ProjectSettings.has_setting(name):
 		return ProjectSettings.get_setting(name)
+	prints("return default: ", name)
 	return default
 
 static func is_update_notification_enabled() -> bool:
@@ -161,15 +153,21 @@ static func extract_value_set_from_help(value :String) -> PoolStringArray:
 
 static func update_property(property :GdUnitProperty) -> void:
 	ProjectSettings.set_setting(property.name(), property.value())
-	ProjectSettings.save()
+	save()
 
 static func reset_property(property :GdUnitProperty) -> void:
 	ProjectSettings.set_setting(property.name(), property.default())
-	ProjectSettings.save()
+	save()
 
 static func save_property(name :String, value) -> void:
 	ProjectSettings.set_setting(name, value)
-	ProjectSettings.save()
+	save()
+
+static func save() -> void:
+	var err := ProjectSettings.save()
+	if err != OK:
+		push_error("Save GdUnit3 settings failed : %s" % GdUnitTools.error_as_string(err))
+		return
 
 static func get_property(name :String) -> GdUnitProperty:
 	for property in ProjectSettings.get_property_list():

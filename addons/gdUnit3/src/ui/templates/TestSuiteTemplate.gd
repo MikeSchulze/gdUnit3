@@ -8,15 +8,7 @@ onready var _save_button :Button = $ScrollContainer/VBoxContainer/Panel/HBoxCont
 onready var _selected_type :OptionButton = $ScrollContainer/VBoxContainer/Editor/MarginContainer/HBoxContainer/SelectType
 onready var _show_tags :Popup = $Tags
 
-const supported_tags = """
-Tags are replaced when the test-suite is created.
 
-# The test suite class name based on source which the file was generated.
-${class_name}
-
-# The resource path of the source from which the file was generated.
-${source_path}
-"""
 
 var gd_key_words := ["extends", "class_name", "const", "var", "onready", "func", "void", "pass"]
 var gdunit_key_words := ["GdUnitTestSuite", "before", "after", "before_test", "after_test"]
@@ -62,18 +54,18 @@ func setup_supported_types() -> void:
 	_selected_type.set_item_disabled(1, true)
 
 func setup_tags_help() -> void:
-	_tags_editor.set_text(supported_tags)
+	_tags_editor.set_text(GdUnitTestSuiteTemplate.SUPPORTED_TAGS)
 
 func load_template() -> void:
-	_template_editor.set_text(GdUnitSettings.get_setting(GdUnitSettings.TEMPLATE_TS_GD, GdUnitSettings.DEFAULT_TEMP_TS_GD))
+	_template_editor.set_text(GdUnitTestSuiteTemplate.load_template())
 
 func _on_Restore_pressed():
-	_template_editor.set_text(GdUnitSettings.DEFAULT_TEMP_TS_GD)
-	GdUnitSettings.save_property(GdUnitSettings.TEMPLATE_TS_GD, GdUnitSettings.DEFAULT_TEMP_TS_GD)
+	_template_editor.set_text(GdUnitTestSuiteTemplate.default_template())
+	GdUnitTestSuiteTemplate.reset_to_default()
 	_save_button.disabled = true
 
 func _on_Save_pressed():
-	GdUnitSettings.save_property(GdUnitSettings.TEMPLATE_TS_GD, _template_editor.get_text())
+	GdUnitTestSuiteTemplate.save_template(_template_editor.get_text())
 	_save_button.disabled = true
 
 func _on_Tags_pressed():
