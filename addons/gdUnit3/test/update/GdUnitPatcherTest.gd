@@ -102,11 +102,14 @@ func test_execute_v_150() -> void:
 	_patcher.execute()
 	assert_array(Engine.get_meta(GdUnitPatch.PATCH_VERSION)).is_empty()
 
-func test_execute_update_v106_to_v107() -> void:
+func test_execute_update_v106_to_v110() -> void:
 	# save project settings before modify by patching
 	GdUnitSettings.dump_to_tmp()
 	assert_array(Engine.get_meta(GdUnitPatch.PATCH_VERSION)).is_empty()
 	_patcher.scan(GdUnit3Version.parse("v1.0.6"))
+	# expected patches to execute
+	assert_dict(_patcher._patches)\
+		.is_equal({"res://addons/gdUnit3/src/update/patches/v1.1.0": PoolStringArray(["patch_gd_170.gd", "patch_gd_172.gd"])})
 	
 	# add v1.0.6 properties
 	var old_update_notification_enabled = "gdunit3/settings/update_notification_enabled"

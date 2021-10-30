@@ -164,11 +164,8 @@ static func create_test_suite(test_suite_path :String, source_path :String) -> R
 		if error != OK:
 			return Result.error("Can't create directoy  at: %s. Error code %s" % [test_suite_path.get_base_dir(), error])
 	var file_extension := test_suite_path.get_extension()
-	var clazz_name :String = GdObjects.extract_class_name(source_path).value()
-	var clazz_suite_name := clazz_name + "Test"
 	var script := GDScript.new()
-	var test_suite_template = GdUnitSettings.get_setting(GdUnitSettings.TEMPLATE_TS_GD, GdUnitSettings.DEFAULT_TEMP_TS_GD)
-	script.source_code = test_suite_template.replace("${class_name}", clazz_suite_name).replace("${source_path}", source_path)
+	script.source_code = GdUnitTestSuiteTemplate.build_template(source_path)
 	var error := ResourceSaver.save(test_suite_path, script)
 	if error != OK:
 		return Result.error("Can't create test suite at: %s. Error code %s" % [test_suite_path, error])
