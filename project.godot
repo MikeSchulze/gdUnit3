@@ -1324,7 +1324,6 @@ enabled=PoolStringArray( "res://addons/gdUnit3/plugin.cfg" )
 
 report/assert/verbose_errors=false
 report/assert/verbose_warnings=false
-settings/test/test_suite_naming_convention=2
 
 [network]
 
