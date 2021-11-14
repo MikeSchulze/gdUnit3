@@ -41,7 +41,7 @@ namespace GdUnit3
         // A litle helper to auto freeing your created objects after test execution
         public T auto_free<T>(T obj)
         {
-            GdUnitTools.Call("register_auto_free", obj, GetMeta("MEMORY_POOL"));
+            //GdUnitTools.Call("register_auto_free", obj, GetMeta("MEMORY_POOL"));
             return obj;
         }
 
