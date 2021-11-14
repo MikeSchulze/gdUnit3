@@ -9,7 +9,7 @@ onready var _tree :Tree = $Panel/Tree
 onready var _report_list :Node = $report/ScrollContainer/list
 onready var _report_template :RichTextLabel = $report/report_template
 
-onready var _context_menu := $contextMenu
+onready var _context_menu :PopupPanel = $contextMenu
 onready var _context_menu_run := $contextMenu/items/run
 onready var _context_menu_debug := $contextMenu/items/debug
 
@@ -417,7 +417,7 @@ func add_test_case(parent :TreeItem, test_case :GdUnitTestCaseDto) -> void:
 ################################################################################
 func _on_Tree_item_rmb_selected(position :Vector2) -> void:
 	_context_menu.rect_position = position + _tree.get_global_position()
-	_context_menu.show()
+	_context_menu.popup()
 
 func _on_run_pressed(run_debug :bool) -> void:
 	_context_menu.hide()
