@@ -1,0 +1,35 @@
+name: CI GdUnit3 on Godot 3.4.x
+on: [push, workflow_dispatch]
+
+jobs:
+  testing:
+    strategy:
+      matrix:
+        godot: [3.4]
+
+    name: CI Godot ${{ matrix.godot }}
+    runs-on: ubuntu-latest
+    container:
+      image: barichello/godot-ci:${{ matrix.godot }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+          submodules: 'recursive'
+
+      - name: Setup
+        shell: bash
+        run: echo "GODOT_BIN=/usr/local/bin/godot" >> $GITHUB_ENV
+
+      - name: Run Selftes
+        shell: bash
+        run: ./runtest.sh --selftest
+
+      - name: Collect Test Report
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: Report_${{ matrix.godot }}
+          path: reports/**
