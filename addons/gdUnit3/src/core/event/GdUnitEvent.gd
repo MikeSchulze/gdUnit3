@@ -83,6 +83,9 @@ func statistic(type :String) -> int:
 func total_count() -> int:
 	return _total_count
 
+func success_count() -> int:
+	return total_count() - error_count() - failed_count() - skipped_count()
+
 func error_count() -> int:
 	return _statistics.get(ERROR_COUNT, 0)
 	
