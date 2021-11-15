@@ -10,6 +10,7 @@
   <img src="https://img.shields.io/badge/Godot-v3.3.2-%23478cbf?logo=godot-engine&logoColor=cyian&color=brightgreen">
   <img src="https://img.shields.io/badge/Godot-v3.3.3-%23478cbf?logo=godot-engine&logoColor=cyian&color=brightgreen">
   <img src="https://img.shields.io/badge/Godot-v3.3.4-%23478cbf?logo=godot-engine&logoColor=cyian&color=brightgreen">
+  <img src="https://img.shields.io/badge/Godot-v3.4-%23478cbf?logo=godot-engine&logoColor=cyian&color=brightgreen">
   <img src="https://img.shields.io/badge/Godot-v4.x.x-%23478cbf?logo=godot-engine&logoColor=cyian&color=red">
 </p>
 
