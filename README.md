@@ -35,6 +35,7 @@ GdUnit3 is a framework for testing GdScrips and Scenes within the Godot editor. 
 * Fully integrated in the Godot editor
 * Run test-suite(s) by using the context menu on FileSystem, ScriptEditor or GdUnitInspector
 * Create test's directly from the ScriptEditor
+* Configurable template for the creation of a new test-suite
 * A spacious set of Asserts use to verify your code
 * Argument matchers to verify the behavior of a function call by a specified argument type.
 * Fluent syntax support
@@ -47,7 +48,8 @@ GdUnit3 is a framework for testing GdScrips and Scenes within the Godot editor. 
   * Simulate scene processing by a certain number of frames
   * Simulate scene proccessing by waiting for a specific signal
 * Update Notifier to install latest version from GitHub
-* Command Line Tool [[Command-Line-Tool]]
+* Command Line Tool
+* CI - Continuous Integration support 
 
  
 ## Short Example
