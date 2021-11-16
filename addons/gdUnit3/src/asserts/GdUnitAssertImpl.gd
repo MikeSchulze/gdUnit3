@@ -19,7 +19,10 @@ static func _get_line_number() -> int:
 	for stack_info in stack_trace:
 		var function :String = stack_info.get("function")
 		var source :String = stack_info.get("source")
-		if source.empty() or source.ends_with("AssertImpl.gd") or source.ends_with("GdUnitTestSuite.gd"):
+		if source.empty() \
+		 or source.ends_with("AssertImpl.gd") \
+		 or source.ends_with("GdUnitTestSuite.gd") \
+		 or source.ends_with("GdUnitSceneRunner.gd"):
 			continue
 		return stack_info.get("line")
 	return -1
