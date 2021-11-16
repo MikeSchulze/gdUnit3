@@ -126,7 +126,7 @@ func test_wait_signal_without_time_factor() -> void:
 	yield(runner.wait_emit_signal(scene, "panel_color_change", [scene._box1, Color.blue], 600), "completed")
 	yield(runner.wait_emit_signal(scene, "panel_color_change", [scene._box1, Color.green], 600), "completed")
 	yield(runner.wait_emit_signal(scene, "panel_color_change", [scene._box1, Color.khaki], 300, GdUnitAssert.EXPECT_FAIL), "completed")\
-		.starts_with_failure_message("Expecting emit signal: 'panel_color_change([[ColorRect")
+		.starts_with_failure_message("Expecting emit signal: 'panel_color_change(")
 
 func test_wait_signal_with_time_factor() -> void:
 	var scene = auto_free(load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn").instance())
@@ -140,4 +140,4 @@ func test_wait_signal_with_time_factor() -> void:
 	yield(runner.wait_emit_signal(scene, "panel_color_change", [scene._box1, Color.blue], 100), "completed")
 	yield(runner.wait_emit_signal(scene, "panel_color_change", [scene._box1, Color.green], 100), "completed")
 	yield(runner.wait_emit_signal(scene, "panel_color_change", [scene._box1, Color.khaki], 30, GdUnitAssert.EXPECT_FAIL), "completed")\
-		.starts_with_failure_message("Expecting emit signal: 'panel_color_change([[ColorRect")
+		.starts_with_failure_message("Expecting emit signal: 'panel_color_change(")

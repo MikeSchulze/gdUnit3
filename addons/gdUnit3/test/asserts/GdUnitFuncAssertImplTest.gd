@@ -295,4 +295,4 @@ func test_invalid_function():
 	yield(assert_func(self, "invalid_func_name", [], GdUnitAssert.EXPECT_FAIL)\
 		.wait_until(100)\
 		.is_equal(42), "completed")\
-		.starts_with_failure_message("The function 'invalid_func_name' do not exists on instance '[Node:")
+		.starts_with_failure_message("The function 'invalid_func_name' do not exists on instance")
