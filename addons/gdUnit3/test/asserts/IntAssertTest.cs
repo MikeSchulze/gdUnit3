@@ -217,7 +217,7 @@ public class IntAssertTest : TestSuite
     [TestCase]
     public void Executor()
     {
-        new Executor().execute(this);
+        new Executor().Execute(this);
     }
 
 

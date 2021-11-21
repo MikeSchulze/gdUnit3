@@ -1,7 +1,7 @@
 using Godot;
 using GdUnit3;
 
-// will be ignored becaus of missing `[TestSuite]` animation
+// will be ignored becaus of missing `[TestSuite]` anotation
 public class NotATestSuite : TestSuite
 {
 

@@ -27,7 +27,7 @@ namespace GdUnit3
         const string FAILED_COUNT = "failed_count";
         const string SKIPPED_COUNT = "skipped_count";
 
-        private IDictionary _data = new Dictionary<string, object>();
+        private IDictionary<string, object> _data = new Dictionary<string, object>();
 #nullable enable
         private TestEvent(TYPE type, string resourcePath, string suiteName, string testName, int totalCount = 0, IDictionary? statistics = null, IEnumerable<TestReport>? reports = null)
         {
@@ -50,6 +50,7 @@ namespace GdUnit3
 
         public static TestEvent Before(string resourcePath, string suiteName, int totalCount)
         {
+
             return new TestEvent(TYPE.TESTSUITE_BEFORE, resourcePath, suiteName, "", totalCount);
         }
 
@@ -87,9 +88,14 @@ namespace GdUnit3
                     { SKIPPED_COUNT, skippedCount}};
         }
 
-        public System.Collections.IDictionary AsDictionary()
+        public IDictionary<string, object> AsDictionary()
         {
             return _data;
+        }
+
+        public override string ToString()
+        {
+            return string.Format("Event: {0} {1}:{2}, {3} ", _data["type"], _data["suite_name"], _data["test_name"], "");
         }
     }
 }

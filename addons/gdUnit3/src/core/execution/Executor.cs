@@ -28,7 +28,7 @@ namespace GdUnit3
             _eventListeners.Add(listener);
         }
 
-        public void execute(TestSuite testSuite)
+        public void Execute(TestSuite testSuite)
         {
             using (ExecutionContext context = new ExecutionContext(testSuite, _eventListeners))
             {
