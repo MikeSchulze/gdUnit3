@@ -30,8 +30,10 @@ namespace GdUnit3
 
         public void execute(TestSuite testSuite)
         {
-            var stage = new TestSuiteExecutionStage(testSuite.GetType());
-            stage.Execute(new ExecutionContext(testSuite, _eventListeners));
+            using (ExecutionContext context = new ExecutionContext(testSuite, _eventListeners))
+            {
+                new TestSuiteExecutionStage(testSuite.GetType()).Execute(context);
+            }
             testSuite.Free();
         }
     }

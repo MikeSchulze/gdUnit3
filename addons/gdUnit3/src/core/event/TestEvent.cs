@@ -29,7 +29,7 @@ namespace GdUnit3
 
         private IDictionary _data = new Dictionary<string, object>();
 #nullable enable
-        private TestEvent(TYPE type, string resourcePath, string suiteName, string testName, int totalCount = 0, IEnumerable? statistics = null, IEnumerable<TestReport>? reports = null)
+        private TestEvent(TYPE type, string resourcePath, string suiteName, string testName, int totalCount = 0, IDictionary? statistics = null, IEnumerable<TestReport>? reports = null)
         {
             _data.Add("type", type);
             _data.Add("resource_path", resourcePath);
@@ -53,7 +53,7 @@ namespace GdUnit3
             return new TestEvent(TYPE.TESTSUITE_BEFORE, resourcePath, suiteName, "", totalCount);
         }
 
-        public static TestEvent After(string resourcePath, string suiteName, IEnumerable statistics)
+        public static TestEvent After(string resourcePath, string suiteName, IDictionary statistics)
         {
             return new TestEvent(TYPE.TESTSUITE_AFTER, resourcePath, suiteName, "", 0, statistics);
         }
@@ -62,7 +62,7 @@ namespace GdUnit3
         {
             return new TestEvent(TYPE.TESTCASE_BEFORE, resourcePath, suiteName, testName);
         }
-        public static TestEvent AfterTest(string resourcePath, string suiteName, string testName, IEnumerable? statistics = null, IEnumerable<TestReport>? reports = null)
+        public static TestEvent AfterTest(string resourcePath, string suiteName, string testName, IDictionary? statistics = null, IEnumerable<TestReport>? reports = null)
         {
             return new TestEvent(TYPE.TESTCASE_AFTER, resourcePath, suiteName, testName, 0, statistics, reports);
         }

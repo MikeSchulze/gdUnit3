@@ -12,8 +12,10 @@ namespace GdUnit3
         {
             if (!context.IsSkipped())
             {
+                context.MemoryPool.SetActive(StageName());
                 context.OrphanMonitor.Start();
                 base.Execute(context);
+                context.MemoryPool.ReleaseRegisteredObjects();
                 context.OrphanMonitor.Stop();
             }
             context.FireAfterTestEvent();

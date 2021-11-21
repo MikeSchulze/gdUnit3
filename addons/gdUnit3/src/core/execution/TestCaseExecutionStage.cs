@@ -6,31 +6,33 @@ namespace GdUnit3
     {
         public TestCaseExecutionStage(Type type)
         {
-            BeforeTestStage = new BeforeTestExecutionStage(type);
-            AfterTestStage = new AfterTestExecutionStage(type);
+            BeforeStage = new BeforeTestExecutionStage(type);
+            AfterStage = new AfterTestExecutionStage(type);
         }
 
         public string StageName() => "TestCases";
 
-        private IExecutionStage BeforeTestStage
+        private IExecutionStage BeforeStage
         { get; set; }
-        private IExecutionStage AfterTestStage
+        private IExecutionStage AfterStage
         { get; set; }
 
 
         public void Execute(ExecutionContext context)
         {
-            BeforeTestStage.Execute(context);
+            BeforeStage.Execute(context);
             using (ExecutionContext currentContext = new ExecutionContext(context))
             {
+                currentContext.MemoryPool.SetActive(StageName());
                 currentContext.OrphanMonitor.Start(true);
                 while (!currentContext.IsSkipped() && currentContext.CurrentIteration != 0)
                 {
                     currentContext.Test.Execute(currentContext);
                 }
+                currentContext.MemoryPool.ReleaseRegisteredObjects();
                 currentContext.OrphanMonitor.Stop();
             }
-            AfterTestStage.Execute(context);
+            AfterStage.Execute(context);
         }
     }
 }

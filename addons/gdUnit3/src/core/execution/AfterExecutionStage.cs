@@ -9,8 +9,10 @@ namespace GdUnit3
 
         public override void Execute(ExecutionContext context)
         {
+            context.MemoryPool.SetActive(StageName());
             context.OrphanMonitor.Start();
             base.Execute(context);
+            context.MemoryPool.ReleaseRegisteredObjects();
             context.OrphanMonitor.Stop();
             context.FireAfterEvent();
         }

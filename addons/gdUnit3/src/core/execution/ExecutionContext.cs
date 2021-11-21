@@ -10,6 +10,7 @@ namespace GdUnit3
     {
         public ExecutionContext(TestSuite testInstance, IEnumerable<ITestEventListener> eventListeners)
         {
+            MemoryPool = new MemoryPool();
             OrphanMonitor = new OrphanNodesMonitor();
             Stopwatch = new Stopwatch();
             Stopwatch.Start();
@@ -39,6 +40,10 @@ namespace GdUnit3
 
         public OrphanNodesMonitor OrphanMonitor
         { get; set; }
+
+        public MemoryPool MemoryPool
+        { get; set; }
+
 
         public Stopwatch Stopwatch
         { get; private set; }
@@ -89,6 +94,9 @@ namespace GdUnit3
             return ReportCollector.Warnings.Count() > 0 || SubExecutionContexts.Where(context => context.IsWarning()).Count() != 0;
         }
 
+        public IEnumerable<TestReport> CollectReports =>
+             ReportCollector.Reports.Concat(SubExecutionContexts.SelectMany(c => c.CollectReports));
+
         public bool IsSkipped() => Skipped;
 
         private int SkippedCount() => SubExecutionContexts.Where(context => context.IsSkipped()).Count();
@@ -99,7 +107,7 @@ namespace GdUnit3
 
         public int OrphanCount() => SubExecutionContexts.Select(context => context.OrphanMonitor.OrphanCount()).Sum();
 
-        public IEnumerable BuildStatistics()
+        public IDictionary BuildStatistics()
         {
             return TestEvent.BuildStatistics(
                 OrphanCount(),
@@ -133,14 +141,11 @@ namespace GdUnit3
 
         public void FireAfterTestEvent()
         {
-            var testEvent = TestEvent.AfterTest(TestInstance.ResourcePath, TestInstance.Name, Test.Name, BuildStatistics(), ReportCollector.Reports);
-            FireTestEvent(testEvent);
+            FireTestEvent(TestEvent.AfterTest(TestInstance.ResourcePath, TestInstance.Name, Test.Name, BuildStatistics(), CollectReports));
         }
 
         public void Dispose()
         {
-            ReportCollector.Clear();
-            SubExecutionContexts.Clear();
             Stopwatch.Stop();
         }
 

@@ -12,6 +12,7 @@ namespace GdUnit3
             context.FireBeforeTestEvent();
             if (!context.IsSkipped())
             {
+                context.MemoryPool.SetActive(StageName());
                 context.OrphanMonitor.Start(true);
                 base.Execute(context);
                 context.OrphanMonitor.Stop();
