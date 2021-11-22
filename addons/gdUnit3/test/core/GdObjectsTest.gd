@@ -595,7 +595,7 @@ func test_is_snake_case() -> void:
 func test_is_test_suite() -> void:
 	assert_bool(GdObjects.is_test_suite(GdUnitTestResourceLoader.load_gd_script("res://addons/gdUnit3/test/core/ResultTest.gd"))).is_true()
 	if GdUnitTools.is_mono_supported():
-		assert_bool(GdObjects.is_test_suite(GdUnitTestResourceLoader.load_cs_script("res://addons/gdUnit3/test/core/ExampleTest.cs"))).is_true()
+		assert_bool(GdObjects.is_test_suite(GdUnitTestResourceLoader.load_cs_script("res://addons/gdUnit3/test/core/ExampleTestSuite.cs"))).is_true()
 	assert_bool(GdObjects.is_test_suite(GdUnitTestResourceLoader.load_cs_script("res://addons/gdUnit3/test/core/resources/testsuites/mono/NotATestSuite.cs"))).is_false()
 	# currently not supported
 	assert_bool(GdObjects.is_test_suite(NativeScript.new())).is_false()

@@ -46,20 +46,19 @@ public class ExecutorTest : TestSuite, ITestEventListener
     }
 
 
-    private readonly string[] DEFAULT_TEST_CASES = { "test_case1", "test_case2" };
+    private readonly string[] DEFAULT_TEST_CASES = { "TestCase1", "TestCase2" };
     private void AssertEventList(List<TestEvent> events, string suiteName, string[] testCaseNames = null)
     {
         var testCases = testCaseNames ?? DEFAULT_TEST_CASES;
-
 
     }
 
     [TestCase]
     public void test_execute_success()
     {
-        TestSuite testSuite = LoadTestSuite("res://addons/gdUnit3/test/core/resources/testsuites/mono/NotATestSuite.cs");
+        TestSuite testSuite = LoadTestSuite("res://addons/gdUnit3/test/core/resources/testsuites/mono/ExampleTestSuiteA.cs");
         // verify all test cases loaded
-        //AssertArray(testSuite.get_children()).extract("get_name").contains_exactly(["test_case1", "test_case2"]);
+        //AssertArray(testSuite.get_children()).extract("get_name").contains_exactly(["TestCase1", "TestCase2"]);
         // # simulate test suite execution
         var events = Execute(testSuite);
         events.ForEach(e => Godot.GD.PrintS(e));
