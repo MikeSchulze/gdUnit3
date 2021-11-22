@@ -75,7 +75,7 @@ class CLIRunner extends Node:
 					# process next test suite
 					var test_suite := _test_suites_to_process.pop_front() as Node
 					if GdObjects.is_cs_script(test_suite.get_script()):
-						_cs_executor.execute(test_suite)
+						_cs_executor.Execute(test_suite)
 					else:
 						var fs = _executor.execute(test_suite)
 						if fs is GDScriptFunctionState:
