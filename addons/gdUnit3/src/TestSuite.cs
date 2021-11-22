@@ -1,6 +1,6 @@
 using Godot;
 using System;
-using System.Diagnostics;
+using System.Collections;
 
 namespace GdUnit3
 {
@@ -99,6 +99,11 @@ namespace GdUnit3
         public IObjectAssert AssertObject(object current, IAssert.EXPECT expectResult = IAssert.EXPECT.SUCCESS)
         {
             return new ObjectAssert(this, current, expectResult);
+        }
+
+        public IArrayAssert AssertArray(IEnumerable current, IAssert.EXPECT expectResult = IAssert.EXPECT.SUCCESS)
+        {
+            return new ArrayAssert(this, current, expectResult);
         }
     }
 

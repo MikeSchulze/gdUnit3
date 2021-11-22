@@ -1,3 +1,5 @@
+using System;
+using System.Diagnostics;
 
 namespace GdUnit3
 {
@@ -11,6 +13,8 @@ namespace GdUnit3
         {
             _delegator = delegator;
             _current = current;
+            StackFrame CallStack = new StackFrame(3, true);
+            _delegator.Call("set_line_number", CallStack.GetFileLineNumber());
         }
 
         public IAssertBase<V> HasFailureMessage(string expected)
@@ -49,9 +53,9 @@ namespace GdUnit3
             return this;
         }
 
-        public IAssertBase<V> StartsWithFailureMessage(string value)
+        public IAssertBase<V> StartsWithFailureMessage(string message)
         {
-            _delegator.Call("starts_with_failure_message");
+            _delegator.Call("starts_with_failure_message", message);
             return this;
         }
 

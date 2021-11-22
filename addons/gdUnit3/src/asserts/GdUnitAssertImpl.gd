@@ -10,6 +10,7 @@ var _expect_fail :bool = false
 var _custom_failure_message = null
 var _report_consumer :WeakRef
 var _caller :WeakRef
+var _line_number :int = -1
 
 # Scans the current stack trace for the root cause to extract the line number
 static func _get_line_number() -> int:
@@ -44,6 +45,10 @@ func _set_test_failure(failure :bool) -> void:
 		return
 	_caller.get_ref().set_meta(GD_TEST_FAILURE, failure)
 
+# used from c# side to inject failure line number
+func set_line_number(line :int) -> void:
+	_line_number = line
+
 func __current():
 	return _current_value_provider.get_value()
 
@@ -55,7 +60,7 @@ func report_success() -> GdUnitAssert:
 
 func report_error(error_message :String) -> GdUnitAssert:
 	_set_test_failure(true)
-	var line_number := _get_line_number()
+	var line_number := _get_line_number() if _line_number == -1 else _line_number
 	GdAssertReports.set_last_error_line_number(line_number)
 	if _custom_failure_message == null:
 		return GdAssertReports.report_error(error_message, self, line_number)
