@@ -19,5 +19,11 @@ namespace GdUnit3
         /// <summary> Verifies that the current Array is not empty, it has a size of minimum 1.</summary>
         public IArrayAssert IsNotEmpty();
 
+        /// <summary> Verifies that the current Array has a size of given value.</summary>
+        public IArrayAssert HasSize(int expected);
+
+        /// <summary> Verifies that the current Array contains the given values, in any order.</summary>
+        public IArrayAssert Contains(IEnumerable expected);
+
     }
 }

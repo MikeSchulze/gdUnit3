@@ -97,5 +97,31 @@ public class ArrayAssertTest : TestSuite
             .HasFailureMessage("Expecting:\n must not be empty");
     }
 
-    // TODO continue test coverage here
+    [TestCase]
+    public void HasSize()
+    {
+        AssertArray(new int[] { 1, 2, 3, 4, 5 }).HasSize(5);
+        AssertArray(new string[] { "a", "b", "c", "d", "e", "f" }).HasSize(6);
+        // should fail because the array has a size of 5
+        AssertArray(new int[] { 1, 2, 3, 4, 5 }, FAIL).HasSize(4)
+            .HasFailureMessage("Expecting size:\n '4'\n but was\n '5'");
+    }
+
+    [TestCase]
+    public void Contains()
+    {
+        AssertArray(new int[] { 1, 2, 3, 4, 5 }).Contains(new int[] { });
+        AssertArray(new int[] { 1, 2, 3, 4, 5 }).Contains(new int[] { 5, 2 });
+        AssertArray(new int[] { 1, 2, 3, 4, 5 }).Contains(new int[] { 5, 4, 3, 2, 1 });
+        // should fail because the array not contains 7 and 6
+        string expected_error_message = "Expecting contains elements:\n"
+            + " 1, 2, 3, 4, 5\n"
+            + " do contains(in any order)\n"
+            + " 2, 7, 6\n"
+            + "but could not find elements:\n"
+            + " 7, 6";
+
+        AssertArray(new int[] { 1, 2, 3, 4, 5 }, FAIL).Contains(new int[] { 2, 7, 6 })
+            .HasFailureMessage(expected_error_message);
+    }
 }

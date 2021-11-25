@@ -23,17 +23,27 @@ namespace GdUnit3
             return this;
         }
 
-        /// <summary> Verifies that the current Array is empty, it has a size of 0.</summary>
         public IArrayAssert IsEmpty()
         {
             _delegator.Call("is_empty");
             return this;
         }
 
-        /// <summary> Verifies that the current Array is not empty, it has a size of minimum 1.</summary>
         public IArrayAssert IsNotEmpty()
         {
             _delegator.Call("is_not_empty");
+            return this;
+        }
+
+        public IArrayAssert HasSize(int expected)
+        {
+            _delegator.Call("has_size", expected);
+            return this;
+        }
+
+        public IArrayAssert Contains(IEnumerable expected)
+        {
+            _delegator.Call("contains", expected);
             return this;
         }
 
