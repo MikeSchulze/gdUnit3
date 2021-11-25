@@ -65,7 +65,8 @@ func test_fail():
 	return report_error(GdAssertMessages.error_not_implemented())
 
 func has_failure_message(expected :String):
-	var rtl := RichTextLabel.new()
+	var rtl := RichTextLabelExt.new()
+	rtl.setup_effects()
 	rtl.bbcode_enabled = true
 	rtl.parse_bbcode(_current_error_message)
 	var current_error := rtl.get_text()
@@ -78,7 +79,8 @@ func has_failure_message(expected :String):
 	return self
 
 func starts_with_failure_message(expected :String):
-	var rtl := RichTextLabel.new()
+	var rtl := RichTextLabelExt.new()
+	rtl.setup_effects()
 	rtl.bbcode_enabled = true
 	rtl.parse_bbcode(_current_error_message)
 	var current_error := rtl.get_text()

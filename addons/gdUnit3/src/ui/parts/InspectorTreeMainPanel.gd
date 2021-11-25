@@ -332,7 +332,7 @@ func show_failed_report(selected_item :TreeItem) -> void:
 	# add new reports
 	for r in selected_item.get_meta(META_GDUNIT_REPORT):
 		var report := r as GdUnitReport
-		var reportNode = _report_template.duplicate(true)
+		var reportNode = _report_template.clone()
 		reportNode.visible = true
 		reportNode.set_bbcode(report.to_string())
 		_report_list.add_child(reportNode)
