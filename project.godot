@@ -979,6 +979,16 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/test/core/ResultTest.gd"
 }, {
+"base": "RichTextEffect",
+"class": "RichTextEffectBackground",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/src/ui/parts/RichTextEffectBackground.gd"
+}, {
+"base": "RichTextLabel",
+"class": "RichTextLabelExt",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/src/ui/parts/RichTextLabelExt.gd"
+}, {
 "base": "Resource",
 "class": "ScriptWithClassName",
 "language": "GDScript",
@@ -1254,6 +1264,8 @@ _global_script_class_icons={
 "RPCMessage": "",
 "Result": "",
 "ResultTest": "",
+"RichTextEffectBackground": "",
+"RichTextLabelExt": "",
 "ScriptWithClassName": "",
 "SignalHandler": "",
 "SnakeCaseWithClassName": "",

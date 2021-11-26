@@ -348,12 +348,13 @@ static func error_contains_exactly(current: Array, expected: Array) -> String:
 
 const SUB_COLOR :=  Color.red
 const ADD_COLOR :=  Color.green
-static func colorDiff(value:String) -> String:
+static func colorDiff(value :String) -> String:
 	var result = PoolByteArray()
 	var characters := value.to_ascii()
 	var index = 0
 	var missing_chars := PoolByteArray()
 	var additional_chars := PoolByteArray()
+	
 	while index < characters.size():
 		var character = characters[index]
 		match character:
@@ -380,17 +381,16 @@ static func format_chars(characters :PoolByteArray, type :Color) -> PoolByteArra
 	var result := PoolByteArray()
 	if characters.size() == 0:
 		return result
-		
 	if characters.size() == 1 and characters[0] == 10:
 		if type == ADD_COLOR:
-			result.append_array(("[color=#%s]\n<--empty line-->[/color]" % [type.to_html()]).to_utf8())
+			result.append_array(("[bg color=#%s]\n<--empty line-->[/bg]" % [type.to_html()]).to_utf8())
 		else:
-			result.append_array(("[color=#%s][s]\n<--empty line-->[/s][/color]" % type.to_html()).to_utf8())
+			result.append_array(("[bg color=#%s][s]\n<--empty line-->[/s][/bg]" % type.to_html()).to_utf8())
 		return result
 	if type == ADD_COLOR:
-		result.append_array(("[color=#%s]%s[/color]" % [type.to_html(), characters.get_string_from_ascii()]).to_utf8())
+		result.append_array(("[bg color=#%s]%s[/bg]" % [type.to_html(), characters.get_string_from_ascii()]).to_utf8())
 	else:
-		result.append_array(("[color=#%s][s]%s[/s][/color]" % [type.to_html(), characters.get_string_from_ascii()]).to_utf8())
+		result.append_array(("[bg color=#%s]%s[/bg]" % [type.to_html(), characters.get_string_from_ascii()]).to_utf8())
 	return result
 
 static func humanized(value :String) -> String:
