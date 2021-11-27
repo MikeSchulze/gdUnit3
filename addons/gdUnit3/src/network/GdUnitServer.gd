@@ -2,7 +2,7 @@ tool
 extends Node
 
 onready var _server :GdUnitTcpServer = $TcpServer
-onready var _error_handler :GdUnitPushErrorHandler = $ErrorHandler
+#onready var _error_handler :GdUnitPushErrorHandler = $ErrorHandler
 
 var _signal_handler :SignalHandler
 
