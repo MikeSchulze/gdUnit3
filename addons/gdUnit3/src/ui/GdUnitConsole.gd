@@ -24,6 +24,7 @@ func _ready():
 	_signal_handler.register_on_client_disconnected(self, "_on_client_disconnected")
 	header.bbcode_text = TITLE.replace('${version}', version)
 	output.clear()
+	output.setup_effects()
 
 func _notification(what):
 	if what == EditorSettings.NOTIFICATION_EDITOR_SETTINGS_CHANGED:
@@ -67,30 +68,36 @@ func _on_event_test_suite(event :GdUnitEvent):
 			output.append_bbcode(" %+12s" % LocalTime.elapsed(event.elapsed_time()))
 			output.newline()
 			output.push_color(_text_color.to_html())
-			output.append_bbcode("	| %d total | %d error | %d failed | %d skipped | %d orphans |\n" % [_statistics["total_count"], _statistics["error_count"], _statistics["failed_count"], _statistics["skipped_count"], _statistics["orphan_nodes"]])
+			output.push_indent(1)
+			output.append_bbcode("| %d total | %d error | %d failed | %d skipped | %d orphans |\n" % [_statistics["total_count"], _statistics["error_count"], _statistics["failed_count"], _statistics["skipped_count"], _statistics["orphan_nodes"]])
+			output.pop_indent(1)
 			output.pop()
 			output.newline()
 		GdUnitEvent.TESTCASE_BEFORE:
 			var spaces = "-%d" % (80 - event._suite_name.length())
-			output.append_bbcode(("\t[color=#" + _engine_type_color.to_html() + "]%s[/color]:[color=#" + _function_color.to_html() + "]%"+spaces+"s[/color]") % [event._suite_name, event._test_name])
+			output.push_indent(1)
+			output.append_bbcode(("[color=#" + _engine_type_color.to_html() + "]%s[/color]:[color=#" + _function_color.to_html() + "]%"+spaces+"s[/color]") % [event._suite_name, event._test_name])
+			output.pop_indent(1)
 		GdUnitEvent.TESTCASE_AFTER:
 			var reports := event.reports()
 			update_statistics(event)
 			if event.is_success():
 				output.push_color(Color.lightgreen.to_html())
 				output.append_bbcode("PASSED")
+				output.pop()
+				output.append_bbcode(" %+12s" % LocalTime.elapsed(event.elapsed_time()))
 			else:
 				output.push_color(Color.firebrick.to_html())
 				var report:GdUnitReport = reports[0]
 				output.append_bbcode("FAILED")
+				output.pop()
+				output.append_bbcode(" %+12s" % LocalTime.elapsed(event.elapsed_time()))
 				output.newline()
 				output.push_color(_text_color.to_html())
 				output.push_indent(2)
 				output.append_bbcode("line %d %s" % [report._line_number, report._message])
+				output.pop_indent(2)
 				output.pop()
-				output.pop()
-			output.pop()
-			output.append_bbcode(" %+12s" % LocalTime.elapsed(event.elapsed_time()))
 			output.newline()
 
 func _on_client_connected(client_id :int) -> void:

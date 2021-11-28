@@ -1,16 +1,22 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://addons/gdUnit3/src/ui/GdUnitConsole.gd" type="Script" id=1]
 [ext_resource path="res://addons/gdUnit3/src/update/assets/fonts/RobotoMono-14-bold-italics.tres" type="DynamicFont" id=2]
 [ext_resource path="res://addons/gdUnit3/src/update/assets/fonts/RobotoMono-14.tres" type="DynamicFont" id=3]
 [ext_resource path="res://addons/gdUnit3/src/update/assets/fonts/RobotoMono-14-italics.tres" type="DynamicFont" id=4]
 [ext_resource path="res://addons/gdUnit3/src/update/assets/fonts/RobotoMono-14-bold.tres" type="DynamicFont" id=5]
+[ext_resource path="res://addons/gdUnit3/src/ui/parts/RichTextLabelExt.gd" type="Script" id=6]
+[ext_resource path="res://addons/gdUnit3/src/ui/parts/RichTextEffectBackground.gd" type="Script" id=7]
+
+[sub_resource type="RichTextEffect" id=1]
+script = ExtResource( 7 )
 
 [node name="Control" type="Control"]
 use_parent_material = true
 anchor_right = 1.0
 anchor_bottom = 1.0
 rect_min_size = Vector2( 0, 100 )
+rect_clip_content = true
 script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
@@ -20,6 +26,9 @@ __meta__ = {
 use_parent_material = true
 anchor_right = 1.0
 anchor_bottom = 1.0
+rect_clip_content = true
+size_flags_horizontal = 3
+size_flags_vertical = 3
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -61,6 +70,8 @@ custom_fonts/bold_font = ExtResource( 5 )
 custom_fonts/normal_font = ExtResource( 3 )
 bbcode_enabled = true
 scroll_following = true
+custom_effects = [ SubResource( 1 ) ]
+script = ExtResource( 6 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
