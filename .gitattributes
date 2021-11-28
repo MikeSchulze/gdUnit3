@@ -6,7 +6,6 @@
 /.github               export-ignore
 /default_env.tres      export-ignore
 /icon.png              export-ignore
-/LICENSE               export-ignore
 /project.godot         export-ignore
 /process_example.txt   export-ignore
 /README.md             export-ignore
