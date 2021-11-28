@@ -63,7 +63,7 @@ var _running_debug_mode :bool
 var _current_runner_process_id :int = 0
 
 # holds the current connected gdUnit runner client id
-var _client_id
+var _client_id :int
 
 var _editor_interface :EditorInterface
 
