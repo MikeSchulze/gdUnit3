@@ -47,5 +47,28 @@ namespace GdUnit3
             return this;
         }
 
+        public IArrayAssert ContainsExactly(IEnumerable expected)
+        {
+            _delegator.Call("contains_exactly", expected);
+            return this;
+        }
+
+        public IArrayAssert ContainsExactlyInAnyOrder(IEnumerable expected)
+        {
+            _delegator.Call("contains_exactly_in_any_order", expected);
+            return this;
+        }
+
+        public IArrayAssert Extract(string funcName, IEnumerable args = null)
+        {
+            _delegator.Call("extract", funcName, args ?? new Godot.Collections.Array());
+            return this;
+        }
+
+        public IArrayAssert ExtractV(params IValueExtractor[] extractors)
+        {
+            _delegator.Call("extractV", extractors);
+            return this;
+        }
     }
 }

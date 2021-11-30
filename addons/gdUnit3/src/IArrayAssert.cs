@@ -25,5 +25,24 @@ namespace GdUnit3
         /// <summary> Verifies that the current Array contains the given values, in any order.</summary>
         public IArrayAssert Contains(IEnumerable expected);
 
+        /// <summary> Verifies that the current Array contains exactly only the given values and nothing else, in same order.</summary>
+        public IArrayAssert ContainsExactly(IEnumerable expected);
+
+        /// <summary> Verifies that the current Array contains exactly only the given values and nothing else, in any order.</summary>
+        public IArrayAssert ContainsExactlyInAnyOrder(IEnumerable expected);
+
+        /// <summary>
+        /// Extracts all values by given function name and optional arguments into a new ArrayAssert<br />
+        /// If the elements not accessible by `func_name` the value is converted to `"n.a"`, expecting null values
+        /// </summary>
+        public IArrayAssert Extract(string funcName, IEnumerable args = null);
+
+        /// <summary>
+        /// Extracts all values by given extractor's into a new ArrayAssert<br />
+        /// If the elements not extractable than the value is converted to `"n.a"`, expecting null values
+        /// </summary>
+        public IArrayAssert ExtractV(params IValueExtractor[] extractors);
+
+
     }
 }
