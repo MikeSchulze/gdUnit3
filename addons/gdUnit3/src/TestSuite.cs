@@ -1,10 +1,8 @@
 using Godot;
 using System;
-using System.Collections;
 
 namespace GdUnit3
 {
-
     /** <summary>
     This class is the main class to implement your unit tests<br />
     You have to extend and implement your test cases as described<br />
@@ -31,17 +29,10 @@ namespace GdUnit3
 
         private static Godot.Resource GdUnitTools = (Resource)GD.Load<GDScript>("res://addons/gdUnit3/src/core/GdUnitTools.gd").New();
 
-
         // current we overide it to get the correct count of tests
         public int get_child_count()
         {
             return TestCaseCount;
-        }
-
-        // A litle helper to auto freeing your created objects after test execution
-        public T auto_free<T>(T obj)
-        {
-            return MemoryPool.RegisterForAutoFree(obj);
         }
 
         // Discard the error message triggered by a timeout (interruption).
@@ -73,38 +64,5 @@ namespace GdUnit3
         public string ResourcePath => (GetScript() as Script).ResourcePath;
 
         public bool Skipped => false;
-
-
-        // === Asserts ==================================================================
-        public IBoolAssert AssertBool(bool current, IAssert.EXPECT expectResult = IAssert.EXPECT.SUCCESS)
-        {
-            return new BoolAssert(this, current, expectResult);
-        }
-
-        public IStringAssert AssertString(string current, IAssert.EXPECT expectResult = IAssert.EXPECT.SUCCESS)
-        {
-            return new StringAssert(this, current, expectResult);
-        }
-
-        public IIntAssert AssertInt(int current, IAssert.EXPECT expectResult = IAssert.EXPECT.SUCCESS)
-        {
-            return new IntAssert(this, current, expectResult);
-        }
-
-        public IDoubleAssert AssertFloat(double current, IAssert.EXPECT expectResult = IAssert.EXPECT.SUCCESS)
-        {
-            return new DoubleAssert(this, current, expectResult);
-        }
-
-        public IObjectAssert AssertObject(object current, IAssert.EXPECT expectResult = IAssert.EXPECT.SUCCESS)
-        {
-            return new ObjectAssert(this, current, expectResult);
-        }
-
-        public IArrayAssert AssertArray(IEnumerable current, IAssert.EXPECT expectResult = IAssert.EXPECT.SUCCESS)
-        {
-            return new ArrayAssert(this, current, expectResult);
-        }
     }
-
 }

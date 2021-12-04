@@ -1,22 +1,22 @@
-using Godot;
 using System;
+
+using static GdUnit3.Assertions;
 
 namespace GdUnit3
 {
     public sealed class ObjectAssert : AssertBase<object>, IObjectAssert
     {
-        private static Godot.GDScript AssertImpl = GD.Load<GDScript>("res://addons/gdUnit3/src/asserts/GdUnitObjectAssertImpl.gd");
+        private static Godot.GDScript AssertImpl = Godot.GD.Load<Godot.GDScript>("res://addons/gdUnit3/src/asserts/GdUnitObjectAssertImpl.gd");
 
-        private static Godot.GDScript GdAssertMessages = GD.Load<GDScript>("res://addons/gdUnit3/src/asserts/GdAssertMessages.gd");
+        private static Godot.GDScript GdAssertMessages = Godot.GD.Load<Godot.GDScript>("res://addons/gdUnit3/src/asserts/GdAssertMessages.gd");
 
         private readonly Godot.Reference _messageBuilder;
 
-        public ObjectAssert(object caller, object current, IAssert.EXPECT expectResult)
+        public ObjectAssert(object caller, object current, EXPECT expectResult)
             : base((Godot.Reference)AssertImpl.New(caller, current, expectResult), current)
         {
             _messageBuilder = GdAssertMessages.New() as Godot.Reference;
         }
-
 
         public IObjectAssert IsNotInstanceof<ExpectedType>()
         {

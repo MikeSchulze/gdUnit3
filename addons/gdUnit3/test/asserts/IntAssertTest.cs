@@ -1,6 +1,7 @@
 using GdUnit3;
-using Godot;
-using static GdUnit3.IAssert.EXPECT;
+
+using static GdUnit3.Assertions;
+using static GdUnit3.Assertions.EXPECT;
 
 [TestSuite]
 public class IntAssertTest : TestSuite
@@ -190,11 +191,9 @@ public class IntAssertTest : TestSuite
             .HasFailureMessage("Expecting:\n '10'\n in range between\n '11' <> '21'");
     }
 
-
     [TestCase(timeout = 20, seed = 111, iterations = 20)]
     public void override_failure_message([Fuzzer(10)] int value, [Fuzzer(5)] int value2 = 0)
     {
-        GD.PrintS("iteration", value, value2);
         AssertInt(value, FAIL)
             .OverrideFailureMessage("Custom failure message")
             .IsNull()

@@ -2,11 +2,9 @@ using System.Collections;
 
 namespace GdUnit3
 {
-    /// <summary> An Assertion Tool to verify arrays </summary>
+    /// <summary> An Assertion tool to verify arrays </summary>
     public interface IArrayAssert : IAssertBase<IEnumerable>
     {
-
-
         /// <summary> Verifies that the current String is equal to the given one, ignoring case considerations.</summary>
         public IArrayAssert IsEqualIgnoringCase(IEnumerable expected);
 
@@ -42,7 +40,5 @@ namespace GdUnit3
         /// If the elements not extractable than the value is converted to `"n.a"`, expecting null values
         /// </summary>
         public IArrayAssert ExtractV(params IValueExtractor[] extractors);
-
-
     }
 }

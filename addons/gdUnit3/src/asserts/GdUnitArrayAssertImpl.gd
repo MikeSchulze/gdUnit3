@@ -18,6 +18,10 @@ func set_line_number(line :int) -> void:
 func __current() -> Array:
 	return Array(_base.__current())
 
+# hack to replace the current form csharp ArrayAssert
+func set_current(current):
+	_base.set_current(current)
+
 func __expected(expected) -> Array:
 	if typeof(expected) == TYPE_ARRAY:
 		return expected

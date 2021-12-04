@@ -1,5 +1,8 @@
 using GdUnit3;
 
+using static GdUnit3.Assertions;
+using static GdUnit3.Assertions.EXPECT;
+
 [TestSuite]
 public class BoolAssertTest : TestSuite
 {
@@ -7,7 +10,7 @@ public class BoolAssertTest : TestSuite
     public void IsTrue()
     {
         AssertBool(true).IsTrue();
-        AssertBool(false, IAssert.EXPECT.FAIL).IsTrue()
+        AssertBool(false, FAIL).IsTrue()
             .HasFailureMessage("Expecting: 'True' but is 'False'");
     }
 
@@ -15,17 +18,17 @@ public class BoolAssertTest : TestSuite
     public void IsFalse()
     {
         AssertBool(false).IsFalse();
-        AssertBool(true, IAssert.EXPECT.FAIL).IsFalse()
+        AssertBool(true, FAIL).IsFalse()
             .HasFailureMessage("Expecting: 'False' but is 'True'");
     }
 
     [TestCase]
     public void IsNull()
     {
-        AssertBool(true, IAssert.EXPECT.FAIL)
+        AssertBool(true, FAIL)
             .IsNull()
             .StartsWithFailureMessage("Expecting: 'Null' but was 'True'");
-        AssertBool(false, IAssert.EXPECT.FAIL)
+        AssertBool(false, FAIL)
             .IsNull()
             .StartsWithFailureMessage("Expecting: 'Null' but was 'False'");
     }
@@ -42,7 +45,7 @@ public class BoolAssertTest : TestSuite
     {
         AssertBool(true).IsEqual(true);
         AssertBool(false).IsEqual(false);
-        AssertBool(true, IAssert.EXPECT.FAIL)
+        AssertBool(true, FAIL)
             .IsEqual(false)
             .HasFailureMessage("Expecting:\n 'False'\n but was\n 'True'");
     }
@@ -52,7 +55,7 @@ public class BoolAssertTest : TestSuite
     {
         AssertBool(true).IsNotEqual(false);
         AssertBool(false).IsNotEqual(true);
-        AssertBool(true, IAssert.EXPECT.FAIL)
+        AssertBool(true, FAIL)
             .IsNotEqual(true)
             .HasFailureMessage("Expecting:\n 'True'\n not equal to\n 'True'");
     }
@@ -69,7 +72,7 @@ public class BoolAssertTest : TestSuite
     [TestCase]
     public void OverrideFailureMessage()
     {
-        AssertBool(true, IAssert.EXPECT.FAIL)
+        AssertBool(true, FAIL)
             .OverrideFailureMessage("Custom failure message")
             .IsNull()
             .HasFailureMessage("Custom failure message");

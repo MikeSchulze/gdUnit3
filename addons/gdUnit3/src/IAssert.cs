@@ -1,25 +1,12 @@
-using System.ComponentModel;
-
 namespace GdUnit3
 {
-
     /// <summary> Main interface of all GdUnit asserts </summary>
     public interface IAssert
-    {
-
-        enum EXPECT : int
-        {
-            [Description("assert expects ends with success")]
-            SUCCESS = 0,
-            [Description("assert expects ends with errors")]
-            FAIL = 1
-        }
-    }
+    { }
 
     /// <summary> Base interface of all GdUnit asserts </summary>
     public interface IAssertBase<V> : IAssert
     {
-
         /// <summary>Verifies that the current value is null.</summary>
         IAssertBase<V> IsNull();
 

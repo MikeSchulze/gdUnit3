@@ -1,15 +1,22 @@
 using System.Collections;
-using Godot;
+using System.Collections.Generic;
+using System.Linq;
+
+using static GdUnit3.Assertions;
 
 namespace GdUnit3
 {
     public sealed class ArrayAssert : AssertBase<IEnumerable>, IArrayAssert
     {
-        private static Godot.GDScript AssertImpl = GD.Load<GDScript>("res://addons/gdUnit3/src/asserts/GdUnitArrayAssertImpl.gd");
+        private static Godot.GDScript AssertImpl = Godot.GD.Load<Godot.GDScript>("res://addons/gdUnit3/src/asserts/GdUnitArrayAssertImpl.gd");
 
-        public ArrayAssert(object caller, IEnumerable current, IAssert.EXPECT expectResult)
+        public ArrayAssert(object caller, IEnumerable current, EXPECT expectResult)
             : base((Godot.Reference)AssertImpl.New(caller, current, expectResult))
-        { }
+        {
+            Current = current;
+        }
+
+        private IEnumerable Current { get; set; }
 
         public IArrayAssert IsEqualIgnoringCase(IEnumerable expected)
         {
@@ -67,7 +74,15 @@ namespace GdUnit3
 
         public IArrayAssert ExtractV(params IValueExtractor[] extractors)
         {
-            _delegator.Call("extractV", extractors);
+            var extractedValues = new List<object>();
+
+            foreach (var element in Current)
+            {
+                object[] values = extractors.Select(e => e.ExtractValue(element)).ToArray<object>();
+                extractedValues.Add(values.Count() == 1 ? values.First() : Tuple(values));
+            }
+            Current = extractedValues;
+            _delegator.Call("set_current", Current);
             return this;
         }
     }

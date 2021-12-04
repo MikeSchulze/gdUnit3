@@ -1,7 +1,5 @@
-
 namespace GdUnit3
 {
-
     /// <summary> An Assertion Tool to verify object values </summary>
     public interface IObjectAssert : IAssertBase<object>
     {
@@ -16,6 +14,5 @@ namespace GdUnit3
 
         // Verifies that the current value is not an instance of the given type.
         public IObjectAssert IsNotInstanceof<ExpectedType>();
-
     }
 }

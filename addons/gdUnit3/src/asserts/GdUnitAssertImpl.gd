@@ -52,6 +52,10 @@ func set_line_number(line :int) -> void:
 func __current():
 	return _current_value_provider.get_value()
 
+# hack to replace the current form csharp ArrayAssert
+func set_current(current):
+	_current_value_provider = DefaultValueProvider.new(current)
+
 func __validate_value_type(value, type :int) -> bool:
 	return value is ValueProvider or value == null or typeof(value) == type
 

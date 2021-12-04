@@ -1,12 +1,12 @@
-using Godot;
+using static GdUnit3.Assertions;
 
 namespace GdUnit3
 {
     public sealed class StringAssert : AssertBase<string>, IStringAssert
     {
-        private static Godot.GDScript AssertImpl = GD.Load<GDScript>("res://addons/gdUnit3/src/asserts/GdUnitStringAssertImpl.gd");
+        private static Godot.GDScript AssertImpl = Godot.GD.Load<Godot.GDScript>("res://addons/gdUnit3/src/asserts/GdUnitStringAssertImpl.gd");
 
-        public StringAssert(object caller, object current, IAssert.EXPECT expectResult)
+        public StringAssert(object caller, object current, EXPECT expectResult)
             : base((Godot.Reference)AssertImpl.New(caller, current, expectResult))
         { }
 
@@ -75,6 +75,5 @@ namespace GdUnit3
             _delegator.Call("starts_with", expected);
             return this;
         }
-
     }
 }

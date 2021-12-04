@@ -1,6 +1,9 @@
 using Godot;
 using GdUnit3;
-using static GdUnit3.IAssert.EXPECT;
+
+using static GdUnit3.Assertions;
+using static GdUnit3.Assertions.EXPECT;
+
 
 [TestSuite]
 public class ObjectAssertTest : TestSuite
@@ -37,15 +40,15 @@ public class ObjectAssertTest : TestSuite
     public void IsInstanceof()
     {
         // engine class test
-        AssertObject(auto_free(new Path())).IsInstanceof<Node>();
-        AssertObject(auto_free(new Camera())).IsInstanceof<Camera>();
+        AssertObject(AutoFree(new Path())).IsInstanceof<Node>();
+        AssertObject(AutoFree(new Camera())).IsInstanceof<Camera>();
         // script class test
         // inner class test
-        AssertObject(auto_free(new CustomClass.InnerClassA())).IsInstanceof<Node>();
-        AssertObject(auto_free(new CustomClass.InnerClassB())).IsInstanceof<CustomClass.InnerClassA>();
+        AssertObject(AutoFree(new CustomClass.InnerClassA())).IsInstanceof<Node>();
+        AssertObject(AutoFree(new CustomClass.InnerClassB())).IsInstanceof<CustomClass.InnerClassA>();
 
         // should fail because the current is not a instance of `Tree`
-        AssertObject(auto_free(new Path()), FAIL)
+        AssertObject(AutoFree(new Path()), FAIL)
             .IsInstanceof<Tree>()
             .HasFailureMessage("Expected instance of:\n 'Godot.Tree'\n But it was 'Godot.Path'");
         AssertObject(null, FAIL)
@@ -58,13 +61,13 @@ public class ObjectAssertTest : TestSuite
     {
         AssertObject(null).IsNotInstanceof<Node>();
         // engine class test
-        AssertObject(auto_free(new Path())).IsNotInstanceof<Tree>();
+        AssertObject(AutoFree(new Path())).IsNotInstanceof<Tree>();
         // inner class test
-        AssertObject(auto_free(new CustomClass.InnerClassA())).IsNotInstanceof<Tree>();
-        AssertObject(auto_free(new CustomClass.InnerClassB())).IsNotInstanceof<CustomClass.InnerClassC>();
+        AssertObject(AutoFree(new CustomClass.InnerClassA())).IsNotInstanceof<Tree>();
+        AssertObject(AutoFree(new CustomClass.InnerClassB())).IsNotInstanceof<CustomClass.InnerClassC>();
 
         // should fail because the current is not a instance of `Tree`
-        AssertObject(auto_free(new Path()), FAIL)
+        AssertObject(AutoFree(new Path()), FAIL)
             .IsNotInstanceof<Node>()
             .HasFailureMessage("Expected not be a instance of <Godot.Node>");
     }
@@ -74,7 +77,7 @@ public class ObjectAssertTest : TestSuite
     {
         AssertObject(null).IsNull();
         // should fail because the current is not null
-        AssertObject(auto_free(new Node()), FAIL)
+        AssertObject(AutoFree(new Node()), FAIL)
             .IsNull()
             .StartsWithFailureMessage("Expecting: 'Null' but was <Node>");
     }
@@ -82,7 +85,7 @@ public class ObjectAssertTest : TestSuite
     [TestCase]
     public void IsNotNull()
     {
-        AssertObject(auto_free(new Node())).IsNotNull();
+        AssertObject(AutoFree(new Node())).IsNotNull();
         // should fail because the current is null
         AssertObject(null, FAIL)
             .IsNotNull()
@@ -92,9 +95,9 @@ public class ObjectAssertTest : TestSuite
     [TestCase]
     public void IsSame()
     {
-        var obj1 = auto_free(new Node());
+        var obj1 = AutoFree(new Node());
         var obj2 = obj1;
-        var obj3 = auto_free(obj1.Duplicate());
+        var obj3 = AutoFree(obj1.Duplicate());
         AssertObject(obj1).IsSame(obj1);
         AssertObject(obj1).IsSame(obj2);
         AssertObject(obj2).IsSame(obj1);
@@ -107,9 +110,9 @@ public class ObjectAssertTest : TestSuite
     [TestCase]
     public void IsNotSame()
     {
-        var obj1 = auto_free(new Node());
+        var obj1 = AutoFree(new Node());
         var obj2 = obj1;
-        var obj3 = auto_free(obj1.Duplicate());
+        var obj3 = AutoFree(obj1.Duplicate());
         AssertObject(null).IsNotSame(obj1);
         AssertObject(obj1).IsNotSame(obj3);
         AssertObject(obj3).IsNotSame(obj1);
@@ -132,7 +135,7 @@ public class ObjectAssertTest : TestSuite
     [TestCase]
     public void OverrideFailureMessage()
     {
-        AssertObject(auto_free(new Node()), FAIL)
+        AssertObject(AutoFree(new Node()), FAIL)
             .OverrideFailureMessage("Custom failure message")
             .IsNull()
             .HasFailureMessage("Custom failure message");

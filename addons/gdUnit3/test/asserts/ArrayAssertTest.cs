@@ -1,6 +1,8 @@
 using GdUnit3;
 using Godot;
-using static GdUnit3.IAssert.EXPECT;
+
+using static GdUnit3.Assertions;
+using static GdUnit3.Assertions.EXPECT;
 
 [TestSuite]
 public class ArrayAssertTest : TestSuite
@@ -165,7 +167,6 @@ public class ArrayAssertTest : TestSuite
             .HasFailureMessage(expected_error_message);
     }
 
-
     [TestCase]
     public void ContainsExactlyInAnyOrder()
     {
@@ -220,17 +221,17 @@ public class ArrayAssertTest : TestSuite
         AssertArray(new object[] { 1, false, 3.14, null, Colors.AliceBlue }).Extract("get_class")
             .ContainsExactly(new object[] { "n.a.", "n.a.", "n.a.", null, "n.a." });
         // extracting by a func without arguments
-        AssertArray(new object[] { new Reference(), 2, new AStar(), auto_free(new Node()) }).Extract("get_class")
+        AssertArray(new object[] { new Reference(), 2, new AStar(), AutoFree(new Node()) }).Extract("get_class")
             .ContainsExactly(new object[] { "Reference", "n.a.", "AStar", "Node" });
         // extracting by a func with arguments
-        AssertArray(new object[] { new Reference(), 2, new AStar(), auto_free(new Node()) }).Extract("has_signal", new object[] { "tree_entered" })
+        AssertArray(new object[] { new Reference(), 2, new AStar(), AutoFree(new Node()) }).Extract("has_signal", new object[] { "tree_entered" })
             .ContainsExactly(new object[] { false, "n.a.", false, true });
 
         // try extract on object via a func that not exists
-        AssertArray(new object[] { new Reference(), 2, new AStar(), auto_free(new Node()) }).Extract("invalid_func")
+        AssertArray(new object[] { new Reference(), 2, new AStar(), AutoFree(new Node()) }).Extract("invalid_func")
             .ContainsExactly(new object[] { "n.a.", "n.a.", "n.a.", "n.a." });
         // try extract on object via a func that has no return value
-        AssertArray(new object[] { new Reference(), 2, new AStar(), auto_free(new Node()) }).Extract("remove_meta", new object[] { "" })
+        AssertArray(new object[] { new Reference(), 2, new AStar(), AutoFree(new Node()) }).Extract("remove_meta", new object[] { "" })
             .ContainsExactly(new object[] { null, "n.a.", null, null });
     }
 
@@ -247,34 +248,34 @@ public class ArrayAssertTest : TestSuite
             _x = x;
         }
 
-        public string getName() => _name;
-        public object getValue() => _value;
-        public object getX() => _x;
-        public string getX1() => "x1";
-        public string getX2() => "x2";
-        public string getX3() => "x3";
-        public string getX4() => "x4";
-        public string getX5() => "x5";
-        public string getX6() => "x6";
-        public string getX7() => "x7";
-        public string getX8() => "x8";
-        public string getX9() => "x9";
+        public string GetName() => _name;
+        public object GetValue() => _value;
+        public object GetX() => _x;
+        public string GetX1() => "x1";
+        public string GetX2() => "x2";
+        public string GetX3() => "x3";
+        public string GetX4() => "x4";
+        public string GetX5() => "x5";
+        public string GetX6() => "x6";
+        public string GetX7() => "x7";
+        public string GetX8() => "x8";
+        public string GetX9() => "x9";
     }
 
     [TestCase]
     public void ExtractV()
     {
         // single extract
-        //  AssertArray(new object[] { 1, false, 3.14, null, Colors.AliceBlue })
-        //    .ExtractV(extr("get_class"))
-        //  .ContainsExactly(new object[] { "n.a.", "n.a.", "n.a.", null, "n.a." });
+        AssertArray(new object[] { 1, false, 3.14, null, Colors.AliceBlue })
+            .ExtractV(Extr("GetClass"))
+            .ContainsExactly(new object[] { "n.a.", "n.a.", "n.a.", null, "n.a." });
         // tuple of two
-        //AssertArray(new object[] { new TestObj("A", 10), new TestObj("B", "foo"), Colors.AliceBlue, new TestObj("C", 11) })
-        //  .ExtractV(extr("get_name"), extr("get_value"))
-        //.ContainsExactly(new object[] { tuple("A", 10), tuple("B", "foo"), tuple("n.a.", "n.a."), tuple("C", 11) });
+        AssertArray(new object[] { new TestObj("A", 10), new TestObj("B", "foo"), Colors.AliceBlue, new TestObj("C", 11) })
+            .ExtractV(Extr("GetName"), Extr("GetValue"))
+            .ContainsExactly(new object[] { Tuple("A", 10), Tuple("B", "foo"), Tuple("n.a.", "n.a."), Tuple("C", 11) });
         // tuple of three
-        //AssertArray(new object[] { new TestObj("A", 10), new TestObj("B", "foo", "bar"), new TestObj("C", 11, 42) })
-        //  .ExtractV(extr("get_name"), extr("get_value"), extr("get_x"))
-        // .ContainsExactly(new object[] { tuple("A", 10, null), tuple("B", "foo", "bar"), tuple("C", 11, 42) });
+        AssertArray(new object[] { new TestObj("A", 10), new TestObj("B", "foo", "bar"), new TestObj("C", 11, 42) })
+            .ExtractV(Extr("GetName"), Extr("GetValue"), Extr("GetX"))
+            .ContainsExactly(new object[] { Tuple("A", 10, null), Tuple("B", "foo", "bar"), Tuple("C", 11, 42) });
     }
 }

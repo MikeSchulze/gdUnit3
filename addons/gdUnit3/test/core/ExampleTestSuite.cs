@@ -1,6 +1,8 @@
 using Godot;
 using GdUnit3;
 
+using static GdUnit3.Assertions;
+
 
 [TestSuite]
 public class ExampleTestSuite : TestSuite

@@ -1,6 +1,8 @@
 
 using GdUnit3;
-using static GdUnit3.IAssert.EXPECT;
+
+using static GdUnit3.Assertions;
+using static GdUnit3.Assertions.EXPECT;
 using static GdUnit3.IStringAssert.Compare;
 
 [TestSuite]
@@ -217,5 +219,4 @@ public class StringAssertTest : TestSuite
             .IsNull()
             .HasFailureMessage("Custom failure message");
     }
-
 }

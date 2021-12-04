@@ -1,11 +1,9 @@
-using System;
 using System.Diagnostics;
 
 namespace GdUnit3
 {
     public abstract class AssertBase<V> : IAssertBase<V>
     {
-
         protected readonly Godot.Reference _delegator;
         protected readonly object _current;
 

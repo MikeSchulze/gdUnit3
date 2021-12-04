@@ -1,7 +1,5 @@
-
 namespace GdUnit3
 {
-
     /// <summary> An Assertion Tool to verify boolean values </summary>
     public interface IBoolAssert : IAssertBase<bool>
     {
@@ -11,6 +9,5 @@ namespace GdUnit3
 
         /// <summary> Verifies that the current value is false.</summary>
         IBoolAssert IsFalse();
-
     }
 }

@@ -1,7 +1,5 @@
-
 namespace GdUnit3
 {
-
     /// <summary> An Assertion Tool to verify string values </summary>
     public interface IStringAssert : IAssertBase<string>
     {
@@ -48,6 +46,5 @@ namespace GdUnit3
 
         /// <summary> Verifies that the current String has the expected length by used comparator.</summary>
         public IStringAssert HasLength(int lenght, Compare comparator = Compare.EQUAL);
-
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 
 namespace GdUnit3
 {
@@ -27,6 +28,8 @@ namespace GdUnit3
                 currentContext.OrphanMonitor.Start(true);
                 while (!currentContext.IsSkipped() && currentContext.CurrentIteration != 0)
                 {
+                    // save current test suite instance used by assertions to register report resolver
+                    Thread.SetData(Thread.GetNamedDataSlot("TestInstance"), currentContext.TestInstance);
                     currentContext.Test.Execute(currentContext);
                 }
                 currentContext.MemoryPool.ReleaseRegisteredObjects();

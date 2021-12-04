@@ -1,5 +1,6 @@
-using Godot;
 using GdUnit3;
+
+using static GdUnit3.Assertions;
 
 // will be ignored because of missing `[TestSuite]` anotation
 // used by executor integration test
