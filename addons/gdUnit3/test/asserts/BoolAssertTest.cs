@@ -74,7 +74,7 @@ public class BoolAssertTest : TestSuite
     {
         AssertBool(true, FAIL)
             .OverrideFailureMessage("Custom failure message")
-            .IsNull()
+            .IsFalse()
             .HasFailureMessage("Custom failure message");
     }
 }

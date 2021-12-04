@@ -1,4 +1,7 @@
+using System;
 using System.Diagnostics;
+
+using static GdUnit3.Assertions;
 
 namespace GdUnit3
 {
@@ -7,10 +10,13 @@ namespace GdUnit3
         protected readonly Godot.Reference _delegator;
         protected readonly object _current;
 
-        protected AssertBase(Godot.Reference delegator, object current = null)
+        private EXPECT _expectResult;
+
+        protected AssertBase(Godot.Reference delegator, object current = null, EXPECT expectResult = EXPECT.SUCCESS)
         {
             _delegator = delegator;
             _current = current;
+            _expectResult = expectResult;
             StackFrame CallStack = new StackFrame(3, true);
             _delegator.Call("set_line_number", CallStack.GetFileLineNumber());
         }
@@ -61,6 +67,26 @@ namespace GdUnit3
         {
             _delegator.Call("test_fail");
             return this;
+        }
+
+        private void InteruptOnFail()
+        {
+            if (!IsEnableInterupptOnFailure())
+            {
+                return;
+            }
+            var isFailed = (bool)_delegator.Call("is_failed");
+            if (isFailed == true)
+            {
+                throw new System.Exception("TestCase interuppted by a failing assert.");
+            }
+        }
+
+        protected T CallDelegator<T>(string methodName, params object[] args) where T : IAssertBase<V>, IAssert
+        {
+            _delegator.Call(methodName, args);
+            InteruptOnFail();
+            return (T)Convert.ChangeType(this, typeof(T));
         }
     }
 }

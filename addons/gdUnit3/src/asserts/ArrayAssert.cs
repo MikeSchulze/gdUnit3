@@ -11,79 +11,66 @@ namespace GdUnit3
         private static Godot.GDScript AssertImpl = Godot.GD.Load<Godot.GDScript>("res://addons/gdUnit3/src/asserts/GdUnitArrayAssertImpl.gd");
 
         public ArrayAssert(object caller, IEnumerable current, EXPECT expectResult)
-            : base((Godot.Reference)AssertImpl.New(caller, current, expectResult))
+            : base((Godot.Reference)AssertImpl.New(caller, current, expectResult), current, expectResult)
         {
-            Current = current;
+            Current = current?.Cast<object>() ?? Enumerable.Empty<object>();
         }
 
-        private IEnumerable Current { get; set; }
+        private IEnumerable<object> Current { get; set; }
 
         public IArrayAssert IsEqualIgnoringCase(IEnumerable expected)
         {
-            _delegator.Call("is_equal_ignoring_case", expected);
-            return this;
+            return CallDelegator<ArrayAssert>("is_equal_ignoring_case", expected);
         }
 
         public IArrayAssert IsNotEqualIgnoringCase(IEnumerable expected)
         {
-            _delegator.Call("is_not_equal_ignoring_case", expected);
-            return this;
+            return CallDelegator<ArrayAssert>("is_not_equal_ignoring_case", expected);
         }
 
         public IArrayAssert IsEmpty()
         {
-            _delegator.Call("is_empty");
-            return this;
+            return CallDelegator<ArrayAssert>("is_empty");
         }
 
         public IArrayAssert IsNotEmpty()
         {
-            _delegator.Call("is_not_empty");
-            return this;
+            return CallDelegator<ArrayAssert>("is_not_empty");
         }
 
         public IArrayAssert HasSize(int expected)
         {
-            _delegator.Call("has_size", expected);
-            return this;
+            return CallDelegator<ArrayAssert>("has_size", expected);
         }
 
         public IArrayAssert Contains(IEnumerable expected)
         {
-            _delegator.Call("contains", expected);
-            return this;
+            return CallDelegator<ArrayAssert>("contains", expected);
         }
 
         public IArrayAssert ContainsExactly(IEnumerable expected)
         {
-            _delegator.Call("contains_exactly", expected);
-            return this;
+            return CallDelegator<ArrayAssert>("contains_exactly", expected);
         }
 
         public IArrayAssert ContainsExactlyInAnyOrder(IEnumerable expected)
         {
-            _delegator.Call("contains_exactly_in_any_order", expected);
-            return this;
+            return CallDelegator<ArrayAssert>("contains_exactly_in_any_order", expected);
         }
 
-        public IArrayAssert Extract(string funcName, IEnumerable args = null)
+        public IArrayAssert Extract(string funcName, params object[] args)
         {
-            _delegator.Call("extract", funcName, args ?? new Godot.Collections.Array());
-            return this;
+            return ExtractV(new ValueExtractor(funcName, args));
         }
 
         public IArrayAssert ExtractV(params IValueExtractor[] extractors)
         {
-            var extractedValues = new List<object>();
-
-            foreach (var element in Current)
+            Current = Current.Select(v =>
             {
-                object[] values = extractors.Select(e => e.ExtractValue(element)).ToArray<object>();
-                extractedValues.Add(values.Count() == 1 ? values.First() : Tuple(values));
-            }
-            Current = extractedValues;
-            _delegator.Call("set_current", Current);
-            return this;
+                object[] values = extractors.Select(e => e.ExtractValue(v)).ToArray<object>();
+                return values.Count() == 1 ? values.First() : Tuple(values);
+            }).ToList();
+            return CallDelegator<ArrayAssert>("set_current", Current);
         }
     }
 }

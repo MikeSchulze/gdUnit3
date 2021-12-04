@@ -54,7 +54,15 @@ namespace GdUnit3
         public void Execute(ExecutionContext context)
         {
             object[] arguments = Parameters.SelectMany(ResolveParam).ToArray<object>();
-            MethodInfo.Invoke(context.TestInstance, arguments);
+            try
+            {
+                MethodInfo.Invoke(context.TestInstance, arguments);
+            }
+            // catch test interupption
+            catch (Exception e)
+            {
+                Godot.GD.PrintS("Interupt TestCase:", e.GetBaseException().Message);
+            }
         }
     }
 }

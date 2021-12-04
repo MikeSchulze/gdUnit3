@@ -21,5 +21,10 @@ namespace GdUnit3
             _delegator.Call("is_true");
             return this;
         }
+
+        public new IBoolAssert OverrideFailureMessage(string message)
+        {
+            return base.OverrideFailureMessage(message) as IBoolAssert;
+        }
     }
 }

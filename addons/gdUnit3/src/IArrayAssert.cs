@@ -33,7 +33,7 @@ namespace GdUnit3
         /// Extracts all values by given function name and optional arguments into a new ArrayAssert<br />
         /// If the elements not accessible by `func_name` the value is converted to `"n.a"`, expecting null values
         /// </summary>
-        public IArrayAssert Extract(string funcName, IEnumerable args = null);
+        public IArrayAssert Extract(string funcName, params object[] args);
 
         /// <summary>
         /// Extracts all values by given extractor's into a new ArrayAssert<br />

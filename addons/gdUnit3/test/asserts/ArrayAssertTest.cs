@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using GdUnit3;
 using Godot;
 
@@ -7,6 +8,13 @@ using static GdUnit3.Assertions.EXPECT;
 [TestSuite]
 public class ArrayAssertTest : TestSuite
 {
+
+    [BeforeTest]
+    public void Setup()
+    {
+        // disable default fail fast behavior because we tests also for failing asserts see EXPECT.FAIL
+        EnableInterupptOnFailure(false);
+    }
 
     [TestCase]
     public void IsNull()
@@ -277,5 +285,91 @@ public class ArrayAssertTest : TestSuite
         AssertArray(new object[] { new TestObj("A", 10), new TestObj("B", "foo", "bar"), new TestObj("C", 11, 42) })
             .ExtractV(Extr("GetName"), Extr("GetValue"), Extr("GetX"))
             .ContainsExactly(new object[] { Tuple("A", 10, null), Tuple("B", "foo", "bar"), Tuple("C", 11, 42) });
+    }
+
+    [TestCase]
+    public void Extractv_Chained()
+    {
+        var root_a = new TestObj("root_a", null);
+        var obj_a = new TestObj("A", root_a);
+        var obj_b = new TestObj("B", root_a);
+        var obj_c = new TestObj("C", root_a);
+        var root_b = new TestObj("root_b", root_a);
+        var obj_x = new TestObj("X", root_b);
+        var obj_y = new TestObj("Y", root_b);
+
+        AssertArray(new object[] { obj_a, obj_b, obj_c, obj_x, obj_y })
+            .ExtractV(Extr("GetName"), Extr("GetValue.GetName"))
+            .ContainsExactly(new object[]{
+                Tuple("A", "root_a"),
+                Tuple("B", "root_a"),
+                Tuple("C", "root_a"),
+                Tuple("X", "root_b"),
+                Tuple("Y", "root_b")
+            });
+    }
+
+    [TestCase]
+    public void Extract_Chained()
+    {
+        var root_a = new TestObj("root_a", null);
+        var obj_a = new TestObj("A", root_a);
+        var obj_b = new TestObj("B", root_a);
+        var obj_c = new TestObj("C", root_a);
+        var root_b = new TestObj("root_b", root_a);
+        var obj_x = new TestObj("X", root_b);
+        var obj_y = new TestObj("Y", root_b);
+
+        AssertArray(new object[] { obj_a, obj_b, obj_c, obj_x, obj_y })
+            .Extract("GetValue.GetName")
+            .ContainsExactly(new object[]{
+                "root_a",
+                "root_a",
+                "root_a",
+                "root_b",
+                "root_b"
+            });
+    }
+
+    [TestCase]
+    public void ExtractV_ManyArgs()
+    {
+        AssertArray(new object[] { new TestObj("A", 10), new TestObj("B", "foo", "bar"), new TestObj("C", 11, 42) })
+            .ExtractV(
+                Extr("GetName"),
+                Extr("GetX1"),
+                Extr("GetX2"),
+                Extr("GetX3"),
+                Extr("GetX4"),
+                Extr("GetX5"),
+                Extr("GetX6"),
+                Extr("GetX7"),
+                Extr("GetX8"),
+                Extr("GetX9"))
+            .ContainsExactly(new object[]{
+                Tuple("A", "x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8", "x9"),
+                Tuple("B", "x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8", "x9"),
+                Tuple("C", "x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8", "x9")});
+    }
+
+    [TestCase]
+    public void OverrideFailureMessage()
+    {
+        AssertArray(new object[] { }, FAIL)
+            .OverrideFailureMessage("Custom failure message")
+            .IsNull()
+            .HasFailureMessage("Custom failure message");
+    }
+
+    [TestCase]
+    public void Interuppt_IsFailure()
+    {
+        // we want to interrupt on first failure
+        EnableInterupptOnFailure(true);
+        // try to fail
+        AssertArray(new object[] { }, FAIL).IsNotEmpty();
+
+        // expect this line will never called because of the test is interuppted by a failing assert
+        AssertBool(true).OverrideFailureMessage("This line shold never be called").IsFalse();
     }
 }

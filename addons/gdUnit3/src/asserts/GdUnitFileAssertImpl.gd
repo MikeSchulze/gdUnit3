@@ -10,6 +10,10 @@ func _init(caller :Object, current, expect_result: int):
 	if not _base.__validate_value_type(current, TYPE_STRING):
 		report_error("GdUnitFileAssert inital error, unexpected type <%s>" % GdObjects.typeof_as_string(current))
 
+# used from c# side to inject failure line number
+func set_line_number(line :int) -> void:
+	_base.set_line_number(line)
+
 func __current() -> String:
 	return _base.__current() as String
 

@@ -41,9 +41,14 @@ func _init(caller :Object, current, expect_result :int = EXPECT_SUCCESS):
 		_expect_fail = true
 
 func _set_test_failure(failure :bool) -> void:
+	_is_failed = failure
 	if _caller.get_ref().has_meta(GD_TEST_FAILURE) and _caller.get_ref().get_meta(GD_TEST_FAILURE) == true:
 		return
 	_caller.get_ref().set_meta(GD_TEST_FAILURE, failure)
+
+# used from c# side
+func is_failed() -> bool:
+	return _is_failed
 
 # used from c# side to inject failure line number
 func set_line_number(line :int) -> void:

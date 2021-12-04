@@ -11,6 +11,10 @@ func _init(caller :Object, current, expect_result :int):
 func __validate_value_type(value) -> bool:
 	return value is ValueProvider or value == null or value is Result
 
+# used from c# side to inject failure line number
+func set_line_number(line :int) -> void:
+	_base.set_line_number(line)
+
 func __current() -> Result:
 	return _base.__current() as Result
 

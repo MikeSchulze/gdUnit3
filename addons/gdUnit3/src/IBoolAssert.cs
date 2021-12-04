@@ -9,5 +9,8 @@ namespace GdUnit3
 
         /// <summary> Verifies that the current value is false.</summary>
         IBoolAssert IsFalse();
+
+
+        new IBoolAssert OverrideFailureMessage(string message);
     }
 }

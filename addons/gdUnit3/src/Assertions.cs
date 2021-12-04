@@ -14,7 +14,7 @@ namespace GdUnit3
         {
             [Description("assert expects ends with success")]
             SUCCESS = 0,
-            [Description("assert expects ends with errors")]
+            [Description("assert expects ends with failure")]
             FAIL = 1
         }
 
@@ -89,6 +89,21 @@ namespace GdUnit3
         ///  Builds an extractor by given method name and optional arguments
         /// </summary>
         public static IValueExtractor Extr(string methodName, params object[] args) => new ValueExtractor(methodName, args);
+
+
+
+        /// <summary>
+        /// Enable/Disables the fail fast behavior
+        /// It is enabled the first failing assert will interupt the current executed test case
+        /// </summary>
+        /// <param name="enable"></param>
+        public static void EnableInterupptOnFailure(bool enable) => Thread.SetData(Thread.GetNamedDataSlot("EnableInterupptOnFailure"), enable);
+
+        /// <summary>
+        /// Indicates whether fail fast is enabled
+        /// </summary>
+        /// <returns></returns>
+        public static bool IsEnableInterupptOnFailure() => (bool)Thread.GetData(Thread.GetNamedDataSlot("EnableInterupptOnFailure"));
 
         /// <summary>
         ///  A helper to return given enumerable as string representation
