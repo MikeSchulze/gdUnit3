@@ -12,7 +12,7 @@ public class ArrayAssertTest : TestSuite
     public void Setup()
     {
         // disable default fail fast behavior because we tests also for failing asserts see EXPECT.FAIL
-        EnableInterupptOnFailure(false);
+        EnableInterruptOnFailure(false);
     }
 
     [TestCase]
@@ -361,14 +361,14 @@ public class ArrayAssertTest : TestSuite
     }
 
     [TestCase]
-    public void Interuppt_IsFailure()
+    public void Interrupt_IsFailure()
     {
         // we want to interrupt on first failure
-        EnableInterupptOnFailure(true);
+        EnableInterruptOnFailure(true);
         // try to fail
         AssertArray(new object[] { }, FAIL).IsNotEmpty();
 
-        // expect this line will never called because of the test is interuppted by a failing assert
+        // expect this line will never called because of the test is interrupted by a failing assert
         AssertBool(true).OverrideFailureMessage("This line shold never be called").IsFalse();
     }
 }

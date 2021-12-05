@@ -94,16 +94,16 @@ namespace GdUnit3
 
         /// <summary>
         /// Enable/Disables the fail fast behavior
-        /// It is enabled the first failing assert will interupt the current executed test case
+        /// It is enabled the first failing assert will interrupt the current executed test case
         /// </summary>
         /// <param name="enable"></param>
-        public static void EnableInterupptOnFailure(bool enable) => Thread.SetData(Thread.GetNamedDataSlot("EnableInterupptOnFailure"), enable);
+        public static void EnableInterruptOnFailure(bool enable) => Thread.SetData(Thread.GetNamedDataSlot("EnableInterruptOnFailure"), enable);
 
         /// <summary>
         /// Indicates whether fail fast is enabled
         /// </summary>
         /// <returns></returns>
-        public static bool IsEnableInterupptOnFailure() => (bool)Thread.GetData(Thread.GetNamedDataSlot("EnableInterupptOnFailure"));
+        public static bool IsEnableInterruptOnFailure() => (bool)Thread.GetData(Thread.GetNamedDataSlot("EnableInterruptOnFailure"));
 
         /// <summary>
         ///  A helper to return given enumerable as string representation

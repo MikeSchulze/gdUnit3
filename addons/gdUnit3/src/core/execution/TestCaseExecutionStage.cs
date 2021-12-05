@@ -22,7 +22,7 @@ namespace GdUnit3
         public void Execute(ExecutionContext context)
         {
             // we always want to interrupt on first failure
-            Assertions.EnableInterupptOnFailure(true);
+            Assertions.EnableInterruptOnFailure(true);
             BeforeStage.Execute(context);
             using (ExecutionContext currentContext = new ExecutionContext(context))
             {

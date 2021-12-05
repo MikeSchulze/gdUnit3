@@ -24,7 +24,7 @@ namespace GdUnit3
             {
                 var message = String.Format("Expected not be a instance of <{0}>", typeof(ExpectedType));
                 _delegator.Call("report_error", message);
-                if (IsEnableInterupptOnFailure())
+                if (IsEnableInterruptOnFailure())
                     throw new TestFailedException("TestCase interuppted by a failing assert.", 2);
                 return this;
             }
@@ -50,7 +50,7 @@ namespace GdUnit3
             {
                 var message = error_is_instanceof(_current != null ? _current.GetType() : null, typeof(ExpectedType));
                 _delegator.Call("report_error", message);
-                if (IsEnableInterupptOnFailure())
+                if (IsEnableInterruptOnFailure())
                     throw new TestFailedException("TestCase interuppted by a failing assert.", 2);
                 return this;
             }

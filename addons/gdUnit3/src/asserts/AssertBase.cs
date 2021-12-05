@@ -62,23 +62,23 @@ namespace GdUnit3
             return CallDelegator("test_fail");
         }
 
-        private void InteruptOnFail()
+        private void InterruptOnFail()
         {
-            if (!IsEnableInterupptOnFailure())
+            if (!IsEnableInterruptOnFailure())
             {
                 return;
             }
             var isFailed = (bool)_delegator.Call("is_failed");
             if (isFailed)
             {
-                throw new TestFailedException("TestCase interuppted by a failing assert.");
+                throw new TestFailedException("TestCase interrupted by a failing assert.");
             }
         }
 
         protected IAssertBase<V> CallDelegator(string methodName, params object[] args)
         {
             _delegator.Call(methodName, args);
-            InteruptOnFail();
+            InterruptOnFail();
             return this;
         }
     }
