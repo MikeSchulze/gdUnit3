@@ -6,6 +6,12 @@ using static GdUnit3.Assertions.EXPECT;
 [TestSuite]
 public class IntAssertTest : TestSuite
 {
+    [BeforeTest]
+    public void Setup()
+    {
+        // disable default fail fast behavior because we tests also for failing asserts see EXPECT.FAIL
+        EnableInterupptOnFailure(false);
+    }
 
     [TestCase]
     public void IsNull()
@@ -85,12 +91,6 @@ public class IntAssertTest : TestSuite
             .IsGreaterEqual(24)
             .HasFailureMessage("Expecting to be greater than or equal:\n '24' but was '23'");
     }
-
-    //  [TestCase]
-    //public void _test_IsEven_fuzz(fuzzer = Fuzzers.even(-9223372036854775807, 9223372036854775807))
-    //{
-    //  AssertInt(fuzzer.next_value()).IsEven()
-    //}
 
     [TestCase]
     public void IsEven()
@@ -192,7 +192,7 @@ public class IntAssertTest : TestSuite
     }
 
     [TestCase(timeout = 20, seed = 111, iterations = 20)]
-    public void override_failure_message([Fuzzer(10)] int value, [Fuzzer(5)] int value2 = 0)
+    public void OverrideFailureMessage([Fuzzer(10)] int value, [Fuzzer(5)] int value2 = 0)
     {
         AssertInt(value, FAIL)
             .OverrideFailureMessage("Custom failure message")
@@ -200,24 +200,15 @@ public class IntAssertTest : TestSuite
             .HasFailureMessage("Custom failure message");
     }
 
-    [BeforeTest]
-    public void setup()
-    {
-
-    }
-
-    [AfterTest]
-    public void testFin()
-    {
-
-    }
-
-    [IgnoreUntil("Ignore on self test")]
     [TestCase]
-    public void Executor()
+    public void Interuppt_IsFailure()
     {
-        new Executor().Execute(this);
+        // we want to interrupt on first failure
+        EnableInterupptOnFailure(true);
+        // try to fail
+        AssertInt(10, FAIL).IsZero();
+
+        // expect this line will never called because of the test is interuppted by a failing assert
+        AssertBool(true).OverrideFailureMessage("This line shold never be called").IsFalse();
     }
-
-
 }

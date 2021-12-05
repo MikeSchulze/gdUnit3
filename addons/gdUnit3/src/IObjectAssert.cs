@@ -10,9 +10,11 @@ namespace GdUnit3
         public IObjectAssert IsNotSame(object expected);
 
         // Verifies that the current value is an instance of the given type.
-        public IObjectAssert IsInstanceof<ExpectedType>();
+        public IObjectAssert IsInstanceOf<ExpectedType>();
 
         // Verifies that the current value is not an instance of the given type.
-        public IObjectAssert IsNotInstanceof<ExpectedType>();
+        public IObjectAssert IsNotInstanceOf<ExpectedType>();
+
+        public new IObjectAssert OverrideFailureMessage(string message);
     }
 }

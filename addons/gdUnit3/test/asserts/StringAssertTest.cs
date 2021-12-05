@@ -8,6 +8,13 @@ using static GdUnit3.IStringAssert.Compare;
 [TestSuite]
 public class StringAssertTest : TestSuite
 {
+    [BeforeTest]
+    public void Setup()
+    {
+        // disable default fail fast behavior because we tests also for failing asserts see EXPECT.FAIL
+        EnableInterupptOnFailure(false);
+    }
+
     [TestCase]
     public void IsNull()
     {
@@ -100,7 +107,7 @@ public class StringAssertTest : TestSuite
     }
 
     [TestCase]
-    public void notContains()
+    public void NotContains()
     {
         AssertString("This is a test message").NotContains("a tezt");
         AssertString("This is a test message", FAIL)
@@ -218,5 +225,17 @@ public class StringAssertTest : TestSuite
             .OverrideFailureMessage("Custom failure message")
             .IsNull()
             .HasFailureMessage("Custom failure message");
+    }
+
+    [TestCase]
+    public void Interuppt_IsFailure()
+    {
+        // we want to interrupt on first failure
+        EnableInterupptOnFailure(true);
+        // try to fail
+        AssertString("", FAIL).IsNotEmpty();
+
+        // expect this line will never called because of the test is interuppted by a failing assert
+        AssertBool(true).OverrideFailureMessage("This line shold never be called").IsFalse();
     }
 }

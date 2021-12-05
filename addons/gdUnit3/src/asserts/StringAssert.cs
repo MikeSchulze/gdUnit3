@@ -12,68 +12,73 @@ namespace GdUnit3
 
         public IStringAssert Contains(string expected)
         {
-            _delegator.Call("contains", expected);
+            CallDelegator("contains", expected);
             return this;
         }
 
         public IStringAssert ContainsIgnoringCase(string expected)
         {
-            _delegator.Call("contains_ignoring_case", expected);
+            CallDelegator("contains_ignoring_case", expected);
             return this;
         }
 
         public IStringAssert EndsWith(string expected)
         {
-            _delegator.Call("ends_with", expected);
+            CallDelegator("ends_with", expected);
             return this;
         }
 
         public IStringAssert HasLength(int lenght, IStringAssert.Compare comparator = IStringAssert.Compare.EQUAL)
         {
-            _delegator.Call("has_length", lenght, comparator);
+            CallDelegator("has_length", lenght, comparator);
             return this;
         }
 
         public IStringAssert IsEmpty()
         {
-            _delegator.Call("is_empty");
+            CallDelegator("is_empty");
             return this;
         }
 
         public IStringAssert IsEqualIgnoringCase(string expected)
         {
-            _delegator.Call("is_equal_ignoring_case", expected);
+            CallDelegator("is_equal_ignoring_case", expected);
             return this;
         }
 
         public IStringAssert IsNotEmpty()
         {
-            _delegator.Call("is_not_empty");
+            CallDelegator("is_not_empty");
             return this;
         }
 
         public IStringAssert IsNotEqualIgnoringCase(string expected)
         {
-            _delegator.Call("is_not_equal_ignoring_case", expected);
+            CallDelegator("is_not_equal_ignoring_case", expected);
             return this;
         }
 
         public IStringAssert NotContains(string expected)
         {
-            _delegator.Call("not_contains", expected);
+            CallDelegator("not_contains", expected);
             return this;
         }
 
         public IStringAssert NotContainsIgnoringCase(string expected)
         {
-            _delegator.Call("not_contains_ignoring_case", expected);
+            CallDelegator("not_contains_ignoring_case", expected);
             return this;
         }
 
         public IStringAssert StartsWith(string expected)
         {
-            _delegator.Call("starts_with", expected);
+            CallDelegator("starts_with", expected);
             return this;
+        }
+
+        public new IStringAssert OverrideFailureMessage(string message)
+        {
+            return base.OverrideFailureMessage(message) as IStringAssert;
         }
     }
 }

@@ -15,6 +15,10 @@ func __validate_value_type(value) -> bool:
 func set_line_number(line :int) -> void:
 	_base.set_line_number(line)
 
+# used from c# side
+func is_failed() -> bool:
+	return _base.is_failed()
+
 func __current() -> Result:
 	return _base.__current() as Result
 

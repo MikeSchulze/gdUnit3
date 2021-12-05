@@ -1,4 +1,3 @@
-using System;
 using System.Diagnostics;
 
 using static GdUnit3.Assertions;
@@ -21,52 +20,46 @@ namespace GdUnit3
             _delegator.Call("set_line_number", CallStack.GetFileLineNumber());
         }
 
-        public IAssertBase<V> HasFailureMessage(string expected)
-        {
-            _delegator.Call("has_failure_message", expected);
-            return this;
-        }
-
         public IAssertBase<V> IsEqual(V expected)
         {
-            _delegator.Call("is_equal", expected);
-            return this;
+            return CallDelegator("is_equal", expected);
         }
 
         public IAssertBase<V> IsNotEqual(V expected)
         {
-            _delegator.Call("is_not_equal", expected);
-            return this;
+            return CallDelegator("is_not_equal", expected);
         }
 
         public IAssertBase<V> IsNotNull()
         {
-            _delegator.Call("is_not_null");
-            return this;
+            return CallDelegator("is_not_null");
         }
 
         public IAssertBase<V> IsNull()
         {
-            _delegator.Call("is_null");
+            return CallDelegator("is_null");
+        }
+
+        public IAssert HasFailureMessage(string expected)
+        {
+            CallDelegator("has_failure_message", expected);
             return this;
         }
 
-        public IAssertBase<V> OverrideFailureMessage(string message)
+        public IAssert OverrideFailureMessage(string message)
         {
             _delegator.Call("override_failure_message", message);
             return this;
         }
 
-        public IAssertBase<V> StartsWithFailureMessage(string message)
+        public IAssert StartsWithFailureMessage(string message)
         {
-            _delegator.Call("starts_with_failure_message", message);
-            return this;
+            return CallDelegator("starts_with_failure_message", message);
         }
 
-        public IAssertBase<V> TestFail()
+        public IAssert TestFail()
         {
-            _delegator.Call("test_fail");
-            return this;
+            return CallDelegator("test_fail");
         }
 
         private void InteruptOnFail()
@@ -76,17 +69,17 @@ namespace GdUnit3
                 return;
             }
             var isFailed = (bool)_delegator.Call("is_failed");
-            if (isFailed == true)
+            if (isFailed)
             {
-                throw new System.Exception("TestCase interuppted by a failing assert.");
+                throw new TestFailedException("TestCase interuppted by a failing assert.");
             }
         }
 
-        protected T CallDelegator<T>(string methodName, params object[] args) where T : IAssertBase<V>, IAssert
+        protected IAssertBase<V> CallDelegator(string methodName, params object[] args)
         {
             _delegator.Call(methodName, args);
             InteruptOnFail();
-            return (T)Convert.ChangeType(this, typeof(T));
+            return this;
         }
     }
 }

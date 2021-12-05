@@ -18,12 +18,14 @@ namespace GdUnit3
             _messageBuilder = GdAssertMessages.New() as Godot.Reference;
         }
 
-        public IObjectAssert IsNotInstanceof<ExpectedType>()
+        public IObjectAssert IsNotInstanceOf<ExpectedType>()
         {
             if (_current is ExpectedType)
             {
                 var message = String.Format("Expected not be a instance of <{0}>", typeof(ExpectedType));
                 _delegator.Call("report_error", message);
+                if (IsEnableInterupptOnFailure())
+                    throw new TestFailedException("TestCase interuppted by a failing assert.", 2);
                 return this;
             }
             _delegator.Call("report_success");
@@ -32,26 +34,33 @@ namespace GdUnit3
 
         public IObjectAssert IsNotSame(object expected)
         {
-            _delegator.Call("is_not_same", expected);
+            CallDelegator("is_not_same", expected);
             return this;
         }
 
         public IObjectAssert IsSame(object expected)
         {
-            _delegator.Call("is_same", expected);
+            CallDelegator("is_same", expected);
             return this;
         }
 
-        public IObjectAssert IsInstanceof<ExpectedType>()
+        public IObjectAssert IsInstanceOf<ExpectedType>()
         {
             if (!(_current is ExpectedType))
             {
                 var message = error_is_instanceof(_current != null ? _current.GetType() : null, typeof(ExpectedType));
                 _delegator.Call("report_error", message);
+                if (IsEnableInterupptOnFailure())
+                    throw new TestFailedException("TestCase interuppted by a failing assert.", 2);
                 return this;
             }
             _delegator.Call("report_success");
             return this;
+        }
+
+        public new IObjectAssert OverrideFailureMessage(string message)
+        {
+            return base.OverrideFailureMessage(message) as IObjectAssert;
         }
 
         private String format_expected(string value)

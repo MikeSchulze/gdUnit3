@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using GdUnit3;
 using Godot;
 
@@ -288,7 +287,7 @@ public class ArrayAssertTest : TestSuite
     }
 
     [TestCase]
-    public void Extractv_Chained()
+    public void ExtractV_Chained()
     {
         var root_a = new TestObj("root_a", null);
         var obj_a = new TestObj("A", root_a);

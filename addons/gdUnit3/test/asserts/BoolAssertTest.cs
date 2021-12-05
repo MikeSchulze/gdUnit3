@@ -6,6 +6,13 @@ using static GdUnit3.Assertions.EXPECT;
 [TestSuite]
 public class BoolAssertTest : TestSuite
 {
+    [BeforeTest]
+    public void Setup()
+    {
+        // disable default fail fast behavior because we tests also for failing asserts see EXPECT.FAIL
+        EnableInterupptOnFailure(false);
+    }
+
     [TestCase]
     public void IsTrue()
     {
@@ -76,5 +83,17 @@ public class BoolAssertTest : TestSuite
             .OverrideFailureMessage("Custom failure message")
             .IsFalse()
             .HasFailureMessage("Custom failure message");
+    }
+
+    [TestCase]
+    public void Interuppt_IsFailure()
+    {
+        // we want to interrupt on first failure
+        EnableInterupptOnFailure(true);
+        // try to fail
+        AssertBool(true, FAIL).IsFalse();
+
+        // expect this line will never called because of the test is interuppted by a failing assert
+        AssertBool(true).OverrideFailureMessage("This line shold never be called").IsFalse();
     }
 }

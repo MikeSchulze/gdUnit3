@@ -58,10 +58,24 @@ namespace GdUnit3
             {
                 MethodInfo.Invoke(context.TestInstance, arguments);
             }
-            // catch test interupption
+            catch (TargetInvocationException e)
+            {
+                var baseException = e.GetBaseException();
+                if (baseException is TestFailedException)
+                {
+                    var ex = baseException as TestFailedException;
+                    Godot.GD.PrintS("TestCase Failed:", String.Format("|{0}#{1}:{2}|", context.TestInstance.Name, Name, ex.LineNumber), ex.Message);
+                    return;
+                }
+                // unexpected exceptions
+                Godot.GD.PushError(baseException.Message);
+                Godot.GD.PushError(baseException.StackTrace);
+            }
             catch (Exception e)
             {
-                Godot.GD.PrintS("Interupt TestCase:", e.GetBaseException().Message);
+                // unexpected exceptions
+                Godot.GD.PushError(e.Message);
+                Godot.GD.PushError(e.StackTrace);
             }
         }
     }

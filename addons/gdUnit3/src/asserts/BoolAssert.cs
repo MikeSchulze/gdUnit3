@@ -12,13 +12,13 @@ namespace GdUnit3
 
         public IBoolAssert IsFalse()
         {
-            _delegator.Call("is_false");
+            CallDelegator("is_false");
             return this;
         }
 
         public IBoolAssert IsTrue()
         {
-            _delegator.Call("is_true");
+            CallDelegator("is_true");
             return this;
         }
 

@@ -8,6 +8,12 @@ using static GdUnit3.Assertions.EXPECT;
 [TestSuite]
 public class ObjectAssertTest : TestSuite
 {
+    [BeforeTest]
+    public void Setup()
+    {
+        // disable default fail fast behavior because we tests also for failing asserts see EXPECT.FAIL
+        EnableInterupptOnFailure(false);
+    }
 
     class CustomClass
     {
@@ -37,38 +43,38 @@ public class ObjectAssertTest : TestSuite
     }
 
     [TestCase]
-    public void IsInstanceof()
+    public void IsInstanceOf()
     {
         // engine class test
-        AssertObject(AutoFree(new Path())).IsInstanceof<Node>();
-        AssertObject(AutoFree(new Camera())).IsInstanceof<Camera>();
+        AssertObject(AutoFree(new Path())).IsInstanceOf<Node>();
+        AssertObject(AutoFree(new Camera())).IsInstanceOf<Camera>();
         // script class test
         // inner class test
-        AssertObject(AutoFree(new CustomClass.InnerClassA())).IsInstanceof<Node>();
-        AssertObject(AutoFree(new CustomClass.InnerClassB())).IsInstanceof<CustomClass.InnerClassA>();
+        AssertObject(AutoFree(new CustomClass.InnerClassA())).IsInstanceOf<Node>();
+        AssertObject(AutoFree(new CustomClass.InnerClassB())).IsInstanceOf<CustomClass.InnerClassA>();
 
         // should fail because the current is not a instance of `Tree`
         AssertObject(AutoFree(new Path()), FAIL)
-            .IsInstanceof<Tree>()
+            .IsInstanceOf<Tree>()
             .HasFailureMessage("Expected instance of:\n 'Godot.Tree'\n But it was 'Godot.Path'");
         AssertObject(null, FAIL)
-            .IsInstanceof<Tree>()
+            .IsInstanceOf<Tree>()
             .HasFailureMessage("Expected instance of:\n 'Godot.Tree'\n But it was 'Null'");
     }
 
     [TestCase]
-    public void IsNotInstanceof()
+    public void IsNotInstanceOf()
     {
-        AssertObject(null).IsNotInstanceof<Node>();
+        AssertObject(null).IsNotInstanceOf<Node>();
         // engine class test
-        AssertObject(AutoFree(new Path())).IsNotInstanceof<Tree>();
+        AssertObject(AutoFree(new Path())).IsNotInstanceOf<Tree>();
         // inner class test
-        AssertObject(AutoFree(new CustomClass.InnerClassA())).IsNotInstanceof<Tree>();
-        AssertObject(AutoFree(new CustomClass.InnerClassB())).IsNotInstanceof<CustomClass.InnerClassC>();
+        AssertObject(AutoFree(new CustomClass.InnerClassA())).IsNotInstanceOf<Tree>();
+        AssertObject(AutoFree(new CustomClass.InnerClassB())).IsNotInstanceOf<CustomClass.InnerClassC>();
 
         // should fail because the current is not a instance of `Tree`
         AssertObject(AutoFree(new Path()), FAIL)
-            .IsNotInstanceof<Node>()
+            .IsNotInstanceOf<Node>()
             .HasFailureMessage("Expected not be a instance of <Godot.Node>");
     }
 
@@ -124,7 +130,7 @@ public class ObjectAssertTest : TestSuite
     }
 
     [TestCase]
-    public void must_fail_has_invlalid_type()
+    public void MustFail_hasInvlalidType()
     {
         AssertObject(1, FAIL).HasFailureMessage("GdUnitObjectAssert inital error, unexpected type <int>");
         AssertObject(1.3, FAIL).HasFailureMessage("GdUnitObjectAssert inital error, unexpected type <float>");
@@ -141,4 +147,15 @@ public class ObjectAssertTest : TestSuite
             .HasFailureMessage("Custom failure message");
     }
 
+    [TestCase]
+    public void Interuppt_IsFailure()
+    {
+        // we want to interrupt on first failure
+        EnableInterupptOnFailure(true);
+        // try to fail
+        AssertObject(null, FAIL).IsNotNull();
+
+        // expect this line will never called because of the test is interuppted by a failing assert
+        AssertBool(true).OverrideFailureMessage("This line shold never be called").IsFalse();
+    }
 }

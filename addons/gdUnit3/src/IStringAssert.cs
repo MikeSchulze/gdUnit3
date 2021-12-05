@@ -46,5 +46,7 @@ namespace GdUnit3
 
         /// <summary> Verifies that the current String has the expected length by used comparator.</summary>
         public IStringAssert HasLength(int lenght, Compare comparator = Compare.EQUAL);
+
+        public new IStringAssert OverrideFailureMessage(string message);
     }
 }

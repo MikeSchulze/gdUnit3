@@ -43,5 +43,8 @@ namespace GdUnit3
 
         /// <summary> Verifies that the current value is between the given boundaries (inclusive).</summary>
         public INumberAssert<V> IsBetween(V from, V to);
+
+
+        public new INumberAssert<V> OverrideFailureMessage(string message);
     }
 }

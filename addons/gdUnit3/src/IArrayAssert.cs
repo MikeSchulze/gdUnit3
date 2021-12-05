@@ -40,5 +40,7 @@ namespace GdUnit3
         /// If the elements not extractable than the value is converted to `"n.a"`, expecting null values
         /// </summary>
         public IArrayAssert ExtractV(params IValueExtractor[] extractors);
+
+        public new IArrayAssert OverrideFailureMessage(string message);
     }
 }

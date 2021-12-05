@@ -12,6 +12,10 @@ func _init(caller :Object, current, expect_result :int):
 func set_line_number(line :int) -> void:
 	_base.set_line_number(line)
 
+# used from c# side
+func is_failed() -> bool:
+	return _base.is_failed()
+
 func __current() -> Vector2:
 	return _base.__current()
 

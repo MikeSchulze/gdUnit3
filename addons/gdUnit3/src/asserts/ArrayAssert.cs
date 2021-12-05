@@ -20,42 +20,50 @@ namespace GdUnit3
 
         public IArrayAssert IsEqualIgnoringCase(IEnumerable expected)
         {
-            return CallDelegator<ArrayAssert>("is_equal_ignoring_case", expected);
+            CallDelegator("is_equal_ignoring_case", expected);
+            return this;
         }
 
         public IArrayAssert IsNotEqualIgnoringCase(IEnumerable expected)
         {
-            return CallDelegator<ArrayAssert>("is_not_equal_ignoring_case", expected);
+            CallDelegator("is_not_equal_ignoring_case", expected);
+            return this;
         }
 
         public IArrayAssert IsEmpty()
         {
-            return CallDelegator<ArrayAssert>("is_empty");
+            CallDelegator("is_empty");
+            return this;
         }
 
         public IArrayAssert IsNotEmpty()
         {
-            return CallDelegator<ArrayAssert>("is_not_empty");
+            CallDelegator("is_not_empty");
+            return this;
         }
 
         public IArrayAssert HasSize(int expected)
         {
-            return CallDelegator<ArrayAssert>("has_size", expected);
+            CallDelegator("has_size", expected);
+            return this;
         }
 
         public IArrayAssert Contains(IEnumerable expected)
         {
-            return CallDelegator<ArrayAssert>("contains", expected);
+            CallDelegator("contains", expected);
+            return this;
         }
 
         public IArrayAssert ContainsExactly(IEnumerable expected)
         {
-            return CallDelegator<ArrayAssert>("contains_exactly", expected);
+            CallDelegator("contains_exactly", expected);
+            return this;
         }
 
         public IArrayAssert ContainsExactlyInAnyOrder(IEnumerable expected)
         {
-            return CallDelegator<ArrayAssert>("contains_exactly_in_any_order", expected);
+            CallDelegator("contains_exactly_in_any_order", expected);
+            return this;
         }
 
         public IArrayAssert Extract(string funcName, params object[] args)
@@ -70,7 +78,14 @@ namespace GdUnit3
                 object[] values = extractors.Select(e => e.ExtractValue(v)).ToArray<object>();
                 return values.Count() == 1 ? values.First() : Tuple(values);
             }).ToList();
-            return CallDelegator<ArrayAssert>("set_current", Current);
+            CallDelegator("set_current", Current);
+            return this;
+        }
+
+
+        public new IArrayAssert OverrideFailureMessage(string message)
+        {
+            return base.OverrideFailureMessage(message) as IArrayAssert;
         }
     }
 }
