@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System;
 using System.Linq;
 
 using static GdUnit3.Assertions;
@@ -48,21 +49,48 @@ namespace GdUnit3
             return this;
         }
 
+        public IArrayAssert Contains(params object[] expected)
+        {
+            CallDelegator("contains", new Godot.Collections.Array(expected));
+            return this;
+        }
+
         public IArrayAssert Contains(IEnumerable expected)
         {
-            CallDelegator("contains", expected);
+            if (expected.GetEnumerator() is CharEnumerator)
+                CallDelegator("contains", new Godot.Collections.Array(new object[] { expected as string }));
+            else
+                CallDelegator("contains", expected);
+            return this;
+        }
+
+        public IArrayAssert ContainsExactly(params object[] expected)
+        {
+            CallDelegator("contains_exactly", new Godot.Collections.Array(expected));
             return this;
         }
 
         public IArrayAssert ContainsExactly(IEnumerable expected)
         {
-            CallDelegator("contains_exactly", expected);
+            if (expected.GetEnumerator() is CharEnumerator)
+                CallDelegator("contains_exactly", new Godot.Collections.Array(new object[] { expected as string }));
+            else
+                CallDelegator("contains_exactly", expected);
+            return this;
+        }
+
+        public IArrayAssert ContainsExactlyInAnyOrder(params object[] expected)
+        {
+            CallDelegator("contains_exactly_in_any_order", new Godot.Collections.Array(expected));
             return this;
         }
 
         public IArrayAssert ContainsExactlyInAnyOrder(IEnumerable expected)
         {
-            CallDelegator("contains_exactly_in_any_order", expected);
+            if (expected.GetEnumerator() is CharEnumerator)
+                CallDelegator("contains_exactly_in_any_order", new Godot.Collections.Array(new object[] { expected as string }));
+            else
+                CallDelegator("contains_exactly_in_any_order", expected);
             return this;
         }
 
@@ -78,7 +106,7 @@ namespace GdUnit3
                 object[] values = extractors.Select(e => e.ExtractValue(v)).ToArray<object>();
                 return values.Count() == 1 ? values.First() : Tuple(values);
             }).ToList();
-            CallDelegator("set_current", Current);
+            _delegator.Call("set_current", Current);
             return this;
         }
 

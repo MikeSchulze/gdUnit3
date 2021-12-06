@@ -23,8 +23,17 @@ namespace GdUnit3
         /// <summary> Verifies that the current Array contains the given values, in any order.</summary>
         public IArrayAssert Contains(IEnumerable expected);
 
+        /// <summary> Verifies that the current Array contains the given values, in any order.</summary>
+        public IArrayAssert Contains(params object[] expected);
+
+        /// <summary> Verifies that the current Array contains exactly only the given values and nothing else, in same order.</summary>
+        public IArrayAssert ContainsExactly(params object[] expected);
+
         /// <summary> Verifies that the current Array contains exactly only the given values and nothing else, in same order.</summary>
         public IArrayAssert ContainsExactly(IEnumerable expected);
+
+        /// <summary> Verifies that the current Array contains exactly only the given values and nothing else, in any order.</summary>
+        public IArrayAssert ContainsExactlyInAnyOrder(params object[] expected);
 
         /// <summary> Verifies that the current Array contains exactly only the given values and nothing else, in any order.</summary>
         public IArrayAssert ContainsExactlyInAnyOrder(IEnumerable expected);

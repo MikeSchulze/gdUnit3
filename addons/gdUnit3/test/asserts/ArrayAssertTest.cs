@@ -116,98 +116,377 @@ public class ArrayAssertTest : TestSuite
     }
 
     [TestCase]
-    public void Contains()
+    public void Contains_stringssAsArray()
+    {
+        AssertArray(new string[] { "aaa", "bbb", "ccc", "ddd", "eee" }).Contains(new string[] { });
+        AssertArray(new string[] { "aaa", "bbb", "ccc", "ddd", "eee" }).Contains(new string[] { "ddd", "bbb" });
+        AssertArray(new string[] { "aaa", "bbb", "ccc", "ddd", "eee" }).Contains(new string[] { "eee", "ddd", "ccc", "bbb", "aaa" });
+        // should fail because the array not contains 7 and 6
+        AssertArray(new string[] { "aaa", "bbb", "ccc", "ddd", "eee" }, FAIL).Contains(new string[] { "bbb", "xxx", "yyy" })
+            .HasFailureMessage("Expecting contains elements:\n"
+                            + " aaa, bbb, ccc, ddd, eee\n"
+                            + " do contains (in any order)\n"
+                            + " bbb, xxx, yyy\n"
+                            + "but could not find elements:\n"
+                            + " xxx, yyy");
+    }
+
+    [TestCase]
+    public void Contains_stringssAsElements()
+    {
+        AssertArray(new string[] { "aaa", "bbb", "ccc", "ddd", "eee" }).Contains();
+        AssertArray(new string[] { "aaa", "bbb", "ccc", "ddd", "eee" }).Contains("ddd", "bbb");
+        AssertArray(new string[] { "aaa", "bbb", "ccc", "ddd", "eee" }).Contains("eee", "ddd", "ccc", "bbb", "aaa");
+        // should fail because the array not contains 7 and 6
+        AssertArray(new string[] { "aaa", "bbb", "ccc", "ddd", "eee" }, FAIL).Contains("bbb", "xxx", "yyy")
+            .HasFailureMessage("Expecting contains elements:\n"
+                            + " aaa, bbb, ccc, ddd, eee\n"
+                            + " do contains (in any order)\n"
+                            + " bbb, xxx, yyy\n"
+                            + "but could not find elements:\n"
+                            + " xxx, yyy");
+    }
+
+    [TestCase]
+    public void Contains_numbersAsArray()
     {
         AssertArray(new int[] { 1, 2, 3, 4, 5 }).Contains(new int[] { });
         AssertArray(new int[] { 1, 2, 3, 4, 5 }).Contains(new int[] { 5, 2 });
         AssertArray(new int[] { 1, 2, 3, 4, 5 }).Contains(new int[] { 5, 4, 3, 2, 1 });
         // should fail because the array not contains 7 and 6
-        string expected_error_message = "Expecting contains elements:\n"
-            + " 1, 2, 3, 4, 5\n"
-            + " do contains (in any order)\n"
-            + " 2, 7, 6\n"
-            + "but could not find elements:\n"
-            + " 7, 6";
-
         AssertArray(new int[] { 1, 2, 3, 4, 5 }, FAIL).Contains(new int[] { 2, 7, 6 })
-            .HasFailureMessage(expected_error_message);
+            .HasFailureMessage("Expecting contains elements:\n"
+                            + " 1, 2, 3, 4, 5\n"
+                            + " do contains (in any order)\n"
+                            + " 2, 7, 6\n"
+                            + "but could not find elements:\n"
+                            + " 7, 6");
     }
 
     [TestCase]
-    public void ContainsExactly()
+    public void Contains_numbersAsElements()
     {
-        AssertArray(new int[] { 1, 2, 3, 4, 5 }).ContainsExactly(new int[] { 1, 2, 3, 4, 5 });
-        // should fail because the array contains the same elements but in a different order
-        string expected_error_message = "Expecting contains exactly elements:\n"
-            + " 1, 2, 3, 4, 5\n"
-            + " do contains (in same order)\n"
-            + " 1, 4, 3, 2, 5\n"
-            + " but has different order at position '1'\n"
-            + " '2' vs '4'";
+        AssertArray(new int[] { 1, 2, 3, 4, 5 }).Contains();
+        AssertArray(new int[] { 1, 2, 3, 4, 5 }).Contains(5, 2);
+        AssertArray(new int[] { 1, 2, 3, 4, 5 }).Contains(5, 4, 3, 2, 1);
+        // should fail because the array not contains 7 and 6
+        AssertArray(new int[] { 1, 2, 3, 4, 5 }, FAIL).Contains(2, 7, 6)
+            .HasFailureMessage("Expecting contains elements:\n"
+                            + " 1, 2, 3, 4, 5\n"
+                            + " do contains (in any order)\n"
+                            + " 2, 7, 6\n"
+                            + "but could not find elements:\n"
+                            + " 7, 6");
+    }
 
+    [TestCase]
+    public void ContainsExactly_stringsAsArray()
+    {
+        // test agains only one element
+        AssertArray(new string[] { "abc" }).ContainsExactly(new string[] { "abc" });
+        AssertArray(new string[] { "abc" }, FAIL).ContainsExactly(new string[] { "abXc" })
+            .HasFailureMessage("Expecting contains exactly elements:\n"
+                            + " abc\n"
+                            + " do contains (in same order)\n"
+                            + " abXc\n"
+                            + "but some elements where not expected:\n"
+                            + " abc\n"
+                            + "and could not find elements:\n"
+                            + " abXc");
+
+        // test agains many elements
+        AssertArray(new string[] { "abc", "def", "xyz" }).ContainsExactly(new string[] { "abc", "def", "xyz" });
+        // should fail because if contains the same elements but in a different order
+        AssertArray(new string[] { "abc", "def", "xyz" }, FAIL).ContainsExactly(new string[] { "abc", "xyz", "def" })
+            .HasFailureMessage("Expecting contains exactly elements:\n"
+                            + " abc, def, xyz\n"
+                            + " do contains (in same order)\n"
+                            + " abc, xyz, def\n"
+                            + " but has different order at position '1'\n"
+                            + " 'def' vs 'xyz'");
+
+        // should fail because it contains more elements and in a different order
+        AssertArray(new string[] { "abc", "def", "foo", "bar", "xyz" }, FAIL)
+            .ContainsExactly(new string[] { "abc", "xyz", "def" })
+            .HasFailureMessage("Expecting contains exactly elements:\n"
+                            + " abc, def, foo, bar, xyz\n"
+                            + " do contains (in same order)\n"
+                            + " abc, xyz, def\n"
+                            + "but some elements where not expected:\n"
+                            + " foo, bar");
+
+        // should fail because it contains less elements and in a different order
+        AssertArray(new string[] { "abc", "def", "xyz" }, FAIL)
+            .ContainsExactly(new string[] { "abc", "def", "bar", "foo", "xyz" })
+            .HasFailureMessage("Expecting contains exactly elements:\n"
+                            + " abc, def, xyz\n"
+                            + " do contains (in same order)\n"
+                            + " abc, def, bar, foo, xyz\n"
+                            + "but could not find elements:\n"
+                            + " bar, foo");
+    }
+
+    [TestCase]
+    public void ContainsExactly_stringsAsElements()
+    {
+        // test agains only one element
+        AssertArray(new string[] { "abc" }).ContainsExactly("abc");
+        AssertArray(new string[] { "abc" }, FAIL).ContainsExactly("abXc")
+            .HasFailureMessage("Expecting contains exactly elements:\n"
+                            + " abc\n"
+                            + " do contains (in same order)\n"
+                            + " abXc\n"
+                            + "but some elements where not expected:\n"
+                            + " abc\n"
+                            + "and could not find elements:\n"
+                            + " abXc");
+
+        // test agains many elements
+        AssertArray(new string[] { "abc", "def", "xyz" }).ContainsExactly("abc", "def", "xyz");
+        // should fail because if contains the same elements but in a different order
+        AssertArray(new string[] { "abc", "def", "xyz" }, FAIL).ContainsExactly("abc", "xyz", "def")
+            .HasFailureMessage("Expecting contains exactly elements:\n"
+                            + " abc, def, xyz\n"
+                            + " do contains (in same order)\n"
+                            + " abc, xyz, def\n"
+                            + " but has different order at position '1'\n"
+                            + " 'def' vs 'xyz'");
+
+        // should fail because it contains more elements and in a different order
+        AssertArray(new string[] { "abc", "def", "foo", "bar", "xyz" }, FAIL)
+            .ContainsExactly("abc", "xyz", "def")
+            .HasFailureMessage("Expecting contains exactly elements:\n"
+                            + " abc, def, foo, bar, xyz\n"
+                            + " do contains (in same order)\n"
+                            + " abc, xyz, def\n"
+                            + "but some elements where not expected:\n"
+                            + " foo, bar");
+
+        // should fail because it contains less elements and in a different order
+        AssertArray(new string[] { "abc", "def", "xyz" }, FAIL)
+            .ContainsExactly("abc", "def", "bar", "foo", "xyz")
+            .HasFailureMessage("Expecting contains exactly elements:\n"
+                            + " abc, def, xyz\n"
+                            + " do contains (in same order)\n"
+                            + " abc, def, bar, foo, xyz\n"
+                            + "but could not find elements:\n"
+                            + " bar, foo");
+    }
+
+    [TestCase]
+    public void ContainsExactly_numbersAsArray()
+    {
+        // test agains array with only one element
+        AssertArray(new int[] { 1 }).ContainsExactly(new int[] { 1 });
+        AssertArray(new int[] { 1 }, FAIL).ContainsExactly(new int[] { 2 })
+            .HasFailureMessage("Expecting contains exactly elements:\n"
+                            + " 1\n"
+                            + " do contains (in same order)\n"
+                            + " 2\n"
+                            + "but some elements where not expected:\n"
+                            + " 1\n"
+                            + "and could not find elements:\n"
+                            + " 2");
+
+        // test agains array with many elements
+        AssertArray(new int[] { 1, 2, 3, 4, 5 }).ContainsExactly(new int[] { 1, 2, 3, 4, 5 });
+        // should fail because if contains the same elements but in a different order
         AssertArray(new int[] { 1, 2, 3, 4, 5 }, FAIL)
             .ContainsExactly(new int[] { 1, 4, 3, 2, 5 })
-            .HasFailureMessage(expected_error_message);
+            .HasFailureMessage("Expecting contains exactly elements:\n"
+                            + " 1, 2, 3, 4, 5\n"
+                            + " do contains (in same order)\n"
+                            + " 1, 4, 3, 2, 5\n"
+                            + " but has different order at position '1'\n"
+                            + " '2' vs '4'");
 
-        // should fail because the array contains more elements and in a different order
-        expected_error_message = "Expecting contains exactly elements:\n"
-            + " 1, 2, 3, 4, 5, 6, 7\n"
-            + " do contains (in same order)\n"
-            + " 1, 4, 3, 2, 5\n"
-            + "but some elements where not expected:\n"
-            + " 6, 7";
-
+        // should fail because it contains more elements and in a different order
         AssertArray(new int[] { 1, 2, 3, 4, 5, 6, 7 }, FAIL)
             .ContainsExactly(new int[] { 1, 4, 3, 2, 5 })
-            .HasFailureMessage(expected_error_message);
+            .HasFailureMessage("Expecting contains exactly elements:\n"
+                            + " 1, 2, 3, 4, 5, 6, 7\n"
+                            + " do contains (in same order)\n"
+                            + " 1, 4, 3, 2, 5\n"
+                            + "but some elements where not expected:\n"
+                            + " 6, 7");
 
-        // should fail because the array contains less elements and in a different order
-        expected_error_message = "Expecting contains exactly elements:\n"
-            + " 1, 2, 3, 4, 5\n"
-            + " do contains (in same order)\n"
-            + " 1, 4, 3, 2, 5, 6, 7\n"
-            + "but could not find elements:\n"
-            + " 6, 7";
-
+        // should fail because it contains less elements and in a different order
         AssertArray(new int[] { 1, 2, 3, 4, 5 }, FAIL)
             .ContainsExactly(new int[] { 1, 4, 3, 2, 5, 6, 7 })
-            .HasFailureMessage(expected_error_message);
+            .HasFailureMessage("Expecting contains exactly elements:\n"
+                            + " 1, 2, 3, 4, 5\n"
+                            + " do contains (in same order)\n"
+                            + " 1, 4, 3, 2, 5, 6, 7\n"
+                            + "but could not find elements:\n"
+                            + " 6, 7");
     }
 
     [TestCase]
-    public void ContainsExactlyInAnyOrder()
+    public void ContainsExactly_numbersAsElements()
+    {
+        // test agains array with only one element
+        AssertArray(new int[] { 1 }).ContainsExactly(1);
+        AssertArray(new int[] { 1 }, FAIL).ContainsExactly(2)
+            .HasFailureMessage("Expecting contains exactly elements:\n"
+                            + " 1\n"
+                            + " do contains (in same order)\n"
+                            + " 2\n"
+                            + "but some elements where not expected:\n"
+                            + " 1\n"
+                            + "and could not find elements:\n"
+                            + " 2");
+
+        // test agains array with many elements
+        AssertArray(new int[] { 1, 2, 3, 4, 5 }).ContainsExactly(1, 2, 3, 4, 5);
+        // should fail because if contains the same elements but in a different order
+        AssertArray(new int[] { 1, 2, 3, 4, 5 }, FAIL)
+            .ContainsExactly(1, 4, 3, 2, 5)
+            .HasFailureMessage("Expecting contains exactly elements:\n"
+                            + " 1, 2, 3, 4, 5\n"
+                            + " do contains (in same order)\n"
+                            + " 1, 4, 3, 2, 5\n"
+                            + " but has different order at position '1'\n"
+                            + " '2' vs '4'");
+
+        // should fail because it contains more elements and in a different order
+        AssertArray(new int[] { 1, 2, 3, 4, 5, 6, 7 }, FAIL)
+            .ContainsExactly(1, 4, 3, 2, 5)
+            .HasFailureMessage("Expecting contains exactly elements:\n"
+                            + " 1, 2, 3, 4, 5, 6, 7\n"
+                            + " do contains (in same order)\n"
+                            + " 1, 4, 3, 2, 5\n"
+                            + "but some elements where not expected:\n"
+                            + " 6, 7");
+
+        // should fail because it contains less elements and in a different order
+        AssertArray(new int[] { 1, 2, 3, 4, 5 }, FAIL)
+            .ContainsExactly(1, 4, 3, 2, 5, 6, 7)
+            .HasFailureMessage("Expecting contains exactly elements:\n"
+                            + " 1, 2, 3, 4, 5\n"
+                            + " do contains (in same order)\n"
+                            + " 1, 4, 3, 2, 5, 6, 7\n"
+                            + "but could not find elements:\n"
+                            + " 6, 7");
+    }
+
+    [TestCase]
+    public void ContainsExactlyInAnyOrder_stringsAsArray()
+    {
+        AssertArray(new string[] { "aaa", "bbb", "ccc", "ddd", "eee" }).ContainsExactlyInAnyOrder(new string[] { "aaa", "bbb", "ccc", "ddd", "eee" });
+        AssertArray(new string[] { "aaa", "bbb", "ccc", "ddd", "eee" }).ContainsExactlyInAnyOrder(new string[] { "eee", "ddd", "ccc", "bbb", "aaa" });
+        AssertArray(new string[] { "aaa", "bbb", "ccc", "ddd", "eee" }).ContainsExactlyInAnyOrder(new string[] { "bbb", "aaa", "ccc", "eee", "ddd" });
+
+        // should fail because is contains not exactly the same elements in any order
+        AssertArray(new string[] { "aaa", "bbb", "ccc", "ddd" }, FAIL)
+            .ContainsExactlyInAnyOrder(new string[] { "xxx", "aaa", "yyy", "bbb", "ccc", "ddd" })
+            .HasFailureMessage("Expecting contains exactly elements:\n"
+                            + " aaa, bbb, ccc, ddd\n"
+                            + " do contains exactly (in any order)\n"
+                            + " xxx, aaa, yyy, bbb, ccc, ddd\n"
+                            + "but could not find elements:\n"
+                            + " xxx, yyy");
+
+        //should fail because is contains the same elements but in a different order
+        AssertArray(new string[] { "aaa", "bbb", "ccc", "ddd", "eee", "fff" }, FAIL)
+            .ContainsExactlyInAnyOrder(new string[] { "fff", "aaa", "ddd", "bbb", "eee", })
+            .HasFailureMessage("Expecting contains exactly elements:\n"
+                            + " aaa, bbb, ccc, ddd, eee, fff\n"
+                            + " do contains exactly (in any order)\n"
+                            + " fff, aaa, ddd, bbb, eee\n"
+                            + "but some elements where not expected:\n"
+                            + " ccc");
+    }
+
+    [TestCase]
+    public void ContainsExactlyInAnyOrder_stringsAsElements()
+    {
+        AssertArray(new string[] { "aaa", "bbb", "ccc", "ddd", "eee" }).ContainsExactlyInAnyOrder("aaa", "bbb", "ccc", "ddd", "eee");
+        AssertArray(new string[] { "aaa", "bbb", "ccc", "ddd", "eee" }).ContainsExactlyInAnyOrder("eee", "ddd", "ccc", "bbb", "aaa");
+        AssertArray(new string[] { "aaa", "bbb", "ccc", "ddd", "eee" }).ContainsExactlyInAnyOrder("bbb", "aaa", "ccc", "eee", "ddd");
+
+        // should fail because is contains not exactly the same elements in any order
+        AssertArray(new string[] { "aaa", "bbb", "ccc", "ddd" }, FAIL)
+            .ContainsExactlyInAnyOrder("xxx", "aaa", "yyy", "bbb", "ccc", "ddd")
+            .HasFailureMessage("Expecting contains exactly elements:\n"
+                            + " aaa, bbb, ccc, ddd\n"
+                            + " do contains exactly (in any order)\n"
+                            + " xxx, aaa, yyy, bbb, ccc, ddd\n"
+                            + "but could not find elements:\n"
+                            + " xxx, yyy");
+
+        //should fail because is contains the same elements but in a different order
+        AssertArray(new string[] { "aaa", "bbb", "ccc", "ddd", "eee", "fff" }, FAIL)
+            .ContainsExactlyInAnyOrder("fff", "aaa", "ddd", "bbb", "eee")
+            .HasFailureMessage("Expecting contains exactly elements:\n"
+                            + " aaa, bbb, ccc, ddd, eee, fff\n"
+                            + " do contains exactly (in any order)\n"
+                            + " fff, aaa, ddd, bbb, eee\n"
+                            + "but some elements where not expected:\n"
+                            + " ccc");
+    }
+
+    [TestCase]
+    public void ContainsExactlyInAnyOrder_numbersAsArray()
     {
         AssertArray(new int[] { 1, 2, 3, 4, 5 }).ContainsExactlyInAnyOrder(new int[] { 1, 2, 3, 4, 5 });
         AssertArray(new int[] { 1, 2, 3, 4, 5 }).ContainsExactlyInAnyOrder(new int[] { 5, 3, 2, 4, 1 });
         AssertArray(new int[] { 1, 2, 3, 4, 5 }).ContainsExactlyInAnyOrder(new int[] { 5, 1, 2, 4, 3 });
 
-        // should fail because the array contains not exactly the same elements in any order
-        string expected_error_message = "Expecting contains exactly elements:\n"
-            + " 1, 2, 6, 4, 5\n"
-            + " do contains exactly (in any order)\n"
-            + " 5, 3, 2, 4, 1, 9, 10\n"
-            + "but some elements where not expected:\n"
-            + " 6\n"
-            + "and could not find elements:\n"
-            + " 3, 9, 10";
-
+        // should fail because is contains not exactly the same elements in any order
         AssertArray(new int[] { 1, 2, 6, 4, 5 }, FAIL)
             .ContainsExactlyInAnyOrder(new int[] { 5, 3, 2, 4, 1, 9, 10 })
-            .HasFailureMessage(expected_error_message);
+            .HasFailureMessage("Expecting contains exactly elements:\n"
+                            + " 1, 2, 6, 4, 5\n"
+                            + " do contains exactly (in any order)\n"
+                            + " 5, 3, 2, 4, 1, 9, 10\n"
+                            + "but some elements where not expected:\n"
+                            + " 6\n"
+                            + "and could not find elements:\n"
+                            + " 3, 9, 10");
 
-        //should fail because the array contains the same elements but in a different order
-        expected_error_message = "Expecting contains exactly elements:\n"
-            + " 1, 2, 6, 9, 10, 4, 5\n"
-            + " do contains exactly (in any order)\n"
-            + " 5, 3, 2, 4, 1\n"
-            + "but some elements where not expected:\n"
-            + " 6, 9, 10\n"
-            + "and could not find elements:\n"
-            + " 3";
-
+        //should fail because is contains the same elements but in a different order
         AssertArray(new int[] { 1, 2, 6, 9, 10, 4, 5 }, FAIL)
             .ContainsExactlyInAnyOrder(new int[] { 5, 3, 2, 4, 1 })
-            .HasFailureMessage(expected_error_message);
+            .HasFailureMessage("Expecting contains exactly elements:\n"
+                            + " 1, 2, 6, 9, 10, 4, 5\n"
+                            + " do contains exactly (in any order)\n"
+                            + " 5, 3, 2, 4, 1\n"
+                            + "but some elements where not expected:\n"
+                            + " 6, 9, 10\n"
+                            + "and could not find elements:\n"
+                            + " 3");
+    }
+
+    [TestCase]
+    public void ContainsExactlyInAnyOrder_numbersAsElements()
+    {
+        AssertArray(new int[] { 1, 2, 3, 4, 5 }).ContainsExactlyInAnyOrder(1, 2, 3, 4, 5);
+        AssertArray(new int[] { 1, 2, 3, 4, 5 }).ContainsExactlyInAnyOrder(5, 3, 2, 4, 1);
+        AssertArray(new int[] { 1, 2, 3, 4, 5 }).ContainsExactlyInAnyOrder(5, 1, 2, 4, 3);
+
+        // should fail because is contains not exactly the same elements in any order
+        AssertArray(new int[] { 1, 2, 6, 4, 5 }, FAIL)
+            .ContainsExactlyInAnyOrder(5, 3, 2, 4, 1, 9, 10)
+            .HasFailureMessage("Expecting contains exactly elements:\n"
+                            + " 1, 2, 6, 4, 5\n"
+                            + " do contains exactly (in any order)\n"
+                            + " 5, 3, 2, 4, 1, 9, 10\n"
+                            + "but some elements where not expected:\n"
+                            + " 6\n"
+                            + "and could not find elements:\n"
+                            + " 3, 9, 10");
+
+        //should fail because is contains the same elements but in a different order
+        AssertArray(new int[] { 1, 2, 6, 9, 10, 4, 5 }, FAIL)
+            .ContainsExactlyInAnyOrder(5, 3, 2, 4, 1)
+            .HasFailureMessage("Expecting contains exactly elements:\n"
+                            + " 1, 2, 6, 9, 10, 4, 5\n"
+                            + " do contains exactly (in any order)\n"
+                            + " 5, 3, 2, 4, 1\n"
+                            + "but some elements where not expected:\n"
+                            + " 6, 9, 10\n"
+                            + "and could not find elements:\n"
+                            + " 3");
     }
 
     [TestCase]
@@ -242,7 +521,7 @@ public class ArrayAssertTest : TestSuite
             .ContainsExactly(new object[] { null, "n.a.", null, null });
     }
 
-    class TestObj
+    class TestObj : Godot.Reference
     {
         string _name;
         object _value;
@@ -321,13 +600,21 @@ public class ArrayAssertTest : TestSuite
 
         AssertArray(new object[] { obj_a, obj_b, obj_c, obj_x, obj_y })
             .Extract("GetValue.GetName")
-            .ContainsExactly(new object[]{
+            .ContainsExactly(
                 "root_a",
                 "root_a",
                 "root_a",
                 "root_b",
                 "root_b"
-            });
+            );
+    }
+
+    [TestCase]
+    public void Extract_InvalidMethod()
+    {
+        AssertArray(new object[] { "abc" })
+            .Extract("NotExistMethod")
+            .ContainsExactly("n.a.");
     }
 
     [TestCase]
