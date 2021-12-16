@@ -1,4 +1,6 @@
 using System.Diagnostics;
+using System.Collections;
+using System.Linq;
 
 using static GdUnit3.Assertions;
 
@@ -7,14 +9,14 @@ namespace GdUnit3
     public abstract class AssertBase<V> : IAssertBase<V>
     {
         protected readonly Godot.Reference _delegator;
-        protected readonly object _current;
+        protected object Current { get; private set; }
 
         private EXPECT _expectResult;
 
-        protected AssertBase(Godot.Reference delegator, object current = null, EXPECT expectResult = EXPECT.SUCCESS)
+        protected AssertBase(Godot.Reference delegator, object current, EXPECT expectResult = EXPECT.SUCCESS)
         {
             _delegator = delegator;
-            _current = current;
+            Current = current;
             _expectResult = expectResult;
             StackFrame CallStack = new StackFrame(3, true);
             _delegator.Call("set_line_number", CallStack.GetFileLineNumber());
@@ -22,12 +24,28 @@ namespace GdUnit3
 
         public IAssertBase<V> IsEqual(V expected)
         {
-            return CallDelegator("is_equal", expected);
+            var result = Comparable.IsEqual(Current, expected);
+            if (!result.Valid)
+            {
+                _delegator.Call("report_error", AssertFailures.ErrorEqual(Current, expected));
+                if (IsEnableInterruptOnFailure())
+                    throw new TestFailedException("TestCase interuppted by a failing assert.", 2);
+            }
+            _delegator.Call("report_success");
+            return this;
         }
 
         public IAssertBase<V> IsNotEqual(V expected)
         {
-            return CallDelegator("is_not_equal", expected);
+            var result = Comparable.IsEqual(Current, expected);
+            if (result.Valid)
+            {
+                _delegator.Call("report_error", AssertFailures.ErrorNotEqual(Current, expected));
+                if (IsEnableInterruptOnFailure())
+                    throw new TestFailedException("TestCase interuppted by a failing assert.", 2);
+            }
+            _delegator.Call("report_success");
+            return this;
         }
 
         public IAssertBase<V> IsNotNull()
@@ -78,6 +96,20 @@ namespace GdUnit3
         protected IAssertBase<V> CallDelegator(string methodName, params object[] args)
         {
             _delegator.Call(methodName, args);
+            InterruptOnFail();
+            return this;
+        }
+
+        protected IAssertBase<V> CallDelegator(string methodName, IEnumerable args)
+        {
+            _delegator.Call(methodName, new Godot.Collections.Array(args.Cast<object>().ToArray()));
+            InterruptOnFail();
+            return this;
+        }
+
+        protected IAssertBase<V> CallDelegator(string methodName, string value)
+        {
+            _delegator.Call(methodName, value);
             InterruptOnFail();
             return this;
         }

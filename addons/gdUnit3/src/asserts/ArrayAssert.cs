@@ -17,7 +17,7 @@ namespace GdUnit3
             Current = current?.Cast<object>() ?? Enumerable.Empty<object>();
         }
 
-        private IEnumerable<object> Current { get; set; }
+        private new IEnumerable<object> Current { get; set; }
 
         public IArrayAssert IsEqualIgnoringCase(IEnumerable expected)
         {

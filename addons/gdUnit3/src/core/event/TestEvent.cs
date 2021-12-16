@@ -8,7 +8,7 @@ namespace GdUnit3
     public class TestEvent : Godot.Reference
     {
 
-        enum TYPE
+        public enum TYPE
         {
             INIT,
             STOP,
@@ -31,6 +31,7 @@ namespace GdUnit3
 #nullable enable
         private TestEvent(TYPE type, string resourcePath, string suiteName, string testName, int totalCount = 0, IDictionary? statistics = null, IEnumerable<TestReport>? reports = null)
         {
+            Type = type;
             _data.Add("type", type);
             _data.Add("resource_path", resourcePath);
             _data.Add("suite_name", suiteName);
@@ -92,6 +93,11 @@ namespace GdUnit3
         {
             return _data;
         }
+
+        public TestEvent.TYPE Type { get; private set; }
+        public string SuiteName() => _data["suite_name"] as string;
+        public string TestName() => _data["test_name"] as string;
+        public int TotalCount() => (int)_data["total_count"];
 
         public override string ToString()
         {

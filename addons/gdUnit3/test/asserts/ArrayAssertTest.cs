@@ -56,11 +56,21 @@ public class ArrayAssertTest : TestSuite
         AssertArray(new int[] { }).IsEqual(new int[] { });
         AssertArray(System.Array.Empty<int>()).IsEqual(System.Array.Empty<int>());
         AssertArray(new Godot.Collections.Array()).IsEqual(new Godot.Collections.Array());
-
         AssertArray(new int[] { 1, 2, 4, 5 }).IsEqual(new int[] { 1, 2, 4, 5 });
+        AssertArray(new Godot.Collections.Array(new int[] { 1, 2, 4, 5 })).IsEqual(new Godot.Collections.Array(new int[] { 1, 2, 4, 5 }));
 
-        AssertArray(new int[] { 1, 2, 4, 5 }, FAIL).IsEqual(new int[] { 1, 2, 3, 4, 2, 5 });
-        //.HasFailureMessage("Expecting:\n ");
+        AssertArray(new int[] { 1, 2, 4, 5 }, FAIL)
+            .IsEqual(new int[] { 1, 2, 3, 4, 2, 5 })
+            .HasFailureMessage("Expecting:\n"
+                + " [1, 2, 3, 4, 2, 5]\n"
+                + " but was\n"
+                + " [1, 2, 4, 5]");
+        AssertArray(new Godot.Collections.Array(new int[] { 1, 2, 4, 5 }), FAIL)
+            .IsEqual(new Godot.Collections.Array(new int[] { 1, 2, 3, 4, 2, 5 }))
+            .HasFailureMessage("Expecting:\n"
+                + " [1, 2, 3, 4, 2, 5]\n"
+                + " but was\n"
+                + " [1, 2, 4, 5]");
     }
 
     [TestCase]
@@ -504,20 +514,20 @@ public class ArrayAssertTest : TestSuite
     public void Extract()
     {
         // try to extract on base types
-        AssertArray(new object[] { 1, false, 3.14, null, Colors.AliceBlue }).Extract("get_class")
+        AssertArray(new object[] { 1, false, 3.14, null, Colors.AliceBlue }).Extract("GetClass")
             .ContainsExactly(new object[] { "n.a.", "n.a.", "n.a.", null, "n.a." });
         // extracting by a func without arguments
-        AssertArray(new object[] { new Reference(), 2, new AStar(), AutoFree(new Node()) }).Extract("get_class")
+        AssertArray(new object[] { new Reference(), 2, new AStar(), AutoFree(new Node()) }).Extract("GetClass")
             .ContainsExactly(new object[] { "Reference", "n.a.", "AStar", "Node" });
         // extracting by a func with arguments
-        AssertArray(new object[] { new Reference(), 2, new AStar(), AutoFree(new Node()) }).Extract("has_signal", new object[] { "tree_entered" })
+        AssertArray(new object[] { new Reference(), 2, new AStar(), AutoFree(new Node()) }).Extract("HasSignal", new object[] { "tree_entered" })
             .ContainsExactly(new object[] { false, "n.a.", false, true });
 
         // try extract on object via a func that not exists
-        AssertArray(new object[] { new Reference(), 2, new AStar(), AutoFree(new Node()) }).Extract("invalid_func")
+        AssertArray(new object[] { new Reference(), 2, new AStar(), AutoFree(new Node()) }).Extract("InvalidMethod")
             .ContainsExactly(new object[] { "n.a.", "n.a.", "n.a.", "n.a." });
         // try extract on object via a func that has no return value
-        AssertArray(new object[] { new Reference(), 2, new AStar(), AutoFree(new Node()) }).Extract("remove_meta", new object[] { "" })
+        AssertArray(new object[] { new Reference(), 2, new AStar(), AutoFree(new Node()) }).Extract("RemoveMeta", new object[] { "" })
             .ContainsExactly(new object[] { null, "n.a.", null, null });
     }
 

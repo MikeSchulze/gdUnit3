@@ -18,10 +18,4 @@ public class ExampleTestSuiteA : TestSuite
     {
         AssertBool(true).IsEqual(false);
     }
-
-    [IgnoreUntil("This test is set to ignore")]
-    [TestCase]
-    public void Ignored()
-    {
-    }
 }

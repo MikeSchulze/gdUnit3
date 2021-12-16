@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace GdUnit3
 {
@@ -25,16 +26,16 @@ namespace GdUnit3
             if (value == null)
                 return null;
 
-            if (value is Godot.Object)
-            {
-                return _delegator.Call("extract_value", value);
-            }
+            // if (value is Godot.Object)
+            // {
+            //     return _delegator.Call("extract_value", value);
+            // }
 
             try
             {
                 foreach (var methodName in _methodNames)
                 {
-                    value = CallMethod(value, methodName);
+                    value = Extract(value, methodName);
                     if (value == null || value.Equals("n.a."))
                         return value;
                 }
@@ -42,21 +43,28 @@ namespace GdUnit3
             }
             catch (Exception e)
             {
-                Godot.GD.PushError(e.Message);
+                Godot.GD.PrintErr(e.Message, value, _methodNames);
                 return "n.a.";
             }
         }
 
-        private object CallMethod(object value, string methodName)
+        private object Extract(object instance, string name)
         {
-            var method = value.GetType().GetMethod(methodName);
-            if (method == null)
+            var type = instance.GetType();
+            var method = type.GetMethod(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            if (method != null)
+            {
+                return method.Invoke(instance, _args.ToArray());
+            }
+            var property = type.GetProperty(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            if (property == null)
             {
                 //if GdUnitSettings.is_verbose_assert_warnings():
-                //    Godot.GD.PushWarning("Extracting value from element '%s' by func '%s' failed! Converting to \"n.a.\"" % [value, func_name])
+                //    Godot.GD.PushWarning("Extracting value from element '%s' by func '%s' failed! Converting to \"n.a.\"" % [instance, func_name])
                 return "n.a.";
             }
-            return method.Invoke(value, _args.ToArray());
+            return property.GetValue(instance);
+
         }
     }
 }

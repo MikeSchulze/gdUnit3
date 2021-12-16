@@ -7,7 +7,7 @@ namespace GdUnit3
         private static Godot.GDScript AssertImpl = Godot.GD.Load<Godot.GDScript>("res://addons/gdUnit3/src/asserts/GdUnitStringAssertImpl.gd");
 
         public StringAssert(object caller, object current, EXPECT expectResult)
-            : base((Godot.Reference)AssertImpl.New(caller, current, expectResult))
+            : base((Godot.Reference)AssertImpl.New(caller, current, expectResult), current)
         { }
 
         public IStringAssert Contains(string expected)
