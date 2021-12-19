@@ -41,7 +41,7 @@ public class StringAssertTest : TestSuite
         AssertString("This is a test message").IsEqual("This is a test message");
         AssertString("This is a test message", FAIL)
             .IsEqual("This is a test Message")
-            .HasFailureMessage("Expecting:\n 'This is a test Message'\n but was\n 'This is a test Mmessage'");
+            .HasFailureMessage("Expecting:\n 'This is a test Message'\n but was\n 'This is a test message'");
     }
 
     [TestCase]

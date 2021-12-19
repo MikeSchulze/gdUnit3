@@ -26,11 +26,7 @@ namespace GdUnit3
         {
             var result = Comparable.IsEqual(Current, expected);
             if (!result.Valid)
-            {
-                _delegator.Call("report_error", AssertFailures.ErrorEqual(Current, expected));
-                if (IsEnableInterruptOnFailure())
-                    throw new TestFailedException("TestCase interuppted by a failing assert.", 2);
-            }
+                return ReportTestFailure(AssertFailures.Equal(Current, expected), Current, expected);
             _delegator.Call("report_success");
             return this;
         }
@@ -39,23 +35,24 @@ namespace GdUnit3
         {
             var result = Comparable.IsEqual(Current, expected);
             if (result.Valid)
-            {
-                _delegator.Call("report_error", AssertFailures.ErrorNotEqual(Current, expected));
-                if (IsEnableInterruptOnFailure())
-                    throw new TestFailedException("TestCase interuppted by a failing assert.", 2);
-            }
+                return ReportTestFailure(AssertFailures.NotEqual(Current, expected), Current, expected);
+            _delegator.Call("report_success");
+            return this;
+        }
+        public IAssertBase<V> IsNull()
+        {
+            if (Current != null)
+                return ReportTestFailure(AssertFailures.IsNull(Current), Current, null);
             _delegator.Call("report_success");
             return this;
         }
 
         public IAssertBase<V> IsNotNull()
         {
-            return CallDelegator("is_not_null");
-        }
-
-        public IAssertBase<V> IsNull()
-        {
-            return CallDelegator("is_null");
+            if (Current == null)
+                return ReportTestFailure(AssertFailures.IsNotNull(Current), Current, null);
+            _delegator.Call("report_success");
+            return this;
         }
 
         public IAssert HasFailureMessage(string expected)
@@ -83,9 +80,7 @@ namespace GdUnit3
         private void InterruptOnFail()
         {
             if (!IsEnableInterruptOnFailure())
-            {
                 return;
-            }
             var isFailed = (bool)_delegator.Call("is_failed");
             if (isFailed)
             {
@@ -111,6 +106,14 @@ namespace GdUnit3
         {
             _delegator.Call(methodName, value);
             InterruptOnFail();
+            return this;
+        }
+
+        protected IAssertBase<V> ReportTestFailure(string message, object current, object expected)
+        {
+            _delegator.Call("report_error", message);
+            if (IsEnableInterruptOnFailure())
+                throw new TestFailedException("TestCase interuppted by a failing assert.", 3);
             return this;
         }
     }

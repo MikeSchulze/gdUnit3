@@ -1,5 +1,6 @@
-using Godot;
 using GdUnit3;
+
+using System.Collections.Generic;
 
 using static GdUnit3.Assertions;
 using static GdUnit3.Assertions.EXPECT;
@@ -17,65 +18,111 @@ public class ObjectAssertTest : TestSuite
 
     class CustomClass
     {
-        public class InnerClassA : Node { }
+        public class InnerClassA : Godot.Node { }
 
         public class InnerClassB : InnerClassA { }
 
-        public class InnerClassC : Node { }
+        public class InnerClassC : Godot.Node { }
+    }
+    class CustomClassB : CustomClass
+    {
     }
 
     [TestCase]
     public void IsEqual()
     {
-        AssertObject(new CubeMesh()).IsEqual(new CubeMesh());
+        AssertObject(new Godot.CubeMesh()).IsEqual(new Godot.CubeMesh());
+        AssertObject(new object()).IsEqual(new object());
+
         // should fail because the current is an CubeMesh and we expect equal to a Skin
-        AssertObject(new CubeMesh(), FAIL)
-            .IsEqual(new Skin());
+        AssertObject(new Godot.CubeMesh(), FAIL)
+            .IsEqual(new Godot.Skin())
+            .HasFailureMessage("Expecting:\n"
+                + " <Godot.Skin>\n"
+                + " but was\n"
+                + " <Godot.CubeMesh>");
+        AssertObject(new object(), FAIL)
+            .IsEqual(new List<int>())
+            .HasFailureMessage("Expecting:\n"
+                + " empty System.Collections.Generic.List<System.Int32>\n"
+                + " but was\n"
+                + " <System.Object>");
     }
 
     [TestCase]
     public void IsNotEqual()
     {
-        AssertObject(new CubeMesh()).IsNotEqual(new Skin());
+        AssertObject(new Godot.CubeMesh()).IsNotEqual(new Godot.Skin());
+        AssertObject(new object()).IsNotEqual(new List<object>());
         // should fail because the current is an CubeMesh and we expect not equal to a CubeMesh
-        AssertObject(new CubeMesh(), FAIL)
-            .IsNotEqual(new CubeMesh());
+        AssertObject(new Godot.CubeMesh(), FAIL)
+            .IsNotEqual(new Godot.CubeMesh())
+            .HasFailureMessage("Expecting:\n"
+                + " <Godot.CubeMesh>\n"
+                + " not equal to\n"
+                + " <Godot.CubeMesh>");
+        AssertObject(new object(), FAIL)
+            .IsNotEqual(new object())
+            .HasFailureMessage("Expecting:\n"
+                + " <System.Object>\n"
+                + " not equal to\n"
+                + " <System.Object>");
     }
 
     [TestCase]
     public void IsInstanceOf()
     {
         // engine class test
-        AssertObject(AutoFree(new Path())).IsInstanceOf<Node>();
-        AssertObject(AutoFree(new Camera())).IsInstanceOf<Camera>();
+        AssertObject(AutoFree(new Godot.Path())).IsInstanceOf<Godot.Node>();
+        AssertObject(AutoFree(new Godot.Camera())).IsInstanceOf<Godot.Camera>();
         // script class test
         // inner class test
-        AssertObject(AutoFree(new CustomClass.InnerClassA())).IsInstanceOf<Node>();
+        AssertObject(AutoFree(new CustomClass.InnerClassA())).IsInstanceOf<Godot.Node>();
         AssertObject(AutoFree(new CustomClass.InnerClassB())).IsInstanceOf<CustomClass.InnerClassA>();
+        // c# class
+        AssertObject(new object()).IsInstanceOf<object>();
+        AssertObject("").IsInstanceOf<object>();
+        AssertObject(new CustomClass()).IsInstanceOf<object>();
+        AssertObject(new CustomClassB()).IsInstanceOf<object>();
+        AssertObject(new CustomClassB()).IsInstanceOf<CustomClass>();
 
         // should fail because the current is not a instance of `Tree`
-        AssertObject(AutoFree(new Path()), FAIL)
-            .IsInstanceOf<Tree>()
-            .HasFailureMessage("Expected instance of:\n 'Godot.Tree'\n But it was 'Godot.Path'");
+        AssertObject(AutoFree(new Godot.Path()), FAIL)
+            .IsInstanceOf<Godot.Tree>()
+            .HasFailureMessage("Expected instance of:\n"
+                + " <Godot.Tree>\n"
+                + " But it was <Godot.Path>");
         AssertObject(null, FAIL)
-            .IsInstanceOf<Tree>()
-            .HasFailureMessage("Expected instance of:\n 'Godot.Tree'\n But it was 'Null'");
+            .IsInstanceOf<Godot.Tree>()
+            .HasFailureMessage("Expected instance of:\n"
+                + " <Godot.Tree>\n"
+                + " But it was 'Null'");
+        AssertObject(new CustomClass(), FAIL)
+            .IsInstanceOf<CustomClassB>()
+            .HasFailureMessage("Expected instance of:\n"
+                + " <ObjectAssertTest+CustomClassB>\n"
+                + " But it was <ObjectAssertTest+CustomClass>");
     }
 
     [TestCase]
     public void IsNotInstanceOf()
     {
-        AssertObject(null).IsNotInstanceOf<Node>();
+        AssertObject(null).IsNotInstanceOf<Godot.Node>();
         // engine class test
-        AssertObject(AutoFree(new Path())).IsNotInstanceOf<Tree>();
+        AssertObject(AutoFree(new Godot.Path())).IsNotInstanceOf<Godot.Tree>();
         // inner class test
-        AssertObject(AutoFree(new CustomClass.InnerClassA())).IsNotInstanceOf<Tree>();
+        AssertObject(AutoFree(new CustomClass.InnerClassA())).IsNotInstanceOf<Godot.Tree>();
         AssertObject(AutoFree(new CustomClass.InnerClassB())).IsNotInstanceOf<CustomClass.InnerClassC>();
+        // c# class
+        AssertObject(new CustomClass()).IsNotInstanceOf<CustomClassB>();
 
         // should fail because the current is not a instance of `Tree`
-        AssertObject(AutoFree(new Path()), FAIL)
-            .IsNotInstanceOf<Node>()
-            .HasFailureMessage("Expected not be a instance of <Godot.Node>");
+        AssertObject(AutoFree(new Godot.Path()), FAIL)
+            .IsNotInstanceOf<Godot.Node>()
+            .HasFailureMessage("Expecting: not be a instance of <Godot.Node>");
+        AssertObject(AutoFree(new CustomClassB()), FAIL)
+            .IsNotInstanceOf<CustomClass>()
+            .HasFailureMessage("Expecting: not be a instance of <ObjectAssertTest+CustomClass>");
     }
 
     [TestCase]
@@ -83,15 +130,19 @@ public class ObjectAssertTest : TestSuite
     {
         AssertObject(null).IsNull();
         // should fail because the current is not null
-        AssertObject(AutoFree(new Node()), FAIL)
+        AssertObject(AutoFree(new Godot.Node()), FAIL)
             .IsNull()
-            .StartsWithFailureMessage("Expecting: 'Null' but was <Node>");
+            .StartsWithFailureMessage("Expecting: 'Null' but was <Godot.Node>");
+        AssertObject(AutoFree(new object()), FAIL)
+            .IsNull()
+            .StartsWithFailureMessage("Expecting: 'Null' but was <System.Object>");
     }
 
     [TestCase]
     public void IsNotNull()
     {
-        AssertObject(AutoFree(new Node())).IsNotNull();
+        AssertObject(AutoFree(new Godot.Node())).IsNotNull();
+        AssertObject(new object()).IsNotNull();
         // should fail because the current is null
         AssertObject(null, FAIL)
             .IsNotNull()
@@ -101,22 +152,48 @@ public class ObjectAssertTest : TestSuite
     [TestCase]
     public void IsSame()
     {
-        var obj1 = AutoFree(new Node());
+        var obj1 = AutoFree(new Godot.Node());
         var obj2 = obj1;
         var obj3 = AutoFree(obj1.Duplicate());
         AssertObject(obj1).IsSame(obj1);
         AssertObject(obj1).IsSame(obj2);
         AssertObject(obj2).IsSame(obj1);
-        AssertObject(null, FAIL).IsSame(obj1);
-        AssertObject(obj1, FAIL).IsSame(obj3);
-        AssertObject(obj3, FAIL).IsSame(obj1);
-        AssertObject(obj3, FAIL).IsSame(obj2);
+        var o1 = new object();
+        var o2 = o1;
+        AssertObject(o1).IsSame(o1);
+        AssertObject(o1).IsSame(o2);
+        AssertObject(o2).IsSame(o1);
+
+        AssertObject(null, FAIL)
+            .IsSame(obj1)
+            .HasFailureMessage("Expecting:\n"
+                + " <Godot.Node>\n"
+                + " to refer to the same object\n"
+                + " 'Null'");
+        AssertObject(obj1, FAIL)
+            .IsSame(obj3)
+            .HasFailureMessage("Expecting:\n"
+                + " <Godot.Node>\n"
+                + " to refer to the same object\n"
+                + " <Godot.Node>");
+        AssertObject(obj3, FAIL)
+            .IsSame(obj1)
+            .HasFailureMessage("Expecting:\n"
+                + " <Godot.Node>\n"
+                + " to refer to the same object\n"
+                + " <Godot.Node>");
+        AssertObject(obj3, FAIL)
+            .IsSame(obj2)
+            .HasFailureMessage("Expecting:\n"
+                + " <Godot.Node>\n"
+                + " to refer to the same object\n"
+                + " <Godot.Node>");
     }
 
     [TestCase]
     public void IsNotSame()
     {
-        var obj1 = AutoFree(new Node());
+        var obj1 = AutoFree(new Godot.Node());
         var obj2 = obj1;
         var obj3 = AutoFree(obj1.Duplicate());
         AssertObject(null).IsNotSame(obj1);
@@ -124,24 +201,35 @@ public class ObjectAssertTest : TestSuite
         AssertObject(obj3).IsNotSame(obj1);
         AssertObject(obj3).IsNotSame(obj2);
 
-        AssertObject(obj1, FAIL).IsNotSame(obj1);
-        AssertObject(obj1, FAIL).IsNotSame(obj2);
-        AssertObject(obj2, FAIL).IsNotSame(obj1);
+        var o1 = new object();
+        var o2 = new object();
+        AssertObject(null).IsNotSame(o1);
+        AssertObject(o1).IsNotSame(o2);
+        AssertObject(o2).IsNotSame(o1);
+
+        AssertObject(obj1, FAIL)
+            .IsNotSame(obj1)
+            .HasFailureMessage("Expecting not same: <Godot.Node>");
+        AssertObject(obj1, FAIL)
+            .IsNotSame(obj2)
+            .HasFailureMessage("Expecting not same: <Godot.Node>");
+        AssertObject(obj2, FAIL)
+            .IsNotSame(obj1)
+            .HasFailureMessage("Expecting not same: <Godot.Node>");
     }
 
     [TestCase]
-    public void MustFail_hasInvlalidType()
+    public void MustFail_IsPrimitive()
     {
-        AssertObject(1, FAIL).HasFailureMessage("GdUnitObjectAssert inital error, unexpected type <int>");
-        AssertObject(1.3, FAIL).HasFailureMessage("GdUnitObjectAssert inital error, unexpected type <float>");
-        AssertObject(true, FAIL).HasFailureMessage("GdUnitObjectAssert inital error, unexpected type <bool>");
-        AssertObject("foo", FAIL).HasFailureMessage("GdUnitObjectAssert inital error, unexpected type <String>");
+        AssertObject(1, FAIL).HasFailureMessage("ObjectAssert inital error: current is primitive <System.Int32>");
+        AssertObject(1.3, FAIL).HasFailureMessage("ObjectAssert inital error: current is primitive <System.Double>");
+        AssertObject(true, FAIL).HasFailureMessage("ObjectAssert inital error: current is primitive <System.Boolean>");
     }
 
     [TestCase]
     public void OverrideFailureMessage()
     {
-        AssertObject(AutoFree(new Node()), FAIL)
+        AssertObject(AutoFree(new Godot.Node()), FAIL)
             .OverrideFailureMessage("Custom failure message")
             .IsNull()
             .HasFailureMessage("Custom failure message");

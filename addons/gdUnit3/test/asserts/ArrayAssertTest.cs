@@ -62,15 +62,15 @@ public class ArrayAssertTest : TestSuite
         AssertArray(new int[] { 1, 2, 4, 5 }, FAIL)
             .IsEqual(new int[] { 1, 2, 3, 4, 2, 5 })
             .HasFailureMessage("Expecting:\n"
-                + " [1, 2, 3, 4, 2, 5]\n"
+                + " System.Int32[] [1, 2, 3, 4, 2, 5]\n"
                 + " but was\n"
-                + " [1, 2, 4, 5]");
+                + " System.Int32[] [1, 2, 4, 5]");
         AssertArray(new Godot.Collections.Array(new int[] { 1, 2, 4, 5 }), FAIL)
             .IsEqual(new Godot.Collections.Array(new int[] { 1, 2, 3, 4, 2, 5 }))
             .HasFailureMessage("Expecting:\n"
-                + " [1, 2, 3, 4, 2, 5]\n"
+                + " Godot.Collections.Array [1, 2, 3, 4, 2, 5]\n"
                 + " but was\n"
-                + " [1, 2, 4, 5]");
+                + " Godot.Collections.Array [1, 2, 4, 5]");
     }
 
     [TestCase]
