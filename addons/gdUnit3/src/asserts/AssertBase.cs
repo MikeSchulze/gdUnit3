@@ -9,16 +9,20 @@ namespace GdUnit3
     public abstract class AssertBase<V> : IAssertBase<V>
     {
         protected readonly Godot.Reference _delegator;
-        protected object Current { get; private set; }
+        protected V Current { get; private set; }
+
+        private object CustomFailureMessage { get; set; }
 
         private EXPECT _expectResult;
 
-        protected AssertBase(Godot.Reference delegator, object current, EXPECT expectResult = EXPECT.SUCCESS)
+        protected int _failureGrapStackLine = 3;
+
+        protected AssertBase(Godot.Reference delegator, V current, EXPECT expectResult = EXPECT.SUCCESS)
         {
             _delegator = delegator;
             Current = current;
             _expectResult = expectResult;
-            StackFrame CallStack = new StackFrame(3, true);
+            StackFrame CallStack = new StackFrame(_failureGrapStackLine, true);
             _delegator.Call("set_line_number", CallStack.GetFileLineNumber());
         }
 
@@ -27,7 +31,6 @@ namespace GdUnit3
             var result = Comparable.IsEqual(Current, expected);
             if (!result.Valid)
                 return ReportTestFailure(AssertFailures.Equal(Current, expected), Current, expected);
-            _delegator.Call("report_success");
             return this;
         }
 
@@ -36,14 +39,12 @@ namespace GdUnit3
             var result = Comparable.IsEqual(Current, expected);
             if (result.Valid)
                 return ReportTestFailure(AssertFailures.NotEqual(Current, expected), Current, expected);
-            _delegator.Call("report_success");
             return this;
         }
         public IAssertBase<V> IsNull()
         {
             if (Current != null)
                 return ReportTestFailure(AssertFailures.IsNull(Current), Current, null);
-            _delegator.Call("report_success");
             return this;
         }
 
@@ -51,7 +52,6 @@ namespace GdUnit3
         {
             if (Current == null)
                 return ReportTestFailure(AssertFailures.IsNotNull(Current), Current, null);
-            _delegator.Call("report_success");
             return this;
         }
 
@@ -63,7 +63,7 @@ namespace GdUnit3
 
         public IAssert OverrideFailureMessage(string message)
         {
-            _delegator.Call("override_failure_message", message);
+            CustomFailureMessage = message;
             return this;
         }
 
@@ -111,9 +111,10 @@ namespace GdUnit3
 
         protected IAssertBase<V> ReportTestFailure(string message, object current, object expected)
         {
-            _delegator.Call("report_error", message);
+            var failureMessage = CustomFailureMessage ?? message;
+            _delegator.Call("report_error", failureMessage);
             if (IsEnableInterruptOnFailure())
-                throw new TestFailedException("TestCase interuppted by a failing assert.", 3);
+                throw new TestFailedException("TestCase interuppted by a failing assert.", _failureGrapStackLine);
             return this;
         }
     }

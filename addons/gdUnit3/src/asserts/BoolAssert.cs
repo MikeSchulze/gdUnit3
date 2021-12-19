@@ -6,19 +6,21 @@ namespace GdUnit3
     {
         private static Godot.GDScript GdUnitBoolAssertImpl = Godot.GD.Load<Godot.GDScript>("res://addons/gdUnit3/src/asserts/GdUnitBoolAssertImpl.gd");
 
-        public BoolAssert(object caller, object current, EXPECT expectResult)
+        public BoolAssert(object caller, bool current, EXPECT expectResult)
             : base((Godot.Reference)GdUnitBoolAssertImpl.New(caller, current, expectResult), current)
         { }
 
         public IBoolAssert IsFalse()
         {
-            CallDelegator("is_false");
+            if (true.Equals(Current))
+                return ReportTestFailure(AssertFailures.IsFalse(), Current, false) as IBoolAssert;
             return this;
         }
 
         public IBoolAssert IsTrue()
         {
-            CallDelegator("is_true");
+            if (!true.Equals(Current))
+                return ReportTestFailure(AssertFailures.IsTrue(), Current, true) as IBoolAssert;
             return this;
         }
 

@@ -51,51 +51,92 @@ public class IntAssertTest : TestSuite
     [TestCase]
     public void IsLess()
     {
+        AssertInt(-23).IsLess(-22);
         AssertInt(23).IsLess(42);
         AssertInt(23).IsLess(24);
         // this assertion fails because 23 is not less than 23
         AssertInt(23, FAIL)
             .IsLess(23)
             .HasFailureMessage("Expecting to be less than:\n '23' but was '23'");
+        AssertInt(23, FAIL)
+            .IsLess(22)
+            .HasFailureMessage("Expecting to be less than:\n '22' but was '23'");
+        AssertInt(-23, FAIL)
+            .IsLess(-23)
+            .HasFailureMessage("Expecting to be less than:\n '-23' but was '-23'");
+        AssertInt(-23, FAIL)
+            .IsLess(-24)
+            .HasFailureMessage("Expecting to be less than:\n '-24' but was '-23'");
     }
 
     [TestCase]
     public void IsLessEqual()
     {
-        AssertInt(23).IsLessEqual(42);
+        AssertInt(-23).IsLessEqual(-22);
+        AssertInt(-23).IsLessEqual(-23);
+        AssertInt(0).IsLessEqual(0);
         AssertInt(23).IsLessEqual(23);
+        AssertInt(23).IsLessEqual(42);
         // this assertion fails because 23 is not less than or equal to 22
         AssertInt(23, FAIL)
             .IsLessEqual(22)
             .HasFailureMessage("Expecting to be less than or equal:\n '22' but was '23'");
+        AssertInt(-23, FAIL)
+            .IsLessEqual(-24)
+            .HasFailureMessage("Expecting to be less than or equal:\n '-24' but was '-23'");
     }
 
     [TestCase]
     public void IsGreater()
     {
+        AssertInt(-23).IsGreater(-24);
+        AssertInt(1).IsGreater(0);
         AssertInt(23).IsGreater(20);
         AssertInt(23).IsGreater(22);
         // this assertion fails because 23 is not greater than 23
         AssertInt(23, FAIL)
             .IsGreater(23)
             .HasFailureMessage("Expecting to be greater than:\n '23' but was '23'");
+        AssertInt(23, FAIL)
+            .IsGreater(24)
+            .HasFailureMessage("Expecting to be greater than:\n '24' but was '23'");
+        AssertInt(-23, FAIL)
+            .IsGreater(-23)
+            .HasFailureMessage("Expecting to be greater than:\n '-23' but was '-23'");
+        AssertInt(-23, FAIL)
+            .IsGreater(-22)
+            .HasFailureMessage("Expecting to be greater than:\n '-22' but was '-23'");
     }
 
     [TestCase]
     public void IsGreaterEqual()
     {
+        AssertInt(-23).IsGreaterEqual(-24);
+        AssertInt(-23).IsGreaterEqual(-23);
+        AssertInt(0).IsGreaterEqual(0);
         AssertInt(23).IsGreaterEqual(20);
         AssertInt(23).IsGreaterEqual(23);
         // this assertion fails because 23 is not greater than 23
         AssertInt(23, FAIL)
             .IsGreaterEqual(24)
             .HasFailureMessage("Expecting to be greater than or equal:\n '24' but was '23'");
+        AssertInt(-23, FAIL)
+            .IsGreaterEqual(-22)
+            .HasFailureMessage("Expecting to be greater than or equal:\n '-22' but was '-23'");
     }
 
     [TestCase]
     public void IsEven()
     {
-        AssertInt(12).IsEven();
+        AssertInt(-200).IsEven();
+        AssertInt(-22).IsEven();
+        AssertInt(0).IsEven();
+        AssertInt(22).IsEven();
+        AssertInt(200).IsEven();
+
+        AssertInt(-13, FAIL)
+            .IsEven()
+            .HasFailureMessage("Expecting:\n '-13' must be even");
         AssertInt(13, FAIL)
             .IsEven()
             .HasFailureMessage("Expecting:\n '13' must be even");
@@ -104,7 +145,14 @@ public class IntAssertTest : TestSuite
     [TestCase]
     public void IsOdd()
     {
+        AssertInt(-13).IsOdd();
         AssertInt(13).IsOdd();
+        AssertInt(-12, FAIL)
+            .IsOdd()
+            .HasFailureMessage("Expecting:\n '-12' must be odd");
+        AssertInt(0, FAIL)
+            .IsOdd()
+            .HasFailureMessage("Expecting:\n '0' must be odd");
         AssertInt(12, FAIL)
             .IsOdd()
             .HasFailureMessage("Expecting:\n '12' must be odd");
@@ -113,7 +161,11 @@ public class IntAssertTest : TestSuite
     [TestCase]
     public void IsNegative()
     {
-        AssertInt(-13).IsNegative();
+        AssertInt(-1).IsNegative();
+        AssertInt(-23).IsNegative();
+        AssertInt(0, FAIL)
+            .IsNegative()
+            .HasFailureMessage("Expecting:\n '0' be negative");
         AssertInt(13, FAIL)
             .IsNegative()
             .HasFailureMessage("Expecting:\n '13' be negative");
@@ -122,7 +174,11 @@ public class IntAssertTest : TestSuite
     [TestCase]
     public void IsNotNegative()
     {
+        AssertInt(0).IsNotNegative();
         AssertInt(13).IsNotNegative();
+        AssertInt(-1, FAIL)
+            .IsNotNegative()
+            .HasFailureMessage("Expecting:\n '-1' be not negative");
         AssertInt(-13, FAIL)
             .IsNotNegative()
             .HasFailureMessage("Expecting:\n '-13' be not negative");
@@ -133,19 +189,23 @@ public class IntAssertTest : TestSuite
     {
         AssertInt(0).IsZero();
         // this assertion fail because the value is not zero
+        AssertInt(-1, FAIL)
+            .IsZero()
+            .HasFailureMessage("Expecting:\n zero but is '-1'");
         AssertInt(1, FAIL)
             .IsZero()
-            .HasFailureMessage("Expecting:\n equal to 0 but is '1'");
+            .HasFailureMessage("Expecting:\n zero but is '1'");
     }
 
     [TestCase]
     public void IsNotZero()
     {
+        AssertInt(-1).IsNotZero();
         AssertInt(1).IsNotZero();
         // this assertion fail because the value is not zero
         AssertInt(0, FAIL)
             .IsNotZero()
-            .HasFailureMessage("Expecting:\n not equal to 0");
+            .HasFailureMessage("Expecting:\n not zero");
     }
 
     [TestCase]
@@ -155,25 +215,35 @@ public class IntAssertTest : TestSuite
         // this assertion fail because 7 is not in [3, 4, 5, 6]
         AssertInt(7, FAIL)
             .IsIn(new int[] { 3, 4, 5, 6 })
-            .HasFailureMessage("Expecting:\n '7'\n is in\n '[3, 4, 5, 6]'");
+            .HasFailureMessage("Expecting:\n"
+                + " '7'\n"
+                + " is in\n"
+                + " System.Int32[] [3, 4, 5, 6]");
+        AssertInt(7, FAIL)
+            .IsIn(new int[] { })
+            .HasFailureMessage("Expecting:\n"
+                + " '7'\n"
+                + " is in\n"
+                + " empty System.Int32[]");
     }
 
     [TestCase]
     public void IsNotIn()
     {
+        AssertInt(5).IsNotIn(new int[] { });
         AssertInt(5).IsNotIn(new int[] { 3, 4, 6, 7 });
         // this assertion fail because 7 is not in [3, 4, 5, 6]
         AssertInt(5, FAIL)
             .IsNotIn(new int[] { 3, 4, 5, 6 })
-            .HasFailureMessage("Expecting:\n '5'\n is not in\n '[3, 4, 5, 6]'");
+            .HasFailureMessage("Expecting:\n"
+                + " '5'\n"
+                + " is not in\n"
+                + " System.Int32[] [3, 4, 5, 6]");
     }
 
-    //[Theory]
-    //[Fuzzer(name = "rangei", from = -20, to = 20)]
-    [TestCase(timeout = 1000)]
-    public void IsBetween()
+    [TestCase(iterations = 40)]
+    public void IsBetween([Fuzzer(-20)] int value)
     {
-        int value = 10;
         AssertInt(value).IsBetween(-20, 20);
     }
 

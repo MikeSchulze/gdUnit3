@@ -20,7 +20,6 @@ namespace GdUnit3
         {
             if (Current is ExpectedType)
                 return ReportTestFailure(AssertFailures.NotInstanceOf(typeof(ExpectedType)), Current, typeof(ExpectedType)) as IObjectAssert;
-            _delegator.Call("report_success");
             return this;
         }
 
@@ -28,7 +27,6 @@ namespace GdUnit3
         {
             if (Current == expected)
                 return ReportTestFailure(AssertFailures.IsNotSame(expected), Current, expected) as IObjectAssert;
-            _delegator.Call("report_success");
             return this;
         }
 
@@ -36,7 +34,6 @@ namespace GdUnit3
         {
             if (Current != expected)
                 return ReportTestFailure(AssertFailures.IsSame(Current, expected), Current, expected) as IObjectAssert;
-            _delegator.Call("report_success");
             return this;
         }
 
@@ -44,7 +41,6 @@ namespace GdUnit3
         {
             if (!(Current is ExpectedType))
                 return ReportTestFailure(AssertFailures.IsInstanceOf(Current?.GetType() ?? null, typeof(ExpectedType)), Current, typeof(ExpectedType)) as IObjectAssert;
-            _delegator.Call("report_success");
             return this;
         }
 

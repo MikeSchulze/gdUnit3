@@ -1,87 +1,105 @@
 using System;
+using System.Diagnostics;
 
 namespace GdUnit3
 {
-    public class NumberAssert<V> : AssertBase<V>, INumberAssert<V>
+    public class NumberAssert<V> : AssertBase<V>, INumberAssert<V> where V : IComparable
     {
-        public NumberAssert(Godot.Reference delegator, object current) : base(delegator, current)
-        { }
+        public NumberAssert(Godot.Reference delegator, V current) : base(delegator, current)
+        {
+            _failureGrapStackLine = 4;
+            StackFrame CallStack = new StackFrame(3, true);
+            _delegator.Call("set_line_number", CallStack.GetFileLineNumber());
+        }
 
         public INumberAssert<V> IsBetween(V from, V to)
         {
-            CallDelegator("is_between", from, to);
+            if (from.CompareTo(Current) > 0 || Current.CompareTo(to) > 0)
+                return ReportTestFailure(AssertFailures.IsBetween(Current, from, to), Current, new V[] { from, to }) as INumberAssert<V>;
             return this;
         }
 
         public INumberAssert<V> IsEven()
         {
-            CallDelegator("is_even");
+            if (Convert.ToInt64(Current) % 2 != 0)
+                return ReportTestFailure(AssertFailures.IsEven(Current), Current, null) as INumberAssert<V>;
             return this;
         }
 
         public INumberAssert<V> IsGreater(V expected)
         {
-            CallDelegator("is_greater", expected);
+            if (Current.CompareTo(expected) <= 0)
+                return ReportTestFailure(AssertFailures.IsGreater(Current, expected), Current, expected) as INumberAssert<V>;
             return this;
         }
 
         public INumberAssert<V> IsGreaterEqual(V expected)
         {
-            CallDelegator("is_greater_equal", expected);
+            if (Current.CompareTo(expected) < 0)
+                return ReportTestFailure(AssertFailures.IsGreaterEqual(Current, expected), Current, expected) as INumberAssert<V>;
             return this;
         }
 
-        public INumberAssert<V> IsIn(Array expected)
+        public INumberAssert<V> IsIn(params V[] expected)
         {
-            CallDelegator("is_in", expected);
+            if (Array.IndexOf(expected, Current) == -1)
+                return ReportTestFailure(AssertFailures.IsIn(Current, expected), Current, expected) as INumberAssert<V>;
             return this;
         }
 
         public INumberAssert<V> IsLess(V expected)
         {
-            CallDelegator("is_less", expected);
+            if (Current.CompareTo(expected) >= 0)
+                return ReportTestFailure(AssertFailures.IsLess(Current, expected), Current, expected) as INumberAssert<V>;
             return this;
         }
 
         public INumberAssert<V> IsLessEqual(V expected)
         {
-            CallDelegator("is_less_equal", expected);
+            if (Current.CompareTo(expected) > 0)
+                return ReportTestFailure(AssertFailures.IsLessEqual(Current, expected), Current, expected) as INumberAssert<V>;
             return this;
         }
 
         public INumberAssert<V> IsNegative()
         {
-            CallDelegator("is_negative");
+            if (Current.CompareTo(0) >= 0)
+                return ReportTestFailure(AssertFailures.IsNegative(Current), Current, null) as INumberAssert<V>;
             return this;
         }
 
-        public INumberAssert<V> IsNotIn(Array expected)
+        public INumberAssert<V> IsNotIn(params V[] expected)
         {
-            CallDelegator("is_not_in", expected);
+            if (Array.IndexOf(expected, Current) != -1)
+                return ReportTestFailure(AssertFailures.IsNotIn(Current, expected), Current, expected) as INumberAssert<V>;
             return this;
         }
 
         public INumberAssert<V> IsNotNegative()
         {
-            CallDelegator("is_not_negative");
+            if (Current.CompareTo(0) < 0)
+                return ReportTestFailure(AssertFailures.IsNotNegative(Current), Current, null) as INumberAssert<V>;
             return this;
         }
 
         public INumberAssert<V> IsNotZero()
         {
-            CallDelegator("is_not_zero");
+            if (Convert.ToInt64(Current) == 0)
+                return ReportTestFailure(AssertFailures.IsNotZero(), Current, null) as INumberAssert<V>;
             return this;
         }
 
         public INumberAssert<V> IsOdd()
         {
-            CallDelegator("is_odd");
+            if (Convert.ToInt64(Current) % 2 == 0)
+                return ReportTestFailure(AssertFailures.IsOdd(Current), Current, null) as INumberAssert<V>;
             return this;
         }
 
         public INumberAssert<V> IsZero()
         {
-            CallDelegator("is_zero");
+            if (Convert.ToInt64(Current) != 0)
+                return ReportTestFailure(AssertFailures.IsZero(Current), Current, null) as INumberAssert<V>;
             return this;
         }
 

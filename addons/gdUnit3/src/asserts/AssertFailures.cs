@@ -72,6 +72,18 @@ namespace GdUnit3
         private static string FormatExpected(object value) => FormatValue(value, VALUE_COLOR, true);
         private static string FormatFailure(object value) => FormatValue(value, ERROR_COLOR, false);
 
+        public static string IsTrue() =>
+            string.Format("{0} {1} but is {2}",
+                FormatFailure("Expecting:"),
+                FormatExpected(true),
+                FormatCurrent(false));
+
+        public static string IsFalse() =>
+            string.Format("{0} {1} but is {2}",
+                FormatFailure("Expecting:"),
+                FormatExpected(false),
+                FormatCurrent(true));
+
         public static string Equal(object current, object expected) =>
             string.Format("{0}\n {1}\n but was\n {2}",
                 FormatFailure("Expecting:"),
@@ -115,6 +127,78 @@ namespace GdUnit3
         public static string IsNotSame(object expected) =>
             string.Format("{0} {1}",
                 FormatFailure("Expecting not same:"),
+                FormatExpected(expected));
+
+        public static string IsBetween(object current, object from, object to) =>
+            string.Format("{0}\n {1}\n in range between\n {2} <> {3}",
+                FormatFailure("Expecting:"),
+                FormatCurrent(current),
+                FormatExpected(from),
+                FormatExpected(to));
+
+        public static string IsEven(object current) =>
+            string.Format("{0}\n {1} must be even",
+                FormatFailure("Expecting:"),
+                FormatCurrent(current));
+
+        public static string IsOdd(object current) =>
+            string.Format("{0}\n {1} must be odd",
+                FormatFailure("Expecting:"),
+                FormatCurrent(current));
+
+        public static string IsGreater(object current, object expected) =>
+            string.Format("{0}\n {1} but was {2}",
+                FormatFailure("Expecting to be greater than:"),
+                FormatExpected(expected),
+                FormatCurrent(current));
+
+        public static string IsGreaterEqual(object current, object expected) =>
+            string.Format("{0}\n {1} but was {2}",
+                FormatFailure("Expecting to be greater than or equal:"),
+                FormatExpected(expected),
+                FormatCurrent(current));
+
+        public static string IsLess(object current, object expected) =>
+            string.Format("{0}\n {1} but was {2}",
+                FormatFailure("Expecting to be less than:"),
+                FormatExpected(expected),
+                FormatCurrent(current));
+
+        public static string IsLessEqual(object current, object expected) =>
+            string.Format("{0}\n {1} but was {2}",
+                FormatFailure("Expecting to be less than or equal:"),
+                FormatExpected(expected),
+                FormatCurrent(current));
+
+        public static string IsNegative(object current) =>
+            string.Format("{0}\n {1} be negative",
+                FormatFailure("Expecting:"),
+                FormatCurrent(current));
+
+        public static string IsNotNegative(object current) =>
+            string.Format("{0}\n {1} be not negative",
+                FormatFailure("Expecting:"),
+                FormatCurrent(current));
+
+        public static string IsNotZero() =>
+            string.Format("{0}\n not zero",
+                FormatFailure("Expecting:"));
+
+        public static string IsZero(object current) =>
+            string.Format("{0}\n zero but is {1}",
+                FormatFailure("Expecting:"),
+                FormatCurrent(current));
+
+        public static string IsIn(object current, object expected) =>
+            string.Format("{0}\n {1}\n is in\n {2}",
+                FormatFailure("Expecting:"),
+                FormatCurrent(current),
+                FormatExpected(expected));
+
+        public static string IsNotIn(object current, object expected) =>
+            string.Format("{0}\n {1}\n is not in\n {2}",
+                FormatFailure("Expecting:"),
+                FormatCurrent(current),
                 FormatExpected(expected));
     }
 }

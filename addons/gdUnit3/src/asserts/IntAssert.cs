@@ -1,3 +1,5 @@
+using System;
+
 using static GdUnit3.Assertions;
 
 namespace GdUnit3
@@ -6,7 +8,7 @@ namespace GdUnit3
     {
         private static Godot.GDScript AssertImpl = Godot.GD.Load<Godot.GDScript>("res://addons/gdUnit3/src/asserts/GdUnitIntAssertImpl.gd");
 
-        public IntAssert(object caller, object current, EXPECT expectResult)
+        public IntAssert(object caller, int current, EXPECT expectResult)
             : base((Godot.Reference)AssertImpl.New(caller, current, expectResult), current)
         { }
     }
