@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using System.Reflection;
 
 namespace GdUnit3
 {
@@ -21,21 +22,54 @@ namespace GdUnit3
 
         public void Execute(ExecutionContext context)
         {
-            // we always want to interrupt on first failure
-            Assertions.EnableInterruptOnFailure(true);
             BeforeStage.Execute(context);
             using (ExecutionContext currentContext = new ExecutionContext(context))
             {
                 currentContext.MemoryPool.SetActive(StageName());
                 currentContext.OrphanMonitor.Start(true);
-                while (!currentContext.IsSkipped() && currentContext.CurrentIteration != 0)
+
+                var testInstance = currentContext.TestInstance;
+                var testCase = currentContext.Test;
+                try
                 {
                     // save current test suite instance used by assertions to register report resolver
-                    Thread.SetData(Thread.GetNamedDataSlot("TestInstance"), currentContext.TestInstance);
-                    currentContext.Test.Execute(currentContext);
+                    Thread.SetData(Thread.GetNamedDataSlot("TestInstance"), testInstance);
+                    while (!currentContext.IsSkipped() && currentContext.CurrentIteration != 0)
+                    {
+                        testCase.MethodInfo.Invoke(testInstance, testCase.Arguments);
+                    }
                 }
-                currentContext.MemoryPool.ReleaseRegisteredObjects();
-                currentContext.OrphanMonitor.Stop();
+                catch (TargetInvocationException e)
+                {
+                    var baseException = e.GetBaseException();
+                    if (baseException is TestFailedException)
+                    {
+                        if (currentContext.FailureReporting)
+                        {
+                            var ex = baseException as TestFailedException;
+                            currentContext.ReportCollector.Consume(new TestReport(TestReport.TYPE.FAILURE, ex.LineNumber, ex.Message));
+                        }
+                    }
+                    else
+                    {
+                        // unexpected exceptions
+                        Godot.GD.PushError(baseException.Message);
+                        Godot.GD.PushError(baseException.StackTrace);
+                        currentContext.ReportCollector.Consume(new TestReport(TestReport.TYPE.ABORT, -1, baseException.Message));
+                    }
+                }
+                catch (Exception e)
+                {
+                    // unexpected exceptions
+                    Godot.GD.PushError(e.Message);
+                    Godot.GD.PushError(e.StackTrace);
+                    currentContext.ReportCollector.Consume(new TestReport(TestReport.TYPE.ABORT, -1, e.Message));
+                }
+                finally
+                {
+                    currentContext.MemoryPool.ReleaseRegisteredObjects();
+                    currentContext.OrphanMonitor.Stop();
+                }
             }
             AfterStage.Execute(context);
         }

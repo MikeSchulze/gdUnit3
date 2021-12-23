@@ -40,36 +40,36 @@ namespace GdUnit3
             return sb.ToString();
         }
 
-        private static string FormatValue(object value, string color, bool quoted, string delimiter = "\n")
+        private static string FormatValue(object value, string color, bool quoted, bool printType = true)
         {
             if (value == null)
                 return "'Null'";
 
             if (value is Type)
-                return string.Format("[color={0}]<{1}>[/color]", VALUE_COLOR, value);
+                return string.Format("[color={0}]<{1}>[/color]", color, value);
 
             Type type = value.GetType();
             if (type.IsArray || (value is IEnumerable && !(value is string)))
             {
                 var asArray = ((IEnumerable)value).Cast<object>()
-                             .Select(x => x.ToString())
+                             .Select(x => x?.ToString() ?? "'Null'")
                              .ToArray();
-                var className = SimpleClassName(type);
-                return asArray.Length == 0 ? "empty " + className : className + " [" + string.Join(", ", asArray) + "]";
+                var className = printType ? SimpleClassName(type) : "";
+                return asArray.Length == 0 ? "empty " + className : className + " [color=" + color + "][" + string.Join(", ", asArray) + "][/color]";
             }
 
             if (type.IsClass && !(value is string) || value is Type)
             {
-                return string.Format("[color={0}]<{1}>[/color]", VALUE_COLOR, SimpleClassName(type));
+                return string.Format("[color={0}]<{1}>[/color]", color, SimpleClassName(type));
             }
 
             var formatter = type != null && formatters.ContainsKey(type) ? formatters[type] : defaultFormatter;
             string pattern = quoted ? "'[color={0}]{1}[/color]'" : "[color={0}]{1}[/color]";
-            return string.Format(pattern, VALUE_COLOR, formatter(value));
+            return string.Format(pattern, color, formatter(value));
         }
 
-        private static string FormatCurrent(object value, string delimiter = "\n") => FormatValue(value, VALUE_COLOR, true);
-        private static string FormatExpected(object value) => FormatValue(value, VALUE_COLOR, true);
+        private static string FormatCurrent(object value, bool printType = true) => FormatValue(value, VALUE_COLOR, true, printType);
+        private static string FormatExpected(object value, bool printType = true) => FormatValue(value, VALUE_COLOR, true, printType);
         private static string FormatFailure(object value) => FormatValue(value, ERROR_COLOR, false);
 
         public static string IsTrue() =>
@@ -85,7 +85,13 @@ namespace GdUnit3
                 FormatCurrent(true));
 
         public static string Equal(object current, object expected) =>
-            string.Format("{0}\n {1}\n but was\n {2}",
+            string.Format("{0}\n {1}\n be equal to\n {2}",
+                FormatFailure("Expecting:"),
+                FormatExpected(expected),
+                FormatCurrent(current));
+
+        public static string IsEqualIgnoringCase(object current, object expected) =>
+            string.Format("{0}\n {1}\n be equal to (ignoring case)\n {2}",
                 FormatFailure("Expecting:"),
                 FormatExpected(expected),
                 FormatCurrent(current));
@@ -96,8 +102,14 @@ namespace GdUnit3
                 FormatExpected(expected),
                 FormatCurrent(current));
 
+        public static string IsNotEqualIgnoringCase(string current, string expected) =>
+            string.Format("{0}\n {1}\n not equal to (ignoring case)\n {2}",
+                FormatFailure("Expecting:"),
+                FormatExpected(expected),
+                FormatCurrent(current));
+
         public static string IsNull(object current) =>
-            string.Format("{0} {1} but was {2}",
+            string.Format("{0} {1} but is {2}",
                 FormatFailure("Expecting:"),
                 FormatExpected(null),
                 FormatCurrent(current));
@@ -107,13 +119,27 @@ namespace GdUnit3
                 FormatFailure("Expecting: not to be"),
                 FormatCurrent(current));
 
+        public static string IsEmpty(object current) =>
+            string.Format("{0}\n but has size {1}",
+                FormatFailure("Expecting be empty:"),
+                FormatCurrent(current));
+
+        public static string IsEmpty(string current) =>
+            string.Format("{0}\n but is\n {1}",
+                FormatFailure("Expecting be empty:"),
+                FormatCurrent(current));
+
+        public static string IsNotEmpty() =>
+            string.Format("{0}\n but is empty",
+                FormatFailure("Expecting not being empty:"));
+
         public static string NotInstanceOf(Type expected) =>
             string.Format("{0} {1}",
                 FormatFailure("Expecting: not be a instance of"),
                 FormatExpected(expected));
 
         public static string IsInstanceOf(Type current, Type expected) =>
-            string.Format("{0}\n {1}\n But it was {2}",
+            string.Format("{0}\n {1}\n but is {2}",
                 FormatFailure("Expected instance of:"),
                 FormatExpected(expected),
                 FormatCurrent(current));
@@ -146,26 +172,32 @@ namespace GdUnit3
                 FormatFailure("Expecting:"),
                 FormatCurrent(current));
 
+        public static string HasSize(object current, object expected) =>
+            string.Format("{0}\n {1} but is {2}",
+                FormatFailure("Expecting size:"),
+                FormatExpected(expected),
+                FormatCurrent(current));
+
         public static string IsGreater(object current, object expected) =>
-            string.Format("{0}\n {1} but was {2}",
+            string.Format("{0}\n {1} but is {2}",
                 FormatFailure("Expecting to be greater than:"),
                 FormatExpected(expected),
                 FormatCurrent(current));
 
         public static string IsGreaterEqual(object current, object expected) =>
-            string.Format("{0}\n {1} but was {2}",
+            string.Format("{0}\n {1} but is {2}",
                 FormatFailure("Expecting to be greater than or equal:"),
                 FormatExpected(expected),
                 FormatCurrent(current));
 
         public static string IsLess(object current, object expected) =>
-            string.Format("{0}\n {1} but was {2}",
+            string.Format("{0}\n {1} but is {2}",
                 FormatFailure("Expecting to be less than:"),
                 FormatExpected(expected),
                 FormatCurrent(current));
 
         public static string IsLessEqual(object current, object expected) =>
-            string.Format("{0}\n {1} but was {2}",
+            string.Format("{0}\n {1} but is {2}",
                 FormatFailure("Expecting to be less than or equal:"),
                 FormatExpected(expected),
                 FormatCurrent(current));
@@ -200,5 +232,140 @@ namespace GdUnit3
                 FormatFailure("Expecting:"),
                 FormatCurrent(current),
                 FormatExpected(expected));
+
+        public static string Contains(IEnumerable<object> current, IEnumerable<object> expected, List<object> notFound) =>
+            string.Format("{0}\n {1}\n do contains (in any order)\n {2}\n but could not find elements:\n {3}",
+                FormatFailure("Expecting contains elements:"),
+                FormatCurrent(current, false),
+                FormatExpected(expected, false),
+                FormatExpected(notFound, false));
+
+        public static string ContainsExactly(IEnumerable<object> current, IEnumerable<object> expected, List<object> notFound, List<object> notExpected)
+        {
+            if (notExpected.Count == 0 && notFound.Count == 0)
+                return string.Format("{0}\n {1}\n do contains (in same order)\n {2}\n but has different order {3}",
+                    FormatFailure("Expecting contains exactly elements:"),
+                    FormatCurrent(current, false),
+                    FormatExpected(expected, false),
+                    FindFirstDiff(current, expected));
+
+            var message = string.Format("{0}\n {1}\n do contains (in same order)\n {2}",
+                FormatFailure("Expecting contains exactly elements:"),
+                FormatCurrent(current, false),
+                FormatExpected(expected, false));
+            if (notExpected.Count > 0)
+                message += "\n but some elements where not expected:\n " + FormatExpected(notExpected, false);
+            if (notFound.Count > 0)
+                message += string.Format("\n {0} could not find elements:\n {1}", notExpected.Count == 0 ? "but" : "and", FormatExpected(notFound, false));
+            return message;
+        }
+
+        public static string ContainsExactlyInAnyOrder(IEnumerable<object> current, IEnumerable<object> expected, List<object> notFound, List<object> notExpected)
+        {
+            if (notExpected.Count == 0 && notFound.Count == 0)
+                return string.Format("{0}\n {1}\n do contains (in any order)\n {2}\n but has different order {3}",
+                    FormatFailure("Expecting contains exactly elements:"),
+                    FormatCurrent(current, false),
+                    FormatExpected(expected, false),
+                    FindFirstDiff(current, expected));
+
+            var message = string.Format("{0}\n {1}\n do contains (in any order)\n {2}",
+                FormatFailure("Expecting contains exactly elements:"),
+                FormatCurrent(current, false),
+                FormatExpected(expected, false));
+            if (notExpected.Count > 0)
+                message += "\n but some elements where not expected:\n " + FormatExpected(notExpected, false);
+            if (notFound.Count > 0)
+                message += string.Format("\n {0} could not find elements:\n {1}", notExpected.Count == 0 ? "but" : "and", FormatExpected(notFound, false));
+            return message;
+        }
+
+        public static string NotContains(string current, string expected) =>
+            string.Format("{0}\n {1}\n do not contain\n {2}",
+                FormatFailure("Expecting:"),
+                FormatCurrent(current, false),
+                FormatExpected(expected, false));
+
+        public static string NotContainsIgnoringCase(string current, string expected) =>
+            string.Format("{0}\n {1}\n do not contain (ignoring case)\n {2}",
+                FormatFailure("Expecting:"),
+                FormatCurrent(current, false),
+                FormatExpected(expected, false));
+
+        public static string HasValue(string methodName, object current, object expected) =>
+            string.Format("{0}\n {1} to be {2} but is {3}",
+                FormatFailure("Expecting Property:"),
+                FormatCurrent(methodName, false),
+                FormatCurrent(expected, false),
+                FormatCurrent(current, false));
+
+        public static string Contains(string current, string expected) =>
+            string.Format("{0}\n {1}\n do contains\n {2}",
+                FormatFailure("Expecting:"),
+                FormatCurrent(current, false),
+                FormatExpected(expected, false));
+
+        public static string ContainsIgnoringCase(string current, string expected) =>
+            string.Format("{0}\n {1}\n do contains (ignoring case)\n {2}",
+                FormatFailure("Expecting:"),
+                FormatCurrent(current, false),
+                FormatExpected(expected, false));
+
+        public static string EndsWith(string current, string expected) =>
+            string.Format("{0}\n {1}\n to end with\n {2}",
+                FormatFailure("Expecting:"),
+                FormatCurrent(current, false),
+                FormatExpected(expected, false));
+
+        public static string StartsWith(string current, string expected) =>
+            string.Format("{0}\n {1}\n to start with\n {2}",
+                FormatFailure("Expecting:"),
+                FormatCurrent(current, false),
+                FormatExpected(expected, false));
+
+        public static string HasLength(string current, int currentLength, int expectedLength, IStringAssert.Compare comparator)
+        {
+            var errorMessage = "";
+            switch (comparator)
+            {
+                case IStringAssert.Compare.EQUAL:
+                    errorMessage = "Expecting length:";
+                    break;
+                case IStringAssert.Compare.LESS_THAN:
+                    errorMessage = "Expecting length to be less than:";
+                    break;
+                case IStringAssert.Compare.LESS_EQUAL:
+                    errorMessage = "Expecting length to be less than or equal:";
+                    break;
+                case IStringAssert.Compare.GREATER_THAN:
+                    errorMessage = "Expecting length to be greater than:";
+                    break;
+                case IStringAssert.Compare.GREATER_EQUAL:
+                    errorMessage = "Expecting length to be greater than or equal:";
+                    break;
+                default:
+                    errorMessage = "Invalid comperator";
+                    break;
+            }
+            return string.Format("{0}\n {1} but is '{2}' for\n {3}",
+                        FormatFailure(errorMessage),
+                        FormatExpected(expectedLength),
+                        FormatFailure(currentLength),
+                        FormatCurrent(current));
+        }
+
+
+        static string FindFirstDiff(IEnumerable<object> left, IEnumerable<object> right)
+        {
+            foreach (var it in left.Select((value, i) => new { Value = value, Index = i }))
+            {
+                var l = it.Value;
+                var r = right.ElementAt(it.Index);
+                if (!Comparable.IsEqual(l, r).Valid)
+                    return string.Format("at position {0}\n {1} vs {2}", FormatCurrent(it.Index), FormatCurrent(l), FormatExpected(r));
+            }
+            return "";
+        }
+
     }
 }

@@ -1,19 +1,14 @@
-
 using System;
-using static GdUnit3.Assertions;
 
 namespace GdUnit3
 {
     public sealed class ObjectAssert : AssertBase<object>, IObjectAssert
     {
-        private static Godot.GDScript AssertImpl = Godot.GD.Load<Godot.GDScript>("res://addons/gdUnit3/src/asserts/GdUnitObjectAssertImpl.gd");
-
-        public ObjectAssert(object caller, object current, EXPECT expectResult)
-            : base((Godot.Reference)AssertImpl.New(caller, null, expectResult), current)
+        public ObjectAssert(object current) : base(current)
         {
             Type type = current?.GetType() ?? null;
             if (type != null && type.IsPrimitive)
-                ReportTestFailure(String.Format("ObjectAssert inital error: current is primitive <{0}>", type), Current, null);
+                ReportTestFailure(String.Format("ObjectAssert inital error: current is primitive <{0}>", type), Current, null, 1);
         }
 
         public IObjectAssert IsNotInstanceOf<ExpectedType>()

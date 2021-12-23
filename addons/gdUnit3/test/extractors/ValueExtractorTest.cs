@@ -1,8 +1,6 @@
 using GdUnit3;
-using Godot;
 
 using static GdUnit3.Assertions;
-using static GdUnit3.Assertions.EXPECT;
 
 [TestSuite]
 public class ValueExtractorTest : TestSuite

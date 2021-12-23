@@ -4,10 +4,9 @@ namespace GdUnit3
 {
     public sealed class TestFailedException : System.Exception
     {
-
-        public TestFailedException(string message, int frame = 4) : base(message)
+        public TestFailedException(string message, int frameOffset = 0) : base(message)
         {
-            StackFrame CallStack = new StackFrame(frame, true);
+            StackFrame CallStack = new StackFrame(3 + frameOffset, true);
             LineNumber = CallStack.GetFileLineNumber();
         }
 

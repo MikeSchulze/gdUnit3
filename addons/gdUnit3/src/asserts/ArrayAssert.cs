@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System;
 using System.Linq;
 
 using static GdUnit3.Assertions;
@@ -9,10 +8,7 @@ namespace GdUnit3
 {
     public sealed class ArrayAssert : AssertBase<IEnumerable>, IArrayAssert
     {
-        private static Godot.GDScript AssertImpl = Godot.GD.Load<Godot.GDScript>("res://addons/gdUnit3/src/asserts/GdUnitArrayAssertImpl.gd");
-
-        public ArrayAssert(object caller, IEnumerable current, EXPECT expectResult)
-            : base((Godot.Reference)AssertImpl.New(caller, current, expectResult), current, expectResult)
+        public ArrayAssert(IEnumerable current) : base(current)
         {
             Current = current?.Cast<object>() ?? Enumerable.Empty<object>();
         }
@@ -21,77 +17,134 @@ namespace GdUnit3
 
         public IArrayAssert IsEqualIgnoringCase(IEnumerable expected)
         {
-            CallDelegator("is_equal_ignoring_case", expected);
+            var result = Comparable.IsEqual(Current, expected, Comparable.MODE.CASE_INSENSITIVE);
+            if (!result.Valid)
+                return ReportTestFailure(AssertFailures.IsEqualIgnoringCase(Current, expected), Current, expected) as IArrayAssert;
             return this;
         }
 
         public IArrayAssert IsNotEqualIgnoringCase(IEnumerable expected)
         {
-            CallDelegator("is_not_equal_ignoring_case", expected);
+            var result = Comparable.IsEqual(Current, expected, Comparable.MODE.CASE_INSENSITIVE);
+            if (result.Valid)
+                return ReportTestFailure(AssertFailures.NotEqual(Current, expected), Current, expected) as IArrayAssert;
             return this;
         }
 
         public IArrayAssert IsEmpty()
         {
-            CallDelegator("is_empty");
+            var count = Current?.Count() ?? 0;
+            if (count != 0)
+                return ReportTestFailure(AssertFailures.IsEmpty(count), Current, null) as IArrayAssert;
             return this;
         }
 
         public IArrayAssert IsNotEmpty()
         {
-            CallDelegator("is_not_empty");
+            var count = Current?.Count() ?? 0;
+            if (count == 0)
+                return ReportTestFailure(AssertFailures.IsNotEmpty(), Current, null) as IArrayAssert;
             return this;
         }
 
         public IArrayAssert HasSize(int expected)
         {
-            CallDelegator("has_size", expected);
+            var count = Current?.Count() ?? 0;
+            if (count != expected)
+                return ReportTestFailure(AssertFailures.HasSize(count, expected), Current, null) as IArrayAssert;
             return this;
         }
 
         public IArrayAssert Contains(params object[] expected)
         {
-            CallDelegator("contains", new Godot.Collections.Array(expected));
+            // we test for contains nothing
+            if (expected.Length == 0)
+                return this;
+
+            var notFound = ArrayContainsAll(Current, expected);
+            if (notFound.Count > 0)
+                return ReportTestFailure(AssertFailures.Contains(Current, expected, notFound), Current, expected) as IArrayAssert;
             return this;
         }
 
         public IArrayAssert Contains(IEnumerable expected)
         {
-            if (expected.GetEnumerator() is CharEnumerator)
-                CallDelegator("contains", new Godot.Collections.Array(new object[] { expected as string }));
-            else
-                CallDelegator("contains", expected);
+            var Expected = expected.Cast<object>().ToArray();
+            // we test for contains nothing
+            if (Expected.Length == 0)
+                return this;
+
+            var notFound = ArrayContainsAll(Current, Expected);
+            if (notFound.Count > 0)
+                return ReportTestFailure(AssertFailures.Contains(Current, Expected, notFound), Current, expected) as IArrayAssert;
             return this;
         }
 
         public IArrayAssert ContainsExactly(params object[] expected)
         {
-            CallDelegator("contains_exactly", new Godot.Collections.Array(expected));
+            // we test for contains nothing
+            if (expected.Length == 0)
+                return this;
+            // is equal than it contains same elements in same order
+            if (Comparable.IsEqual(Current, expected).Valid)
+                return this;
+
+            var diff = DiffArray(Current, expected);
+            var notExpected = diff.NotExpected;
+            var notFound = diff.NotFound;
+            if (notFound.Count > 0 || notExpected.Count > 0 || (notFound.Count == 0 && notExpected.Count == 0))
+                return ReportTestFailure(AssertFailures.ContainsExactly(Current, expected, notFound, notExpected), Current, expected) as IArrayAssert;
             return this;
         }
 
         public IArrayAssert ContainsExactly(IEnumerable expected)
         {
-            if (expected.GetEnumerator() is CharEnumerator)
-                CallDelegator("contains_exactly", new Godot.Collections.Array(new object[] { expected as string }));
-            else
-                CallDelegator("contains_exactly", expected);
+            var Expected = expected is string ? new string[] { expected as string } : expected.Cast<object>().ToArray();
+            // we test for contains nothing
+            if (Expected.Length == 0)
+                return this;
+            // is equal than it contains same elements in same order
+            if (Comparable.IsEqual(Current, Expected).Valid)
+                return this;
+
+            var diff = DiffArray(Current, Expected);
+            var notExpected = diff.NotExpected;
+            var notFound = diff.NotFound;
+            if (notFound.Count > 0 || notExpected.Count > 0 || (notFound.Count == 0 && notExpected.Count == 0))
+                return ReportTestFailure(AssertFailures.ContainsExactly(Current, Expected, notFound, notExpected), Current, expected) as IArrayAssert;
             return this;
         }
 
         public IArrayAssert ContainsExactlyInAnyOrder(params object[] expected)
         {
-            CallDelegator("contains_exactly_in_any_order", new Godot.Collections.Array(expected));
-            return this;
+            // we test for contains nothing
+            if (expected.Length == 0)
+                return this;
+
+            var diff = DiffArray(Current, expected);
+            var notExpected = diff.NotExpected;
+            var notFound = diff.NotFound;
+
+            // no difference and additions found
+            if (notExpected.Count == 0 && notFound.Count == 0)
+                return this;
+            return ReportTestFailure(AssertFailures.ContainsExactlyInAnyOrder(Current, expected, notFound, notExpected), Current, expected) as IArrayAssert;
         }
 
         public IArrayAssert ContainsExactlyInAnyOrder(IEnumerable expected)
         {
-            if (expected.GetEnumerator() is CharEnumerator)
-                CallDelegator("contains_exactly_in_any_order", new Godot.Collections.Array(new object[] { expected as string }));
-            else
-                CallDelegator("contains_exactly_in_any_order", expected);
-            return this;
+            var Expected = expected.Cast<object>().ToArray();
+            // we test for contains nothing
+            if (Expected.Length == 0)
+                return this;
+
+            var diff = DiffArray(Current, Expected);
+            var notExpected = diff.NotExpected;
+            var notFound = diff.NotFound;
+            // no difference and additions found
+            if (notExpected.Count == 0 && notFound.Count == 0)
+                return this;
+            return ReportTestFailure(AssertFailures.ContainsExactlyInAnyOrder(Current, Expected, notFound, notExpected), Current, expected) as IArrayAssert;
         }
 
         public IArrayAssert Extract(string funcName, params object[] args)
@@ -106,14 +159,59 @@ namespace GdUnit3
                 object[] values = extractors.Select(e => e.ExtractValue(v)).ToArray<object>();
                 return values.Count() == 1 ? values.First() : Tuple(values);
             }).ToList();
-            _delegator.Call("set_current", Current);
             return this;
         }
-
 
         public new IArrayAssert OverrideFailureMessage(string message)
         {
             return base.OverrideFailureMessage(message) as IArrayAssert;
+        }
+
+        private List<object> ArrayContainsAll(IEnumerable<object> left, IEnumerable<object> right)
+        {
+            var notFound = right?.ToList();
+
+            foreach (var c in left.ToList())
+            {
+                foreach (var e in right.ToList())
+                {
+                    if (Comparable.IsEqual(c, e).Valid)
+                    {
+                        notFound.Remove(c);
+                        break;
+                    }
+                }
+            }
+            return notFound;
+        }
+
+        private class ArrayDiff
+        {
+            public List<object> NotExpected { get; set; }
+            public List<object> NotFound { get; set; }
+        }
+
+        private ArrayDiff DiffArray(IEnumerable<object> left, IEnumerable<object> right)
+        {
+            var currentOrdered = left?.OrderBy(v => v);
+            var expectedOrdered = right?.OrderBy(v => v);
+
+            var notExpected = Current?.ToList();
+            var notFound = right?.ToList();
+
+            foreach (var c in left.ToList())
+            {
+                foreach (var e in right.ToList())
+                {
+                    if (Comparable.IsEqual(c, e).Valid)
+                    {
+                        notFound.Remove(c);
+                        notExpected.Remove(e);
+                        break;
+                    }
+                }
+            }
+            return new ArrayDiff() { NotExpected = notExpected, NotFound = notFound };
         }
     }
 }

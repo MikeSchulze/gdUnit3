@@ -6,7 +6,7 @@ using System;
 
 namespace GdUnit3
 {
-    public sealed class TestCase : Godot.Reference, IExecutionStage
+    public sealed class TestCase : Godot.Reference
     {
         public TestCase(MethodInfo methodInfo)
         {
@@ -17,8 +17,6 @@ namespace GdUnit3
 
         public string Name
         { get; set; }
-
-        public string StageName() => "TestCase";
 
         public TestCaseAttribute Attributes
         { get => MethodInfo.GetCustomAttribute<TestCaseAttribute>(); }
@@ -39,7 +37,7 @@ namespace GdUnit3
         private IEnumerable<object> Parameters
         { get; set; }
 
-        private MethodInfo MethodInfo
+        public MethodInfo MethodInfo
         { get; set; }
 
         private IEnumerable<object> ResolveParam(object input)
@@ -51,32 +49,7 @@ namespace GdUnit3
             return new object[] { input };
         }
 
-        public void Execute(ExecutionContext context)
-        {
-            object[] arguments = Parameters.SelectMany(ResolveParam).ToArray<object>();
-            try
-            {
-                MethodInfo.Invoke(context.TestInstance, arguments);
-            }
-            catch (TargetInvocationException e)
-            {
-                var baseException = e.GetBaseException();
-                if (baseException is TestFailedException)
-                {
-                    var ex = baseException as TestFailedException;
-                    Godot.GD.PrintS("TestCase Failed:", String.Format("|{0}#{1}:{2}|", context.TestInstance.Name, Name, ex.LineNumber), ex.Message);
-                    return;
-                }
-                // unexpected exceptions
-                Godot.GD.PushError(baseException.Message);
-                Godot.GD.PushError(baseException.StackTrace);
-            }
-            catch (Exception e)
-            {
-                // unexpected exceptions
-                Godot.GD.PushError(e.Message);
-                Godot.GD.PushError(e.StackTrace);
-            }
-        }
+        public object[] Arguments => Parameters.SelectMany(ResolveParam).ToArray<object>();
+
     }
 }

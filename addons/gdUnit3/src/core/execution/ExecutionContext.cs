@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace GdUnit3
 {
@@ -10,11 +11,13 @@ namespace GdUnit3
     {
         public ExecutionContext(TestSuite testInstance, IEnumerable<ITestEventListener> eventListeners)
         {
+            Thread.SetData(Thread.GetNamedDataSlot("ExecutionContext"), this);
             MemoryPool = new MemoryPool();
             OrphanMonitor = new OrphanNodesMonitor();
             Stopwatch = new Stopwatch();
             Stopwatch.Start();
 
+            FailureReporting = true;
             TestInstance = testInstance;
             EventListeners = eventListeners;
             ReportCollector = new TestReportCollector();
@@ -38,6 +41,7 @@ namespace GdUnit3
             Skipped = Test.Skipped;
         }
 
+        public bool FailureReporting { get; set; }
         public OrphanNodesMonitor OrphanMonitor
         { get; set; }
 
@@ -50,6 +54,8 @@ namespace GdUnit3
 
         public TestSuite TestInstance
         { get; private set; }
+
+        public static ExecutionContext Current => Thread.GetData(Thread.GetNamedDataSlot("ExecutionContext")) as ExecutionContext;
 
         private IEnumerable<ITestEventListener> EventListeners
         { get; set; }

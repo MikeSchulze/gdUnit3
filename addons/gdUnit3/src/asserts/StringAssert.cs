@@ -1,78 +1,111 @@
-using static GdUnit3.Assertions;
-
 namespace GdUnit3
 {
     public sealed class StringAssert : AssertBase<string>, IStringAssert
     {
-        private static Godot.GDScript AssertImpl = Godot.GD.Load<Godot.GDScript>("res://addons/gdUnit3/src/asserts/GdUnitStringAssertImpl.gd");
-
-        public StringAssert(object caller, string current, EXPECT expectResult)
-            : base((Godot.Reference)AssertImpl.New(caller, current, expectResult), current)
+        public StringAssert(string current) : base(current)
         { }
 
         public IStringAssert Contains(string expected)
         {
-            CallDelegator("contains", expected);
+            if (Current == null || !(Current as string).Contains(expected))
+                return ReportTestFailure(AssertFailures.Contains(Current, expected), Current, expected) as IStringAssert;
             return this;
         }
 
         public IStringAssert ContainsIgnoringCase(string expected)
         {
-            CallDelegator("contains_ignoring_case", expected);
+            if (Current == null || !(Current as string).ToLower().Contains(expected.ToLower()))
+                return ReportTestFailure(AssertFailures.ContainsIgnoringCase(Current, expected), Current, expected) as IStringAssert;
             return this;
         }
 
         public IStringAssert EndsWith(string expected)
         {
-            CallDelegator("ends_with", expected);
+            if (Current == null || !(Current as string).EndsWith(expected))
+                return ReportTestFailure(AssertFailures.EndsWith(Current, expected), Current, expected) as IStringAssert;
             return this;
         }
 
-        public IStringAssert HasLength(int lenght, IStringAssert.Compare comparator = IStringAssert.Compare.EQUAL)
+        public IStringAssert HasLength(int expectedLenght, IStringAssert.Compare comparator = IStringAssert.Compare.EQUAL)
         {
-            CallDelegator("has_length", lenght, comparator);
+            var currentLenght = (Current as string)?.Length ?? 0;
+            var failed = false;
+            switch (comparator)
+            {
+                case IStringAssert.Compare.EQUAL:
+                    if (currentLenght != expectedLenght)
+                        failed = true;
+                    break;
+                case IStringAssert.Compare.GREATER_EQUAL:
+                    if (currentLenght < expectedLenght)
+                        failed = true;
+                    break;
+                case IStringAssert.Compare.GREATER_THAN:
+                    if (currentLenght <= expectedLenght)
+                        failed = true;
+                    break;
+                case IStringAssert.Compare.LESS_EQUAL:
+                    if (currentLenght > expectedLenght)
+                        failed = true;
+                    break;
+                case IStringAssert.Compare.LESS_THAN:
+                    if (currentLenght >= expectedLenght)
+                        failed = true;
+                    break;
+            }
+            if (failed)
+                return ReportTestFailure(AssertFailures.HasLength(Current, currentLenght, expectedLenght, comparator), Current, expectedLenght) as IStringAssert;
             return this;
         }
 
         public IStringAssert IsEmpty()
         {
-            CallDelegator("is_empty");
+            if (Current == null || (Current as string).Length > 0)
+                return ReportTestFailure(AssertFailures.IsEmpty(Current), Current, null) as IStringAssert;
             return this;
         }
 
         public IStringAssert IsEqualIgnoringCase(string expected)
         {
-            CallDelegator("is_equal_ignoring_case", expected);
+            var result = Comparable.IsEqual(Current, expected, Comparable.MODE.CASE_INSENSITIVE);
+            if (!result.Valid)
+                return ReportTestFailure(AssertFailures.IsEqualIgnoringCase(Current, expected), Current, expected) as IStringAssert;
             return this;
         }
 
         public IStringAssert IsNotEmpty()
         {
-            CallDelegator("is_not_empty");
+            if (Current == null || (Current as string).Length == 0)
+                return ReportTestFailure(AssertFailures.IsNotEmpty(), Current, null) as IStringAssert;
             return this;
         }
 
         public IStringAssert IsNotEqualIgnoringCase(string expected)
         {
-            CallDelegator("is_not_equal_ignoring_case", expected);
+            var result = Comparable.IsEqual(Current, expected, Comparable.MODE.CASE_INSENSITIVE);
+            if (result.Valid)
+                return ReportTestFailure(AssertFailures.IsNotEqualIgnoringCase(Current, expected), Current, expected) as IStringAssert;
             return this;
         }
 
         public IStringAssert NotContains(string expected)
         {
-            CallDelegator("not_contains", expected);
+            if (Current == null || (Current as string).Contains(expected))
+                return ReportTestFailure(AssertFailures.NotContains(Current, expected), Current, expected) as IStringAssert;
             return this;
         }
 
         public IStringAssert NotContainsIgnoringCase(string expected)
         {
-            CallDelegator("not_contains_ignoring_case", expected);
+            if (Current == null || (Current as string).ToLower().Contains(expected.ToLower()))
+                return ReportTestFailure(AssertFailures.NotContainsIgnoringCase(Current, expected), Current, expected) as IStringAssert;
             return this;
         }
 
         public IStringAssert StartsWith(string expected)
         {
-            CallDelegator("starts_with", expected);
+            if (Current == null || !(Current as string).StartsWith(expected))
+                return ReportTestFailure(AssertFailures.StartsWith(Current, expected), Current, expected) as IStringAssert;
             return this;
         }
 

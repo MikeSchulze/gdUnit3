@@ -3,15 +3,8 @@ namespace GdUnit3
     /// <summary> Main interface of all GdUnit asserts </summary>
     public interface IAssert
     {
-
-        /// <summary> Verifies the failure message is equal to expected one.</summary>
-        IAssert HasFailureMessage(string expected);
-
         /// <summary></summary>
         IAssert TestFail();
-
-        /// <summary> Verifies that the failure starts with the given value.</summary>
-        IAssert StartsWithFailureMessage(string value);
 
         /// <summary> Overrides the default failure message by given custom message.</summary>
         IAssert OverrideFailureMessage(string message);
@@ -31,5 +24,11 @@ namespace GdUnit3
 
         /// <summary> Verifies that the current value is not equal to expected one.</summary>
         IAssertBase<V> IsNotEqual(V expected);
+
+        /// <summary> Verifies that the failure starts with the given value.</summary>
+        IAssert StartsWithFailureMessage(string value);
+
+        /// <summary> Verifies the failure message is equal to expected one.</summary>
+        IAssert HasFailureMessage(string expected);
     }
 }

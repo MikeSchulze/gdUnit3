@@ -1,43 +1,42 @@
 using GdUnit3;
 
 using static GdUnit3.Assertions;
-using static GdUnit3.Assertions.EXPECT;
 
 [TestSuite]
 public class BoolAssertTest : TestSuite
 {
-    [BeforeTest]
-    public void Setup()
-    {
-        // disable default fail fast behavior because we tests also for failing asserts see EXPECT.FAIL
-        EnableInterruptOnFailure(false);
-    }
 
     [TestCase]
     public void IsTrue()
     {
         AssertBool(true).IsTrue();
-        AssertBool(false, FAIL).IsTrue()
-            .HasFailureMessage("Expecting: 'True' but is 'False'");
+        AssertThrown(() => AssertBool(false).IsTrue())
+            .IsInstanceOf<TestFailedException>()
+            .HasPropertyValue("LineNumber", 13)
+            .HasMessage("Expecting: 'True' but is 'False'");
     }
 
     [TestCase]
     public void IsFalse()
     {
         AssertBool(false).IsFalse();
-        AssertBool(true, FAIL).IsFalse()
-            .HasFailureMessage("Expecting: 'False' but is 'True'");
+        AssertThrown(() => AssertBool(true).IsFalse())
+            .IsInstanceOf<TestFailedException>()
+            .HasPropertyValue("LineNumber", 23)
+            .HasMessage("Expecting: 'False' but is 'True'");
     }
 
     [TestCase]
     public void IsNull()
     {
-        AssertBool(true, FAIL)
-            .IsNull()
-            .StartsWithFailureMessage("Expecting: 'Null' but was 'True'");
-        AssertBool(false, FAIL)
-            .IsNull()
-            .StartsWithFailureMessage("Expecting: 'Null' but was 'False'");
+        AssertThrown(() => AssertBool(true).IsNull())
+            .IsInstanceOf<TestFailedException>()
+            .HasPropertyValue("LineNumber", 32)
+            .StartsWithMessage("Expecting: 'Null' but is 'True'");
+        AssertThrown(() => AssertBool(false).IsNull())
+            .IsInstanceOf<TestFailedException>()
+            .HasPropertyValue("LineNumber", 36)
+            .StartsWithMessage("Expecting: 'Null' but is 'False'");
     }
 
     [TestCase]
@@ -52,9 +51,10 @@ public class BoolAssertTest : TestSuite
     {
         AssertBool(true).IsEqual(true);
         AssertBool(false).IsEqual(false);
-        AssertBool(true, FAIL)
-            .IsEqual(false)
-            .HasFailureMessage("Expecting:\n 'False'\n but was\n 'True'");
+        AssertThrown(() => AssertBool(true).IsEqual(false))
+            .IsInstanceOf<TestFailedException>()
+            .HasPropertyValue("LineNumber", 54)
+            .HasMessage("Expecting:\n 'False'\n be equal to\n 'True'");
     }
 
     [TestCase]
@@ -62,9 +62,10 @@ public class BoolAssertTest : TestSuite
     {
         AssertBool(true).IsNotEqual(false);
         AssertBool(false).IsNotEqual(true);
-        AssertBool(true, FAIL)
-            .IsNotEqual(true)
-            .HasFailureMessage("Expecting:\n 'True'\n not equal to\n 'True'");
+        AssertThrown(() => AssertBool(true).IsNotEqual(true))
+            .IsInstanceOf<TestFailedException>()
+            .HasPropertyValue("LineNumber", 65)
+            .HasMessage("Expecting:\n 'True'\n not equal to\n 'True'");
     }
 
     [TestCase]
@@ -79,19 +80,22 @@ public class BoolAssertTest : TestSuite
     [TestCase]
     public void OverrideFailureMessage()
     {
-        AssertBool(true, FAIL)
-            .OverrideFailureMessage("Custom failure message")
-            .IsFalse()
-            .HasFailureMessage("Custom failure message");
+        AssertThrown(() => AssertBool(true)
+                    .OverrideFailureMessage("Custom failure message")
+                    .IsFalse())
+            .IsInstanceOf<TestFailedException>()
+            .HasPropertyValue("LineNumber", 83)
+            .HasMessage("Custom failure message");
     }
 
     [TestCase]
     public void Interrupt_IsFailure()
     {
-        // we want to interrupt on first failure
-        EnableInterruptOnFailure(true);
+        // we disable failure reportion until we simmulate an failure
+        ExecutionContext.Current.FailureReporting = false;
         // try to fail
-        AssertBool(true, FAIL).IsFalse();
+        AssertBool(true).IsFalse();
+        ExecutionContext.Current.FailureReporting = true;
 
         // expect this line will never called because of the test is inteerupted by a failing assert
         AssertBool(true).OverrideFailureMessage("This line shold never be called").IsFalse();

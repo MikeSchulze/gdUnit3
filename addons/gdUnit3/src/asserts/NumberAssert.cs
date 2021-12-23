@@ -1,16 +1,11 @@
 using System;
-using System.Diagnostics;
 
 namespace GdUnit3
 {
     public class NumberAssert<V> : AssertBase<V>, INumberAssert<V> where V : IComparable
     {
-        public NumberAssert(Godot.Reference delegator, V current) : base(delegator, current)
-        {
-            _failureGrapStackLine = 4;
-            StackFrame CallStack = new StackFrame(3, true);
-            _delegator.Call("set_line_number", CallStack.GetFileLineNumber());
-        }
+        public NumberAssert(V current) : base(current)
+        { }
 
         public INumberAssert<V> IsBetween(V from, V to)
         {

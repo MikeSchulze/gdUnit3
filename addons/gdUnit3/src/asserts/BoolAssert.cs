@@ -1,13 +1,9 @@
-using static GdUnit3.Assertions;
-
 namespace GdUnit3
 {
     public sealed class BoolAssert : AssertBase<bool>, IBoolAssert
     {
-        private static Godot.GDScript GdUnitBoolAssertImpl = Godot.GD.Load<Godot.GDScript>("res://addons/gdUnit3/src/asserts/GdUnitBoolAssertImpl.gd");
 
-        public BoolAssert(object caller, bool current, EXPECT expectResult)
-            : base((Godot.Reference)GdUnitBoolAssertImpl.New(caller, current, expectResult), current)
+        public BoolAssert(bool current) : base(current)
         { }
 
         public IBoolAssert IsFalse()

@@ -11,13 +11,6 @@ namespace GdUnit3
         public TestReportCollector()
         { }
 
-        // called by GdScript, will be removed after full gd to cs refactoring
-        public void consume(Godot.Resource report)
-        {
-            TestReport.TYPE type = (TestReport.TYPE)Enum.ToObject(typeof(TestReport.TYPE), (int)report.Call("type"));
-            Consume(new TestReport(type, (int)report.Call("line_number"), (string)report.Call("message")));
-        }
-
         public void Consume(TestReport report) => _reports.Add(report);
 
         public void Clear() => _reports.Clear();

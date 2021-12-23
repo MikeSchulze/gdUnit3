@@ -1,29 +1,17 @@
-using System.Diagnostics;
-using System.Collections;
-using System.Linq;
-
-using static GdUnit3.Assertions;
-
 namespace GdUnit3
 {
     public abstract class AssertBase<V> : IAssertBase<V>
     {
-        protected readonly Godot.Reference _delegator;
         protected V Current { get; private set; }
 
-        private object CustomFailureMessage { get; set; }
+        private string CustomFailureMessage { get; set; }
 
-        private EXPECT _expectResult;
+        private string CurrentFailureMessage { get; set; }
 
-        protected int _failureGrapStackLine = 3;
-
-        protected AssertBase(Godot.Reference delegator, V current, EXPECT expectResult = EXPECT.SUCCESS)
+        protected AssertBase(V current)
         {
-            _delegator = delegator;
             Current = current;
-            _expectResult = expectResult;
-            StackFrame CallStack = new StackFrame(_failureGrapStackLine, true);
-            _delegator.Call("set_line_number", CallStack.GetFileLineNumber());
+            CurrentFailureMessage = null;
         }
 
         public IAssertBase<V> IsEqual(V expected)
@@ -55,9 +43,11 @@ namespace GdUnit3
             return this;
         }
 
-        public IAssert HasFailureMessage(string expected)
+        public IAssert HasFailureMessage(string message)
         {
-            CallDelegator("has_failure_message", expected);
+            var current = NormalizedFailureMessage(CurrentFailureMessage);
+            if (!current.Equals(message))
+                return ReportTestFailure(AssertFailures.Equal(current, message), current, message);
             return this;
         }
 
@@ -69,53 +59,33 @@ namespace GdUnit3
 
         public IAssert StartsWithFailureMessage(string message)
         {
-            return CallDelegator("starts_with_failure_message", message);
+            var current = NormalizedFailureMessage(CurrentFailureMessage);
+            if (!current.StartsWith(message))
+                return ReportTestFailure(AssertFailures.Equal(current, message), current, message);
+            return this;
+        }
+
+        private static string NormalizedFailureMessage(string input)
+        {
+            using (var rtl = new Godot.RichTextLabel())
+            {
+                rtl.BbcodeEnabled = true;
+                rtl.ParseBbcode(input);
+                rtl.QueueFree();
+                return rtl.Text;
+            }
         }
 
         public IAssert TestFail()
         {
-            return CallDelegator("test_fail");
+            return ReportTestFailure("Force test to fail", null, null);
         }
 
-        private void InterruptOnFail()
-        {
-            if (!IsEnableInterruptOnFailure())
-                return;
-            var isFailed = (bool)_delegator.Call("is_failed");
-            if (isFailed)
-            {
-                throw new TestFailedException("TestCase interrupted by a failing assert.");
-            }
-        }
-
-        protected IAssertBase<V> CallDelegator(string methodName, params object[] args)
-        {
-            _delegator.Call(methodName, args);
-            InterruptOnFail();
-            return this;
-        }
-
-        protected IAssertBase<V> CallDelegator(string methodName, IEnumerable args)
-        {
-            _delegator.Call(methodName, new Godot.Collections.Array(args.Cast<object>().ToArray()));
-            InterruptOnFail();
-            return this;
-        }
-
-        protected IAssertBase<V> CallDelegator(string methodName, string value)
-        {
-            _delegator.Call(methodName, value);
-            InterruptOnFail();
-            return this;
-        }
-
-        protected IAssertBase<V> ReportTestFailure(string message, object current, object expected)
+        protected IAssertBase<V> ReportTestFailure(string message, object current, object expected, int stackFrameOffset = 0)
         {
             var failureMessage = CustomFailureMessage ?? message;
-            _delegator.Call("report_error", failureMessage);
-            if (IsEnableInterruptOnFailure())
-                throw new TestFailedException("TestCase interuppted by a failing assert.", _failureGrapStackLine);
-            return this;
+            CurrentFailureMessage = failureMessage;
+            throw new TestFailedException(failureMessage, stackFrameOffset);
         }
     }
 }

@@ -1,7 +1,6 @@
-using System.ComponentModel;
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Threading;
 
 namespace GdUnit3
 {
@@ -10,22 +9,12 @@ namespace GdUnit3
     /// </summary>
     public sealed class Assertions
     {
-        public enum EXPECT : int
-        {
-            [Description("assert expects ends with success")]
-            SUCCESS = 0,
-            [Description("assert expects ends with failure")]
-            FAIL = 1
-        }
-
         /// <summary>
         /// An Assertion to verify boolean values
         /// </summary>
         /// <param name="current">The current boolean value to verify</param>
         /// <returns>IBoolAssert</returns>
-        public static IBoolAssert AssertBool(bool current, EXPECT expectResult = EXPECT.SUCCESS) =>
-             new BoolAssert(TestInstance, current, expectResult);
-
+        public static IBoolAssert AssertBool(bool current) => new BoolAssert(current);
 
         /// <summary>
         /// An Assertion to verify string values
@@ -33,9 +22,7 @@ namespace GdUnit3
         /// <param name="current">The current string value to verify</param>
         /// <param name="expectResult"></param>
         /// <returns></returns>
-        public static IStringAssert AssertString(string current, EXPECT expectResult = EXPECT.SUCCESS) =>
-             new StringAssert(TestInstance, current, expectResult);
-
+        public static IStringAssert AssertString(string current) => new StringAssert(current);
 
         /// <summary>
         /// An Assertion to verify integer values
@@ -43,8 +30,7 @@ namespace GdUnit3
         /// <param name="current">The current integer value to verify</param>
         /// <param name="expectResult"></param>
         /// <returns></returns>
-        public static IIntAssert AssertInt(int current, EXPECT expectResult = EXPECT.SUCCESS) =>
-             new IntAssert(TestInstance, current, expectResult);
+        public static IIntAssert AssertInt(int current) => new IntAssert(current);
 
         /// <summary>
         /// An Assertion to verify double values
@@ -52,8 +38,7 @@ namespace GdUnit3
         /// <param name="current">The current double value to verify</param>
         /// <param name="expectResult"></param>
         /// <returns></returns>
-        public static IDoubleAssert AssertFloat(double current, EXPECT expectResult = EXPECT.SUCCESS) =>
-             new DoubleAssert(TestInstance, current, expectResult);
+        public static IDoubleAssert AssertFloat(double current) => new DoubleAssert(current);
 
         /// <summary>
         /// An Assertion to verify object values
@@ -61,8 +46,7 @@ namespace GdUnit3
         /// <param name="current">The current double value to verify</param>
         /// <param name="expectResult"></param>
         /// <returns></returns>        
-        public static IObjectAssert AssertObject(object current, EXPECT expectResult = EXPECT.SUCCESS) =>
-             new ObjectAssert(TestInstance, current, expectResult);
+        public static IObjectAssert AssertObject(object current) => new ObjectAssert(current);
 
         /// <summary>
         /// An Assertion to verify array values
@@ -70,8 +54,14 @@ namespace GdUnit3
         /// <param name="current">The current array value to verify</param>
         /// <param name="expectResult"></param>
         /// <returns></returns>  
-        public static IArrayAssert AssertArray(IEnumerable current, EXPECT expectResult = EXPECT.SUCCESS) =>
-             new ArrayAssert(TestInstance, current, expectResult);
+        public static IArrayAssert AssertArray(IEnumerable current) => new ArrayAssert(current);
+
+        /// <summary>
+        /// An Assertion to verify for expecting exceptions
+        /// </summary>
+        /// <param name="supplier">A function callback where throw possible exceptions</param>
+        /// <returns></returns>  
+        public static IExceptionAssert AssertThrown<T>(Func<T> supplier) => new ExceptionAssert<T>(supplier);
 
         /// ----------- Helpers -------------------------------------------------------------------------------------------------------
 
@@ -90,21 +80,6 @@ namespace GdUnit3
         /// </summary>
         public static IValueExtractor Extr(string methodName, params object[] args) => new ValueExtractor(methodName, args);
 
-
-
-        /// <summary>
-        /// Enable/Disables the fail fast behavior
-        /// It is enabled the first failing assert will interrupt the current executed test case
-        /// </summary>
-        /// <param name="enable"></param>
-        public static void EnableInterruptOnFailure(bool enable) => Thread.SetData(Thread.GetNamedDataSlot("EnableInterruptOnFailure"), enable);
-
-        /// <summary>
-        /// Indicates whether fail fast is enabled
-        /// </summary>
-        /// <returns></returns>
-        public static bool IsEnableInterruptOnFailure() => (bool)Thread.GetData(Thread.GetNamedDataSlot("EnableInterruptOnFailure"));
-
         /// <summary>
         ///  A helper to return given enumerable as string representation
         /// </summary>
@@ -117,7 +92,5 @@ namespace GdUnit3
             }
             return string.Join(", ", items);
         }
-
-        private static object TestInstance => Thread.GetData(Thread.GetNamedDataSlot("TestInstance"));
     }
 }

@@ -10,8 +10,6 @@ namespace GdUnit3
             LESS_EQUAL,
             GREATER_THAN,
             GREATER_EQUAL,
-            BETWEEN_EQUAL,
-            NOT_BETWEEN_EQUAL,
         }
 
         /// <summary> Verifies that the current String is equal to the given one, ignoring case considerations.</summary>
