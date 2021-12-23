@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace GdUnit3
 {
-    sealed class Tuple : Godot.Reference, ITuple
+    sealed class Tuple : ITuple
     {
         public Tuple(params object[] args)
         {

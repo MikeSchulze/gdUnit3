@@ -5,11 +5,8 @@ using System.Reflection;
 
 namespace GdUnit3
 {
-    public sealed class ValueExtractor : Godot.Reference, IValueExtractor
+    public sealed class ValueExtractor : IValueExtractor
     {
-        private static Godot.GDScript ValueExtractorImpl = Godot.GD.Load<Godot.GDScript>("res://addons/gdUnit3/src/extractors/GdUnitFuncValueExtractor.gd");
-        private readonly Godot.Reference _delegator;
-
         private readonly IEnumerable<string> _methodNames;
 
         private readonly IEnumerable<object> _args;
@@ -18,18 +15,12 @@ namespace GdUnit3
         {
             _methodNames = methodName.Split('.');
             _args = args.ToList<object>();
-            _delegator = (Godot.Reference)ValueExtractorImpl.New(methodName, _args);
         }
 
         public object ExtractValue(object value)
         {
             if (value == null)
                 return null;
-
-            // if (value is Godot.Object)
-            // {
-            //     return _delegator.Call("extract_value", value);
-            // }
 
             try
             {

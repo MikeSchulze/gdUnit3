@@ -1,4 +1,3 @@
-using Godot;
 using System;
 using System.Diagnostics.Contracts;
 using System.Collections.Generic;
@@ -7,7 +6,7 @@ using System.Reflection;
 
 namespace GdUnit3
 {
-    public class CsTools : Reference
+    public class CsTools : Godot.Reference
     {
         // used from GdScript side, will be remove later
         public static int TestCaseCount(Type type)

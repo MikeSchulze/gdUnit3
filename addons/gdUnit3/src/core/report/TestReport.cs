@@ -1,11 +1,10 @@
-
 using System;
 using System.Linq;
 using System.Collections.Generic;
 
 namespace GdUnit3
 {
-    public sealed class TestReport : Godot.Reference
+    public sealed class TestReport
     {
         [Flags]
         public enum TYPE
