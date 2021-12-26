@@ -183,17 +183,18 @@ static func error_ends_with(current, expected) -> String:
 	return "%s\n %s\n to end with\n %s" % [_error("Expecting:"), _current(current), _expected(expected)]
 
 static func error_has_length(current, expected: int, compare_operator) -> String:
+	var current_length = current.length() if current != null else null
 	match compare_operator:
 		Comparator.EQUAL:
-			return "%s\n %s but was '%s' in\n %s" % [_error("Expecting size:"), _expected(expected), _nerror(current.length()), _current(current)]
+			return "%s\n %s but was '%s' in\n %s" % [_error("Expecting size:"), _expected(expected), _nerror(current_length), _current(current)]
 		Comparator.LESS_THAN:
-			return "%s\n %s but was '%s' in\n %s" % [_error("Expecting size to be less than:"), _expected(expected), _nerror(current.length()), _current(current)]
+			return "%s\n %s but was '%s' in\n %s" % [_error("Expecting size to be less than:"), _expected(expected), _nerror(current_length), _current(current)]
 		Comparator.LESS_EQUAL:
-			return "%s\n %s but was '%s' in\n %s" % [_error("Expecting size to be less than or equal:"), _expected(expected), _nerror(current.length()), _current(current)]
+			return "%s\n %s but was '%s' in\n %s" % [_error("Expecting size to be less than or equal:"), _expected(expected), _nerror(current_length), _current(current)]
 		Comparator.GREATER_THAN:
-			return "%s\n %s but was '%s' in\n %s" % [_error("Expecting size to be greater than:"), _expected(expected), _nerror(current.length()), _current(current)]
+			return "%s\n %s but was '%s' in\n %s" % [_error("Expecting size to be greater than:"), _expected(expected), _nerror(current_length), _current(current)]
 		Comparator.GREATER_EQUAL:
-			return "%s\n %s but was '%s' in\n %s" % [_error("Expecting size to be greater than or equal:"), _expected(expected), _nerror(current.length()), _current(current)]
+			return "%s\n %s but was '%s' in\n %s" % [_error("Expecting size to be greater than or equal:"), _expected(expected), _nerror(current_length), _current(current)]
 	return "TODO create expected message"
 
 
