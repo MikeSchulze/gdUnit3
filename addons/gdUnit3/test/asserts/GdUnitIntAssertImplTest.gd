@@ -25,8 +25,12 @@ func test_is_equal():
 	assert_int(23, GdUnitAssert.EXPECT_FAIL) \
 		.is_equal(42)\
 		.has_failure_message("Expecting:\n '42'\n but was\n '23'")
+	assert_int(null, GdUnitAssert.EXPECT_FAIL) \
+		.is_equal(42)\
+		.has_failure_message("Expecting:\n '42'\n but was\n 'Null'")
 
 func test_is_not_equal():
+	assert_int(null).is_not_equal(42)
 	assert_int(23).is_not_equal(42)
 	# this assertion fails because 23 are equal to 23 
 	assert_int(23, GdUnitAssert.EXPECT_FAIL) \
@@ -41,6 +45,9 @@ func test_is_less():
 	assert_int(23, GdUnitAssert.EXPECT_FAIL) \
 		.is_less(23)\
 		.has_failure_message("Expecting to be less than:\n '23' but was '23'")
+	assert_int(null, GdUnitAssert.EXPECT_FAIL) \
+		.is_less(23)\
+		.has_failure_message("Expecting to be less than:\n '23' but was 'Null'")
 
 func test_is_less_equal():
 	assert_int(23).is_less_equal(42)
@@ -49,6 +56,9 @@ func test_is_less_equal():
 	assert_int(23, GdUnitAssert.EXPECT_FAIL) \
 		.is_less_equal(22)\
 		.has_failure_message("Expecting to be less than or equal:\n '22' but was '23'")
+	assert_int(null, GdUnitAssert.EXPECT_FAIL) \
+		.is_less_equal(22)\
+		.has_failure_message("Expecting to be less than or equal:\n '22' but was 'Null'")
 
 func test_is_greater():
 	assert_int(23).is_greater(20)
@@ -57,6 +67,9 @@ func test_is_greater():
 	assert_int(23, GdUnitAssert.EXPECT_FAIL) \
 		.is_greater(23)\
 		.has_failure_message("Expecting to be greater than:\n '23' but was '23'")
+	assert_int(null, GdUnitAssert.EXPECT_FAIL) \
+		.is_greater(23)\
+		.has_failure_message("Expecting to be greater than:\n '23' but was 'Null'")
 
 func test_is_greater_equal():
 	assert_int(23).is_greater_equal(20)
@@ -65,33 +78,45 @@ func test_is_greater_equal():
 	assert_int(23, GdUnitAssert.EXPECT_FAIL) \
 		.is_greater_equal(24)\
 		.has_failure_message("Expecting to be greater than or equal:\n '24' but was '23'")
-
-func _test_is_even_fuzz(fuzzer = Fuzzers.even(-9223372036854775807, 9223372036854775807)):
-	assert_int(fuzzer.next_value()).is_even()
+	assert_int(null, GdUnitAssert.EXPECT_FAIL) \
+		.is_greater_equal(24)\
+		.has_failure_message("Expecting to be greater than or equal:\n '24' but was 'Null'")
 
 func test_is_even():
 	assert_int(12).is_even()
 	assert_int(13, GdUnitAssert.EXPECT_FAIL) \
 		.is_even()\
 		.has_failure_message("Expecting:\n '13' must be even")
+	assert_int(null, GdUnitAssert.EXPECT_FAIL) \
+		.is_even()\
+		.has_failure_message("Expecting:\n 'Null' must be even")
 
 func test_is_odd():
 	assert_int(13).is_odd()
 	assert_int(12, GdUnitAssert.EXPECT_FAIL) \
 		.is_odd()\
 		.has_failure_message("Expecting:\n '12' must be odd")
+	assert_int(null, GdUnitAssert.EXPECT_FAIL) \
+		.is_odd()\
+		.has_failure_message("Expecting:\n 'Null' must be odd")
 
 func test_is_negative():
 	assert_int(-13).is_negative()
 	assert_int(13, GdUnitAssert.EXPECT_FAIL) \
 		.is_negative()\
 		.has_failure_message("Expecting:\n '13' be negative")
+	assert_int(null, GdUnitAssert.EXPECT_FAIL) \
+		.is_negative()\
+		.has_failure_message("Expecting:\n 'Null' be negative")
 
 func test_is_not_negative():
 	assert_int(13).is_not_negative()
 	assert_int(-13, GdUnitAssert.EXPECT_FAIL) \
 		.is_not_negative()\
 		.has_failure_message("Expecting:\n '-13' be not negative")
+	assert_int(null, GdUnitAssert.EXPECT_FAIL) \
+		.is_not_negative()\
+		.has_failure_message("Expecting:\n 'Null' be not negative")
 
 func test_is_zero():
 	assert_int(0).is_zero()
@@ -99,8 +124,12 @@ func test_is_zero():
 	assert_int(1, GdUnitAssert.EXPECT_FAIL) \
 		.is_zero()\
 		.has_failure_message("Expecting:\n equal to 0 but is '1'")
+	assert_int(null, GdUnitAssert.EXPECT_FAIL) \
+		.is_zero()\
+		.has_failure_message("Expecting:\n equal to 0 but is 'Null'")
 
 func test_is_not_zero():
+	assert_int(null).is_not_zero()
 	assert_int(1).is_not_zero()
 	# this assertion fail because the value is not zero
 	assert_int(0, GdUnitAssert.EXPECT_FAIL) \
@@ -113,8 +142,12 @@ func test_is_in():
 	assert_int(7, GdUnitAssert.EXPECT_FAIL) \
 		.is_in([3, 4, 5, 6])\
 		.has_failure_message("Expecting:\n '7'\n is in\n '[3, 4, 5, 6]'")
+	assert_int(null, GdUnitAssert.EXPECT_FAIL) \
+		.is_in([3, 4, 5, 6])\
+		.has_failure_message("Expecting:\n 'Null'\n is in\n '[3, 4, 5, 6]'")
 
 func test_is_not_in():
+	assert_int(null).is_not_in([3, 4, 6, 7])
 	assert_int(5).is_not_in([3, 4, 6, 7])
 	# this assertion fail because 7 is not in [3, 4, 5, 6]
 	assert_int(5, GdUnitAssert.EXPECT_FAIL) \
@@ -135,6 +168,9 @@ func test_is_between_must_fail():
 	assert_int(10, GdUnitAssert.EXPECT_FAIL) \
 		.is_between(11, 21) \
 		.has_failure_message("Expecting:\n '10'\n in range between\n '11' <> '21'")
+	assert_int(null, GdUnitAssert.EXPECT_FAIL) \
+		.is_between(11, 21) \
+		.has_failure_message("Expecting:\n 'Null'\n in range between\n '11' <> '21'")
 
 func test_must_fail_has_invlalid_type():
 	assert_int(3.3, GdUnitAssert.EXPECT_FAIL) \
