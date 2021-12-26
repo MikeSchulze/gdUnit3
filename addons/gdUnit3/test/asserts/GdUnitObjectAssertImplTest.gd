@@ -10,8 +10,15 @@ func test_is_equal():
 	# should fail because the current is an Mesh and we expect equal to a Skin
 	assert_object(Mesh.new(), GdUnitAssert.EXPECT_FAIL)\
 		.is_equal(Skin.new())
+	assert_object(null, GdUnitAssert.EXPECT_FAIL)\
+		.is_equal(Skin.new())\
+		.has_failure_message("Expecting:\n"
+			+ " <Skin>\n"
+			+ " but was\n"
+			+ " 'Null'")
 
 func test_is_not_equal():
+	assert_object(null).is_not_equal(Skin.new())
 	assert_object(Mesh.new()).is_not_equal(Skin.new())
 	# should fail because the current is an Mesh and we expect not equal to a Mesh
 	assert_object(Mesh.new(), GdUnitAssert.EXPECT_FAIL)\
@@ -31,8 +38,12 @@ func test_is_instanceof():
 	assert_object(auto_free(Path.new()), GdUnitAssert.EXPECT_FAIL)\
 		.is_instanceof(Tree)\
 		.has_failure_message("Expected instance of:\n 'Tree'\n But it was 'Path'")
+	assert_object(null, GdUnitAssert.EXPECT_FAIL)\
+		.is_instanceof(Tree)\
+		.has_failure_message("Expected instance of:\n 'Tree'\n But it was 'Null'")
 
 func test_is_not_instanceof():
+	assert_object(null).is_not_instanceof(Tree)
 	# engine class test
 	assert_object(auto_free(Path.new())).is_not_instanceof(Tree)
 	# script class test
@@ -73,7 +84,12 @@ func test_is_same():
 	assert_object(obj1).is_same(obj1)
 	assert_object(obj1).is_same(obj2)
 	assert_object(obj2).is_same(obj1)
-	assert_object(null, GdUnitAssert.EXPECT_FAIL).is_same(obj1)
+	assert_object(null, GdUnitAssert.EXPECT_FAIL)\
+		.is_same(obj1)\
+		.has_failure_message("Expecting:\n"
+			+ " <Node>\n"
+			+ " to refer to the same object\n"
+			+ " 'Null'")
 	assert_object(obj1, GdUnitAssert.EXPECT_FAIL).is_same(obj3)
 	assert_object(obj3, GdUnitAssert.EXPECT_FAIL).is_same(obj1)
 	assert_object(obj3, GdUnitAssert.EXPECT_FAIL).is_same(obj2)
