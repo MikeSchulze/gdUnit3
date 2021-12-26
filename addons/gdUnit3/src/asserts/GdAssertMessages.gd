@@ -199,7 +199,7 @@ static func error_has_length(current, expected: int, compare_operator) -> String
 
 
 # - ArrayAssert specific messgaes ---------------------------------------------------
-static func error_arr_contains(current :Array, expected :Array, not_expect :Array, not_found :Array) -> String:
+static func error_arr_contains(current, expected :Array, not_expect :Array, not_found :Array) -> String:
 	var error := "%s\n %s\n do contains (in any order)\n %s" % [_error("Expecting contains elements:"), _current(current, ", "), _expected(expected, ", ")]
 	if not not_expect.empty():
 		error += "\nbut some elements where not expected:\n %s" % _expected(not_expect, ", ")
@@ -208,7 +208,7 @@ static func error_arr_contains(current :Array, expected :Array, not_expect :Arra
 		error += "\n%s could not find elements:\n %s" % [prefix, _expected(not_found, ", ")]
 	return error
 
-static func error_arr_contains_exactly(current :Array, expected :Array, not_expect :Array, not_found :Array) -> String:
+static func error_arr_contains_exactly(current, expected :Array, not_expect :Array, not_found :Array) -> String:
 	if not_expect.empty() and not_found.empty():
 		var diff := _find_first_diff(current, expected)
 		return "%s\n %s\n do contains (in same order)\n %s\n but has different order %s"  % [_error("Expecting contains exactly elements:"), _current(current, ", "), _expected(expected, ", "), diff]
@@ -221,7 +221,7 @@ static func error_arr_contains_exactly(current :Array, expected :Array, not_expe
 		error += "\n%s could not find elements:\n %s" % [prefix, _expected(not_found, ", ")]
 	return error
 
-static func error_arr_contains_exactly_in_any_order(current :Array, expected :Array, not_expect :Array, not_found :Array) -> String:
+static func error_arr_contains_exactly_in_any_order(current, expected :Array, not_expect :Array, not_found :Array) -> String:
 	var error := "%s\n %s\n do contains exactly (in any order)\n %s" % [_error("Expecting contains exactly elements:"), _current(current, ", "), _expected(expected, ", ")]
 	if not not_expect.empty():
 		error += "\nbut some elements where not expected:\n %s" % _expected(not_expect, ", ")
@@ -342,8 +342,9 @@ static func _find_first_diff( left :Array, right :Array) -> String:
 			return "at position %s\n %s vs %s" % [_current(index), _current(l), _expected(r)]
 	return ""
 
-static func error_has_size(current: int, expected: int) -> String:
-	return "%s\n %s\n but was\n %s" % [_error("Expecting size:"), _expected(expected), _current(current)]
+static func error_has_size(current, expected: int) -> String:
+	var current_size = null if current == null else current.size()
+	return "%s\n %s\n but was\n %s" % [_error("Expecting size:"), _expected(expected), _current(current_size)]
 
 static func error_contains_exactly(current: Array, expected: Array) -> String:
 	return "%s\n %s\n but was\n %s" % [_error("Expecting exactly equal:"), _expected(expected), _current(current)]

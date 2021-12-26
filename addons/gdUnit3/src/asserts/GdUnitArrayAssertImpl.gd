@@ -12,7 +12,8 @@ func __validate_value_type(value) -> bool:
 	return value is ValueProvider or value == null or GdObjects.is_array_type(value)
 
 func __current() -> Array:
-	return Array(_base.__current())
+	var current = _base.__current()
+	return  Array(current) if current != null else null
 
 func __expected(expected) -> Array:
 	if typeof(expected) == TYPE_ARRAY:
@@ -60,6 +61,8 @@ func is_not_null() -> GdUnitArrayAssert:
 func is_equal(expected) -> GdUnitArrayAssert:
 	var current_ := __current()
 	var expected_ := __expected(expected)
+	if current_ == null and expected_ != null:
+		return report_error(GdAssertMessages.error_equal(null, expected_))
 	if not GdObjects.equals(current_, expected_):
 		var c := GdObjects.array_to_string(current_, ", ")
 		var e := GdObjects.array_to_string(expected_, ", ")
@@ -71,6 +74,8 @@ func is_equal(expected) -> GdUnitArrayAssert:
 func is_equal_ignoring_case(expected) -> GdUnitArrayAssert:
 	var current_ := __current()
 	var expected_ := __expected(expected)
+	if current_ == null and expected_ != null:
+		return report_error(GdAssertMessages.error_equal(null, expected_))
 	if not GdObjects.equals(current_, expected_, true):
 		var c := GdObjects.array_to_string(current_, ", ")
 		var e := GdObjects.array_to_string(expected_, ", ")
@@ -95,22 +100,22 @@ func is_not_equal_ignoring_case(expected) -> GdUnitArrayAssert:
 # Verifies that the current Array is empty, it has a size of 0.
 func is_empty() -> GdUnitArrayAssert:
 	var current_ := __current()
-	if current_.size() > 0:
+	if current_ == null or current_.size() > 0:
 		return report_error(GdAssertMessages.error_is_empty(current_))
 	return report_success()
 
 # Verifies that the current Array is not empty, it has a size of minimum 1.
 func is_not_empty() -> GdUnitArrayAssert:
 	var current_ := __current()
-	if current_.size() == 0:
+	if current_ != null and current_.size() == 0:
 		return report_error(GdAssertMessages.error_is_not_empty())
 	return report_success()
 
 # Verifies that the current Array has a size of given value.
 func has_size(expected: int) -> GdUnitArrayAssert:
 	var current_ := __current()
-	if current_.size() != expected:
-		return report_error(GdAssertMessages.error_has_size(current_.size(), expected))
+	if current_== null or current_.size() != expected:
+		return report_error(GdAssertMessages.error_has_size(current_, expected))
 	return report_success()
 
 func array_div(left :Array, right :Array, same_order := false) -> Array:
@@ -131,6 +136,10 @@ func array_div(left :Array, right :Array, same_order := false) -> Array:
 func contains(expected) -> GdUnitArrayAssert:
 	var current_ := __current()
 	var expected_ := __expected(expected)
+	
+	if current_ == null:
+		return report_error(GdAssertMessages.error_arr_contains(current_, expected_, [], expected_))
+	
 	var diffs := array_div(current_, expected_)
 	var not_expect := diffs[0] as Array
 	var not_found := diffs[1] as Array
@@ -142,6 +151,10 @@ func contains(expected) -> GdUnitArrayAssert:
 func contains_exactly(expected) -> GdUnitArrayAssert:
 	var current_ := __current()
 	var expected_ := __expected(expected)
+	
+	if current_ == null:
+		return report_error(GdAssertMessages.error_arr_contains_exactly(current_, expected_, [], expected_))
+	
 	# has same content in same order
 	if GdObjects.equals(current_, expected_):
 		return report_success()
@@ -159,6 +172,9 @@ func contains_exactly(expected) -> GdUnitArrayAssert:
 func contains_exactly_in_any_order(expected) -> GdUnitArrayAssert:
 	var current_ := __current()
 	var expected_ := __expected(expected)
+	
+	if current_ == null:
+		return report_error(GdAssertMessages.error_arr_contains_exactly_in_any_order(current_, expected_, [], expected_))
 	
 	# find the difference
 	var diffs := array_div(current_, expected_, false)
@@ -184,8 +200,12 @@ func is_instanceof(expected) -> GdUnitAssert:
 func extract(func_name :String, args := Array()) -> GdUnitArrayAssert:
 	var extracted_elements: = Array()
 	var extractor := GdUnitFuncValueExtractor.new(func_name, args)
-	for element in __current():
-		extracted_elements.append(extractor.extract_value(element))
+	var current = __current()
+	if current == null:
+		extracted_elements.append(null)
+	else:
+		for element in current:
+			extracted_elements.append(extractor.extract_value(element))
 	_base._current_value_provider = DefaultValueProvider.new(extracted_elements)
 	return self
 
@@ -203,15 +223,19 @@ func extractv(
 	extr9 :GdUnitValueExtractor = null) -> GdUnitArrayAssert:
 	var extractors := GdObjects.array_filter_value([extr0, extr1, extr2, extr3, extr4, extr5, extr6, extr7, extr8, extr9], null)
 	var extracted_elements: = Array()
-	for element in __current():
-		var ev : = [GdUnitTuple.NO_ARG, GdUnitTuple.NO_ARG, GdUnitTuple.NO_ARG, GdUnitTuple.NO_ARG, GdUnitTuple.NO_ARG, GdUnitTuple.NO_ARG, GdUnitTuple.NO_ARG, GdUnitTuple.NO_ARG, GdUnitTuple.NO_ARG, GdUnitTuple.NO_ARG]
-		for index in extractors.size():
-			var extractor :GdUnitValueExtractor = extractors[index]
-			ev[index] = extractor.extract_value(element)
-		
-		if extractors.size() > 1:
-			extracted_elements.append(GdUnitTuple.new(ev[0], ev[1], ev[2], ev[3], ev[4], ev[5], ev[6], ev[7], ev[8], ev[9]))
-		else:
-			extracted_elements.append(ev[0])
+	var current = __current()
+	if current == null:
+		extracted_elements.append(null)
+	else:
+		for element in __current():
+			var ev : = [GdUnitTuple.NO_ARG, GdUnitTuple.NO_ARG, GdUnitTuple.NO_ARG, GdUnitTuple.NO_ARG, GdUnitTuple.NO_ARG, GdUnitTuple.NO_ARG, GdUnitTuple.NO_ARG, GdUnitTuple.NO_ARG, GdUnitTuple.NO_ARG, GdUnitTuple.NO_ARG]
+			for index in extractors.size():
+				var extractor :GdUnitValueExtractor = extractors[index]
+				ev[index] = extractor.extract_value(element)
+			
+			if extractors.size() > 1:
+				extracted_elements.append(GdUnitTuple.new(ev[0], ev[1], ev[2], ev[3], ev[4], ev[5], ev[6], ev[7], ev[8], ev[9]))
+			else:
+				extracted_elements.append(ev[0])
 	_base._current_value_provider = DefaultValueProvider.new(extracted_elements)
 	return self
