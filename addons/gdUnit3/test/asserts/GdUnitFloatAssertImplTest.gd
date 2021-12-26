@@ -25,8 +25,12 @@ func test_is_equal():
 	assert_float(23.2, GdUnitAssert.EXPECT_FAIL) \
 		.is_equal(23.4)\
 		.has_failure_message("Expecting:\n '23.400000'\n but was\n '23.200000'")
+	assert_float(null, GdUnitAssert.EXPECT_FAIL) \
+		.is_equal(23.4)\
+		.has_failure_message("Expecting:\n '23.400000'\n but was\n 'Null'")
 
 func test_is_not_equal():
+	assert_float(null).is_not_equal(23.4)
 	assert_float(23.2).is_not_equal(23.4)
 	# this assertion fails because 23.2 are equal to 23.2
 	assert_float(23.2, GdUnitAssert.EXPECT_FAIL) \
@@ -46,6 +50,9 @@ func test_is_equal_approx() -> void:
 	assert_float(23.22, GdUnitAssert.EXPECT_FAIL)\
 		.is_equal_approx(23.2, 0.01)\
 		.has_failure_message("Expecting:\n '23.220000'\n in range between\n '23.190000' <> '23.210000'")
+	assert_float(null, GdUnitAssert.EXPECT_FAIL)\
+		.is_equal_approx(23.2, 0.01)\
+		.has_failure_message("Expecting:\n 'Null'\n in range between\n '23.190000' <> '23.210000'")
 
 func test_is_less():
 	assert_float(23.2).is_less(23.4)
@@ -54,6 +61,9 @@ func test_is_less():
 	assert_float(23.2, GdUnitAssert.EXPECT_FAIL) \
 		.is_less(23.2)\
 		.has_failure_message("Expecting to be less than:\n '23.200000' but was '23.200000'")
+	assert_float(null, GdUnitAssert.EXPECT_FAIL) \
+		.is_less(23.2)\
+		.has_failure_message("Expecting to be less than:\n '23.200000' but was 'Null'")
 
 func test_is_less_equal():
 	assert_float(23.2).is_less_equal(23.4)
@@ -62,6 +72,9 @@ func test_is_less_equal():
 	assert_float(23.2, GdUnitAssert.EXPECT_FAIL) \
 		.is_less_equal(23.1)\
 		.has_failure_message("Expecting to be less than or equal:\n '23.100000' but was '23.200000'")
+	assert_float(null, GdUnitAssert.EXPECT_FAIL) \
+		.is_less_equal(23.1)\
+		.has_failure_message("Expecting to be less than or equal:\n '23.100000' but was 'Null'")
 
 func test_is_greater():
 	assert_float(23.2).is_greater(23.0)
@@ -70,6 +83,9 @@ func test_is_greater():
 	assert_float(23.2, GdUnitAssert.EXPECT_FAIL) \
 		.is_greater(23.2)\
 		.has_failure_message("Expecting to be greater than:\n '23.200000' but was '23.200000'")
+	assert_float(null, GdUnitAssert.EXPECT_FAIL) \
+		.is_greater(23.2)\
+		.has_failure_message("Expecting to be greater than:\n '23.200000' but was 'Null'")
 
 func test_is_greater_equal():
 	assert_float(23.2).is_greater_equal(20.2)
@@ -78,6 +94,9 @@ func test_is_greater_equal():
 	assert_float(23.2, GdUnitAssert.EXPECT_FAIL) \
 		.is_greater_equal(23.3)\
 		.has_failure_message("Expecting to be greater than or equal:\n '23.300000' but was '23.200000'")
+	assert_float(null, GdUnitAssert.EXPECT_FAIL) \
+		.is_greater_equal(23.3)\
+		.has_failure_message("Expecting to be greater than or equal:\n '23.300000' but was 'Null'")
 
 func test_is_negative():
 	assert_float(-13.2).is_negative()
@@ -85,6 +104,9 @@ func test_is_negative():
 	assert_float(13.2, GdUnitAssert.EXPECT_FAIL) \
 		.is_negative()\
 		.has_failure_message("Expecting:\n '13.200000' be negative")
+	assert_float(null, GdUnitAssert.EXPECT_FAIL) \
+		.is_negative()\
+		.has_failure_message("Expecting:\n 'Null' be negative")
 
 func test_is_not_negative():
 	assert_float(13.2).is_not_negative()
@@ -92,6 +114,9 @@ func test_is_not_negative():
 	assert_float(-13.2, GdUnitAssert.EXPECT_FAIL) \
 		.is_not_negative()\
 		.has_failure_message("Expecting:\n '-13.200000' be not negative")
+	assert_float(null, GdUnitAssert.EXPECT_FAIL) \
+		.is_not_negative()\
+		.has_failure_message("Expecting:\n 'Null' be not negative")
 
 func test_is_zero():
 	assert_float(0.0).is_zero()
@@ -99,11 +124,17 @@ func test_is_zero():
 	assert_float(0.00001, GdUnitAssert.EXPECT_FAIL) \
 		.is_zero()\
 		.has_failure_message("Expecting:\n equal to 0 but is '0.000010'")
+	assert_float(null, GdUnitAssert.EXPECT_FAIL) \
+		.is_zero()\
+		.has_failure_message("Expecting:\n equal to 0 but is 'Null'")
 
 func test_is_not_zero():
 	assert_float(0.00001).is_not_zero()
 	# this assertion fail because the value is not zero
 	assert_float(0.000001, GdUnitAssert.EXPECT_FAIL) \
+		.is_not_zero()\
+		.has_failure_message("Expecting:\n not equal to 0")
+	assert_float(null, GdUnitAssert.EXPECT_FAIL) \
 		.is_not_zero()\
 		.has_failure_message("Expecting:\n not equal to 0")
 
@@ -113,8 +144,12 @@ func test_is_in():
 	assert_float(5.5, GdUnitAssert.EXPECT_FAIL) \
 		.is_in([5.1, 5.2, 5.3, 5.4])\
 		.has_failure_message("Expecting:\n '5.500000'\n is in\n '[5.1, 5.2, 5.3, 5.4]'")
+	assert_float(null, GdUnitAssert.EXPECT_FAIL) \
+		.is_in([5.1, 5.2, 5.3, 5.4])\
+		.has_failure_message("Expecting:\n 'Null'\n is in\n '[5.1, 5.2, 5.3, 5.4]'")
 
 func test_is_not_in():
+	assert_float(null).is_not_in([5.1, 5.3, 5.4])
 	assert_float(5.2).is_not_in([5.1, 5.3, 5.4])
 	# this assertion fail because 5.2 is not in [5.1, 5.2, 5.3, 5.4]
 	assert_float(5.2, GdUnitAssert.EXPECT_FAIL) \
@@ -136,6 +171,9 @@ func test_is_between_must_fail():
 	assert_float(10.0, GdUnitAssert.EXPECT_FAIL) \
 		.is_between(11, 21) \
 		.has_failure_message("Expecting:\n '10.000000'\n in range between\n '11.000000' <> '21.000000'")
+	assert_float(null, GdUnitAssert.EXPECT_FAIL) \
+		.is_between(11, 21) \
+		.has_failure_message("Expecting:\n 'Null'\n in range between\n '11.000000' <> '21.000000'")
 
 func test_must_fail_has_invlalid_type():
 	assert_float(1, GdUnitAssert.EXPECT_FAIL) \

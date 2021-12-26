@@ -65,56 +65,56 @@ func is_equal_approx(expected :float, approx :float) -> GdUnitFloatAssert:
 # Verifies that the current value is less than the given one.
 func is_less(expected :float) -> GdUnitFloatAssert:
 	var current := __current()
-	if current >= expected:
+	if current == null or current >= expected:
 		report_error(GdAssertMessages.error_is_value(Comparator.LESS_THAN, current, expected))
 	return report_success()
 
 # Verifies that the current value is less than or equal the given one.
 func is_less_equal(expected :float) -> GdUnitFloatAssert:
 	var current := __current()
-	if current > expected:
+	if current == null or current > expected:
 		report_error(GdAssertMessages.error_is_value(Comparator.LESS_EQUAL, current, expected))
 	return report_success()
 
 # Verifies that the current value is greater than the given one.
 func is_greater(expected :float) -> GdUnitFloatAssert:
 	var current := __current()
-	if current <= expected:
+	if current == null or current <= expected:
 		return report_error(GdAssertMessages.error_is_value(Comparator.GREATER_THAN, current, expected))
 	return report_success()
 
 # Verifies that the current value is greater than or equal the given one.
 func is_greater_equal(expected :float) -> GdUnitFloatAssert:
 	var current := __current()
-	if current < expected:
+	if current == null or current < expected:
 		return report_error(GdAssertMessages.error_is_value(Comparator.GREATER_EQUAL, current, expected))
 	return report_success()
 
 # Verifies that the current value is negative.
 func is_negative() -> GdUnitFloatAssert:
 	var current := __current()
-	if current >= 0.0:
+	if current == null or current >= 0.0:
 		return report_error(GdAssertMessages.error_is_negative(current))
 	return report_success()
 
 # Verifies that the current value is not negative.
 func is_not_negative() -> GdUnitFloatAssert:
 	var current := __current()
-	if current < 0.0:
+	if current == null or current < 0.0:
 		return report_error(GdAssertMessages.error_is_not_negative(current))
 	return report_success()
 
 # Verifies that the current value is equal to zero.
 func is_zero() -> GdUnitFloatAssert:
 	var current := __current()
-	if not is_equal_approx(0.00000000, current):
+	if current == null or not is_equal_approx(0.00000000, current):
 		return report_error(GdAssertMessages.error_is_zero(current))
 	return report_success()
 
 # Verifies that the current value is not equal to zero.
 func is_not_zero() -> GdUnitFloatAssert:
 	var current := __current()
-	if is_equal_approx(0.00000000, current):
+	if current == null or is_equal_approx(0.00000000, current):
 		return report_error(GdAssertMessages.error_is_not_zero())
 	return report_success()
 
@@ -135,7 +135,7 @@ func is_not_in(expected :Array) -> GdUnitFloatAssert:
 # Verifies that the current value is between the given boundaries (inclusive).
 func is_between(from :float, to :float) -> GdUnitFloatAssert:
 	var current := __current()
-	if current < from or current > to:
+	if current == null or current < from or current > to:
 		return report_error(GdAssertMessages.error_is_value(Comparator.BETWEEN_EQUAL, current, from, to))
 	return report_success()
 
