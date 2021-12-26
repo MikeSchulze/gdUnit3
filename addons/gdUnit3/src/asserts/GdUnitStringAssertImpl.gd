@@ -8,10 +8,10 @@ func _init(caller :Object, current, expect_result :int):
 	if not _base.__validate_value_type(current, TYPE_STRING):
 		report_error("GdUnitStringAssert inital error, unexpected type <%s>" % GdObjects.typeof_as_string(current))
 
-func __current() -> String:
+func __current():
 	var current = _base.__current()
 	if current == null:
-		return "<Null>"
+		return null
 	return current as String
 
 func report_success() -> GdUnitStringAssert:
@@ -52,7 +52,9 @@ func is_not_null() -> GdUnitStringAssert:
 	return self
 
 func is_equal(expected) -> GdUnitStringAssert:
-	var current := __current()
+	var current = __current()
+	if current == null:
+		return report_error(GdAssertMessages.error_equal(current, expected))
 	if not GdObjects.equals(current, expected):
 		var diffs := GdObjects.string_diff(current, expected)
 		var formatted_current := GdAssertMessages.colorDiff(diffs[1])
@@ -60,7 +62,9 @@ func is_equal(expected) -> GdUnitStringAssert:
 	return report_success()
 
 func is_equal_ignoring_case(expected) -> GdUnitStringAssert:
-	var current := __current()
+	var current = __current()
+	if current == null:
+		return report_error(GdAssertMessages.error_equal_ignoring_case(current, expected))
 	if not GdObjects.equals(current, expected, true):
 		var diffs := GdObjects.string_diff(current, expected)
 		var formatted_current := GdAssertMessages.colorDiff(diffs[1])
@@ -68,68 +72,72 @@ func is_equal_ignoring_case(expected) -> GdUnitStringAssert:
 	return report_success()
 
 func is_not_equal(expected) -> GdUnitStringAssert:
-	var current := __current()
+	var current = __current()
 	if GdObjects.equals(current, expected):
 		return report_error(GdAssertMessages.error_not_equal(current, expected))
 	return report_success()
 
 func is_not_equal_ignoring_case(expected) -> GdUnitStringAssert:
-	var current := __current()
+	var current = __current()
 	if GdObjects.equals(current, expected, true):
 		return report_error(GdAssertMessages.error_not_equal(current, expected))
 	return report_success()
 
 func is_empty() -> GdUnitStringAssert:
-	var current := __current()
-	if not current.empty():
+	var current = __current()
+	if current == null or not current.empty():
 		return report_error(GdAssertMessages.error_is_empty(current))
 	return report_success()
 
 func is_not_empty() -> GdUnitStringAssert:
-	var current := __current()
-	if current.empty():
+	var current = __current()
+	if current == null or current.empty():
 		return report_error(GdAssertMessages.error_is_not_empty())
 	return report_success()
 
 func contains(expected :String) -> GdUnitStringAssert:
-	var current := __current()
-	if current.find(expected) == -1:
+	var current = __current()
+	if current == null or current.find(expected) == -1:
 		return report_error(GdAssertMessages.error_contains(current, expected))
 	return report_success()
 
 func not_contains(expected :String) -> GdUnitStringAssert:
-	var current := __current()
-	if current.find(expected) != -1:
+	var current = __current()
+	if current != null and current.find(expected) != -1:
 		return report_error(GdAssertMessages.error_not_contains(current, expected))
 	return report_success()
 
 func contains_ignoring_case(expected :String) -> GdUnitStringAssert:
-	var current := __current()
-	if current.findn(expected) == -1:
+	var current = __current()
+	if current == null or current.findn(expected) == -1:
 		return report_error(GdAssertMessages.error_contains_ignoring_case(current, expected))
 	return report_success()
 
 func not_contains_ignoring_case(expected :String) -> GdUnitStringAssert:
-	var current := __current()
-	if current.findn(expected) != -1:
+	var current = __current()
+	if current != null and current.findn(expected) != -1:
 		return report_error(GdAssertMessages.error_not_contains_ignoring_case(current, expected))
 	return report_success()
 
 func starts_with(expected :String) -> GdUnitStringAssert:
-	var current := __current()
-	if current.find(expected) != 0:
+	var current = __current()
+	if current == null or current.find(expected) != 0:
 		return report_error(GdAssertMessages.error_starts_with(current, expected))
 	return report_success()
 
 func ends_with(expected :String) -> GdUnitStringAssert:
-	var current := __current()
+	var current = __current()
+	if current == null:
+		return report_error(GdAssertMessages.error_ends_with(current, expected))
 	var find = current.length() - expected.length()
 	if current.rfind(expected) != find:
 		return report_error(GdAssertMessages.error_ends_with(current, expected))
 	return report_success()
 
 func has_length(expected :int, comparator :int = Comparator.EQUAL) -> GdUnitStringAssert:
-	var current := __current()
+	var current = __current()
+	if current == null:
+		return report_error(GdAssertMessages.error_has_length(current, expected, comparator))
 	match comparator:
 		Comparator.EQUAL:
 			if current.length() != expected:
