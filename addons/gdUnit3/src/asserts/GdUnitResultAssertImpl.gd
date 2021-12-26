@@ -55,7 +55,7 @@ func is_not_null() -> GdUnitResultAssert:
 # Verifies that the result is ends up with empty 
 func is_empty() -> GdUnitResultAssert:
 	var result := __current()
-	if not result.is_empty():
+	if result == null or not result.is_empty():
 		report_error(GdAssertMessages.error_result_is_empty(result))
 	else:
 		report_success()
@@ -64,7 +64,7 @@ func is_empty() -> GdUnitResultAssert:
 # Verifies that the result is ends up with success
 func is_success() -> GdUnitResultAssert:
 	var result := __current()
-	if not result.is_success():
+	if result == null or not result.is_success():
 		report_error(GdAssertMessages.error_result_is_success(result))
 	else:
 		report_success()
@@ -73,7 +73,7 @@ func is_success() -> GdUnitResultAssert:
 # Verifies that the result is ends up with warning
 func is_warning() -> GdUnitResultAssert:
 	var result := __current()
-	if not result.is_warn():
+	if result == null or not result.is_warn():
 		report_error(GdAssertMessages.error_result_is_warning(result))
 	else:
 		report_success()
@@ -81,9 +81,9 @@ func is_warning() -> GdUnitResultAssert:
 
 # Verifies that the result is ends up with error
 func is_error() -> GdUnitResultAssert:
-	var current := __current()
-	if not current.is_error():
-		report_error(GdAssertMessages.error_result_is_error(current))
+	var result := __current()
+	if result == null or not result.is_error():
+		report_error(GdAssertMessages.error_result_is_error(result))
 	else:
 		report_success()
 	return self
@@ -91,6 +91,9 @@ func is_error() -> GdUnitResultAssert:
 # Verifies that the result contains the expected message
 func contains_message(expected :String) -> GdUnitResultAssert:
 	var result := __current()
+	if result == null:
+		report_error(GdAssertMessages.error_result_has_message("Null", expected))
+		return self
 	if result.is_success():
 		report_error(GdAssertMessages.error_result_has_message_on_success(expected))
 	elif result.is_error() and result.error_message() != expected:
@@ -104,8 +107,9 @@ func contains_message(expected :String) -> GdUnitResultAssert:
 # Verifies that the result contains the expected value
 func is_value(expected) -> GdUnitResultAssert:
 	var result := __current()
-	if not GdObjects.equals(result.value(), expected):
-		report_error(GdAssertMessages.error_result_is_value(result.value(), expected))
+	var value = null if result == null else result.value()
+	if not GdObjects.equals(value, expected):
+		report_error(GdAssertMessages.error_result_is_value(value, expected))
 	else:
 		report_success()
 	return self

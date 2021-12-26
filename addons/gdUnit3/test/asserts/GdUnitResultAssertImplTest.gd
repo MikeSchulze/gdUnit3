@@ -25,10 +25,12 @@ func test_is_empty():
 	assert_result(Result.warn("a warning"), GdUnitAssert.EXPECT_FAIL) \
 		.is_empty() \
 		.has_failure_message("Expecting the result must be a EMPTY but was WARNING:\n 'a warning'")
-	
 	assert_result(Result.error("a error"), GdUnitAssert.EXPECT_FAIL) \
 		.is_empty() \
 		.has_failure_message("Expecting the result must be a EMPTY but was ERROR:\n 'a error'")
+	assert_result(null, GdUnitAssert.EXPECT_FAIL) \
+		.is_empty() \
+		.has_failure_message("Expecting the result must be a EMPTY but was Null.")
 
 func test_is_success():
 	assert_result(Result.success("")).is_success()
@@ -36,10 +38,12 @@ func test_is_success():
 	assert_result(Result.warn("a warning"), GdUnitAssert.EXPECT_FAIL) \
 		.is_success() \
 		.has_failure_message("Expecting the result must be a SUCCESS but was WARNING:\n 'a warning'")
-	
 	assert_result(Result.error("a error"), GdUnitAssert.EXPECT_FAIL) \
 		.is_success() \
 		.has_failure_message("Expecting the result must be a SUCCESS but was ERROR:\n 'a error'")
+	assert_result(null, GdUnitAssert.EXPECT_FAIL) \
+		.is_success() \
+		.has_failure_message("Expecting the result must be a SUCCESS but was Null.")
 
 func test_is_warning():
 	assert_result(Result.warn("a warning")).is_warning()
@@ -47,10 +51,12 @@ func test_is_warning():
 	assert_result(Result.success("value"), GdUnitAssert.EXPECT_FAIL) \
 		.is_warning() \
 		.has_failure_message("Expecting the result must be a WARNING but was SUCCESS.")
-	
 	assert_result(Result.error("a error"), GdUnitAssert.EXPECT_FAIL) \
 		.is_warning() \
 		.has_failure_message("Expecting the result must be a WARNING but was ERROR:\n 'a error'")
+	assert_result(null, GdUnitAssert.EXPECT_FAIL) \
+		.is_warning() \
+		.has_failure_message("Expecting the result must be a WARNING but was Null.")
 
 func test_is_error():
 	assert_result(Result.error("a error")).is_error()
@@ -58,10 +64,12 @@ func test_is_error():
 	assert_result(Result.success(""), GdUnitAssert.EXPECT_FAIL) \
 		.is_error() \
 		.has_failure_message("Expecting the result must be a ERROR but was SUCCESS.")
-	
 	assert_result(Result.warn("a warning"), GdUnitAssert.EXPECT_FAIL) \
 		.is_error() \
 		.has_failure_message("Expecting the result must be a ERROR but was WARNING:\n 'a warning'")
+	assert_result(null, GdUnitAssert.EXPECT_FAIL) \
+		.is_error() \
+		.has_failure_message("Expecting the result must be a ERROR but was Null.")
 
 func test_contains_message():
 	assert_result(Result.error("a error")).contains_message("a error")
@@ -76,6 +84,9 @@ func test_contains_message():
 	assert_result(Result.error("Error 410"), GdUnitAssert.EXPECT_FAIL) \
 		.contains_message("Error 500") \
 		.has_failure_message("Expecting:\n 'Error 500'\n but was\n 'Error 410'.")
+	assert_result(null, GdUnitAssert.EXPECT_FAIL) \
+		.contains_message("Error 500") \
+		.has_failure_message("Expecting:\n 'Error 500'\n but was\n 'Null'.")
 
 func test_is_value():
 	assert_result(Result.success("")).is_value("")
@@ -91,6 +102,10 @@ func test_is_value():
 	assert_result(Result.success(result_value), GdUnitAssert.EXPECT_FAIL) \
 		.is_value("") \
 		.has_failure_message("Expecting to contain same value:\n ''\n but was\n <Node>.")
+	assert_result(null, GdUnitAssert.EXPECT_FAIL) \
+		.is_value("") \
+		.has_failure_message("Expecting to contain same value:\n ''\n but was\n 'Null'.")
+
 
 func test_override_failure_message() -> void:
 	assert_result(Result.success(""), GdUnitAssert.EXPECT_FAIL)\

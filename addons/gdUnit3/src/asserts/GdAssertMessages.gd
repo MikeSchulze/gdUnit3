@@ -264,6 +264,8 @@ static func error_result_is_value(current, expected) -> String:
 	return "%s\n %s\n but was\n %s." % [_error("Expecting to contain same value:"), _expected(expected), _current(current)]
 
 static func _result_error_message(current :Result, expected_type :int) -> String:
+	if current == null:
+		return _error("Expecting the result must be a %s but was Null." % result_type(expected_type))
 	if current.is_success():
 		return _error("Expecting the result must be a %s but was SUCCESS." % result_type(expected_type))
 	var error = "Expecting the result must be a %s but was %s:" % [result_type(expected_type), result_type(current._state)]
