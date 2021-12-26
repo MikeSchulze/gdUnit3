@@ -32,7 +32,6 @@ func test_is_not_null():
 	assert_dict(null, GdUnitAssert.EXPECT_FAIL)\
 		.is_not_null()\
 		.has_failure_message("Expecting: not to be 'Null'")
-		
 
 func test_is_equal():
 	assert_dict({}).is_equal({})
@@ -43,7 +42,11 @@ func test_is_equal():
 	
 	# should fail
 	assert_dict(null, GdUnitAssert.EXPECT_FAIL)\
-		.is_equal({1:1})
+		.is_equal({1:1})\
+		.has_failure_message("Expecting:\n"
+			+ " '{1:1}'\n"
+			+ " but was\n"
+			+ " 'Null'")
 		
 	assert_dict({}, GdUnitAssert.EXPECT_FAIL)\
 		.is_equal({1:1})
@@ -95,7 +98,10 @@ func test_is_empty():
 	assert_dict({}).is_empty()
 	
 	assert_dict(null, GdUnitAssert.EXPECT_FAIL)\
-		.is_empty()
+		.is_empty()\
+		.has_failure_message("Expecting:\n"
+			+ " must be empty but was\n"
+			+ " 'Null'")
 	assert_dict({1:1}, GdUnitAssert.EXPECT_FAIL)\
 		.is_empty()
 
@@ -104,7 +110,10 @@ func test_is_not_empty():
 	assert_dict({1:1, "key_a": "value_a"}).is_not_empty()
 	
 	assert_dict(null, GdUnitAssert.EXPECT_FAIL)\
-		.is_not_empty()
+		.is_not_empty()\
+		.has_failure_message("Expecting:\n"
+			+ " must not be empty")
+		
 	assert_dict({}, GdUnitAssert.EXPECT_FAIL)\
 		.is_not_empty()
 
@@ -115,7 +124,8 @@ func test_has_size():
 	assert_dict({1:1, 2:1, 3:1}).has_size(3)
 	
 	assert_dict(null, GdUnitAssert.EXPECT_FAIL)\
-		.has_size(0)
+		.has_size(0)\
+		.has_failure_message("Expecting: not to be 'Null'")
 	assert_dict(null, GdUnitAssert.EXPECT_FAIL)\
 		.has_size(1)
 	assert_dict({}, GdUnitAssert.EXPECT_FAIL)\
@@ -135,6 +145,9 @@ func test_contains_keys():
 	assert_dict({1:1, 3:3}, GdUnitAssert.EXPECT_FAIL)\
 		.contains_keys([1, 4])\
 		.has_failure_message("Expecting keys:\n 1, 3\n to contains:\n 1, 4\n but can't find key's:\n 4")
+	assert_dict(null, GdUnitAssert.EXPECT_FAIL)\
+		.contains_keys([1, 4])\
+		.has_failure_message("Expecting: not to be 'Null'")
 
 func test_contains_not_keys():
 	assert_dict({}).contains_not_keys([2])
@@ -147,6 +160,9 @@ func test_contains_not_keys():
 	assert_dict({1:1, 2:2, 3:3}, GdUnitAssert.EXPECT_FAIL)\
 		.contains_not_keys([1, 2, 3, 4])\
 		.has_failure_message("Expecting keys:\n 1, 2, 3\n do not contains:\n 1, 2, 3, 4\n but contains key's:\n 1, 2, 3")
+	assert_dict(null, GdUnitAssert.EXPECT_FAIL)\
+		.contains_not_keys([1, 4])\
+		.has_failure_message("Expecting: not to be 'Null'")
 
 func test_contains_key_value():
 	assert_dict({1:1}).contains_key_value(1, 1)
@@ -155,6 +171,9 @@ func test_contains_key_value():
 	assert_dict({1:1}, GdUnitAssert.EXPECT_FAIL)\
 		.contains_key_value(1, 2)\
 		.has_failure_message("Expecting key and value:\n '1' : '2'\n but contains\n '1' : '1'")
+	assert_dict(null, GdUnitAssert.EXPECT_FAIL)\
+		.contains_key_value(1, 2)\
+		.has_failure_message("Expecting: not to be 'Null'")
 
 func test_override_failure_message() -> void:
 	assert_dict({1:1}, GdUnitAssert.EXPECT_FAIL)\
