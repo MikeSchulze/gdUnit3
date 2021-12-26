@@ -57,6 +57,8 @@ func is_not_null() -> GdUnitDictionaryAssert:
 func is_equal(expected) -> GdUnitDictionaryAssert:
 	var current := __current()
 	expected = __expected(expected)
+	if current == null:
+		return report_error(GdAssertMessages.error_equal(null, expected))
 	if not GdObjects.equals(current, expected):
 		var c = var2str(current)
 		var e = var2str(expected)
@@ -95,7 +97,7 @@ func has_size(expected: int) -> GdUnitDictionaryAssert:
 	if current == null:
 		return report_error(GdAssertMessages.error_is_not_null())
 	if current.size() != expected:
-		return report_error(GdAssertMessages.error_has_size(current.size(), expected))
+		return report_error(GdAssertMessages.error_has_size(current, expected))
 	return report_success()
 
 # Verifies that the current dictionary contains the given key(s).
