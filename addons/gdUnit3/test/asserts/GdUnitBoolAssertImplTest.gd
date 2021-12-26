@@ -9,11 +9,15 @@ func test_is_true():
 	assert_bool(true).is_true()
 	assert_bool(false, GdUnitAssert.EXPECT_FAIL).is_true() \
 		.has_failure_message("Expecting: 'True' but is 'False'")
+	assert_bool(null, GdUnitAssert.EXPECT_FAIL).is_true() \
+		.has_failure_message("Expecting: 'True' but is 'Null'")
 
 func test_isFalse():
 	assert_bool(false).is_false()
 	assert_bool(true, GdUnitAssert.EXPECT_FAIL).is_false() \
 		.has_failure_message("Expecting: 'False' but is 'True'")
+	assert_bool(null, GdUnitAssert.EXPECT_FAIL).is_false() \
+		.has_failure_message("Expecting: 'False' but is 'Null'")
 
 func test_is_null():
 	assert_bool(null).is_null()
@@ -35,8 +39,12 @@ func test_is_equal():
 	assert_bool(true, GdUnitAssert.EXPECT_FAIL) \
 		.is_equal(false) \
 		.has_failure_message("Expecting:\n 'False'\n but was\n 'True'")
+	assert_bool(null, GdUnitAssert.EXPECT_FAIL) \
+		.is_equal(false) \
+		.has_failure_message("Expecting:\n 'False'\n but was\n 'Null'")
 
 func test_is_not_equal():
+	assert_bool(null).is_not_equal(false)
 	assert_bool(true).is_not_equal(false)
 	assert_bool(false).is_not_equal(true)
 	assert_bool(true, GdUnitAssert.EXPECT_FAIL) \

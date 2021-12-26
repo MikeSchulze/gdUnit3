@@ -107,11 +107,11 @@ static func error_is_instanceof(current: Result, expected :Result) -> String:
 		_expected(expected.or_else(null)), _current(current.or_else(null))]
 
 # -- Boolean Assert specific messages -----------------------------------------------------
-static func error_is_true() -> String:
-	return "%s %s but is %s" % [_error("Expecting:"), _expected(true), _current(false)]
+static func error_is_true(current) -> String:
+	return "%s %s but is %s" % [_error("Expecting:"), _expected(true), _current(current)]
 
-static func error_is_false() -> String:
-	return "%s %s but is %s" % [_error("Expecting:"), _expected(false), _current(true)]
+static func error_is_false(current) -> String:
+	return "%s %s but is %s" % [_error("Expecting:"), _expected(false), _current(current)]
 
 
 
