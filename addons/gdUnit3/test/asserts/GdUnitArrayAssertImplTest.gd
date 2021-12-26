@@ -24,20 +24,34 @@ func test_is_equal():
 	# should fail because the array not contains same elements and has diff size
 	assert_array([1, 2, 4, 5], GdUnitAssert.EXPECT_FAIL) \
 		.is_equal([1, 2, 3, 4, 2, 5])
+	assert_array(null, GdUnitAssert.EXPECT_FAIL) \
+		.is_equal([1, 2, 3])\
+		.has_failure_message("Expecting:\n"
+			+ " 1\n2\n3\n"
+			+ " but was\n"
+			+ " 'Null'")
 
 func test_is_equal_ignoring_case():
 	assert_array(["this", "is", "a", "message"]).is_equal_ignoring_case(["This", "is", "a", "Message"])
 	# should fail because the array not contains same elements
 	assert_array(["this", "is", "a", "message"], GdUnitAssert.EXPECT_FAIL) \
 		.is_equal_ignoring_case(["This", "is", "an", "Message"])
+	assert_array(null, GdUnitAssert.EXPECT_FAIL) \
+		.is_equal_ignoring_case(["This", "is"])\
+		.has_failure_message("Expecting:\n"
+			+ " This\nis\n"
+			+ " but was\n"
+			+ " 'Null'")
 
 func test_is_not_equal():
+	assert_array(null).is_not_equal([1, 2, 3])
 	assert_array([1, 2, 3, 4, 5]).is_not_equal([1, 2, 3, 4, 5, 6])
 	# should fail because the array  contains same elements
 	assert_array([1, 2, 3, 4, 5], GdUnitAssert.EXPECT_FAIL) \
 		.is_not_equal([1, 2, 3, 4, 5])
 
 func test_is_not_equal_ignoring_case():
+	assert_array(null).is_not_equal_ignoring_case(["This", "is", "an", "Message"])
 	assert_array(["this", "is", "a", "message"]).is_not_equal_ignoring_case(["This", "is", "an", "Message"])
 	# should fail because the array contains same elements ignoring case sensitive
 	assert_array(["this", "is", "a", "message"], GdUnitAssert.EXPECT_FAIL) \
@@ -49,8 +63,12 @@ func test_is_empty():
 	assert_array([1], GdUnitAssert.EXPECT_FAIL) \
 		.is_empty()\
 		.has_failure_message("Expecting:\n must be empty but was\n 1")
+	assert_array(null, GdUnitAssert.EXPECT_FAIL) \
+		.is_empty()\
+		.has_failure_message("Expecting:\n must be empty but was\n 'Null'")
 
 func test_is_not_empty():
+	assert_array(null).is_not_empty()
 	assert_array([1]).is_not_empty()
 	# should fail because the array is empty
 	assert_array([], GdUnitAssert.EXPECT_FAIL) \
@@ -64,6 +82,9 @@ func test_has_size():
 	assert_array([1, 2, 3, 4, 5], GdUnitAssert.EXPECT_FAIL) \
 		.has_size(4)\
 		.has_failure_message("Expecting size:\n '4'\n but was\n '5'")
+	assert_array(null, GdUnitAssert.EXPECT_FAIL) \
+		.has_size(4)\
+		.has_failure_message("Expecting size:\n '4'\n but was\n 'Null'")
 
 func test_contains():
 	assert_array([1, 2, 3, 4, 5]).contains([])
@@ -79,6 +100,14 @@ but could not find elements:
 	assert_array([1, 2, 3, 4, 5], GdUnitAssert.EXPECT_FAIL) \
 		.contains([2, 7, 6])\
 		.has_failure_message(expected_error_message)
+	assert_array(null, GdUnitAssert.EXPECT_FAIL) \
+		.contains([2, 7, 6])\
+		.has_failure_message("Expecting contains elements:\n"
+			+ " 'Null'\n"
+			+ " do contains (in any order)\n"
+			+ " 2, 7, 6\n"
+			+ "but could not find elements:\n"
+			+ " 2, 7, 6")
 
 func test_contains_exactly():
 	assert_array([1, 2, 3, 4, 5]).contains_exactly([1, 2, 3, 4, 5])
@@ -114,6 +143,15 @@ but could not find elements:
 	assert_array([1, 2, 3, 4, 5], GdUnitAssert.EXPECT_FAIL) \
 		.contains_exactly([1, 4, 3, 2, 5, 6, 7])\
 		.has_failure_message(expected_error_message)
+	
+	assert_array(null, GdUnitAssert.EXPECT_FAIL) \
+		.contains_exactly([1, 4, 3])\
+		.has_failure_message("Expecting contains exactly elements:\n"
+			+ " 'Null'\n"
+			+ " do contains (in same order)\n"
+			+ " 1, 4, 3\n"
+			+ "but could not find elements:\n"
+			+ " 1, 4, 3")
 
 func test_contains_exactly_in_any_order():
 	assert_array([1, 2, 3, 4, 5]).contains_exactly_in_any_order([1, 2, 3, 4, 5])
@@ -145,6 +183,15 @@ and could not find elements:
 	assert_array([1, 2, 6, 9, 10, 4, 5], GdUnitAssert.EXPECT_FAIL) \
 		.contains_exactly_in_any_order([5, 3, 2, 4, 1])\
 		.has_failure_message(expected_error_message)
+	
+	assert_array(null, GdUnitAssert.EXPECT_FAIL) \
+		.contains_exactly_in_any_order([1, 4, 3])\
+		.has_failure_message("Expecting contains exactly elements:\n"
+			+ " 'Null'\n"
+			+ " do contains exactly (in any order)\n"
+			+ " 1, 4, 3\n"
+			+ "but could not find elements:\n"
+			+ " 1, 4, 3")
 
 func test_fluent():
 	assert_array([])\
@@ -181,6 +228,17 @@ func test_extract() -> void:
 	# try extract on object via a func that has no return value
 	assert_array([Reference.new(), 2, AStar.new(), auto_free(Node.new())]).extract("remove_meta", [""])\
 		.contains_exactly([null, "n.a.", null, null])
+		
+	assert_array(null, GdUnitAssert.EXPECT_FAIL).extract("get_class")\
+		.contains_exactly(["AStar", "Node"])\
+		.has_failure_message("Expecting contains exactly elements:\n"
+			+ " Null\n"
+			+ " do contains (in same order)\n"
+			+ " AStar, Node\n"
+			+ "but some elements where not expected:\n"
+			+ " Null\n"
+			+ "and could not find elements:\n"
+			+ " AStar, Node")
 
 class TestObj:
 	var _name :String
@@ -241,6 +299,18 @@ func test_extractv() -> void:
 	assert_array([TestObj.new("A", 10), TestObj.new("B", "foo", "bar"), TestObj.new("C", 11, 42)])\
 		.extractv(extr("get_name"), extr("get_value"), extr("get_x"))\
 		.contains_exactly([tuple("A", 10, null), tuple("B", "foo", "bar"), tuple("C", 11, 42)])
+	
+	assert_array(null, GdUnitAssert.EXPECT_FAIL)\
+		.extractv(extr("get_name"), extr("get_value"), extr("get_x"))\
+		.contains_exactly([tuple("A", 10, null), tuple("B", "foo", "bar"), tuple("C", 11, 42)])\
+		.has_failure_message("Expecting contains exactly elements:\n"
+			+ " Null\n"
+			+ " do contains (in same order)\n"
+			+ " tuple([A, 10, Null]), tuple([B, foo, bar]), tuple([C, 11, 42])\n"
+			+ "but some elements where not expected:\n"
+			+ " Null\n"
+			+ "and could not find elements:\n"
+			+ " tuple([A, 10, Null]), tuple([B, foo, bar]), tuple([C, 11, 42])")
 
 func test_extractv_chained_func() -> void:
 	var root_a = TestObj.new("root_a", null)
