@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -55,17 +54,12 @@ public class ExecutorTest : TestSuite, ITestEventListener
         }
     }
 
-
-    private readonly string[] DEFAULT_TEST_CASES = { "TestCase1", "TestCase2" };
-    private void AssertEventList(List<TestEvent> events, string suiteName, string[] testCaseNames = null)
+    private void AssertEventList(List<TestEvent> events, string suiteName, params string[] testCaseNames)
     {
-        events.ForEach(e => Godot.GD.PrintS(e));
-
-        var testCases = testCaseNames ?? DEFAULT_TEST_CASES;
         var expectedEvents = new List<ITuple>();
 
-        expectedEvents.Add(Tuple(TestEvent.TYPE.TESTSUITE_BEFORE, suiteName, "", testCases.Length));
-        foreach (var testCase in testCases)
+        expectedEvents.Add(Tuple(TestEvent.TYPE.TESTSUITE_BEFORE, suiteName, "", testCaseNames.Length));
+        foreach (var testCase in testCaseNames)
         {
             expectedEvents.Add(Tuple(TestEvent.TYPE.TESTCASE_BEFORE, suiteName, testCase, 0));
             expectedEvents.Add(Tuple(TestEvent.TYPE.TESTCASE_AFTER, suiteName, testCase, 0));
@@ -78,6 +72,13 @@ public class ExecutorTest : TestSuite, ITestEventListener
             .ContainsExactly(expectedEvents);
     }
 
+    private IArrayAssert AssertEventCounters(List<TestEvent> events) =>
+        AssertArray(events).ExtractV(Extr("Type"), Extr("ErrorCount"), Extr("FailedCount"), Extr("OrphanCount"));
+
+    private IArrayAssert AssertEventStates(List<TestEvent> events) =>
+         AssertArray(events).ExtractV(Extr("TestName"), Extr("IsSuccess"), Extr("IsWarning"), Extr("IsFailed"), Extr("IsError"));
+
+
     [TestCase]
     public void Execute_Success()
     {
@@ -88,10 +89,24 @@ public class ExecutorTest : TestSuite, ITestEventListener
         var events = Execute(testSuite);
 
         // verify basis infos
-        AssertEventList(events, "ExampleTestSuiteA");
+        AssertEventList(events, "ExampleTestSuiteA", "TestCase1", "TestCase2");
 
-
-
+        AssertEventCounters(events).ContainsExactly(
+            Tuple(TestEvent.TYPE.TESTSUITE_BEFORE, 0, 0, 0),
+            Tuple(TestEvent.TYPE.TESTCASE_BEFORE, 0, 0, 0),
+            Tuple(TestEvent.TYPE.TESTCASE_AFTER, 0, 0, 0),
+            Tuple(TestEvent.TYPE.TESTCASE_BEFORE, 0, 0, 0),
+            Tuple(TestEvent.TYPE.TESTCASE_AFTER, 0, 0, 0),
+            Tuple(TestEvent.TYPE.TESTSUITE_AFTER, 0, 0, 0)
+        );
+        AssertEventStates(events).ContainsExactly(
+            Tuple("before", true, false, false, false),
+            Tuple("TestCase1", true, false, false, false),
+            Tuple("TestCase1", true, false, false, false),
+            Tuple("TestCase2", true, false, false, false),
+            Tuple("TestCase2", true, false, false, false),
+            Tuple("after", true, false, false, false)
+        );
     }
 
 }

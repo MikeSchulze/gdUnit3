@@ -25,6 +25,7 @@ namespace GdUnit3
         const string ORPHAN_NODES = "orphan_nodes";
         const string ERROR_COUNT = "error_count";
         const string FAILED_COUNT = "failed_count";
+        const string TOTAL_COUNT = "total_count";
         const string SKIPPED_COUNT = "skipped_count";
 
         private IDictionary<string, object> _data = new Dictionary<string, object>();
@@ -36,7 +37,7 @@ namespace GdUnit3
             _data.Add("resource_path", resourcePath);
             _data.Add("suite_name", suiteName);
             _data.Add("test_name", testName);
-            _data.Add("total_count", totalCount);
+            _data.Add(TOTAL_COUNT, totalCount);
             //var _statistics = statistics ?? Enumerable.Empty<object>();
             if (statistics != null)
             {
@@ -97,7 +98,10 @@ namespace GdUnit3
         public TestEvent.TYPE Type { get; private set; }
         public string SuiteName() => _data["suite_name"] as string;
         public string TestName() => _data["test_name"] as string;
-        public int TotalCount() => (int)_data["total_count"];
+        public int TotalCount() => _data.ContainsKey(TOTAL_COUNT) ? (int)_data[TOTAL_COUNT] : 0;
+        public int ErrorCount() => _data.ContainsKey(ERROR_COUNT) ? (int)_data[ERROR_COUNT] : 0;
+        public int FailedCount() => _data.ContainsKey(FAILED_COUNT) ? (int)_data[FAILED_COUNT] : 0;
+        public int OrphanCount() => _data.ContainsKey(ORPHAN_NODES) ? (int)_data[ORPHAN_NODES] : 0;
 
         public override string ToString()
         {

@@ -22,21 +22,21 @@ namespace GdUnit3
             if (value == null)
                 return null;
 
-            try
+            foreach (var methodName in _methodNames)
             {
-                foreach (var methodName in _methodNames)
+                try
                 {
                     value = Extract(value, methodName);
                     if (value == null || value.Equals("n.a."))
                         return value;
                 }
-                return value;
+                catch (Exception e)
+                {
+                    Godot.GD.PrintErr(e.Message, value, methodName);
+                    return "n.a.";
+                }
             }
-            catch (Exception e)
-            {
-                Godot.GD.PrintErr(e.Message, value, _methodNames);
-                return "n.a.";
-            }
+            return value;
         }
 
         private object Extract(object instance, string name)
