@@ -65,41 +65,41 @@ func is_equal_approx(expected :Vector3, approx :Vector3) -> GdUnitVector3Assert:
 # Verifies that the current value is less than the given one.
 func is_less(expected :Vector3) -> GdUnitVector3Assert:
 	var current := __current()
-	if current >= expected:
+	if current == null or current >= expected:
 		report_error(GdAssertMessages.error_is_value(Comparator.LESS_THAN, current, expected))
 	return report_success()
 
 # Verifies that the current value is less than or equal the given one.
 func is_less_equal(expected :Vector3) -> GdUnitVector3Assert:
 	var current := __current()
-	if current > expected:
+	if current == null or current > expected:
 		report_error(GdAssertMessages.error_is_value(Comparator.LESS_EQUAL, current, expected))
 	return report_success()
 
 # Verifies that the current value is greater than the given one.
 func is_greater(expected :Vector3) -> GdUnitVector3Assert:
 	var current := __current()
-	if current <= expected:
+	if current == null or current <= expected:
 		return report_error(GdAssertMessages.error_is_value(Comparator.GREATER_THAN, current, expected))
 	return report_success()
 
 # Verifies that the current value is greater than or equal the given one.
 func is_greater_equal(expected :Vector3) -> GdUnitVector3Assert:
 	var current := __current()
-	if current < expected:
+	if current == null or current < expected:
 		return report_error(GdAssertMessages.error_is_value(Comparator.GREATER_EQUAL, current, expected))
 	return report_success()
 
 # Verifies that the current value is between the given boundaries (inclusive).
 func is_between(from :Vector3, to :Vector3) -> GdUnitVector3Assert:
 	var current := __current()
-	if not (current >= from and current <= to):
+	if current == null or not (current >= from and current <= to):
 		return report_error(GdAssertMessages.error_is_value(Comparator.BETWEEN_EQUAL, current, from, to))
 	return report_success()
 
 # Verifies that the current value is not between the given boundaries (inclusive).
 func is_not_between(from :Vector3, to :Vector3) -> GdUnitVector3Assert:
 	var current := __current()
-	if (current >= from and current <= to):
+	if current != null and current >= from and current <= to:
 		return report_error(GdAssertMessages.error_is_value(Comparator.NOT_BETWEEN_EQUAL, current, from, to))
 	return report_success()
