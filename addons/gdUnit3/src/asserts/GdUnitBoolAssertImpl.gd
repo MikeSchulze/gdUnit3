@@ -8,8 +8,8 @@ func _init(caller :Object, current, expect_result: int):
 	if not _base.__validate_value_type(current, TYPE_BOOL):
 		report_error("GdUnitBoolAssert inital error, unexpected type <%s>" % GdObjects.typeof_as_string(current))
 
-func __current() -> bool:
-	return _base.__current() as bool
+func __current():
+	return _base.__current()
 
 func report_success() -> GdUnitBoolAssert:
 	_base.report_success()
@@ -58,10 +58,10 @@ func is_not_equal(expected) -> GdUnitBoolAssert:
 
 func is_true() -> GdUnitBoolAssert:
 	if __current() != true:
-		return report_error(GdAssertMessages.error_is_true())
+		return report_error(GdAssertMessages.error_is_true(__current()))
 	return report_success()
 	
 func is_false() -> GdUnitBoolAssert:
-	if __current() == true:
-		return report_error(GdAssertMessages.error_is_false())
+	if __current() == true || __current() == null:
+		return report_error(GdAssertMessages.error_is_false(__current()))
 	return report_success()
