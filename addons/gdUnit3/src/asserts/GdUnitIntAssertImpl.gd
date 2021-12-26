@@ -61,56 +61,56 @@ func is_not_equal(expected :int) -> GdUnitIntAssert:
 # Verifies that the current value is less than the given one.
 func is_less(expected :int) -> GdUnitIntAssert:
 	var current := __current()
-	if current >= expected:
+	if current == null or current >= expected:
 		return report_error(GdAssertMessages.error_is_value(Comparator.LESS_THAN, current, expected))
 	return report_success()
 
 # Verifies that the current value is less than or equal the given one.
 func is_less_equal(expected :int) -> GdUnitIntAssert:
 	var current := __current()
-	if current > expected:
+	if current == null or current > expected:
 		return report_error(GdAssertMessages.error_is_value(Comparator.LESS_EQUAL, current, expected))
 	return report_success()
 
 # Verifies that the current value is greater than the given one.
 func is_greater(expected :int) -> GdUnitIntAssert:
 	var current := __current()
-	if current <= expected:
+	if current == null or current <= expected:
 		return report_error(GdAssertMessages.error_is_value(Comparator.GREATER_THAN, current, expected))
 	return report_success()
 
 # Verifies that the current value is greater than or equal the given one.
 func is_greater_equal(expected :int) -> GdUnitIntAssert:
 	var current := __current()
-	if current < expected:
+	if current == null or current < expected:
 		return report_error(GdAssertMessages.error_is_value(Comparator.GREATER_EQUAL, current, expected))
 	return report_success()
 
 # Verifies that the current value is even.
 func is_even() -> GdUnitIntAssert:
 	var current := __current()
-	if current % 2 != 0:
+	if current == null or current % 2 != 0:
 		return report_error(GdAssertMessages.error_is_even(current))
 	return report_success()
 
 # Verifies that the current value is odd.
 func is_odd() -> GdUnitIntAssert:
 	var current := __current()
-	if current % 2 == 0:
+	if current == null or current % 2 == 0:
 		return report_error(GdAssertMessages.error_is_odd(current))
 	return report_success()
 
 # Verifies that the current value is negative.
 func is_negative() -> GdUnitIntAssert:
 	var current := __current()
-	if current >= 0:
+	if current == null or current >= 0:
 		return report_error(GdAssertMessages.error_is_negative(current))
 	return report_success()
 
 # Verifies that the current value is not negative.
 func is_not_negative() -> GdUnitIntAssert:
 	var current := __current()
-	if current < 0:
+	if current == null or current < 0:
 		return report_error(GdAssertMessages.error_is_not_negative(current))
 	return report_success()
 
@@ -145,6 +145,6 @@ func is_not_in(expected :Array) -> GdUnitIntAssert:
 # Verifies that the current value is between the given boundaries (inclusive).
 func is_between(from :int, to :int) -> GdUnitIntAssert:
 	var current := __current()
-	if current < from or current > to:
+	if current == null or current < from or current > to:
 		return report_error(GdAssertMessages.error_is_value(Comparator.BETWEEN_EQUAL, current, from, to))
 	return report_success()
