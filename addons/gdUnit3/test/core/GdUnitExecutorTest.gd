@@ -7,11 +7,16 @@ const __source = 'res://addons/gdUnit3/src/core/GdUnitExecutor.gd'
 
 var _executor :GdUnitExecutor
 var _events :Array = Array()
+var _stack : Array = []
 
 func before():
 	_executor = GdUnitExecutor.new(true)
 	Engine.get_main_loop().root.add_child(_executor)
 	_executor.connect("send_event_debug", self, "_on_executor_event")
+
+func before_test():
+	# clean the stack before every test run
+	_stack.clear()
 
 func resource(resource_path :String) -> GdUnitTestSuite:
 	return GdUnitTestResourceLoader.load_test_suite(resource_path)
@@ -49,7 +54,7 @@ func assert_event_reports(events :Array, reports1 :Array, reports2 :Array, repor
 	var expected_reports := [reports1, reports2, reports3, reports4, reports5, reports6]
 	for event_index in events.size():
 		var current :Array = events[event_index].reports()
-		var expected = expected_reports[event_index]
+		var expected = expected_reports[event_index] if expected_reports.size() > event_index else []
 		if expected.empty():
 			for m in current.size():
 				assert_str(flating_message(current[m].message())).is_empty()
@@ -542,3 +547,8 @@ func test_execute_add_child_on_before_GD_106() -> void:
 	])
 	# all success no reports expected
 	assert_event_reports(events, [], [], [], [], [], [])
+
+func test_fuzzer_before_before(fuzzer := Fuzzers.rangei(0, 1000), fuzzer_iterations = 1000):
+	# verify the used stack is cleaned by 'before_test'
+	assert_array(_stack).is_empty()
+	_stack.push_back(1)

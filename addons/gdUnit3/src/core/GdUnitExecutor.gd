@@ -13,7 +13,6 @@ const STAGE_TEST_CASE_AFTER = GdUnitReportCollector.STAGE_TEST_CASE_AFTER
 
 var _testsuite_timer :LocalTime
 var _testcase_timer :LocalTime
-var _testrun_timer :LocalTime
 
 var _memory_pool :GdUnitMemoryPool
 var _report_errors_enabled :bool
@@ -110,41 +109,56 @@ func suite_after(test_suite :GdUnitTestSuite) -> GDScriptFunctionState:
 	_report_collector.clear_reports(STAGE_TEST_SUITE_BEFORE|STAGE_TEST_SUITE_AFTER)
 	return null
 
-func test_before(test_suite :GdUnitTestSuite, test_case :_TestCase) -> GDScriptFunctionState:
+func test_before(test_suite :GdUnitTestSuite, test_case :_TestCase, fire_event := true) -> GDScriptFunctionState:
 	set_stage(STAGE_TEST_CASE_BEFORE)
 	_memory_pool.set_pool(test_suite, GdUnitMemoryPool.TEST_SETUP, true)
 	
-	_testcase_timer = LocalTime.now()
 	_total_test_execution_orphans = 0
-	fire_event(GdUnitEvent.new()\
-		.test_before(test_suite.get_script().resource_path, test_suite.get_name(), test_case.get_name()))
+	if fire_event:
+		_testcase_timer = LocalTime.now()
+		fire_event(GdUnitEvent.new()\
+			.test_before(test_suite.get_script().resource_path, test_suite.get_name(), test_case.get_name()))
 	
 	test_suite.set_meta(GdUnitAssertImpl.GD_TEST_FAILURE, false)
-	if not test_case.is_skipped():
-		var fstate = test_suite.before_test()
-		if GdUnitTools.is_yielded(fstate):
-			yield(fstate, "completed")
+	var fstate = test_suite.before_test()
+	if GdUnitTools.is_yielded(fstate):
+		yield(fstate, "completed")
 	
 	_memory_pool.monitor_stop()
 	GdUnitTools.run_auto_close()
 	return null
 
-func test_after(test_suite :GdUnitTestSuite, test_case :_TestCase) -> GDScriptFunctionState:
+func test_after(test_suite :GdUnitTestSuite, test_case :_TestCase, fire_event := true) -> GDScriptFunctionState:
+	_memory_pool.free_pool()
+	# give objects time to finallize
+	if fire_event:
+		yield(get_tree(), "idle_frame")
+	_memory_pool.monitor_stop()
+	var execution_orphan_nodes = _memory_pool.orphan_nodes()
+	if execution_orphan_nodes > 0:
+		_total_test_execution_orphans += execution_orphan_nodes
+		_total_test_warnings += 1
+		_report_collector.push_front(STAGE_TEST_CASE_EXECUTE, GdUnitReport.new() \
+			.create(GdUnitReport.WARN, test_case.line_number(), GdAssertMessages.orphan_detected_on_test(execution_orphan_nodes)))
+	
+	if test_case.is_interupted() and not test_case.is_expect_interupted():
+		_report_collector.add_report(STAGE_TEST_CASE_EXECUTE, GdUnitReport.new() \
+				.create(GdUnitReport.INTERUPTED, test_case.line_number(), "Test timed out suite_after %s" % LocalTime.elapsed(test_case.timeout())))
+	
 	set_stage(STAGE_TEST_CASE_AFTER)
 	_memory_pool.set_pool(test_suite, GdUnitMemoryPool.TEST_SETUP)
 	
-	if not test_case.is_skipped():
-		var fstate = test_suite.after_test()
-		if GdUnitTools.is_yielded(fstate):
-			yield(fstate, "completed")
-		_memory_pool.free_pool()
-		_memory_pool.monitor_stop()
-		var test_setup_orphan_nodes = _memory_pool.orphan_nodes()
-		if test_setup_orphan_nodes > 0:
-			_total_test_warnings += 1
-			_total_test_execution_orphans += test_setup_orphan_nodes
-			_report_collector.push_front(STAGE_TEST_CASE_AFTER, GdUnitReport.new() \
-				.create(GdUnitReport.WARN, test_case.line_number(), GdAssertMessages.orphan_detected_on_test_setup(test_setup_orphan_nodes)))
+	var fstate = test_suite.after_test()
+	if GdUnitTools.is_yielded(fstate):
+		yield(fstate, "completed")
+	_memory_pool.free_pool()
+	_memory_pool.monitor_stop()
+	var test_setup_orphan_nodes = _memory_pool.orphan_nodes()
+	if test_setup_orphan_nodes > 0:
+		_total_test_warnings += 1
+		_total_test_execution_orphans += test_setup_orphan_nodes
+		_report_collector.push_front(STAGE_TEST_CASE_AFTER, GdUnitReport.new() \
+			.create(GdUnitReport.WARN, test_case.line_number(), GdAssertMessages.orphan_detected_on_test_setup(test_setup_orphan_nodes)))
 	
 	var reports := _report_collector.get_reports(STAGE_TEST_CASE_BEFORE|STAGE_TEST_CASE_EXECUTE|STAGE_TEST_CASE_AFTER)
 	var is_error := test_case.is_interupted() and not test_case.is_expect_interupted()
@@ -166,64 +180,64 @@ func test_after(test_suite :GdUnitTestSuite, test_case :_TestCase) -> GDScriptFu
 		GdUnitEvent.SKIPPED_COUNT: int(test_case.is_skipped()),
 	}
 	
-	fire_event(GdUnitEvent.new()\
-		.test_after(test_suite.get_script().resource_path, test_suite.get_name(), test_case.get_name(), statistics, reports.duplicate()))
+	if fire_event:
+		fire_event(GdUnitEvent.new()\
+			.test_after(test_suite.get_script().resource_path, test_suite.get_name(), test_case.get_name(), statistics, reports.duplicate()))
 	_report_collector.clear_reports(STAGE_TEST_CASE_BEFORE|STAGE_TEST_CASE_EXECUTE|STAGE_TEST_CASE_AFTER)
 	return null
 
-func execute_test_case(test_suite :GdUnitTestSuite, test_case :_TestCase) -> GDScriptFunctionState:
+func execute_test_case_single(test_suite :GdUnitTestSuite, test_case :_TestCase) -> GDScriptFunctionState:
 	_test_run_state = test_before(test_suite, test_case)
 	if GdUnitTools.is_yielded(_test_run_state):
 		yield(_test_run_state, "completed")
 		_test_run_state = null
 	
-	_testrun_timer = LocalTime.now()
 	set_stage(STAGE_TEST_CASE_EXECUTE)
 	_memory_pool.set_pool(test_suite, GdUnitMemoryPool.TEST_EXECUTE, true)
 	test_case.generate_seed()
-	
-	if not test_case.is_skipped():
-		if not test_case.has_fuzzer():
-			_test_run_state = test_case.execute()
-			# is yielded than wait for completed
-			if GdUnitTools.is_yielded(_test_run_state):
-				yield(_test_run_state, "completed")
-		else:
-			var fuzzers := create_fuzzers(test_suite, test_case)
-			for iteration in test_case.iterations():
-				# interrupt at first failure
-				var reports := _report_collector.get_reports(STAGE_TEST_CASE_EXECUTE)
-				if not reports.empty():
-					var report :GdUnitReport = _report_collector.pop_front(STAGE_TEST_CASE_EXECUTE)
-					_report_collector.add_report(STAGE_TEST_CASE_EXECUTE, GdUnitReport.new() \
-							.create(GdUnitReport.FAILURE, report.line_number(), GdAssertMessages.fuzzer_interuped(iteration-1, report.message())))
-					break
-				_test_run_state = test_case.execute(fuzzers, iteration)
-				# is yielded than wait for completed
-				if GdUnitTools.is_yielded(_test_run_state):
-					yield(_test_run_state, "completed")
-				if test_case.is_interupted():
-					break
-	
-	_memory_pool.free_pool()
-	# give objects time to finallize
-	yield(get_tree(), "idle_frame")
-	_memory_pool.monitor_stop()
-	var execution_orphan_nodes = _memory_pool.orphan_nodes()
-	if execution_orphan_nodes > 0:
-		_total_test_execution_orphans += execution_orphan_nodes
-		_total_test_warnings += 1
-		_report_collector.push_front(STAGE_TEST_CASE_EXECUTE, GdUnitReport.new() \
-			.create(GdUnitReport.WARN, test_case.line_number(), GdAssertMessages.orphan_detected_on_test(execution_orphan_nodes)))
-	
-	if test_case.is_interupted() and not test_case.is_expect_interupted():
-		_report_collector.add_report(STAGE_TEST_CASE_EXECUTE, GdUnitReport.new() \
-				.create(GdUnitReport.INTERUPTED, test_case.line_number(), "Test timed out suite_after %s" % LocalTime.elapsed(test_case.timeout())))
+	_test_run_state = test_case.execute()
+	# is yielded than wait for completed
+	if GdUnitTools.is_yielded(_test_run_state):
+		yield(_test_run_state, "completed")
 	
 	_test_run_state = test_after(test_suite, test_case)
 	if GdUnitTools.is_yielded(_test_run_state):
 		yield(_test_run_state, "completed")
 		_test_run_state = null
+	return _test_run_state
+
+func execute_test_case_iterative(test_suite :GdUnitTestSuite, test_case :_TestCase) -> GDScriptFunctionState:
+	test_case.generate_seed()
+	var fuzzers := create_fuzzers(test_suite, test_case)
+	var is_failure := false
+	for iteration in test_case.iterations():
+		# call before_test for each iteration
+		_test_run_state = test_before(test_suite, test_case, iteration==0 )
+		if GdUnitTools.is_yielded(_test_run_state):
+			yield(_test_run_state, "completed")
+			_test_run_state = null
+		
+		set_stage(STAGE_TEST_CASE_EXECUTE)
+		_memory_pool.set_pool(test_suite, GdUnitMemoryPool.TEST_EXECUTE, true)
+		_test_run_state = test_case.execute(fuzzers, iteration)
+		if GdUnitTools.is_yielded(_test_run_state):
+			yield(_test_run_state, "completed")
+		
+		var reports := _report_collector.get_reports(STAGE_TEST_CASE_EXECUTE)
+		# interrupt at first failure
+		if not reports.empty():
+			is_failure = true
+			var report :GdUnitReport = _report_collector.pop_front(STAGE_TEST_CASE_EXECUTE)
+			_report_collector.add_report(STAGE_TEST_CASE_EXECUTE, GdUnitReport.new() \
+					.create(GdUnitReport.FAILURE, report.line_number(), GdAssertMessages.fuzzer_interuped(iteration, report.message())))
+		# call after_test for each iteration
+		_test_run_state = test_after(test_suite, test_case, iteration==test_case.iterations()-1 or is_failure)
+		if GdUnitTools.is_yielded(_test_run_state):
+			yield(_test_run_state, "completed")
+			_test_run_state = null
+		
+		if test_case.is_interupted() or is_failure:
+			break
 	return _test_run_state
 
 func execute(test_suite :GdUnitTestSuite) -> GDScriptFunctionState:
@@ -248,7 +262,11 @@ func execute(test_suite :GdUnitTestSuite) -> GDScriptFunctionState:
 			if _fail_fast and _total_test_failed > 0:
 				break
 			test_suite.set_active_test_case(test_case.get_name())
-			fs = execute_test_case(test_suite, test_case)
+			if not test_case.is_skipped():
+				if test_case.has_fuzzer():
+					fs = execute_test_case_iterative(test_suite, test_case)
+				else:
+					fs = execute_test_case_single(test_suite, test_case)
 			# is yielded than wait for completed
 			if GdUnitTools.is_yielded(fs):
 				yield(fs, "completed")
