@@ -2,7 +2,22 @@
 extends GdUnitTestSuite
 
 
+var _stack : Array
+
+func before():
+	# init the stack
+	_stack = []
+
+func before_test():
+	# clean the stack before every test run
+	_stack.clear()
+
+
 func test_multi_yielding_with_fuzzer(fuzzer := Fuzzers.rangei(0, 1000), fuzzer_iterations = 10):
+	# verify the used stack is cleaned by 'before_test'
+	assert_array(_stack).is_empty()
+	_stack.push_back(1)
+
 	prints("test iteration %d" % fuzzer.iteration_index())
 	prints("4")
 	yield(get_tree(), "idle_frame")

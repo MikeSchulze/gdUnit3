@@ -1,10 +1,7 @@
 extends GdUnitTestSuite
 
-var _current_test_case: String = ""
-var _test_case_iterations: int = 0
+var _current_iterations : Dictionary
 var _expected_iterations: Dictionary
-var _collect_values_by_seed := Array()
-var _collect_values2_by_seed := Array()
 
 # a simple test fuzzer where provided a hard coded value set
 class TestFuzzer extends Fuzzer:
@@ -23,61 +20,75 @@ func fuzzer() -> Fuzzer:
 	return Fuzzers.rangei(min_value(), max_value())
 
 func before():
+	# define expected iteration count
 	_expected_iterations = {
+		"test_fuzzer_has_same_instance_peer_iteration" : 10,
 		"test_fuzzer_iterations_default" : Fuzzer.ITERATION_DEFAULT_COUNT,
 		"test_fuzzer_iterations_custom_value" : 234,
+		"test_fuzzer_inject_value" : 100,
+	}
+	# inital values
+	_current_iterations = {
+		"test_fuzzer_has_same_instance_peer_iteration" : 0,
+		"test_fuzzer_iterations_default" : 0,
+		"test_fuzzer_iterations_custom_value" : 0,
+		"test_fuzzer_inject_value" : 0,
 	}
 
-func before_test():
-	_current_test_case = ""
-	_test_case_iterations = 0
-	_collect_values_by_seed.clear()
-	_collect_values2_by_seed.clear()
-	
-func after_test():
-	if _expected_iterations.has(_current_test_case):
-		assert_int(_test_case_iterations).is_equal(_expected_iterations.get(_current_test_case))
+func after():
+	for test_case in _expected_iterations.keys():
+		var current = _current_iterations[test_case]
+		var expected = _expected_iterations[test_case]
+		
+		assert_int(current).override_failure_message("Expecting %s itertions but is %s on test case %s" % [expected, current, test_case]).is_equal(expected)
 
 var _fuzzer_instance_before : Fuzzer = null
 func test_fuzzer_has_same_instance_peer_iteration(fuzzer=TestFuzzer.new(), fuzzer_iterations = 10):
+	_current_iterations["test_fuzzer_has_same_instance_peer_iteration"] += 1
 	if _fuzzer_instance_before != null:
 		assert_that(fuzzer).is_same(_fuzzer_instance_before)
 	_fuzzer_instance_before = fuzzer
 
 func test_fuzzer_iterations_default(fuzzer := Fuzzers.rangei(-23, 22)):
-	_test_case_iterations += 1
-	_current_test_case = "test_fuzzer_iterations_default"
+	_current_iterations["test_fuzzer_iterations_default"] += 1
 
 func test_fuzzer_iterations_custom_value(fuzzer := Fuzzers.rangei(-23, 22), fuzzer_iterations = 234, fuzzer_seed = 100):
-	_test_case_iterations += 1
-	_current_test_case = "test_fuzzer_iterations_custom_value"
+	_current_iterations["test_fuzzer_iterations_custom_value"] += 1
 
 func test_fuzzer_inject_value(fuzzer := Fuzzers.rangei(-23, 22), fuzzer_iterations = 100):
+	_current_iterations["test_fuzzer_inject_value"] += 1
 	assert_int(fuzzer.next_value()).is_between(-23, 22)
 
+var expected_value := [-20, 6, -18, 8, 9, 9, 3, 16, -12, 0]
 func test_fuzzer_inject_value_with_seed(fuzzer := Fuzzers.rangei(-23, 22), fuzzer_iterations = 10, fuzzer_seed = 187772):
-	# collect all generated values
-	_collect_values_by_seed.append(fuzzer.next_value())
-	# finally check after 10 iterations
-	if fuzzer.iteration_index() == 10:
-		# with same seed we expect always the same values generated
-		assert_array(_collect_values_by_seed).contains_exactly([-20, 6, -18, 8, 9, 9, 3, 16, -12, 0])
+	var iteration_index =  fuzzer.iteration_index()-1
+	var current = fuzzer.next_value()
+	var expected = expected_value[iteration_index]
+	assert_int(iteration_index).is_between(0, 9).is_less(10)
+	assert_int(current)\
+		.override_failure_message("Expect value %s on test iteration %s\n but was %s" % [expected, iteration_index, current])\
+		.is_equal(expected)
 
+var expected_value_a := [-20, -18, 9, 3, -12, -21, -11, -13, -18, 7]
+var expected_value_b := [40, 40, 40, 42, 38, 36, 39, 41, 37, 42]
 func test_multiple_fuzzers_inject_value_with_seed(fuzzer_a := Fuzzers.rangei(-23, 22), fuzzer_b := Fuzzers.rangei(33, 44), fuzzer_iterations = 10, fuzzer_seed = 187772):
-	var value_a = fuzzer_a.next_value()
-	var value_b = fuzzer_b.next_value()
-	assert_int(value_a).is_between(-23, 22)
-	assert_int(value_b).is_between(33, 44)
+	var iteration_index_a =  fuzzer_a.iteration_index()-1
+	var current_a = fuzzer_a.next_value()
+	var expected_a = expected_value_a[iteration_index_a]
+	assert_int(iteration_index_a).is_between(0, 9).is_less(10)
+	assert_int(current_a).is_between(-23, 22)
+	assert_int(current_a)\
+		.override_failure_message("Expect value %s on test iteration %s\n but was %s" % [expected_a, iteration_index_a, current_a])\
+		.is_equal(expected_a)
 	
-	_collect_values_by_seed.append(value_a)
-	_collect_values2_by_seed.append(value_b)
-	# finally check after 10 iterations
-	if fuzzer_a.iteration_index() == 10:
-		# with same seed we expect always the same values generated
-		assert_array(_collect_values_by_seed)\
-			.contains_exactly([-20, -18, 9, 3, -12, -21, -11, -13, -18, 7])
-		assert_array(_collect_values2_by_seed)\
-			.contains_exactly([40, 40, 40, 42, 38, 36, 39, 41, 37, 42])
+	var iteration_index_b =  fuzzer_b.iteration_index()-1
+	var current_b = fuzzer_b.next_value()
+	var expected_b = expected_value_b[iteration_index_b]
+	assert_int(iteration_index_b).is_between(0, 9).is_less(10)
+	assert_int(current_b).is_between(33, 44)
+	assert_int(current_b)\
+		.override_failure_message("Expect value %s on test iteration %s\n but was %s" % [expected_b, iteration_index_b, current_b])\
+		.is_equal(expected_b)
 
 func test_fuzzer_error_after_eight_iterations(fuzzer=TestFuzzer.new(), fuzzer_iterations = 10):
 	# should fail after 8 iterations
