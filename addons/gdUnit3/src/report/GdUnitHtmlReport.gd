@@ -18,9 +18,10 @@ func add_testcase_report(suite_name :String, suite_report :GdUnitTestCaseReport)
 		if report.name() == suite_name:
 			report.add_report(suite_report)
 
-func update_test_suite_report(suite_name :String, skipped :int, orphans :int, duration :int) -> void:
+func update_test_suite_report(suite_name :String, failed :bool, skipped :int, orphans :int, duration :int) -> void:
 	for report in _reports:
 		if report.name() == suite_name:
+			report.set_failed(failed)
 			report.set_duration(duration)
 			report.set_skipped(skipped)
 			report.set_orphans(orphans)
