@@ -212,7 +212,15 @@ func test_parse_and_add_test_cases() -> void:
 	var scanner = auto_free(_TestSuiteScanner.new())
 	var test_suite :GdUnitTestSuite = auto_free(GdUnitTestSuite.new())
 	var script_path := "res://addons/gdUnit3/test/core/resources/test_script_with_arguments.gd"
-	var test_case_names := PoolStringArray(["test_no_args", "test_with_timeout", "test_with_fuzzer", "test_with_fuzzer_iterations", "test_with_multible_fuzzers"])
+	var test_case_names := PoolStringArray([
+			"test_no_args",
+			"test_with_timeout",
+			"test_with_fuzzer",
+			"test_with_fuzzer_iterations",
+			"test_with_multible_fuzzers",
+			"test_multiline_arguments_a",
+			"test_multiline_arguments_b",
+			"test_multiline_arguments_c"])
 	scanner._parse_and_add_test_cases(test_suite, script_path, test_case_names)
 	assert_array(test_suite.get_children())\
 		.extractv(extr("get_name"), extr("timeout"), extr("fuzzers"), extr("iterations"))\
@@ -221,7 +229,11 @@ func test_parse_and_add_test_cases() -> void:
 			tuple("test_with_timeout", 2000, PoolStringArray(), 1),
 			tuple("test_with_fuzzer", default_time, PoolStringArray(["fuzzer:=Fuzzers.rangei(-10,22)"]), Fuzzer.ITERATION_DEFAULT_COUNT),
 			tuple("test_with_fuzzer_iterations", default_time, PoolStringArray(["fuzzer:=Fuzzers.rangei(-10,22)"]), 10),
-			tuple("test_with_multible_fuzzers", default_time, PoolStringArray(["fuzzer_a:=Fuzzers.rangei(-10,22)", "fuzzer_b:=Fuzzers.rangei(23,42)"]), 10)])
+			tuple("test_with_multible_fuzzers", default_time, PoolStringArray(["fuzzer_a:=Fuzzers.rangei(-10,22)", "fuzzer_b:=Fuzzers.rangei(23,42)"]), 10),
+			tuple("test_multiline_arguments_a", default_time, PoolStringArray(["fuzzer_a:=Fuzzers.rangei(-10,22)", "fuzzer_b:=Fuzzers.rangei(23,42)"]), 42),
+			tuple("test_multiline_arguments_b", default_time, PoolStringArray(["fuzzer_a:=Fuzzers.rangei(-10,22)", "fuzzer_b:=Fuzzers.rangei(23,42)"]), 23),
+			tuple("test_multiline_arguments_c", 2000, PoolStringArray(["fuzzer_a:=Fuzzers.rangei(-10,22)", "fuzzer_b:=Fuzzers.rangei(23,42)"]), 33),
+		])
 
 func test_scan_by_inheritance_class_name() -> void:
 	var scanner :_TestSuiteScanner = auto_free(_TestSuiteScanner.new())
@@ -252,7 +264,7 @@ func test_scan_by_inheritance_class_path() -> void:
 		ts.free()
 
 func test_get_test_case_line_number() -> void:
-	assert_int(_TestSuiteScanner.get_test_case_line_number("res://addons/gdUnit3/test/core/_TestSuiteScannerTest.gd", "get_test_case_line_number")).is_equal(254)
+	assert_int(_TestSuiteScanner.get_test_case_line_number("res://addons/gdUnit3/test/core/_TestSuiteScannerTest.gd", "get_test_case_line_number")).is_equal(266)
 	assert_int(_TestSuiteScanner.get_test_case_line_number("res://addons/gdUnit3/test/core/_TestSuiteScannerTest.gd", "unknown")).is_equal(-1)
 
 func test__to_naming_convention() -> void:
