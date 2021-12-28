@@ -275,10 +275,13 @@ func collect_failures_and_errors() -> Array:
 	var parent := _tree_root.get_children()
 	while parent != null:
 		if is_state_failed(parent) or is_state_error(parent):
+			_current_failures.append(parent)
 			var item :=  parent.get_children()
 			while item != null:
 				if is_state_failed(item) or is_state_error(item):
 					_current_failures.append(item)
+					# we remove the test_suite to enforce test case select
+					_current_failures.remove(_current_failures.find(parent))
 				item = item.get_next()
 		parent = parent.get_next()
 	return _current_failures
