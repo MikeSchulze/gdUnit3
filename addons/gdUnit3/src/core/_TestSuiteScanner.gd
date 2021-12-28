@@ -103,11 +103,32 @@ func _parse_and_add_test_cases(test_suite :GdUnitTestSuite, resource_path :Strin
 		var func_name := _script_parser.parse_func_name(row)
 		if test_cases_to_find.has(func_name):
 			test_cases_to_find.erase(func_name)
-			# grap test arguments
-			var timeout = _script_parser.parse_argument(row, _TestCase.ARGUMENT_TIMEOUT, _TestCase.DEFAULT_TIMEOUT)
-			var iterations = _script_parser.parse_argument(row, Fuzzer.ARGUMENT_ITERATIONS, Fuzzer.ITERATION_DEFAULT_COUNT)
-			var seed_value = _script_parser.parse_argument(row, Fuzzer.ARGUMENT_SEED, -1)
-			var fuzzers := _script_parser.parse_fuzzers(row)
+			var timeout := _TestCase.DEFAULT_TIMEOUT
+			var iterations := Fuzzer.ITERATION_DEFAULT_COUNT
+			var seed_value := -1
+			var fuzzers := PoolStringArray()
+			while (not file.eof_reached()):
+				# grap test arguments
+				var parsed_timeout = _script_parser.parse_argument(row, _TestCase.ARGUMENT_TIMEOUT, null)
+				if parsed_timeout != null:
+					timeout = parsed_timeout
+				
+				var parsed_iterations = _script_parser.parse_argument(row, Fuzzer.ARGUMENT_ITERATIONS, null)
+				if parsed_iterations != null:
+					iterations = parsed_iterations
+				
+				var parsed_seed_value = _script_parser.parse_argument(row, Fuzzer.ARGUMENT_SEED, null)
+				if parsed_seed_value != null:
+					seed_value = parsed_seed_value
+				
+				fuzzers.append_array( _script_parser.parse_fuzzers(row))
+				
+				# if function end reached?
+				if _script_parser.is_func_end(row):
+					break
+				row = GdScriptParser.clean_up_row(file.get_line())
+				line_number += 1
+				
 			test_suite.add_child(_TestCase.new().configure(func_name, line_number, resource_path, timeout, fuzzers, iterations, seed_value))
 	
 	file.close()

@@ -49,7 +49,6 @@ func test_parse_fuzzer_multiple_argument():
 	assert_that(_parser.parse_fuzzers("func test_foo(fuzzer = fuzzer(), arg1=42)")) \
 		.contains_exactly(["fuzzer=fuzzer()"])
 
-
 func test_parse_multiple_fuzzers():
 	assert_array(_parser.parse_fuzzers("func test_foo(fuzzer1 = Fuzzers.random_rangei(-23, 22), fuzzer2 = Fuzzers.random_rangei(23, 42))")) \
 		.contains_exactly([
@@ -419,3 +418,15 @@ func test_get_class_name_snake_case() -> void:
 		.is_equal("SnakeCaseWithClassName")
 	assert_str(_parser.get_class_name(load("res://addons/gdUnit3/test/core/resources/naming_conventions/snake_case_without_class_name.gd")))\
 		.is_equal("SnakeCaseWithoutClassName")
+
+func test_is_func_end() -> void:
+	assert_bool(_parser.is_func_end("")).is_false()
+	assert_bool(_parser.is_func_end("func test_a():")).is_true()
+	assert_bool(_parser.is_func_end("func test_a() -> void:")).is_true()
+	assert_bool(_parser.is_func_end("func test_a(arg1) :")).is_true()
+	assert_bool(_parser.is_func_end("func test_a(arg1 ): ")).is_true()
+	assert_bool(_parser.is_func_end("func test_a(arg1 ):	")).is_true()
+	assert_bool(_parser.is_func_end("	):")).is_true()
+	assert_bool(_parser.is_func_end("		):")).is_true()
+	assert_bool(_parser.is_func_end("	-> void:")).is_true()
+	assert_bool(_parser.is_func_end("		) -> void :")).is_true()

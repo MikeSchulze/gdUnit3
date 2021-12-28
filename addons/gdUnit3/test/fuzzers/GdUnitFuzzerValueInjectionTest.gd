@@ -26,6 +26,7 @@ func before():
 		"test_fuzzer_iterations_default" : Fuzzer.ITERATION_DEFAULT_COUNT,
 		"test_fuzzer_iterations_custom_value" : 234,
 		"test_fuzzer_inject_value" : 100,
+		"test_multiline_fuzzer_args": 10,
 	}
 	# inital values
 	_current_iterations = {
@@ -33,6 +34,7 @@ func before():
 		"test_fuzzer_iterations_default" : 0,
 		"test_fuzzer_iterations_custom_value" : 0,
 		"test_fuzzer_inject_value" : 0,
+		"test_multiline_fuzzer_args": 0,
 	}
 
 func after():
@@ -101,3 +103,9 @@ func test_fuzzer_error_after_eight_iterations(fuzzer=TestFuzzer.new(), fuzzer_it
 
 func test_fuzzer_custom_func(fuzzer=fuzzer()):
 	assert_int(fuzzer.next_value()).is_between(1, 10)
+
+func test_multiline_fuzzer_args(
+	fuzzer := Fuzzers.rangev2(Vector2(-47, -47), Vector2(47, 47)),
+	nfuzzer := Fuzzers.rangei(0, 9),
+	fuzzer_iterations = 23):
+		_current_iterations["test_multiline_fuzzer_args"] += 1
