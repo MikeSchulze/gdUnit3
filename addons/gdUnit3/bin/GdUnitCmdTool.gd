@@ -260,7 +260,7 @@ class CLIRunner extends Node:
 				_report.add_testsuite_report(GdUnitTestSuiteReport.new(event.resource_path(), event.suite_name()))
 			
 			GdUnitEvent.TESTSUITE_AFTER:
-				_report.update_test_suite_report(event.suite_name(), event.skipped_count(), event.orphan_nodes(),  event.elapsed_time())
+				_report.update_test_suite_report(event.suite_name(), event.is_failed(), event.skipped_count(), event.orphan_nodes(),  event.elapsed_time())
 				
 			GdUnitEvent.TESTCASE_BEFORE:
 				_report.add_testcase_report(event.suite_name(), GdUnitTestCaseReport.new(event.test_name()))

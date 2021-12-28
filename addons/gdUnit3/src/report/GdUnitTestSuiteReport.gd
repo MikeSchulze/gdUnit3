@@ -50,6 +50,10 @@ func set_skipped(skipped :int) -> void:
 func set_orphans(orphans :int) -> void:
 	_orphan_count = orphans
 
+func set_failed(failed :bool) -> void:
+	if failed:
+		_failure_count += 1
+
 func update(test_report :GdUnitTestCaseReport) -> void:
 	for report in _reports:
 		if report.name() == test_report.name():
