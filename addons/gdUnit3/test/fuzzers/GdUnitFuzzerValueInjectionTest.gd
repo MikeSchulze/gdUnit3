@@ -26,7 +26,7 @@ func before():
 		"test_fuzzer_iterations_default" : Fuzzer.ITERATION_DEFAULT_COUNT,
 		"test_fuzzer_iterations_custom_value" : 234,
 		"test_fuzzer_inject_value" : 100,
-		"test_multiline_fuzzer_args": 10,
+		"test_multiline_fuzzer_args": 23,
 	}
 	# inital values
 	_current_iterations = {
