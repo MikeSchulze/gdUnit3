@@ -28,28 +28,28 @@ namespace GdUnit3
 
         public IStringAssert HasLength(int expectedLenght, IStringAssert.Compare comparator = IStringAssert.Compare.EQUAL)
         {
-            var currentLenght = (Current as string)?.Length ?? 0;
+            var currentLenght = (Current as string)?.Length ?? null;
             var failed = false;
             switch (comparator)
             {
                 case IStringAssert.Compare.EQUAL:
-                    if (currentLenght != expectedLenght)
+                    if (currentLenght == null || currentLenght != expectedLenght)
                         failed = true;
                     break;
                 case IStringAssert.Compare.GREATER_EQUAL:
-                    if (currentLenght < expectedLenght)
+                    if (currentLenght == null || currentLenght < expectedLenght)
                         failed = true;
                     break;
                 case IStringAssert.Compare.GREATER_THAN:
-                    if (currentLenght <= expectedLenght)
+                    if (currentLenght == null || currentLenght <= expectedLenght)
                         failed = true;
                     break;
                 case IStringAssert.Compare.LESS_EQUAL:
-                    if (currentLenght > expectedLenght)
+                    if (currentLenght == null || currentLenght > expectedLenght)
                         failed = true;
                     break;
                 case IStringAssert.Compare.LESS_THAN:
-                    if (currentLenght >= expectedLenght)
+                    if (currentLenght == null || currentLenght >= expectedLenght)
                         failed = true;
                     break;
             }
@@ -75,7 +75,7 @@ namespace GdUnit3
 
         public IStringAssert IsNotEmpty()
         {
-            if (Current == null || (Current as string).Length == 0)
+            if (Current != null && (Current as string).Length == 0)
                 return ReportTestFailure(AssertFailures.IsNotEmpty(), Current, null) as IStringAssert;
             return this;
         }
@@ -90,14 +90,14 @@ namespace GdUnit3
 
         public IStringAssert NotContains(string expected)
         {
-            if (Current == null || (Current as string).Contains(expected))
+            if (Current != null && (Current as string).Contains(expected))
                 return ReportTestFailure(AssertFailures.NotContains(Current, expected), Current, expected) as IStringAssert;
             return this;
         }
 
         public IStringAssert NotContainsIgnoringCase(string expected)
         {
-            if (Current == null || (Current as string).ToLower().Contains(expected.ToLower()))
+            if (Current != null && (Current as string).ToLower().Contains(expected.ToLower()))
                 return ReportTestFailure(AssertFailures.NotContainsIgnoringCase(Current, expected), Current, expected) as IStringAssert;
             return this;
         }

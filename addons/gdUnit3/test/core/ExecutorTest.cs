@@ -100,12 +100,12 @@ public class ExecutorTest : TestSuite, ITestEventListener
             Tuple(TestEvent.TYPE.TESTSUITE_AFTER, 0, 0, 0)
         );
         AssertEventStates(events).ContainsExactly(
-            Tuple("before", true, false, false, false),
+            Tuple("", true, false, false, false),
             Tuple("TestCase1", true, false, false, false),
             Tuple("TestCase1", true, false, false, false),
             Tuple("TestCase2", true, false, false, false),
             Tuple("TestCase2", true, false, false, false),
-            Tuple("after", true, false, false, false)
+            Tuple("", true, false, false, false)
         );
     }
 

@@ -29,9 +29,9 @@ namespace GdUnit3
         }
         public IExceptionAssert HasMessage(string message)
         {
-            var current = NormalizedFailureMessage(Current?.Message ?? "");
+            string current = NormalizedFailureMessage(Current?.Message ?? "");
             if (!current.Equals(message))
-                return ReportTestFailure(AssertFailures.Equal(current, message), current, message);
+                return ReportTestFailure(AssertFailures.IsEqual(current, message), current, message);
             return this;
         }
 
@@ -52,7 +52,7 @@ namespace GdUnit3
         {
             var current = NormalizedFailureMessage(Current?.Message ?? "");
             if (!current.StartsWith(message))
-                return ReportTestFailure(AssertFailures.Equal(current, message), current, message);
+                return ReportTestFailure(AssertFailures.IsEqual(current, message), current, message);
             return this;
         }
 

@@ -8,7 +8,7 @@ namespace GdUnit3
     {
         public Tuple(params object[] args)
         {
-            Values = args.ToList<object>();
+            Values = args?.ToList<object>() ?? Enumerable.Empty<object>();
         }
 
         public IEnumerable<object> Values

@@ -10,7 +10,7 @@ namespace GdUnit3
     {
         public ArrayAssert(IEnumerable current) : base(current)
         {
-            Current = current?.Cast<object>() ?? Enumerable.Empty<object>();
+            Current = current?.Cast<object>();
         }
 
         private new IEnumerable<object> Current { get; set; }
@@ -27,21 +27,21 @@ namespace GdUnit3
         {
             var result = Comparable.IsEqual(Current, expected, Comparable.MODE.CASE_INSENSITIVE);
             if (result.Valid)
-                return ReportTestFailure(AssertFailures.NotEqual(Current, expected), Current, expected) as IArrayAssert;
+                return ReportTestFailure(AssertFailures.IsNotEqualIgnoringCase(Current, expected), Current, expected) as IArrayAssert;
             return this;
         }
 
         public IArrayAssert IsEmpty()
         {
-            var count = Current?.Count() ?? 0;
+            var count = Current?.Count() ?? -1;
             if (count != 0)
-                return ReportTestFailure(AssertFailures.IsEmpty(count), Current, null) as IArrayAssert;
+                return ReportTestFailure(AssertFailures.IsEmpty(count, Current == null), Current, count) as IArrayAssert;
             return this;
         }
 
         public IArrayAssert IsNotEmpty()
         {
-            var count = Current?.Count() ?? 0;
+            var count = Current?.Count() ?? -1;
             if (count == 0)
                 return ReportTestFailure(AssertFailures.IsNotEmpty(), Current, null) as IArrayAssert;
             return this;
@@ -49,7 +49,7 @@ namespace GdUnit3
 
         public IArrayAssert HasSize(int expected)
         {
-            var count = Current?.Count() ?? 0;
+            var count = Current?.Count() ?? null;
             if (count != expected)
                 return ReportTestFailure(AssertFailures.HasSize(count, expected), Current, null) as IArrayAssert;
             return this;
@@ -154,11 +154,11 @@ namespace GdUnit3
 
         public IArrayAssert ExtractV(params IValueExtractor[] extractors)
         {
-            Current = Current.Select(v =>
+            Current = Current?.Select(v =>
             {
                 object[] values = extractors.Select(e => e.ExtractValue(v)).ToArray<object>();
                 return values.Count() == 1 ? values.First() : Tuple(values);
-            }).ToList();
+            }).ToList() ?? null;
             return this;
         }
 
@@ -171,17 +171,18 @@ namespace GdUnit3
         {
             var notFound = right?.ToList();
 
-            foreach (var c in left.ToList())
-            {
-                foreach (var e in right.ToList())
+            if (left != null)
+                foreach (var c in left.ToList())
                 {
-                    if (Comparable.IsEqual(c, e).Valid)
+                    foreach (var e in right.ToList())
                     {
-                        notFound.Remove(c);
-                        break;
+                        if (Comparable.IsEqual(c, e).Valid)
+                        {
+                            notFound.Remove(c);
+                            break;
+                        }
                     }
                 }
-            }
             return notFound;
         }
 
@@ -193,15 +194,15 @@ namespace GdUnit3
 
         private ArrayDiff DiffArray(IEnumerable<object> left, IEnumerable<object> right)
         {
-            var currentOrdered = left?.OrderBy(v => v);
-            var expectedOrdered = right?.OrderBy(v => v);
+            var ll = left?.ToList() ?? new List<object>();
+            var rr = right?.ToList() ?? new List<object>();
 
-            var notExpected = Current?.ToList();
-            var notFound = right?.ToList();
+            var notExpected = left?.ToList() ?? new List<object>();
+            var notFound = right?.ToList() ?? new List<object>();
 
-            foreach (var c in left.ToList())
+            foreach (var c in ll)
             {
-                foreach (var e in right.ToList())
+                foreach (var e in rr)
                 {
                     if (Comparable.IsEqual(c, e).Valid)
                     {

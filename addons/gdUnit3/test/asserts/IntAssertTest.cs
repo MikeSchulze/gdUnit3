@@ -12,7 +12,9 @@ public class IntAssertTest : TestSuite
         AssertThrown(() => AssertInt(23).IsNull())
             .IsInstanceOf<TestFailedException>()
             .HasPropertyValue("LineNumber", 12)
-            .HasMessage("Expecting: 'Null' but is '23'");
+            .HasMessage("Expecting be <Null>:\n"
+                + " but is\n"
+                + "  '23'");
     }
 
     [TestCase]
@@ -32,8 +34,9 @@ public class IntAssertTest : TestSuite
         // this assertion fails because 23 are not equal to 42
         AssertThrown(() => AssertInt(23).IsEqual(42))
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 33)
-            .HasMessage("Expecting:\n '42'\n be equal to\n '23'");
+            .HasPropertyValue("LineNumber", 35)
+            .HasMessage("Expecting be equal:\n"
+                + "  '42' but is '23'");
     }
 
     [TestCase]
@@ -44,8 +47,9 @@ public class IntAssertTest : TestSuite
         // this assertion fails because 23 are equal to 23 
         AssertThrown(() => AssertInt(23).IsNotEqual(23))
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 45)
-            .HasMessage("Expecting:\n '23'\n not equal to\n '23'");
+            .HasPropertyValue("LineNumber", 48)
+            .HasMessage("Expecting be NOT equal:\n"
+                + "  '23' but is '23'");
     }
 
     [TestCase]
@@ -57,20 +61,24 @@ public class IntAssertTest : TestSuite
         // this assertion fails because 23 is not less than 23
         AssertThrown(() => AssertInt(23).IsLess(23))
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 58)
-            .HasMessage("Expecting to be less than:\n '23' but is '23'");
+            .HasPropertyValue("LineNumber", 62)
+            .HasMessage("Expecting to be less than:\n"
+                + "  '23' but is '23'");
         AssertThrown(() => AssertInt(23).IsLess(22))
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 62)
-            .HasMessage("Expecting to be less than:\n '22' but is '23'");
+            .HasPropertyValue("LineNumber", 67)
+            .HasMessage("Expecting to be less than:\n"
+                + "  '22' but is '23'");
         AssertThrown(() => AssertInt(-23).IsLess(-23))
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 66)
-            .HasMessage("Expecting to be less than:\n '-23' but is '-23'");
+            .HasPropertyValue("LineNumber", 72)
+            .HasMessage("Expecting to be less than:\n"
+                + "  '-23' but is '-23'");
         AssertThrown(() => AssertInt(-23).IsLess(-24))
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 70)
-            .HasMessage("Expecting to be less than:\n '-24' but is '-23'");
+            .HasPropertyValue("LineNumber", 77)
+            .HasMessage("Expecting to be less than:\n"
+                + "  '-24' but is '-23'");
     }
 
     [TestCase]
@@ -84,12 +92,14 @@ public class IntAssertTest : TestSuite
         // this assertion fails because 23 is not less than or equal to 22
         AssertThrown(() => AssertInt(23).IsLessEqual(22)).IsInstanceOf<TestFailedException>()
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 85)
-            .HasMessage("Expecting to be less than or equal:\n '22' but is '23'");
+            .HasPropertyValue("LineNumber", 93)
+            .HasMessage("Expecting to be less than or equal:\n"
+                + "  '22' but is '23'");
         AssertThrown(() => AssertInt(-23).IsLessEqual(-24))
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 89)
-            .HasMessage("Expecting to be less than or equal:\n '-24' but is '-23'");
+            .HasPropertyValue("LineNumber", 98)
+            .HasMessage("Expecting to be less than or equal:\n"
+                + "  '-24' but is '-23'");
     }
 
     [TestCase]
@@ -102,20 +112,24 @@ public class IntAssertTest : TestSuite
         // this assertion fails because 23 is not greater than 23
         AssertThrown(() => AssertInt(23).IsGreater(23))
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 103)
-            .HasMessage("Expecting to be greater than:\n '23' but is '23'");
+            .HasPropertyValue("LineNumber", 113)
+            .HasMessage("Expecting to be greater than:\n"
+                + "  '23' but is '23'");
         AssertThrown(() => AssertInt(23).IsGreater(24))
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 107)
-            .HasMessage("Expecting to be greater than:\n '24' but is '23'");
+            .HasPropertyValue("LineNumber", 118)
+            .HasMessage("Expecting to be greater than:\n"
+                + "  '24' but is '23'");
         AssertThrown(() => AssertInt(-23).IsGreater(-23))
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 111)
-            .HasMessage("Expecting to be greater than:\n '-23' but is '-23'");
+            .HasPropertyValue("LineNumber", 123)
+            .HasMessage("Expecting to be greater than:\n"
+                + "  '-23' but is '-23'");
         AssertThrown(() => AssertInt(-23).IsGreater(-22))
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 115)
-            .HasMessage("Expecting to be greater than:\n '-22' but is '-23'");
+            .HasPropertyValue("LineNumber", 128)
+            .HasMessage("Expecting to be greater than:\n"
+                + "  '-22' but is '-23'");
     }
 
     [TestCase]
@@ -129,12 +143,14 @@ public class IntAssertTest : TestSuite
         // this assertion fails because 23 is not greater than 23
         AssertThrown(() => AssertInt(23).IsGreaterEqual(24))
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 130)
-            .HasMessage("Expecting to be greater than or equal:\n '24' but is '23'");
+            .HasPropertyValue("LineNumber", 144)
+            .HasMessage("Expecting to be greater than or equal:\n"
+                + "  '24' but is '23'");
         AssertThrown(() => AssertInt(-23).IsGreaterEqual(-22))
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 134)
-            .HasMessage("Expecting to be greater than or equal:\n '-22' but is '-23'");
+            .HasPropertyValue("LineNumber", 149)
+            .HasMessage("Expecting to be greater than or equal:\n"
+                + "  '-22' but is '-23'");
     }
 
     [TestCase]
@@ -148,12 +164,14 @@ public class IntAssertTest : TestSuite
 
         AssertThrown(() => AssertInt(-13).IsEven())
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 149)
-            .HasMessage("Expecting:\n '-13' must be even");
+            .HasPropertyValue("LineNumber", 165)
+            .HasMessage("Expecting be even:\n"
+                + " but is '-13'");
         AssertThrown(() => AssertInt(13).IsEven())
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 153)
-            .HasMessage("Expecting:\n '13' must be even");
+            .HasPropertyValue("LineNumber", 170)
+            .HasMessage("Expecting be even:\n"
+                + " but is '13'");
     }
 
     [TestCase]
@@ -163,16 +181,19 @@ public class IntAssertTest : TestSuite
         AssertInt(13).IsOdd();
         AssertThrown(() => AssertInt(-12).IsOdd())
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 164)
-            .HasMessage("Expecting:\n '-12' must be odd");
+            .HasPropertyValue("LineNumber", 182)
+            .HasMessage("Expecting be odd:\n"
+                + " but is '-12'");
         AssertThrown(() => AssertInt(0).IsOdd())
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 168)
-            .HasMessage("Expecting:\n '0' must be odd");
+            .HasPropertyValue("LineNumber", 187)
+            .HasMessage("Expecting be odd:\n"
+                + " but is '0'");
         AssertThrown(() => AssertInt(12).IsOdd())
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 172)
-            .HasMessage("Expecting:\n '12' must be odd");
+            .HasPropertyValue("LineNumber", 192)
+            .HasMessage("Expecting be odd:\n"
+                + " but is '12'");
     }
 
     [TestCase]
@@ -182,12 +203,14 @@ public class IntAssertTest : TestSuite
         AssertInt(-23).IsNegative();
         AssertThrown(() => AssertInt(0).IsNegative())
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 183)
-            .HasMessage("Expecting:\n '0' be negative");
+            .HasPropertyValue("LineNumber", 204)
+            .HasMessage("Expecting be negative:\n"
+                + " but is '0'");
         AssertThrown(() => AssertInt(13).IsNegative())
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 187)
-            .HasMessage("Expecting:\n '13' be negative");
+            .HasPropertyValue("LineNumber", 209)
+            .HasMessage("Expecting be negative:\n"
+                + " but is '13'");
     }
 
     [TestCase]
@@ -197,12 +220,14 @@ public class IntAssertTest : TestSuite
         AssertInt(13).IsNotNegative();
         AssertThrown(() => AssertInt(-1).IsNotNegative())
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 198)
-            .HasMessage("Expecting:\n '-1' be not negative");
+            .HasPropertyValue("LineNumber", 221)
+            .HasMessage("Expecting be NOT negative:\n"
+                + " but is '-1'");
         AssertThrown(() => AssertInt(-13).IsNotNegative())
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 202)
-            .HasMessage("Expecting:\n '-13' be not negative");
+            .HasPropertyValue("LineNumber", 226)
+            .HasMessage("Expecting be NOT negative:\n"
+                + " but is '-13'");
     }
 
     [TestCase]
@@ -212,12 +237,14 @@ public class IntAssertTest : TestSuite
         // this assertion fail because the value is not zero
         AssertThrown(() => AssertInt(-1).IsZero())
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 213)
-            .HasMessage("Expecting:\n zero but is '-1'");
+            .HasPropertyValue("LineNumber", 238)
+            .HasMessage("Expecting be zero:\n"
+                + " but is '-1'");
         AssertThrown(() => AssertInt(1).IsZero())
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 217)
-            .HasMessage("Expecting:\n zero but is '1'");
+            .HasPropertyValue("LineNumber", 243)
+            .HasMessage("Expecting be zero:\n"
+                + " but is '1'");
     }
 
     [TestCase]
@@ -228,8 +255,9 @@ public class IntAssertTest : TestSuite
         // this assertion fail because the value is not zero
         AssertThrown(() => AssertInt(0).IsNotZero())
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 229)
-            .HasMessage("Expecting:\n not zero");
+            .HasPropertyValue("LineNumber", 256)
+            .HasMessage("Expecting be NOT zero:\n"
+                + " but is '0'");
     }
 
     [TestCase]
@@ -240,18 +268,18 @@ public class IntAssertTest : TestSuite
         // this assertion fail because 7 is not in [3, 4, 5, 6]
         AssertThrown(() => AssertInt(7).IsIn(new int[] { 3, 4, 5, 6 }))
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 241)
+            .HasPropertyValue("LineNumber", 269)
             .HasMessage("Expecting:\n"
-                + " '7'\n"
+                + "  '7'\n"
                 + " is in\n"
-                + " System.Int32[] [3, 4, 5, 6]");
+                + "  System.Int32[3, 4, 5, 6]");
         AssertThrown(() => AssertInt(7).IsIn(new int[] { }))
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 248)
+            .HasPropertyValue("LineNumber", 276)
             .HasMessage("Expecting:\n"
-                + " '7'\n"
+                + "  '7'\n"
                 + " is in\n"
-                + " empty System.Int32[]");
+                + "  System.Int32[]");
     }
 
     [TestCase]
@@ -264,11 +292,11 @@ public class IntAssertTest : TestSuite
         // this assertion fail because 7 is not in [3, 4, 5, 6]
         AssertThrown(() => AssertInt(5).IsNotIn(new int[] { 3, 4, 5, 6 }))
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 265)
+            .HasPropertyValue("LineNumber", 293)
             .HasMessage("Expecting:\n"
-                + " '5'\n"
+                + "  '5'\n"
                 + " is not in\n"
-                + " System.Int32[] [3, 4, 5, 6]");
+                + "  System.Int32[3, 4, 5, 6]");
     }
 
     [TestCase(iterations = 40)]
@@ -282,16 +310,25 @@ public class IntAssertTest : TestSuite
     {
         AssertThrown(() => AssertInt(-10).IsBetween(-9, 0))
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 283)
-            .HasMessage("Expecting:\n '-10'\n in range between\n '-9' <> '0'");
+            .HasPropertyValue("LineNumber", 311)
+            .HasMessage("Expecting:\n"
+                + "  '-10'\n"
+                + " in range between\n"
+                + "  '-9' <> '0'");
         AssertThrown(() => AssertInt(0).IsBetween(1, 10))
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 287)
-            .HasMessage("Expecting:\n '0'\n in range between\n '1' <> '10'");
+            .HasPropertyValue("LineNumber", 318)
+            .HasMessage("Expecting:\n"
+                + "  '0'\n"
+                + " in range between\n"
+                + "  '1' <> '10'");
         AssertThrown(() => AssertInt(10).IsBetween(11, 21))
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 291)
-            .HasMessage("Expecting:\n '10'\n in range between\n '11' <> '21'");
+            .HasPropertyValue("LineNumber", 325)
+            .HasMessage("Expecting:\n"
+                + "  '10'\n"
+                + " in range between\n"
+                + "  '11' <> '21'");
     }
 
     [TestCase]
@@ -301,7 +338,7 @@ public class IntAssertTest : TestSuite
                 .OverrideFailureMessage("Custom failure message")
                 .IsNull())
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 300)
+            .HasPropertyValue("LineNumber", 337)
             .HasMessage("Custom failure message");
     }
 

@@ -103,6 +103,13 @@ namespace GdUnit3
         public int FailedCount() => _data.ContainsKey(FAILED_COUNT) ? (int)_data[FAILED_COUNT] : 0;
         public int OrphanCount() => _data.ContainsKey(ORPHAN_NODES) ? (int)_data[ORPHAN_NODES] : 0;
 
+        public bool IsWarning() => _data.ContainsKey(WARNINGS) ? (bool)_data[WARNINGS] : false;
+        public bool IsFailed() => _data.ContainsKey(FAILED) ? (bool)_data[FAILED] : false;
+        public bool IsError() => _data.ContainsKey(ERRORS) ? (bool)_data[ERRORS] : false;
+        public bool IsSkipped() => _data.ContainsKey(SKIPPED) ? (bool)_data[SKIPPED] : false;
+
+        public bool IsSuccess() => !IsWarning() && !IsFailed() && !IsError() && !IsSkipped();
+
         public override string ToString()
         {
             return string.Format("Event: {0} {1}:{2}, {3} ", _data["type"], _data["suite_name"], _data["test_name"], "");

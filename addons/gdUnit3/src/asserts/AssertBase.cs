@@ -18,7 +18,7 @@ namespace GdUnit3
         {
             var result = Comparable.IsEqual(Current, expected);
             if (!result.Valid)
-                return ReportTestFailure(AssertFailures.Equal(Current, expected), Current, expected);
+                return ReportTestFailure(AssertFailures.IsEqual(Current, expected), Current, expected);
             return this;
         }
 
@@ -26,7 +26,7 @@ namespace GdUnit3
         {
             var result = Comparable.IsEqual(Current, expected);
             if (result.Valid)
-                return ReportTestFailure(AssertFailures.NotEqual(Current, expected), Current, expected);
+                return ReportTestFailure(AssertFailures.IsNotEqual(Current, expected), Current, expected);
             return this;
         }
         public IAssertBase<V> IsNull()
@@ -47,7 +47,7 @@ namespace GdUnit3
         {
             var current = NormalizedFailureMessage(CurrentFailureMessage);
             if (!current.Equals(message))
-                return ReportTestFailure(AssertFailures.Equal(current, message), current, message);
+                return ReportTestFailure(AssertFailures.IsEqual(current, message), current, message);
             return this;
         }
 
@@ -61,7 +61,7 @@ namespace GdUnit3
         {
             var current = NormalizedFailureMessage(CurrentFailureMessage);
             if (!current.StartsWith(message))
-                return ReportTestFailure(AssertFailures.Equal(current, message), current, message);
+                return ReportTestFailure(AssertFailures.IsEqual(current, message), current, message);
             return this;
         }
 

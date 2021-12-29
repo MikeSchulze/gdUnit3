@@ -30,17 +30,15 @@ public class ObjectAssertTest : TestSuite
         AssertThrown(() => AssertObject(new Godot.CubeMesh()).IsEqual(new Godot.Skin()))
             .IsInstanceOf<TestFailedException>()
             .HasPropertyValue("LineNumber", 30)
-            .HasMessage("Expecting:\n"
-                + " <Godot.Skin>\n"
-                + " be equal to\n"
-                + " <Godot.CubeMesh>");
+            .HasMessage("Expecting be equal:\n"
+                + "  <Godot.Skin> but is <Godot.CubeMesh>");
         AssertThrown(() => AssertObject(new object()).IsEqual(new List<int>()))
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 37)
-            .HasMessage("Expecting:\n"
-                + " empty System.Collections.Generic.List<System.Int32>\n"
-                + " be equal to\n"
-                + " <System.Object>");
+            .HasPropertyValue("LineNumber", 35)
+            .HasMessage("Expecting be equal:\n"
+                + "  System.Collections.Generic.List<System.Int32>\n"
+                + " but is\n"
+                + "  <System.Object>");
     }
 
     [TestCase]
@@ -51,18 +49,14 @@ public class ObjectAssertTest : TestSuite
         // should fail because the current is an CubeMesh and we expect not equal to a CubeMesh
         AssertThrown(() => AssertObject(new Godot.CubeMesh()).IsNotEqual(new Godot.CubeMesh()))
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 52)
-            .HasMessage("Expecting:\n"
-                + " <Godot.CubeMesh>\n"
-                + " not equal to\n"
-                + " <Godot.CubeMesh>");
+            .HasPropertyValue("LineNumber", 50)
+            .HasMessage("Expecting be NOT equal:\n"
+                + "  <Godot.CubeMesh> but is <Godot.CubeMesh>");
         AssertThrown(() => AssertObject(new object()).IsNotEqual(new object()))
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 59)
-            .HasMessage("Expecting:\n"
-                + " <System.Object>\n"
-                + " not equal to\n"
-                + " <System.Object>");
+            .HasPropertyValue("LineNumber", 55)
+            .HasMessage("Expecting be NOT equal:\n"
+                + "  <System.Object> but is <System.Object>");
     }
 
     [TestCase]
@@ -85,22 +79,19 @@ public class ObjectAssertTest : TestSuite
         // should fail because the current is not a instance of `Tree`
         AssertThrown(() => AssertObject(AutoFree(new Godot.Path())).IsInstanceOf<Godot.Tree>())
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 86)
-            .HasMessage("Expected instance of:\n"
-                + " <Godot.Tree>\n"
-                + " but is <Godot.Path>");
+            .HasPropertyValue("LineNumber", 80)
+            .HasMessage("Expected be instance of:\n"
+                + "  <Godot.Tree> but is <Godot.Path>");
         AssertThrown(() => AssertObject(null).IsInstanceOf<Godot.Tree>())
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 92)
-            .HasMessage("Expected instance of:\n"
-                + " <Godot.Tree>\n"
-                + " but is 'Null'");
+            .HasPropertyValue("LineNumber", 85)
+            .HasMessage("Expected be instance of:\n"
+                + "  <Godot.Tree> but is <Null>");
         AssertThrown(() => AssertObject(new CustomClass()).IsInstanceOf<CustomClassB>())
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 98)
-            .HasMessage("Expected instance of:\n"
-                + " <ObjectAssertTest+CustomClassB>\n"
-                + " but is <ObjectAssertTest+CustomClass>");
+            .HasPropertyValue("LineNumber", 90)
+            .HasMessage("Expected be instance of:\n"
+                + "  <ObjectAssertTest+CustomClassB> but is <ObjectAssertTest+CustomClass>");
     }
 
     [TestCase]
@@ -118,12 +109,14 @@ public class ObjectAssertTest : TestSuite
         // should fail because the current is not a instance of `Tree`
         AssertThrown(() => AssertObject(AutoFree(new Godot.Path())).IsNotInstanceOf<Godot.Node>())
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 119)
-            .HasMessage("Expecting: not be a instance of <Godot.Node>");
+            .HasPropertyValue("LineNumber", 110)
+            .HasMessage("Expecting be NOT a instance of:\n"
+                + "  <Godot.Node>");
         AssertThrown(() => AssertObject(AutoFree(new CustomClassB())).IsNotInstanceOf<CustomClass>())
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 123)
-            .HasMessage("Expecting: not be a instance of <ObjectAssertTest+CustomClass>");
+            .HasPropertyValue("LineNumber", 115)
+            .HasMessage("Expecting be NOT a instance of:\n"
+                + "  <ObjectAssertTest+CustomClass>");
     }
 
     [TestCase]
@@ -133,12 +126,16 @@ public class ObjectAssertTest : TestSuite
         // should fail because the current is not null
         AssertThrown(() => AssertObject(AutoFree(new Godot.Node())).IsNull())
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 134)
-            .StartsWithMessage("Expecting: 'Null' but is <Godot.Node>");
+            .HasPropertyValue("LineNumber", 127)
+            .StartsWithMessage("Expecting be <Null>:\n"
+                + " but is\n"
+                + "  <Godot.Node>");
         AssertThrown(() => AssertObject(AutoFree(new object())).IsNull())
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 138)
-            .StartsWithMessage("Expecting: 'Null' but is <System.Object>");
+            .HasPropertyValue("LineNumber", 133)
+            .StartsWithMessage("Expecting be <Null>:\n"
+                + " but is\n"
+                + "  <System.Object>");
     }
 
     [TestCase]
@@ -149,8 +146,8 @@ public class ObjectAssertTest : TestSuite
         // should fail because the current is null
         AssertThrown(() => AssertObject(null).IsNotNull())
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 150)
-            .HasMessage("Expecting: not to be 'Null'");
+            .HasPropertyValue("LineNumber", 147)
+            .HasMessage("Expecting be NOT <Null>:");
     }
 
     [TestCase]
@@ -170,32 +167,32 @@ public class ObjectAssertTest : TestSuite
 
         AssertThrown(() => AssertObject(null).IsSame(obj1))
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 171)
-            .HasMessage("Expecting:\n"
-                + " <Godot.Node>\n"
+            .HasPropertyValue("LineNumber", 168)
+            .HasMessage("Expecting be same:\n"
+                + "  <Godot.Node>\n"
                 + " to refer to the same object\n"
-                + " 'Null'");
+                + "  <Null>");
         AssertThrown(() => AssertObject(obj1).IsSame(obj3))
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 178)
-            .HasMessage("Expecting:\n"
-                + " <Godot.Node>\n"
+            .HasPropertyValue("LineNumber", 175)
+            .HasMessage("Expecting be same:\n"
+                + "  <Godot.Node>\n"
                 + " to refer to the same object\n"
-                + " <Godot.Node>");
+                + "  <Godot.Node>");
         AssertThrown(() => AssertObject(obj3).IsSame(obj1))
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 185)
-            .HasMessage("Expecting:\n"
-                + " <Godot.Node>\n"
+            .HasPropertyValue("LineNumber", 182)
+            .HasMessage("Expecting be same:\n"
+                + "  <Godot.Node>\n"
                 + " to refer to the same object\n"
-                + " <Godot.Node>");
+                + "  <Godot.Node>");
         AssertThrown(() => AssertObject(obj3).IsSame(obj2))
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 192)
-            .HasMessage("Expecting:\n"
-                + " <Godot.Node>\n"
+            .HasPropertyValue("LineNumber", 189)
+            .HasMessage("Expecting be same:\n"
+                + "  <Godot.Node>\n"
                 + " to refer to the same object\n"
-                + " <Godot.Node>");
+                + "  <Godot.Node>");
     }
 
     [TestCase]
@@ -217,16 +214,16 @@ public class ObjectAssertTest : TestSuite
 
         AssertThrown(() => AssertObject(obj1).IsNotSame(obj1))
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 218)
-            .HasMessage("Expecting not same: <Godot.Node>");
+            .HasPropertyValue("LineNumber", 215)
+            .HasMessage("Expecting be NOT same: <Godot.Node>");
         AssertThrown(() => AssertObject(obj1).IsNotSame(obj2))
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 222)
-            .HasMessage("Expecting not same: <Godot.Node>");
+            .HasPropertyValue("LineNumber", 219)
+            .HasMessage("Expecting be NOT same: <Godot.Node>");
         AssertThrown(() => AssertObject(obj2).IsNotSame(obj1))
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 226)
-            .HasMessage("Expecting not same: <Godot.Node>");
+            .HasPropertyValue("LineNumber", 223)
+            .HasMessage("Expecting be NOT same: <Godot.Node>");
     }
 
     [TestCase]
@@ -234,15 +231,15 @@ public class ObjectAssertTest : TestSuite
     {
         AssertThrown(() => AssertObject(1))
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 235)
+            .HasPropertyValue("LineNumber", 232)
             .HasMessage("ObjectAssert inital error: current is primitive <System.Int32>");
         AssertThrown(() => AssertObject(1.3))
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 239)
+            .HasPropertyValue("LineNumber", 236)
             .HasMessage("ObjectAssert inital error: current is primitive <System.Double>");
         AssertThrown(() => AssertObject(true))
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 243)
+            .HasPropertyValue("LineNumber", 240)
             .HasMessage("ObjectAssert inital error: current is primitive <System.Boolean>");
     }
 
@@ -253,7 +250,7 @@ public class ObjectAssertTest : TestSuite
                 .OverrideFailureMessage("Custom failure message")
                 .IsNull())
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 252)
+            .HasPropertyValue("LineNumber", 249)
             .HasMessage("Custom failure message");
     }
 

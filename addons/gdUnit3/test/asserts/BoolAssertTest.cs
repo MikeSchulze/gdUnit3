@@ -32,11 +32,11 @@ public class BoolAssertTest : TestSuite
         AssertThrown(() => AssertBool(true).IsNull())
             .IsInstanceOf<TestFailedException>()
             .HasPropertyValue("LineNumber", 32)
-            .StartsWithMessage("Expecting: 'Null' but is 'True'");
+            .StartsWithMessage("Expecting be <Null>:\n but is\n  'True'");
         AssertThrown(() => AssertBool(false).IsNull())
             .IsInstanceOf<TestFailedException>()
             .HasPropertyValue("LineNumber", 36)
-            .StartsWithMessage("Expecting: 'Null' but is 'False'");
+            .StartsWithMessage("Expecting be <Null>:\n but is\n  'False'");
     }
 
     [TestCase]
@@ -54,7 +54,8 @@ public class BoolAssertTest : TestSuite
         AssertThrown(() => AssertBool(true).IsEqual(false))
             .IsInstanceOf<TestFailedException>()
             .HasPropertyValue("LineNumber", 54)
-            .HasMessage("Expecting:\n 'False'\n be equal to\n 'True'");
+            .HasMessage("Expecting be equal:\n"
+                + "  'False' but is 'True'");
     }
 
     [TestCase]
@@ -64,8 +65,9 @@ public class BoolAssertTest : TestSuite
         AssertBool(false).IsNotEqual(true);
         AssertThrown(() => AssertBool(true).IsNotEqual(true))
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 65)
-            .HasMessage("Expecting:\n 'True'\n not equal to\n 'True'");
+            .HasPropertyValue("LineNumber", 66)
+            .HasMessage("Expecting be NOT equal:\n"
+                + "  'True' but is 'True'");
     }
 
     [TestCase]
@@ -84,7 +86,7 @@ public class BoolAssertTest : TestSuite
                     .OverrideFailureMessage("Custom failure message")
                     .IsFalse())
             .IsInstanceOf<TestFailedException>()
-            .HasPropertyValue("LineNumber", 83)
+            .HasPropertyValue("LineNumber", 85)
             .HasMessage("Custom failure message");
     }
 
