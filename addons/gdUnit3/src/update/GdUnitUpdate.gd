@@ -144,7 +144,7 @@ func _on_update_pressed():
 		return
 	update_progress("disable GdUnit3 ..")
 	
-	# remove update content to prevent resource loding issues during update (deleted resources)
+	# remove update content to prevent resource loading issues during update (deleted resources)
 	_content.text = ""
 	_content.bbcode_text = _colored("### Updating ...", Color.snow)
 	# close gdUnit scripts before update
