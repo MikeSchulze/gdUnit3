@@ -144,6 +144,9 @@ func _on_update_pressed():
 		return
 	update_progress("disable GdUnit3 ..")
 	
+	# remove update content to prevent resource loading issues during update (deleted resources)
+	_content.text = ""
+	_content.bbcode_text = _colored("### Updating ...", Color.snow)
 	# close gdUnit scripts before update
 	close_open_editor_scripts()
 	disable_gdUnit()
@@ -188,10 +191,10 @@ func _on_update_pressed():
 	
 	update_progress("enable GdUnit3 ..")
 	yield(get_tree().create_timer(.5), "timeout")
-	enable_gdUnit()
 	update_progress("New GdUnit successfully installed")
 	yield(get_tree().create_timer(1), "timeout")
 	hide()
+	enable_gdUnit()
 	queue_free()
 
 static func enable_gdUnit() -> void:
