@@ -188,10 +188,10 @@ func _on_update_pressed():
 	
 	update_progress("enable GdUnit3 ..")
 	yield(get_tree().create_timer(.5), "timeout")
-	enable_gdUnit()
 	update_progress("New GdUnit successfully installed")
 	yield(get_tree().create_timer(1), "timeout")
 	hide()
+	enable_gdUnit()
 	queue_free()
 
 static func enable_gdUnit() -> void:
