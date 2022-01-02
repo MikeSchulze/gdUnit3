@@ -137,7 +137,7 @@ namespace GdUnit3
 
         public void FireAfterEvent()
         {
-            FireTestEvent(TestEvent.After(TestInstance.ResourcePath, TestInstance.Name, BuildStatistics()));
+            FireTestEvent(TestEvent.After(TestInstance.ResourcePath, TestInstance.Name, BuildStatistics(), CollectReports));
         }
 
         public void FireBeforeTestEvent()

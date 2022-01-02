@@ -32,8 +32,6 @@ namespace GdUnit3
                 var testCase = currentContext.Test;
                 try
                 {
-                    // save current test suite instance used by assertions to register report resolver
-                    Thread.SetData(Thread.GetNamedDataSlot("TestInstance"), testInstance);
                     while (!currentContext.IsSkipped() && currentContext.CurrentIteration != 0)
                     {
                         testCase.MethodInfo.Invoke(testInstance, testCase.Arguments);

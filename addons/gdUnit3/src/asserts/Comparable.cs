@@ -60,6 +60,9 @@ namespace GdUnit3
                 return new Result(false, left, right);
 
             var type = left.GetType();
+            if (type.IsEnum)
+                return new Result(left.Equals(right), left, right, r);
+
             if (type.IsPrimitive || typeof(string).Equals(type) || left is IEquatable<T>)
             {
                 //Godot.GD.PrintS("IsPrimitive", type, left, right);
@@ -67,6 +70,7 @@ namespace GdUnit3
                     return new Result(left.ToString().ToLower().Equals(right.ToString().ToLower()), left, right, r);
                 return new Result(left.Equals(right), left, right, r);
             }
+
 
             if (object.ReferenceEquals(left, right))
                 return new Result(true, left, right, r);

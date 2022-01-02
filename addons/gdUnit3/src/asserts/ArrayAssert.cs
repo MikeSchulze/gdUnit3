@@ -178,7 +178,7 @@ namespace GdUnit3
                     {
                         if (Comparable.IsEqual(c, e).Valid)
                         {
-                            notFound.Remove(c);
+                            notFound.Remove(e);
                             break;
                         }
                     }
@@ -206,8 +206,8 @@ namespace GdUnit3
                 {
                     if (Comparable.IsEqual(c, e).Valid)
                     {
-                        notFound.Remove(c);
-                        notExpected.Remove(e);
+                        notExpected.Remove(c);
+                        notFound.Remove(e);
                         break;
                     }
                 }

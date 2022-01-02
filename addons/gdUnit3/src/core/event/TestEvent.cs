@@ -29,7 +29,10 @@ namespace GdUnit3
         const string SKIPPED_COUNT = "skipped_count";
 
         private IDictionary<string, object> _data = new Dictionary<string, object>();
+
 #nullable enable
+        private List<TestReport>? _reports;
+
         private TestEvent(TYPE type, string resourcePath, string suiteName, string testName, int totalCount = 0, IDictionary? statistics = null, IEnumerable<TestReport>? reports = null)
         {
             Type = type;
@@ -38,11 +41,9 @@ namespace GdUnit3
             _data.Add("suite_name", suiteName);
             _data.Add("test_name", testName);
             _data.Add(TOTAL_COUNT, totalCount);
-            //var _statistics = statistics ?? Enumerable.Empty<object>();
-            if (statistics != null)
-            {
-                _data.Add("statistics", statistics);
-            }
+            _data.Add("statistics", statistics ?? new Dictionary<string, object>());
+
+            _reports = reports?.ToList();
             if (reports != null)
             {
                 var serializedReports = reports.Select(report => report.Serialize()).ToArray();
@@ -52,13 +53,12 @@ namespace GdUnit3
 
         public static TestEvent Before(string resourcePath, string suiteName, int totalCount)
         {
-
-            return new TestEvent(TYPE.TESTSUITE_BEFORE, resourcePath, suiteName, "", totalCount);
+            return new TestEvent(TYPE.TESTSUITE_BEFORE, resourcePath, suiteName, "Before", totalCount);
         }
 
-        public static TestEvent After(string resourcePath, string suiteName, IDictionary statistics)
+        public static TestEvent After(string resourcePath, string suiteName, IDictionary statistics, IEnumerable<TestReport> reports)
         {
-            return new TestEvent(TYPE.TESTSUITE_AFTER, resourcePath, suiteName, "", 0, statistics);
+            return new TestEvent(TYPE.TESTSUITE_AFTER, resourcePath, suiteName, "After", 0, statistics, reports);
         }
 
         public static TestEvent BeforeTest(string resourcePath, string suiteName, string testName)
@@ -90,29 +90,29 @@ namespace GdUnit3
                     { SKIPPED_COUNT, skippedCount}};
         }
 
-        public IDictionary<string, object> AsDictionary()
-        {
-            return _data;
-        }
+        // used as bridge  to serialize GdUnitRunner:PublishEvent
+        public IDictionary<string, object> AsDictionary() => _data;
 
         public TestEvent.TYPE Type { get; private set; }
-        public string SuiteName() => _data["suite_name"] as string;
-        public string TestName() => _data["test_name"] as string;
-        public int TotalCount() => _data.ContainsKey(TOTAL_COUNT) ? (int)_data[TOTAL_COUNT] : 0;
-        public int ErrorCount() => _data.ContainsKey(ERROR_COUNT) ? (int)_data[ERROR_COUNT] : 0;
-        public int FailedCount() => _data.ContainsKey(FAILED_COUNT) ? (int)_data[FAILED_COUNT] : 0;
-        public int OrphanCount() => _data.ContainsKey(ORPHAN_NODES) ? (int)_data[ORPHAN_NODES] : 0;
+        public string SuiteName => _data["suite_name"] as string;
+        public string TestName => _data["test_name"] as string;
 
-        public bool IsWarning() => _data.ContainsKey(WARNINGS) ? (bool)_data[WARNINGS] : false;
-        public bool IsFailed() => _data.ContainsKey(FAILED) ? (bool)_data[FAILED] : false;
-        public bool IsError() => _data.ContainsKey(ERRORS) ? (bool)_data[ERRORS] : false;
-        public bool IsSkipped() => _data.ContainsKey(SKIPPED) ? (bool)_data[SKIPPED] : false;
+        public IDictionary Statistics => _data["statistics"] as IDictionary;
 
-        public bool IsSuccess() => !IsWarning() && !IsFailed() && !IsError() && !IsSkipped();
+        public IEnumerable<TestReport> Reports => _reports ?? new List<TestReport>();
+        public int TotalCount => _data.ContainsKey(TOTAL_COUNT) ? (int)_data[TOTAL_COUNT] : 0;
+        public int ErrorCount => Statistics.Contains(ERROR_COUNT) ? (int)Statistics[ERROR_COUNT] : 0;
+        public int FailedCount => Statistics.Contains(FAILED_COUNT) ? (int)Statistics[FAILED_COUNT] : 0;
+        public int OrphanCount => Statistics.Contains(ORPHAN_NODES) ? (int)Statistics[ORPHAN_NODES] : 0;
+        public bool IsWarning => Statistics.Contains(WARNINGS) ? (bool)Statistics[WARNINGS] : false;
+        public bool IsFailed => Statistics.Contains(FAILED) ? (bool)Statistics[FAILED] : false;
+        public bool IsError => Statistics.Contains(ERRORS) ? (bool)Statistics[ERRORS] : false;
+        public bool IsSkipped => Statistics.Contains(SKIPPED) ? (bool)Statistics[SKIPPED] : false;
+        public bool IsSuccess => !IsWarning && !IsFailed && !IsError && !IsSkipped;
 
         public override string ToString()
         {
-            return string.Format("Event: {0} {1}:{2}, {3} ", _data["type"], _data["suite_name"], _data["test_name"], "");
+            return string.Format("Event: {0} {1}:{2}, {3} ", Type, SuiteName, TestName, "");
         }
     }
 }

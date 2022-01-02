@@ -19,10 +19,15 @@ public class ValueExtractorTest : TestSuite
             TypeA = "aaa";
             TypeB = "bbb";
             TypeC = "ccc";
+            Value = "none";
         }
 
 
         public TestObject.STATE State { get; private set; }
+
+        public TestObject Parent { get; set; }
+
+        public string Value { get; set; }
 
         public string TypeA { get; private set; }
 
@@ -108,6 +113,18 @@ public class ValueExtractorTest : TestSuite
         var obj = new TestObject();
 
         AssertObject(new ValueExtractor("State").ExtractValue(obj)).IsEqual(TestObject.STATE.INIT);
+    }
+
+    [TestCase]
+    public void ExtractValue_chained()
+    {
+        var obj = new TestObject();
+        var parent = new TestObject();
+        parent.Value = "aaa";
+        obj.Parent = parent;
+
+        AssertString(new ValueExtractor("Value").ExtractValue(obj) as string).IsEqual("none");
+        AssertString(new ValueExtractor("Parent.Value").ExtractValue(obj) as string).IsEqual("aaa");
     }
 
 }
