@@ -23,53 +23,51 @@ namespace GdUnit3
         public void Execute(ExecutionContext context)
         {
             BeforeStage.Execute(context);
-            using (ExecutionContext currentContext = new ExecutionContext(context))
-            {
-                currentContext.MemoryPool.SetActive(StageName());
-                currentContext.OrphanMonitor.Start(true);
+            context.MemoryPool.SetActive(StageName());
+            context.OrphanMonitor.Start(true);
 
-                var testInstance = currentContext.TestInstance;
-                var testCase = currentContext.Test;
-                try
+            var testInstance = context.TestInstance;
+            var testCase = context.Test;
+            try
+            {
+                while (!context.IsSkipped() && context.CurrentIteration != 0)
                 {
-                    while (!currentContext.IsSkipped() && currentContext.CurrentIteration != 0)
-                    {
-                        testCase.MethodInfo.Invoke(testInstance, testCase.Arguments);
-                    }
-                }
-                catch (TargetInvocationException e)
-                {
-                    var baseException = e.GetBaseException();
-                    if (baseException is TestFailedException)
-                    {
-                        if (currentContext.FailureReporting)
-                        {
-                            var ex = baseException as TestFailedException;
-                            currentContext.ReportCollector.Consume(new TestReport(TestReport.TYPE.FAILURE, ex.LineNumber, ex.Message));
-                        }
-                    }
-                    else
-                    {
-                        // unexpected exceptions
-                        Godot.GD.PushError(baseException.Message);
-                        Godot.GD.PushError(baseException.StackTrace);
-                        currentContext.ReportCollector.Consume(new TestReport(TestReport.TYPE.ABORT, -1, baseException.Message));
-                    }
-                }
-                catch (Exception e)
-                {
-                    // unexpected exceptions
-                    Godot.GD.PushError(e.Message);
-                    Godot.GD.PushError(e.StackTrace);
-                    currentContext.ReportCollector.Consume(new TestReport(TestReport.TYPE.ABORT, -1, e.Message));
-                }
-                finally
-                {
-                    currentContext.MemoryPool.ReleaseRegisteredObjects();
-                    currentContext.OrphanMonitor.Stop();
+                    testCase.MethodInfo.Invoke(testInstance, testCase.Arguments);
                 }
             }
+            catch (TargetInvocationException e)
+            {
+                var baseException = e.GetBaseException();
+                if (baseException is TestFailedException)
+                {
+                    if (context.FailureReporting)
+                    {
+                        var ex = baseException as TestFailedException;
+                        context.ReportCollector.Consume(new TestReport(TestReport.TYPE.FAILURE, ex.LineNumber, ex.Message));
+                    }
+                }
+                else
+                {
+                    // unexpected exceptions
+                    Godot.GD.PushError(baseException.Message);
+                    Godot.GD.PushError(baseException.StackTrace);
+                    context.ReportCollector.Consume(new TestReport(TestReport.TYPE.ABORT, -1, baseException.Message));
+                }
+            }
+            catch (Exception e)
+            {
+                // unexpected exceptions
+                Godot.GD.PushError(e.Message);
+                Godot.GD.PushError(e.StackTrace);
+                context.ReportCollector.Consume(new TestReport(TestReport.TYPE.ABORT, -1, e.Message));
+            }
+            finally
+            {
+                context.MemoryPool.ReleaseRegisteredObjects();
+                context.OrphanMonitor.Stop();
+            }
             AfterStage.Execute(context);
+
         }
     }
 }

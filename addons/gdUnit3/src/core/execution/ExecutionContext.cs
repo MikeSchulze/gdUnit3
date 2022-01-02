@@ -100,8 +100,7 @@ namespace GdUnit3
             return ReportCollector.Warnings.Count() > 0 || SubExecutionContexts.Where(context => context.IsWarning()).Count() != 0;
         }
 
-        public IEnumerable<TestReport> CollectReports =>
-             ReportCollector.Reports.Concat(SubExecutionContexts.SelectMany(c => c.CollectReports));
+        public IEnumerable<TestReport> CollectReports => ReportCollector.Reports;
 
         public bool IsSkipped() => Skipped;
 

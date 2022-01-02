@@ -14,7 +14,7 @@ public class ExecutorTest : TestSuite, ITestEventListener
     private Executor _executor;
     private List<TestEvent> _events = new List<TestEvent>();
 
-    private bool _verbose = false;
+    private bool _verbose = true;
 
 
     [Before]
@@ -47,6 +47,9 @@ public class ExecutorTest : TestSuite, ITestEventListener
             Godot.GD.PrintS("-------------------------------");
             Godot.GD.PrintS(e.Type, e.SuiteName, e.TestName, new Godot.Collections.Dictionary(e.Statistics));
             Godot.GD.PrintS("ErrorCount:", e.ErrorCount, "FailedCount:", e.FailedCount, "OrphanCount:", e.OrphanCount);
+            var reports = new List<TestReport>(e.Reports).ConvertAll(r => new TestReport(r.Type, r.LineNumber, NormalizedFailureMessage(r.Message)));
+            if (_verbose)
+                reports.ForEach(r => Godot.GD.PrintS("Reports ->", r));
         }
         _events.Add(e);
     }
@@ -87,8 +90,6 @@ public class ExecutorTest : TestSuite, ITestEventListener
         var extractedEvents = events.ConvertAll(e =>
         {
             var reports = new List<TestReport>(e.Reports).ConvertAll(r => new TestReport(r.Type, r.LineNumber, NormalizedFailureMessage(r.Message)));
-            if (_verbose)
-                reports.ForEach(r => Godot.GD.PrintS("Reports ->", r));
             return new { e.TestName, EventType = e.Type, Reports = reports };
         });
         return AssertArray(extractedEvents).ExtractV(Extr("EventType"), Extr("TestName"), Extr("Reports"));
@@ -159,7 +160,7 @@ public class ExecutorTest : TestSuite, ITestEventListener
         AssertTestCaseNames(events)
             .ContainsExactly(ExpectedEvents(events, "TestSuiteFailOnStageBefore", "TestCase1", "TestCase2"));
 
-        // we expect the testsuite is failing on stage 'before()' and commits one failure
+        // we expect the testsuite is failing on stage 'Before()' and commits one failure
         // where is reported finally at TESTSUITE_AFTER event
         AssertEventCounters(events).ContainsExactly(
             Tuple(TESTSUITE_BEFORE, "Before", 0, 0, 0),
@@ -179,14 +180,223 @@ public class ExecutorTest : TestSuite, ITestEventListener
             // report suite is not success, is failed
             Tuple(TESTSUITE_AFTER, "After", false, false, true, false)
         );
-
+        // one failure at Before()
         AssertReports(events).ContainsExactly(
             Tuple(TESTSUITE_BEFORE, "Before", new List<TestReport>()),
             Tuple(TESTCASE_BEFORE, "TestCase1", new List<TestReport>()),
             Tuple(TESTCASE_AFTER, "TestCase1", new List<TestReport>()),
             Tuple(TESTCASE_BEFORE, "TestCase2", new List<TestReport>()),
             Tuple(TESTCASE_AFTER, "TestCase2", new List<TestReport>()),
-            Tuple(TESTSUITE_AFTER, "After", new List<TestReport>() { new TestReport(FAILURE, 13, "failed on before()") }));
+            Tuple(TESTSUITE_AFTER, "After", new List<TestReport>() { new TestReport(FAILURE, 13, "failed on Before()") }));
+    }
+
+    [TestCase]
+    public void Execute_FailureOnStage_After()
+    {
+        TestSuite testSuite = LoadTestSuite("res://addons/gdUnit3/test/core/resources/testsuites/mono/TestSuiteFailOnStageAfter.cs");
+        // verify all test cases loaded
+        AssertArray(testSuite.GetChildren()).Extract("GetName").ContainsExactly(new string[] { "TestCase1", "TestCase2" });
+        // simulate test suite execution
+        var events = Execute(testSuite);
+        // verify basis infos
+        AssertTestCaseNames(events)
+            .ContainsExactly(ExpectedEvents(events, "TestSuiteFailOnStageAfter", "TestCase1", "TestCase2"));
+
+        // we expect the testsuite is failing on stage 'After()' and commits one failure
+        // where is reported finally at TESTSUITE_AFTER event
+        AssertEventCounters(events).ContainsExactly(
+            Tuple(TESTSUITE_BEFORE, "Before", 0, 0, 0),
+            Tuple(TESTCASE_BEFORE, "TestCase1", 0, 0, 0),
+            Tuple(TESTCASE_AFTER, "TestCase1", 0, 0, 0),
+            Tuple(TESTCASE_BEFORE, "TestCase2", 0, 0, 0),
+            Tuple(TESTCASE_AFTER, "TestCase2", 0, 0, 0),
+            // report failure failed_count = 1
+            Tuple(TESTSUITE_AFTER, "After", 0, 1, 0)
+        );
+        AssertEventStates(events).ContainsExactly(
+            Tuple(TESTSUITE_BEFORE, "Before", true, false, false, false),
+            Tuple(TESTCASE_BEFORE, "TestCase1", true, false, false, false),
+            Tuple(TESTCASE_AFTER, "TestCase1", true, false, false, false),
+            Tuple(TESTCASE_BEFORE, "TestCase2", true, false, false, false),
+            Tuple(TESTCASE_AFTER, "TestCase2", true, false, false, false),
+            // report suite is not success, is failed
+            Tuple(TESTSUITE_AFTER, "After", false, false, true, false)
+        );
+        // one failure at After()
+        AssertReports(events).ContainsExactly(
+            Tuple(TESTSUITE_BEFORE, "Before", new List<TestReport>()),
+            Tuple(TESTCASE_BEFORE, "TestCase1", new List<TestReport>()),
+            Tuple(TESTCASE_AFTER, "TestCase1", new List<TestReport>()),
+            Tuple(TESTCASE_BEFORE, "TestCase2", new List<TestReport>()),
+            Tuple(TESTCASE_AFTER, "TestCase2", new List<TestReport>()),
+            Tuple(TESTSUITE_AFTER, "After", new List<TestReport>() { new TestReport(FAILURE, 19, "failed on After()") }));
+    }
+
+    [TestCase]
+    public void Execute_FailureOnStage_BeforeTest()
+    {
+        TestSuite testSuite = LoadTestSuite("res://addons/gdUnit3/test/core/resources/testsuites/mono/TestSuiteFailOnStageBeforeTest.cs");
+        // verify all test cases loaded
+        AssertArray(testSuite.GetChildren()).Extract("GetName").ContainsExactly(new string[] { "TestCase1", "TestCase2" });
+        // simulate test suite execution
+        var events = Execute(testSuite);
+        // verify basis infos
+        AssertTestCaseNames(events)
+            .ContainsExactly(ExpectedEvents(events, "TestSuiteFailOnStageBeforeTest", "TestCase1", "TestCase2"));
+
+        // we expect the testsuite is failing on stage 'BeforeTest()' and commits one failure on each test case
+        // because is in scope of test execution
+        AssertEventCounters(events).ContainsExactly(
+            Tuple(TESTSUITE_BEFORE, "Before", 0, 0, 0),
+            Tuple(TESTCASE_BEFORE, "TestCase1", 0, 0, 0),
+            Tuple(TESTCASE_AFTER, "TestCase1", 0, 1, 0),
+            Tuple(TESTCASE_BEFORE, "TestCase2", 0, 0, 0),
+            Tuple(TESTCASE_AFTER, "TestCase2", 0, 1, 0),
+            Tuple(TESTSUITE_AFTER, "After", 0, 0, 0)
+        );
+        AssertEventStates(events).ContainsExactly(
+            Tuple(TESTSUITE_BEFORE, "Before", true, false, false, false),
+            Tuple(TESTCASE_BEFORE, "TestCase1", true, false, false, false),
+            Tuple(TESTCASE_AFTER, "TestCase1", false, false, true, false),
+            Tuple(TESTCASE_BEFORE, "TestCase2", true, false, false, false),
+            Tuple(TESTCASE_AFTER, "TestCase2", false, false, true, false),
+            // report suite is not success, is failed
+            Tuple(TESTSUITE_AFTER, "After", false, false, true, false)
+        );
+        // BeforeTest() failure report is append to each test
+        AssertReports(events).ContainsExactly(
+            Tuple(TESTSUITE_BEFORE, "Before", new List<TestReport>()),
+            Tuple(TESTCASE_BEFORE, "TestCase1", new List<TestReport>()),
+            Tuple(TESTCASE_AFTER, "TestCase1", new List<TestReport>() { new TestReport(FAILURE, 25, "failed on BeforeTest()") }),
+            Tuple(TESTCASE_BEFORE, "TestCase2", new List<TestReport>()),
+            Tuple(TESTCASE_AFTER, "TestCase2", new List<TestReport>() { new TestReport(FAILURE, 25, "failed on BeforeTest()") }),
+            Tuple(TESTSUITE_AFTER, "After", new List<TestReport>()));
+    }
+
+    [TestCase]
+    public void Execute_FailureOnStage_AfterTest()
+    {
+        TestSuite testSuite = LoadTestSuite("res://addons/gdUnit3/test/core/resources/testsuites/mono/TestSuiteFailOnStageAfterTest.cs");
+        // verify all test cases loaded
+        AssertArray(testSuite.GetChildren()).Extract("GetName").ContainsExactly(new string[] { "TestCase1", "TestCase2" });
+        // simulate test suite execution
+        var events = Execute(testSuite);
+        // verify basis infos
+        AssertTestCaseNames(events)
+            .ContainsExactly(ExpectedEvents(events, "TestSuiteFailOnStageAfterTest", "TestCase1", "TestCase2"));
+
+        // we expect the testsuite is failing on stage 'AfterTest()' and commits one failure on each test case
+        // because is in scope of test execution
+        AssertEventCounters(events).ContainsExactly(
+            Tuple(TESTSUITE_BEFORE, "Before", 0, 0, 0),
+            Tuple(TESTCASE_BEFORE, "TestCase1", 0, 0, 0),
+            Tuple(TESTCASE_AFTER, "TestCase1", 0, 1, 0),
+            Tuple(TESTCASE_BEFORE, "TestCase2", 0, 0, 0),
+            Tuple(TESTCASE_AFTER, "TestCase2", 0, 1, 0),
+            Tuple(TESTSUITE_AFTER, "After", 0, 0, 0)
+        );
+        AssertEventStates(events).ContainsExactly(
+            Tuple(TESTSUITE_BEFORE, "Before", true, false, false, false),
+            Tuple(TESTCASE_BEFORE, "TestCase1", true, false, false, false),
+            Tuple(TESTCASE_AFTER, "TestCase1", false, false, true, false),
+            Tuple(TESTCASE_BEFORE, "TestCase2", true, false, false, false),
+            Tuple(TESTCASE_AFTER, "TestCase2", false, false, true, false),
+            // report suite is not success, is failed
+            Tuple(TESTSUITE_AFTER, "After", false, false, true, false)
+        );
+        // AfterTest() failure report is append to each test
+        AssertReports(events).ContainsExactly(
+            Tuple(TESTSUITE_BEFORE, "Before", new List<TestReport>()),
+            Tuple(TESTCASE_BEFORE, "TestCase1", new List<TestReport>()),
+            Tuple(TESTCASE_AFTER, "TestCase1", new List<TestReport>() { new TestReport(FAILURE, 31, "failed on AfterTest()") }),
+            Tuple(TESTCASE_BEFORE, "TestCase2", new List<TestReport>()),
+            Tuple(TESTCASE_AFTER, "TestCase2", new List<TestReport>() { new TestReport(FAILURE, 31, "failed on AfterTest()") }),
+            Tuple(TESTSUITE_AFTER, "After", new List<TestReport>()));
+    }
+
+    [TestCase]
+    public void Execute_FailureOn_TestCase1()
+    {
+        TestSuite testSuite = LoadTestSuite("res://addons/gdUnit3/test/core/resources/testsuites/mono/TestSuiteFailOnTestCase1.cs");
+        // verify all test cases loaded
+        AssertArray(testSuite.GetChildren()).Extract("GetName").ContainsExactly(new string[] { "TestCase1", "TestCase2" });
+        // simulate test suite execution
+        var events = Execute(testSuite);
+        // verify basis infos
+        AssertTestCaseNames(events)
+            .ContainsExactly(ExpectedEvents(events, "TestSuiteFailOnTestCase1", "TestCase1", "TestCase2"));
+
+        // we expect the test case 'TestCase1' is failing  and commits one failure
+        AssertEventCounters(events).ContainsExactly(
+            Tuple(TESTSUITE_BEFORE, "Before", 0, 0, 0),
+            Tuple(TESTCASE_BEFORE, "TestCase1", 0, 0, 0),
+            Tuple(TESTCASE_AFTER, "TestCase1", 0, 1, 0),
+            Tuple(TESTCASE_BEFORE, "TestCase2", 0, 0, 0),
+            Tuple(TESTCASE_AFTER, "TestCase2", 0, 0, 0),
+            Tuple(TESTSUITE_AFTER, "After", 0, 0, 0)
+        );
+        AssertEventStates(events).ContainsExactly(
+            Tuple(TESTSUITE_BEFORE, "Before", true, false, false, false),
+            Tuple(TESTCASE_BEFORE, "TestCase1", true, false, false, false),
+            Tuple(TESTCASE_AFTER, "TestCase1", false, false, true, false),
+            Tuple(TESTCASE_BEFORE, "TestCase2", true, false, false, false),
+            Tuple(TESTCASE_AFTER, "TestCase2", true, false, false, false),
+            // report suite is not success, is failed
+            Tuple(TESTSUITE_AFTER, "After", false, false, true, false)
+        );
+        // only 'TestCase1' reports a failure
+        AssertReports(events).ContainsExactly(
+            Tuple(TESTSUITE_BEFORE, "Before", new List<TestReport>()),
+            Tuple(TESTCASE_BEFORE, "TestCase1", new List<TestReport>()),
+            Tuple(TESTCASE_AFTER, "TestCase1", new List<TestReport>() { new TestReport(FAILURE, 37, "Expecting be equal:  'TestCase1' but is  'invalid'") }),
+            Tuple(TESTCASE_BEFORE, "TestCase2", new List<TestReport>()),
+            Tuple(TESTCASE_AFTER, "TestCase2", new List<TestReport>()),
+            Tuple(TESTSUITE_AFTER, "After", new List<TestReport>()));
+    }
+
+    [TestCase]
+    public void Execute_FailureOn_MultiStages()
+    {
+        TestSuite testSuite = LoadTestSuite("res://addons/gdUnit3/test/core/resources/testsuites/mono/TestSuiteFailOnMultiStages.cs");
+        // verify all test cases loaded
+        AssertArray(testSuite.GetChildren()).Extract("GetName").ContainsExactly(new string[] { "TestCase1", "TestCase2" });
+        // simulate test suite execution
+        var events = Execute(testSuite);
+        // verify basis infos
+        AssertTestCaseNames(events)
+            .ContainsExactly(ExpectedEvents(events, "TestSuiteFailOnMultiStages", "TestCase1", "TestCase2"));
+
+        // we expect failing on multiple stages
+        AssertEventCounters(events).ContainsExactly(
+            Tuple(TESTSUITE_BEFORE, "Before", 0, 0, 0),
+            Tuple(TESTCASE_BEFORE, "TestCase1", 0, 0, 0),
+            // TestCase1 has a failure plus one from 'BeforeTest'
+            Tuple(TESTCASE_AFTER, "TestCase1", 0, 2, 0),
+            Tuple(TESTCASE_BEFORE, "TestCase2", 0, 0, 0),
+            // the second test has no failures but one from 'BeforeTest'
+            Tuple(TESTCASE_AFTER, "TestCase2", 0, 1, 0),
+            // and one failure is on stage 'After' found
+            Tuple(TESTSUITE_AFTER, "After", 0, 1, 0)
+        );
+        AssertEventStates(events).ContainsExactly(
+            Tuple(TESTSUITE_BEFORE, "Before", true, false, false, false),
+            Tuple(TESTCASE_BEFORE, "TestCase1", true, false, false, false),
+            Tuple(TESTCASE_AFTER, "TestCase1", false, false, true, false),
+            Tuple(TESTCASE_BEFORE, "TestCase2", true, false, false, false),
+            Tuple(TESTCASE_AFTER, "TestCase2", false, false, true, false),
+            // report suite is not success, is failed
+            Tuple(TESTSUITE_AFTER, "After", false, false, true, false)
+        );
+        // only 'TestCase1' reports a 'real' failure plus test setup stage failures
+        AssertReports(events).ContainsExactly(
+            Tuple(TESTSUITE_BEFORE, "Before", new List<TestReport>()),
+            Tuple(TESTCASE_BEFORE, "TestCase1", new List<TestReport>()),
+            Tuple(TESTCASE_AFTER, "TestCase1", new List<TestReport>() {
+                new TestReport(FAILURE, 25, "failed on BeforeTest()"),
+                new TestReport(FAILURE, 37, "Expecting be empty: but is  'TestCase1'")}),
+            Tuple(TESTCASE_BEFORE, "TestCase2", new List<TestReport>()),
+            Tuple(TESTCASE_AFTER, "TestCase2", new List<TestReport>() { new TestReport(FAILURE, 25, "failed on BeforeTest()") }),
+            Tuple(TESTSUITE_AFTER, "After", new List<TestReport>() { new TestReport(FAILURE, 19, "failed on After()") }));
     }
 
 }

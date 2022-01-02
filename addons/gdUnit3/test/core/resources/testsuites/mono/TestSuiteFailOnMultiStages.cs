@@ -4,25 +4,25 @@ using static GdUnit3.Assertions;
 
 // will be ignored because of missing `[TestSuite]` anotation
 // used by executor integration test
-public class TestSuiteFailOnStageBefore : TestSuite
+public class TestSuiteFailOnMultiStages : TestSuite
 {
 
     [Before]
     public void Before()
     {
-        AssertString("Suite Before()").OverrideFailureMessage("failed on Before()").IsEmpty();
+        AssertString("Suite Before()").IsEqual("Suite Before()");
     }
 
     [After]
     public void After()
     {
-        AssertString("Suite After()").IsEqual("Suite After()");
+        AssertString("Suite After()").OverrideFailureMessage("failed on After()").IsEmpty();
     }
 
     [BeforeTest]
     public void BeforeTest()
     {
-        AssertString("Suite BeforeTest()").IsEqual("Suite BeforeTest()");
+        AssertString("Suite BeforeTest()").OverrideFailureMessage("failed on BeforeTest()").IsEmpty();
     }
 
     [AfterTest]
@@ -34,7 +34,7 @@ public class TestSuiteFailOnStageBefore : TestSuite
     [TestCase]
     public void TestCase1()
     {
-        AssertString("TestCase1").IsEqual("TestCase1");
+        AssertString("TestCase1").IsEmpty();
     }
 
     [TestCase]
