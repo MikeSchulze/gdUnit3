@@ -46,23 +46,27 @@ func after():
 
 var _fuzzer_instance_before : Fuzzer = null
 func test_fuzzer_has_same_instance_peer_iteration(fuzzer=TestFuzzer.new(), fuzzer_iterations = 10):
+	assert_object(fuzzer).is_not_null()
 	_current_iterations["test_fuzzer_has_same_instance_peer_iteration"] += 1
 	if _fuzzer_instance_before != null:
 		assert_that(fuzzer).is_same(_fuzzer_instance_before)
 	_fuzzer_instance_before = fuzzer
 
 func test_fuzzer_iterations_default(fuzzer := Fuzzers.rangei(-23, 22)):
+	assert_object(fuzzer).is_not_null()
 	_current_iterations["test_fuzzer_iterations_default"] += 1
 
 func test_fuzzer_iterations_custom_value(fuzzer := Fuzzers.rangei(-23, 22), fuzzer_iterations = 234, fuzzer_seed = 100):
 	_current_iterations["test_fuzzer_iterations_custom_value"] += 1
 
 func test_fuzzer_inject_value(fuzzer := Fuzzers.rangei(-23, 22), fuzzer_iterations = 100):
+	assert_object(fuzzer).is_not_null()
 	_current_iterations["test_fuzzer_inject_value"] += 1
 	assert_int(fuzzer.next_value()).is_between(-23, 22)
 
 var expected_value := [-20, 6, -18, 8, 9, 9, 3, 16, -12, 0]
 func test_fuzzer_inject_value_with_seed(fuzzer := Fuzzers.rangei(-23, 22), fuzzer_iterations = 10, fuzzer_seed = 187772):
+	assert_object(fuzzer).is_not_null()
 	var iteration_index =  fuzzer.iteration_index()-1
 	var current = fuzzer.next_value()
 	var expected = expected_value[iteration_index]
@@ -74,6 +78,8 @@ func test_fuzzer_inject_value_with_seed(fuzzer := Fuzzers.rangei(-23, 22), fuzze
 var expected_value_a := [-20, -18, 9, 3, -12, -21, -11, -13, -18, 7]
 var expected_value_b := [40, 40, 40, 42, 38, 36, 39, 41, 37, 42]
 func test_multiple_fuzzers_inject_value_with_seed(fuzzer_a := Fuzzers.rangei(-23, 22), fuzzer_b := Fuzzers.rangei(33, 44), fuzzer_iterations = 10, fuzzer_seed = 187772):
+	assert_object(fuzzer_a).is_not_null()
+	assert_object(fuzzer_b).is_not_null()
 	var iteration_index_a =  fuzzer_a.iteration_index()-1
 	var current_a = fuzzer_a.next_value()
 	var expected_a = expected_value_a[iteration_index_a]
@@ -93,6 +99,7 @@ func test_multiple_fuzzers_inject_value_with_seed(fuzzer_a := Fuzzers.rangei(-23
 		.is_equal(expected_b)
 
 func test_fuzzer_error_after_eight_iterations(fuzzer=TestFuzzer.new(), fuzzer_iterations = 10):
+	assert_object(fuzzer).is_not_null()
 	# should fail after 8 iterations
 	if fuzzer.iteration_index() == 8:
 		assert_int(fuzzer.next_value(), GdUnitAssert.EXPECT_FAIL) \
@@ -102,10 +109,12 @@ func test_fuzzer_error_after_eight_iterations(fuzzer=TestFuzzer.new(), fuzzer_it
 		assert_int(fuzzer.next_value()).is_between(0, 9)
 
 func test_fuzzer_custom_func(fuzzer=fuzzer()):
+	assert_object(fuzzer).is_not_null()
 	assert_int(fuzzer.next_value()).is_between(1, 10)
 
 func test_multiline_fuzzer_args(
 	fuzzer := Fuzzers.rangev2(Vector2(-47, -47), Vector2(47, 47)),
 	nfuzzer := Fuzzers.rangei(0, 9),
 	fuzzer_iterations = 23):
+		assert_object(fuzzer).is_not_null()
 		_current_iterations["test_multiline_fuzzer_args"] += 1

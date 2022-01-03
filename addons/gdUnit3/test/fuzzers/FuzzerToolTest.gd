@@ -40,3 +40,26 @@ func test_create_fuzzer_do_fail():
 	var fuzzer_func := "fuzzer:=non_fuzzer()"
 	var fuzzer := FuzzerTool.create_fuzzer(self.get_script(), fuzzer_func)
 	assert_that(fuzzer).is_null()
+
+class NestedFuzzer extends Fuzzer:
+	
+	func _init():
+		pass
+	
+	func next_value()->Dictionary: 
+		return {}
+
+func test_create_nested_fuzzer_do_fail():
+	var fuzzer_func := "fuzzer:=NestedFuzzer.new()"
+	var fuzzer := FuzzerTool.create_fuzzer(self.get_script(), fuzzer_func)
+	assert_that(fuzzer).is_not_null()
+	assert_that(fuzzer is Fuzzer).is_true()
+	# the fuzzer is not typed as NestedFuzzer seams be a Godot bug
+	assert_bool(fuzzer is NestedFuzzer).is_false()
+
+func test_create_external_fuzzer():
+	var fuzzer_func := "fuzzer:=TestExternalFuzzer.new()"
+	var fuzzer := FuzzerTool.create_fuzzer(self.get_script(), fuzzer_func)
+	assert_that(fuzzer).is_not_null()
+	assert_that(fuzzer is Fuzzer).is_true()
+	assert_bool(fuzzer is TestExternalFuzzer).is_true()
