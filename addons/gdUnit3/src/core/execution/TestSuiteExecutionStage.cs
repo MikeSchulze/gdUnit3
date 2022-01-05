@@ -10,6 +10,8 @@ namespace GdUnit3
         {
             BeforeStage = new BeforeExecutionStage(type);
             AfterStage = new AfterExecutionStage(type);
+            BeforeTestStage = new BeforeTestExecutionStage(type);
+            AfterTestStage = new AfterTestExecutionStage(type);
             TestCaseStage = new TestCaseExecutionStage(type);
         }
 
@@ -20,21 +22,32 @@ namespace GdUnit3
         private IExecutionStage AfterStage
         { get; set; }
 
+
+        private IExecutionStage BeforeTestStage
+        { get; set; }
+        private IExecutionStage AfterTestStage
+        { get; set; }
+
         private IExecutionStage TestCaseStage
         { get; set; }
 
-        public void Execute(ExecutionContext context)
+        public void Execute(ExecutionContext testSuiteContext)
         {
-            BeforeStage.Execute(context);
+            BeforeStage.Execute(testSuiteContext);
 
-            foreach (TestCase testCase in TestCases(context))
+            foreach (TestCase testCase in TestCases(testSuiteContext))
             {
-                using (ExecutionContext currentContext = new ExecutionContext(context, testCase))
+                using (ExecutionContext testCaseContext = new ExecutionContext(testSuiteContext, testCase))
                 {
-                    TestCaseStage.Execute(currentContext);
+                    BeforeTestStage.Execute(testCaseContext);
+                    using (ExecutionContext context = new ExecutionContext(testCaseContext))
+                    {
+                        TestCaseStage.Execute(context);
+                    }
+                    AfterTestStage.Execute(testCaseContext);
                 }
             }
-            AfterStage.Execute(context);
+            AfterStage.Execute(testSuiteContext);
         }
 
         private bool IsIncluded(string testCaseName, ExecutionContext context)

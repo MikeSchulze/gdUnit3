@@ -299,7 +299,7 @@ public class IntAssertTest : TestSuite
                 + "  System.Int32[3, 4, 5, 6]");
     }
 
-    [TestCase(iterations = 40)]
+    [TestCase(Iterations = 40)]
     public void IsBetween([Fuzzer(-20)] int value)
     {
         AssertInt(value).IsBetween(-20, 20);

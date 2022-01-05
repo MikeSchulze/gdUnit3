@@ -8,9 +8,9 @@ namespace GdUnit3
 {
     public sealed class AssertFailures
     {
-        const string WARN_COLOR = "#EFF883";
-        const string ERROR_COLOR = "#CD5C5C";
-        const string VALUE_COLOR = "#1E90FF";
+        public const string WARN_COLOR = "#EFF883";
+        public const string ERROR_COLOR = "#CD5C5C";
+        public const string VALUE_COLOR = "#1E90FF";
 
         private static Func<object, string> defaultFormatter = (value) => value?.ToString() ?? "<Null>";
 
@@ -40,7 +40,7 @@ namespace GdUnit3
             return sb.ToString();
         }
 
-        private static string FormatValue(object value, string color, bool quoted, bool printType = true)
+        public static string FormatValue(object value, string color, bool quoted, bool printType = true)
         {
             if (value == null)
                 return "<Null>";

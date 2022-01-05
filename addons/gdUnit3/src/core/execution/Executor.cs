@@ -5,6 +5,11 @@ namespace GdUnit3
     public sealed class Executor : Godot.Reference
     {
 
+        public Executor()
+        {
+            ReportOrphanNodesEnabled = true;
+        }
+
         private List<ITestEventListener> _eventListeners = new List<ITestEventListener>();
 
         private class GdTestEventListenerDelegator : ITestEventListener
@@ -17,6 +22,7 @@ namespace GdUnit3
             }
             public void PublishEvent(TestEvent testEvent) => _listener.Call("PublishEvent", testEvent);
         }
+
         public void AddGdTestEventListener(Godot.Object listener)
         {
             // I want to using anonymus implementation to remove the extra delegator class
@@ -28,13 +34,23 @@ namespace GdUnit3
             _eventListeners.Add(listener);
         }
 
+        public bool ReportOrphanNodesEnabled { get; set; }
+
         public void Execute(TestSuite testSuite)
         {
-            using (ExecutionContext context = new ExecutionContext(testSuite, _eventListeners))
+            if (!ReportOrphanNodesEnabled)
+                Godot.GD.PushWarning("!!! Reporting orphan nodes is disabled. Please check GdUnit settings.");
+            try
             {
-                new TestSuiteExecutionStage(testSuite.GetType()).Execute(context);
+                using (ExecutionContext context = new ExecutionContext(testSuite, _eventListeners, ReportOrphanNodesEnabled))
+                {
+                    new TestSuiteExecutionStage(testSuite.GetType()).Execute(context);
+                }
             }
-            testSuite.Free();
+            finally
+            {
+                testSuite.Free();
+            }
         }
     }
 }

@@ -28,10 +28,10 @@ namespace GdUnit3
             var attributes = Attributes;
             return new Dictionary {
                     { "name", Name },
-                    { "line_number", attributes.line },
-                    { "timeout", attributes.timeout },
-                    { "iterations", attributes.iterations },
-                    { "seed", attributes.seed },
+                    { "line_number", attributes.Line },
+                    { "timeout", attributes.Timeout },
+                    { "iterations", attributes.Iterations },
+                    { "seed", attributes.Seed },
                 };
         }
         private IEnumerable<object> Parameters

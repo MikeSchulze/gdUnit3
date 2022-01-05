@@ -14,7 +14,7 @@ public class ExecutorTest : TestSuite, ITestEventListener
     private Executor _executor;
     private List<TestEvent> _events = new List<TestEvent>();
 
-    private bool _verbose = true;
+    private bool _verbose = false;
 
 
     [Before]
@@ -57,6 +57,7 @@ public class ExecutorTest : TestSuite, ITestEventListener
     private List<TestEvent> Execute(TestSuite testSuite, bool enableOrphanDetection = true)
     {
         _events.Clear();
+        _executor.ReportOrphanNodesEnabled = enableOrphanDetection;
         _executor.Execute(testSuite);
         return _events;
     }
@@ -434,24 +435,68 @@ public class ExecutorTest : TestSuite, ITestEventListener
             //  test case has a failure and warnings
             Tuple(TESTCASE_AFTER, "TestCase2", false, true, true, false),
             // report suite is not success, is failed
-            Tuple(TESTSUITE_AFTER, "After", false, false, true, false)
+            Tuple(TESTSUITE_AFTER, "After", false, true, true, false)
         );
-        // only 'TestCase1' reports a 'real' failure plus test setup stage failures
+        // only 'TestCase2' reports a 'real' failure plus test setup stage failures
         AssertReports(events).ContainsExactly(
             Tuple(TESTSUITE_BEFORE, "Before", new List<TestReport>()),
             Tuple(TESTCASE_BEFORE, "TestCase1", new List<TestReport>()),
             // ends with warnings
             Tuple(TESTCASE_AFTER, "TestCase1", new List<TestReport>() {
-                new TestReport(FAILURE, 25, "WARNING: Detected <3> orphan nodes during test execution!"),
-                new TestReport(FAILURE, 37, "WARNING: Detected <2> orphan nodes during test setup! Check BeforeTest() and AfterTest()!")}),
+                new TestReport(WARN, 0, "WARNING: Detected <2> orphan nodes during test setup stage! Check SetupTest:27 and TearDownTest:35 for unfreed instances!"),
+                new TestReport(WARN, 41, "WARNING: Detected <3> orphan nodes during test execution!")}),
             Tuple(TESTCASE_BEFORE, "TestCase2", new List<TestReport>()),
             // ends with failure and warnings 
             Tuple(TESTCASE_AFTER, "TestCase2", new List<TestReport>() {
-                new TestReport(FAILURE, 25, "WARNING: Detected <4> orphan nodes during test execution!"),
-                new TestReport(FAILURE, 25, "faild on test_case2()"),
-                new TestReport(FAILURE, 25, "WARNING: Detected <2> orphan nodes during test setup! Check BeforeTest() and AfterTest()!") }),
+                new TestReport(WARN, 0, "WARNING: Detected <2> orphan nodes during test setup stage! Check SetupTest:27 and TearDownTest:35 for unfreed instances!"),
+                new TestReport(WARN, 50, "WARNING: Detected <4> orphan nodes during test execution!"),
+                new TestReport(FAILURE, 57, "Expecting be empty: but is  'TestCase2'") }),
             // and one orphan detected at stage 'After'
-            Tuple(TESTSUITE_AFTER, "After", new List<TestReport>() { new TestReport(WARN, 19, "WARNING: Detected <1> orphan nodes during test suite setup stage! Check Before() and After()!") }));
+            Tuple(TESTSUITE_AFTER, "After", new List<TestReport>() { new TestReport(WARN, 0, "WARNING: Detected <1> orphan nodes during test suite setup stage! Check SetupSuite:14 and TearDownSuite:21 for unfreed instances!") }));
+    }
+
+
+    [TestCase]
+    public void Execute_Failure_OrphanNodesDetection_Disabled()
+    {
+        TestSuite testSuite = LoadTestSuite("res://addons/gdUnit3/test/core/resources/testsuites/mono/TestSuiteFailAndOrpahnsDetected.cs");
+        // verify all test cases loaded
+        AssertArray(testSuite.GetChildren()).Extract("GetName").ContainsExactly(new string[] { "TestCase1", "TestCase2" });
+        // simulate test suite execution whit disabled orphan detection
+        var events = Execute(testSuite, false);
+        // verify basis infos
+        AssertTestCaseNames(events)
+            .ContainsExactly(ExpectedEvents(events, "TestSuiteFailAndOrpahnsDetected", "TestCase1", "TestCase2"));
+
+        // we expect failing on multiple stages
+        AssertEventCounters(events).ContainsExactly(
+            Tuple(TESTSUITE_BEFORE, "Before", 0, 0, 0),
+            Tuple(TESTCASE_BEFORE, "TestCase1", 0, 0, 0),
+            Tuple(TESTCASE_AFTER, "TestCase1", 0, 0, 0),
+            Tuple(TESTCASE_BEFORE, "TestCase2", 0, 0, 0),
+            Tuple(TESTCASE_AFTER, "TestCase2", 0, 1, 0),
+            Tuple(TESTSUITE_AFTER, "After", 0, 0, 0)
+        );
+        AssertEventStates(events).ContainsExactly(
+            Tuple(TESTSUITE_BEFORE, "Before", true, false, false, false),
+            Tuple(TESTCASE_BEFORE, "TestCase1", true, false, false, false),
+            Tuple(TESTCASE_AFTER, "TestCase1", true, false, false, false),
+            Tuple(TESTCASE_BEFORE, "TestCase2", true, false, false, false),
+            //  test case has a failure
+            Tuple(TESTCASE_AFTER, "TestCase2", false, false, true, false),
+            // report suite is not success, is failed
+            Tuple(TESTSUITE_AFTER, "After", false, false, true, false)
+        );
+        // only 'TestCase2' reports a failure, orphans are not reported
+        AssertReports(events).ContainsExactly(
+            Tuple(TESTSUITE_BEFORE, "Before", new List<TestReport>()),
+            Tuple(TESTCASE_BEFORE, "TestCase1", new List<TestReport>()),
+            Tuple(TESTCASE_AFTER, "TestCase1", new List<TestReport>()),
+            Tuple(TESTCASE_BEFORE, "TestCase2", new List<TestReport>()),
+            // ends with failure
+            Tuple(TESTCASE_AFTER, "TestCase2", new List<TestReport>() {
+                new TestReport(FAILURE, 57, "Expecting be empty: but is  'TestCase2'") }),
+            Tuple(TESTSUITE_AFTER, "After", new List<TestReport>()));
     }
 
 }

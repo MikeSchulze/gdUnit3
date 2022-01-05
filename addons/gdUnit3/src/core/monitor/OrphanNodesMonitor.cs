@@ -5,27 +5,38 @@ namespace GdUnit3
     public class OrphanNodesMonitor
     {
 
-        private int _orphanNodesStart = 0;
-        private int _orphanCount = 0;
+        public OrphanNodesMonitor(bool reportOrphanNodesEnabled)
+        {
+            ReportOrphanNodesEnabled = reportOrphanNodesEnabled;
+            OrphanCount = 0;
+            OrphanNodesStart = 0;
+        }
+
 
         public void Start(bool reset = false)
         {
-            if (reset)
+            if (ReportOrphanNodesEnabled)
             {
-                Reset();
+                if (reset)
+                    Reset();
+                OrphanNodesStart = GetMonitoredOrphanCount();
             }
-            _orphanNodesStart = GetMonitoredOrphanCount();
         }
 
         public void Stop()
         {
-            _orphanCount += GetMonitoredOrphanCount() - _orphanNodesStart;
+            if (ReportOrphanNodesEnabled)
+                OrphanCount += GetMonitoredOrphanCount() - OrphanNodesStart;
         }
 
         private int GetMonitoredOrphanCount() => (int)GetMonitor(Monitor.ObjectOrphanNodeCount);
 
-        public int OrphanCount() => _orphanCount;
+        private bool ReportOrphanNodesEnabled { get; set; }
 
-        public void Reset() => _orphanCount = 0;
+        public int OrphanCount { get; private set; }
+
+        private int OrphanNodesStart { get; set; }
+
+        public void Reset() => OrphanCount = 0;
     }
 }

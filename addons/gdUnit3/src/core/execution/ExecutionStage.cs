@@ -9,7 +9,7 @@ namespace GdUnit3
     {
         private readonly string _name;
 #nullable enable
-        private readonly MethodInfo? _mi;
+        protected readonly MethodInfo? _mi;
 #nullable disable
         protected ExecutionStage(string name, Type type)
         {
@@ -23,7 +23,7 @@ namespace GdUnit3
         {
             try
             {
-                _mi?.Invoke(context.TestInstance, new object[] { });
+                Invoke(context);
             }
             catch (TargetInvocationException e)
             {
@@ -52,6 +52,8 @@ namespace GdUnit3
                 context.ReportCollector.Consume(new TestReport(TestReport.TYPE.ABORT, -1, e.Message));
             }
         }
+
+        protected virtual void Invoke(ExecutionContext context) => _mi?.Invoke(context.TestInstance, new object[] { });
 
         public string StageName() => _name;
     }

@@ -9,14 +9,15 @@ namespace GdUnit3
 {
     public sealed class ExecutionContext : IDisposable
     {
-        public ExecutionContext(TestSuite testInstance, IEnumerable<ITestEventListener> eventListeners)
+        public ExecutionContext(TestSuite testInstance, IEnumerable<ITestEventListener> eventListeners, bool reportOrphanNodesEnabled)
         {
             Thread.SetData(Thread.GetNamedDataSlot("ExecutionContext"), this);
             MemoryPool = new MemoryPool();
-            OrphanMonitor = new OrphanNodesMonitor();
+            OrphanMonitor = new OrphanNodesMonitor(reportOrphanNodesEnabled);
             Stopwatch = new Stopwatch();
             Stopwatch.Start();
 
+            ReportOrphanNodesEnabled = reportOrphanNodesEnabled;
             FailureReporting = true;
             TestInstance = testInstance;
             EventListeners = eventListeners;
@@ -25,23 +26,26 @@ namespace GdUnit3
             // fake report consumer for now, will be replaced by TestEvent listener
             testInstance.SetMeta("gdunit.report.consumer", ReportCollector);
         }
-        public ExecutionContext(ExecutionContext context) : this(context.TestInstance, context.EventListeners)
+        public ExecutionContext(ExecutionContext context) : this(context.TestInstance, context.EventListeners, context.ReportOrphanNodesEnabled)
         {
+            ReportCollector = context.ReportCollector;
             context.SubExecutionContexts.Add(this);
-            Test = context.Test ?? null;
-            Skipped = Test?.Skipped ?? false;
-            CurrentIteration = Test?.Attributes.iterations ?? 0;
+            CurrentTestCase = context.CurrentTestCase ?? null;
+            IsSkipped = CurrentTestCase?.Skipped ?? false;
+            CurrentIteration = CurrentTestCase?.Attributes.Iterations ?? 0;
         }
 
-        public ExecutionContext(ExecutionContext context, TestCase testCase) : this(context.TestInstance, context.EventListeners)
+        public ExecutionContext(ExecutionContext context, TestCase testCase) : this(context.TestInstance, context.EventListeners, context.ReportOrphanNodesEnabled)
         {
             context.SubExecutionContexts.Add(this);
-            Test = testCase;
-            CurrentIteration = testCase.Attributes.iterations;
-            Skipped = Test.Skipped;
+            CurrentTestCase = testCase;
+            CurrentIteration = testCase.Attributes.Iterations;
+            IsSkipped = CurrentTestCase.Skipped;
         }
 
+        public bool ReportOrphanNodesEnabled { get; private set; }
         public bool FailureReporting { get; set; }
+
         public OrphanNodesMonitor OrphanMonitor
         { get; set; }
 
@@ -65,10 +69,7 @@ namespace GdUnit3
         { get; set; }
 #nullable disable
 
-        public TestCase Test
-        { get; set; }
-
-        private bool Skipped
+        public TestCase CurrentTestCase
         { get; set; }
 
         private int Duration
@@ -84,70 +85,55 @@ namespace GdUnit3
         public TestReportCollector ReportCollector
         { get; private set; }
 
+        public bool IsFailed => ReportCollector.Failures.Any() || SubExecutionContexts.Where(context => context.IsFailed).Any();
 
-        public bool IsFailed()
-        {
-            return ReportCollector.Failures.Count() > 0 || SubExecutionContexts.Where(context => context.IsFailed()).Count() != 0;
-        }
+        public bool IsError => ReportCollector.Errors.Any() || SubExecutionContexts.Where(context => context.IsError).Any();
 
-        public bool IsError()
-        {
-            return ReportCollector.Errors.Count() > 0 || SubExecutionContexts.Where(context => context.IsError()).Count() != 0;
-        }
-
-        public bool IsWarning()
-        {
-            return ReportCollector.Warnings.Count() > 0 || SubExecutionContexts.Where(context => context.IsWarning()).Count() != 0;
-        }
+        public bool IsWarning => ReportCollector.Warnings.Any() || SubExecutionContexts.Where(context => context.IsWarning).Any();
+        public bool IsSkipped
+        { get; private set; }
 
         public IEnumerable<TestReport> CollectReports => ReportCollector.Reports;
 
-        public bool IsSkipped() => Skipped;
+        private int SkippedCount => SubExecutionContexts.Where(context => context.IsSkipped).Count();
 
-        private int SkippedCount() => SubExecutionContexts.Where(context => context.IsSkipped()).Count();
+        private int FailureCount => ReportCollector.Failures.Count();
 
-        private int FailureCount() => ReportCollector.Failures.Count();
+        private int ErrorCount => ReportCollector.Errors.Count();
 
-        private int ErrorCount() => ReportCollector.Errors.Count();
+        public int OrphanCount(bool recursive)
+        {
+            var orphanCount = OrphanMonitor.OrphanCount;
+            if (recursive)
+                orphanCount += SubExecutionContexts.Select(context => context.OrphanMonitor.OrphanCount).Sum();
+            return orphanCount;
+        }
 
-        public int OrphanCount() => SubExecutionContexts.Select(context => context.OrphanMonitor.OrphanCount()).Sum();
-
-        public IDictionary BuildStatistics()
+        public IDictionary BuildStatistics(int orphanCount)
         {
             return TestEvent.BuildStatistics(
-                OrphanCount(),
-                IsError(), ErrorCount(),
-                IsFailed(), FailureCount(),
-                false,
-                IsSkipped(), SkippedCount(),
+                orphanCount,
+                IsError, ErrorCount,
+                IsFailed, FailureCount,
+                IsWarning,
+                IsSkipped, SkippedCount,
                 Duration);
         }
 
-        public void FireTestEvent(TestEvent e)
-        {
-            EventListeners.ToList()
-                .ForEach(l => l.PublishEvent(e));
-        }
+        public void FireTestEvent(TestEvent e) =>
+            EventListeners.ToList().ForEach(l => l.PublishEvent(e));
 
-        public void FireBeforeEvent()
-        {
+        public void FireBeforeEvent() =>
             FireTestEvent(TestEvent.Before(TestInstance.ResourcePath, TestInstance.Name, TestInstance.TestCaseCount));
-        }
 
-        public void FireAfterEvent()
-        {
-            FireTestEvent(TestEvent.After(TestInstance.ResourcePath, TestInstance.Name, BuildStatistics(), CollectReports));
-        }
+        public void FireAfterEvent() =>
+            FireTestEvent(TestEvent.After(TestInstance.ResourcePath, TestInstance.Name, BuildStatistics(OrphanCount(false)), CollectReports));
 
-        public void FireBeforeTestEvent()
-        {
-            FireTestEvent(TestEvent.BeforeTest(TestInstance.ResourcePath, TestInstance.Name, Test.Name));
-        }
+        public void FireBeforeTestEvent() =>
+            FireTestEvent(TestEvent.BeforeTest(TestInstance.ResourcePath, TestInstance.Name, CurrentTestCase.Name));
 
-        public void FireAfterTestEvent()
-        {
-            FireTestEvent(TestEvent.AfterTest(TestInstance.ResourcePath, TestInstance.Name, Test.Name, BuildStatistics(), CollectReports));
-        }
+        public void FireAfterTestEvent() =>
+            FireTestEvent(TestEvent.AfterTest(TestInstance.ResourcePath, TestInstance.Name, CurrentTestCase.Name, BuildStatistics(OrphanCount(true)), CollectReports));
 
         public void Dispose()
         {
@@ -156,7 +142,7 @@ namespace GdUnit3
 
         public void PrintDebug(string name = "")
         {
-            Godot.GD.PrintS(name, "test context", TestInstance.Name, Test?.Name, "error:" + IsError(), "failed:" + IsFailed(), "skipped:" + IsSkipped());
+            Godot.GD.PrintS(name, "test context", TestInstance.Name, CurrentTestCase?.Name, "error:" + IsError, "failed:" + IsFailed, "skipped:" + IsSkipped);
         }
     }
 

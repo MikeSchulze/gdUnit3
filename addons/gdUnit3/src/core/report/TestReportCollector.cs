@@ -12,6 +12,8 @@ namespace GdUnit3
 
         public void Consume(TestReport report) => _reports.Add(report);
 
+        public void PushFront(TestReport report) => _reports.Insert(0, report);
+
         public void Clear() => _reports.Clear();
 
 

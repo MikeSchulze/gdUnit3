@@ -10,7 +10,7 @@ namespace GdUnit3
         public override void Execute(ExecutionContext context)
         {
             context.FireBeforeTestEvent();
-            if (!context.IsSkipped())
+            if (!context.IsSkipped)
             {
                 context.MemoryPool.SetActive(StageName());
                 context.OrphanMonitor.Start(true);
