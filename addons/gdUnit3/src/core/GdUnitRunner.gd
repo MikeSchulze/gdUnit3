@@ -3,6 +3,7 @@ extends Node
 const GDUNIT_RUNNER = "GdUnitRunner"
 
 signal sync_rpc_id_result_received
+signal test_suite_completed()
 
 onready var _client :GdUnitTcpClient = $GdUnitTcpClient
 onready var _executor :GdUnitExecutor = $GdUnitExecutor
@@ -23,6 +24,7 @@ var _cs_executor
 var _result :Result
 
 
+
 func _init():
 	# minimize scene window on debug mode
 	if OS.get_cmdline_args().size() == 1:
@@ -34,6 +36,11 @@ func _init():
 	if GdUnitTools.is_mono_supported():
 		_cs_executor = load("res://addons/gdUnit3/src/core/execution/Executor.cs").new()
 		_cs_executor.AddGdTestEventListener(self)
+		_cs_executor.connect("ExecutionCompleted", self, "_on_ExecutionCompleted")
+
+# receives c# executor test suite completed event
+func _on_ExecutionCompleted():
+	emit_signal("test_suite_completed")
 
 func _ready():
 	_config.load()
@@ -64,7 +71,11 @@ func _process(delta):
 				# process next test suite
 				var test_suite = _test_suites_to_process.pop_front()
 				if GdObjects.is_cs_script(test_suite.get_script()):
+					add_child(test_suite)
+					set_process(false)
 					_cs_executor.Execute(test_suite)
+					var results = yield(self, "test_suite_completed")
+					set_process(true)
 				else:
 					var fs = _executor.execute(test_suite)
 					# is yielded than wait for completed

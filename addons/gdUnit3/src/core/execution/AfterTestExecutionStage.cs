@@ -1,24 +1,24 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace GdUnit3
 {
-    public class AfterTestExecutionStage : ExecutionStage<AfterTestAttribute>
+    internal class AfterTestExecutionStage : ExecutionStage<AfterTestAttribute>
     {
         public AfterTestExecutionStage(Type type) : base("AfterTest", type)
         { }
 
-        public override void Execute(ExecutionContext context)
+        public override async Task Execute(ExecutionContext context)
         {
             if (!context.IsSkipped)
             {
                 context.MemoryPool.SetActive(StageName());
                 context.OrphanMonitor.Start();
-                base.Execute(context);
+                await base.Execute(context);
                 context.MemoryPool.ReleaseRegisteredObjects();
                 context.OrphanMonitor.Stop();
-
                 if (context.OrphanMonitor.OrphanCount > 0)
                     context.ReportCollector.PushFront(new TestReport(TestReport.TYPE.WARN, 0, ReportOrphans(context)));
             }

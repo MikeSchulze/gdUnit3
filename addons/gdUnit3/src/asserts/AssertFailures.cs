@@ -6,7 +6,7 @@ using System.Text;
 
 namespace GdUnit3
 {
-    public sealed class AssertFailures
+    internal sealed class AssertFailures
     {
         public const string WARN_COLOR = "#EFF883";
         public const string ERROR_COLOR = "#CD5C5C";

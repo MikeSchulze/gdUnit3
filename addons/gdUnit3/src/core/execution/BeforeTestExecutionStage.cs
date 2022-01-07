@@ -1,20 +1,21 @@
 using System;
+using System.Threading.Tasks;
 
 namespace GdUnit3
 {
-    public class BeforeTestExecutionStage : ExecutionStage<BeforeTestAttribute>
+    internal class BeforeTestExecutionStage : ExecutionStage<BeforeTestAttribute>
     {
         public BeforeTestExecutionStage(Type type) : base("BeforeTest", type)
         { }
 
-        public override void Execute(ExecutionContext context)
+        public override async Task Execute(ExecutionContext context)
         {
             context.FireBeforeTestEvent();
             if (!context.IsSkipped)
             {
                 context.MemoryPool.SetActive(StageName());
                 context.OrphanMonitor.Start(true);
-                base.Execute(context);
+                await base.Execute(context);
                 context.OrphanMonitor.Stop();
             }
         }

@@ -7,7 +7,7 @@ using System.Threading;
 
 namespace GdUnit3
 {
-    public sealed class ExecutionContext : IDisposable
+    internal sealed class ExecutionContext : IDisposable
     {
         public ExecutionContext(TestSuite testInstance, IEnumerable<ITestEventListener> eventListeners, bool reportOrphanNodesEnabled)
         {
@@ -67,10 +67,10 @@ namespace GdUnit3
 #nullable enable
         private List<ExecutionContext> SubExecutionContexts
         { get; set; }
-#nullable disable
 
-        public TestCase CurrentTestCase
+        public TestCase? CurrentTestCase
         { get; set; }
+#nullable disable
 
         private int Duration
         { get => (int)Stopwatch.ElapsedMilliseconds; }

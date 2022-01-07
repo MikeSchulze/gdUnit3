@@ -1,9 +1,11 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace GdUnit3
 {
     public sealed class Executor : Godot.Reference
     {
+        [Godot.Signal] private delegate void ExecutionCompleted();
 
         public Executor()
         {
@@ -36,7 +38,13 @@ namespace GdUnit3
 
         public bool ReportOrphanNodesEnabled { get; set; }
 
-        public void Execute(TestSuite testSuite)
+
+        // this method is called form gdScript and can't handle 'Task'
+        // we used explicit 'async void' to avoid  'Attempted to convert an unmarshallable managed type to Variant Task'
+        public async void Execute(TestSuite testSuite) =>
+            await ExecuteInternally(testSuite);
+
+        public async Task ExecuteInternally(TestSuite testSuite)
         {
             if (!ReportOrphanNodesEnabled)
                 Godot.GD.PushWarning("!!! Reporting orphan nodes is disabled. Please check GdUnit settings.");
@@ -44,7 +52,9 @@ namespace GdUnit3
             {
                 using (ExecutionContext context = new ExecutionContext(testSuite, _eventListeners, ReportOrphanNodesEnabled))
                 {
-                    new TestSuiteExecutionStage(testSuite.GetType()).Execute(context);
+                    var task = new TestSuiteExecutionStage(testSuite.GetType()).Execute(context);
+                    task.GetAwaiter().OnCompleted(() => EmitSignal("ExecutionCompleted"));
+                    await task;
                 }
             }
             finally

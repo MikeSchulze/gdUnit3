@@ -1,22 +1,21 @@
 using System;
-using System.Threading;
-using System.Reflection;
+using System.Threading.Tasks;
 
 namespace GdUnit3
 {
-    public sealed class TestCaseExecutionStage : ExecutionStage<TestCaseAttribute>
+    internal sealed class TestCaseExecutionStage : ExecutionStage<TestCaseAttribute>
     {
         public TestCaseExecutionStage(Type type) : base("TestCases", type)
         { }
 
-        public override void Execute(ExecutionContext context)
+        public override async Task Execute(ExecutionContext context)
         {
             context.MemoryPool.SetActive(StageName());
             context.OrphanMonitor.Start(true);
 
             while (!context.IsSkipped && context.CurrentIteration > 0)
             {
-                base.Execute(context);
+                await base.Execute(context);
             }
 
             context.MemoryPool.ReleaseRegisteredObjects();
@@ -31,6 +30,7 @@ namespace GdUnit3
                 AssertFailures.FormatValue("WARNING:", AssertFailures.WARN_COLOR, false),
                 context.OrphanMonitor.OrphanCount);
 
-        protected override void Invoke(ExecutionContext context) => context.CurrentTestCase.MethodInfo.Invoke(context.TestInstance, context.CurrentTestCase.Arguments);
+        protected override object Invoke(ExecutionContext context) =>
+            context.CurrentTestCase.MethodInfo.Invoke(context.TestInstance, context.CurrentTestCase.Arguments);
     }
 }

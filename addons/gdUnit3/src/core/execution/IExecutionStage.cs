@@ -1,11 +1,11 @@
+using System.Threading.Tasks;
+
 namespace GdUnit3
 {
-    public interface IExecutionStage
+    internal interface IExecutionStage
     {
-
         public string StageName();
 
-
-        public void Execute(ExecutionContext context);
+        public Task Execute(ExecutionContext context);
     }
 }

@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace GdUnit3
 {
-    public sealed class TestSuiteExecutionStage : IExecutionStage
+    internal sealed class TestSuiteExecutionStage : IExecutionStage
     {
         public TestSuiteExecutionStage(Type type)
         {
@@ -31,24 +32,25 @@ namespace GdUnit3
         private IExecutionStage TestCaseStage
         { get; set; }
 
-        public void Execute(ExecutionContext testSuiteContext)
+        public async Task Execute(ExecutionContext testSuiteContext)
         {
-            BeforeStage.Execute(testSuiteContext);
+            await BeforeStage.Execute(testSuiteContext);
 
             foreach (TestCase testCase in TestCases(testSuiteContext))
             {
                 using (ExecutionContext testCaseContext = new ExecutionContext(testSuiteContext, testCase))
                 {
-                    BeforeTestStage.Execute(testCaseContext);
+                    await BeforeTestStage.Execute(testCaseContext);
                     using (ExecutionContext context = new ExecutionContext(testCaseContext))
                     {
-                        TestCaseStage.Execute(context);
+                        await TestCaseStage.Execute(context);
                     }
-                    AfterTestStage.Execute(testCaseContext);
+                    await AfterTestStage.Execute(testCaseContext);
                 }
             }
-            AfterStage.Execute(testSuiteContext);
+            await AfterStage.Execute(testSuiteContext);
         }
+
 
         private bool IsIncluded(string testCaseName, ExecutionContext context)
         {
