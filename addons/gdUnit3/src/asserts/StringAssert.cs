@@ -1,6 +1,6 @@
 namespace GdUnit3
 {
-    public sealed class StringAssert : AssertBase<string>, IStringAssert
+    internal sealed class StringAssert : AssertBase<string>, IStringAssert
     {
         public StringAssert(string current) : base(current)
         { }

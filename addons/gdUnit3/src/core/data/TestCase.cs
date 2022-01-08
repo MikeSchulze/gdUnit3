@@ -1,4 +1,3 @@
-using Godot.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Linq;
@@ -10,30 +9,18 @@ namespace GdUnit3
     {
         public TestCase(MethodInfo methodInfo)
         {
-            this.Name = methodInfo.Name;
-            this.MethodInfo = methodInfo;
-            this.Parameters = CsTools.GetTestMethodParameters(methodInfo).ToArray();
+            MethodInfo = methodInfo;
+            Parameters = CsTools.GetTestMethodParameters(methodInfo).ToArray();
         }
 
-        public string Name
-        { get; set; }
+        public string Name => MethodInfo.Name;
 
-        public TestCaseAttribute Attributes
-        { get => MethodInfo.GetCustomAttribute<TestCaseAttribute>(); }
+        public int Line => Attributes.Line;
 
-        public bool Skipped => Attribute.IsDefined(MethodInfo, typeof(IgnoreUntilAttribute));
+        public TestCaseAttribute Attributes => MethodInfo.GetCustomAttribute<TestCaseAttribute>();
 
-        public Godot.Collections.Dictionary attributes()
-        {
-            var attributes = Attributes;
-            return new Dictionary {
-                    { "name", Name },
-                    { "line_number", attributes.Line },
-                    { "timeout", attributes.Timeout },
-                    { "iterations", attributes.Iterations },
-                    { "seed", attributes.Seed },
-                };
-        }
+        public bool IsSkipped => Attribute.IsDefined(MethodInfo, typeof(IgnoreUntilAttribute));
+
         private IEnumerable<object> Parameters
         { get; set; }
 

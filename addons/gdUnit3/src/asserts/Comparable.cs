@@ -12,6 +12,7 @@ namespace GdUnit3
             CASE_SENSITIVE,
             CASE_INSENSITIVE
         }
+
         public class Result
         {
             public static Result Equal => new Result(true, null, null);
@@ -70,7 +71,6 @@ namespace GdUnit3
                     return new Result(left.ToString().ToLower().Equals(right.ToString().ToLower()), left, right, r);
                 return new Result(left.Equals(right), left, right, r);
             }
-
 
             if (object.ReferenceEquals(left, right))
                 return new Result(true, left, right, r);

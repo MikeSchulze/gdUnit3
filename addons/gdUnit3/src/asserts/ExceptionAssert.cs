@@ -2,12 +2,11 @@ using System;
 
 namespace GdUnit3
 {
-    public sealed class ExceptionAssert<T> : IExceptionAssert
+    internal sealed class ExceptionAssert<T> : IExceptionAssert
     {
         private Exception Current { get; set; }
 
         private string CustomFailureMessage { get; set; }
-
 
         public ExceptionAssert(Func<T> supplier)
         {
@@ -27,6 +26,7 @@ namespace GdUnit3
                 return ReportTestFailure(AssertFailures.IsInstanceOf(Current?.GetType(), typeof(ExpectedType)), Current, typeof(ExpectedType));
             return this;
         }
+
         public IExceptionAssert HasMessage(string message)
         {
             string current = NormalizedFailureMessage(Current?.Message ?? "");
@@ -42,6 +42,7 @@ namespace GdUnit3
                 return ReportTestFailure(AssertFailures.HasValue(propertyName, value, expected), value, expected);
             return this;
         }
+
         public IAssert OverrideFailureMessage(string message)
         {
             CustomFailureMessage = message;
@@ -74,12 +75,5 @@ namespace GdUnit3
             var failureMessage = CustomFailureMessage ?? message;
             throw new TestFailedException(failureMessage);
         }
-
-
-        public IAssert TestFail()
-        {
-            return this;
-        }
-
     }
 }

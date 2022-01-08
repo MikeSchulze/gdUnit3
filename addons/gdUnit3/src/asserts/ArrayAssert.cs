@@ -6,7 +6,7 @@ using static GdUnit3.Assertions;
 
 namespace GdUnit3
 {
-    public sealed class ArrayAssert : AssertBase<IEnumerable>, IArrayAssert
+    internal sealed class ArrayAssert : AssertBase<IEnumerable>, IArrayAssert
     {
         public ArrayAssert(IEnumerable current) : base(current)
         {

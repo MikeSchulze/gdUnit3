@@ -34,10 +34,10 @@ namespace GdUnit3
         public string Message
         { get; private set; }
 
-
-
         private static IEnumerable<TYPE> ErrorTypes => new[] { TYPE.TERMINATED, TYPE.INTERUPTED, TYPE.ABORT };
+
         public bool IsError => ErrorTypes.Contains(Type);
+
         public bool IsFailure => Type == TYPE.FAILURE;
 
         public bool IsWarning => Type == TYPE.WARN;

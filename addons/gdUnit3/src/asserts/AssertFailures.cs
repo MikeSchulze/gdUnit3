@@ -23,6 +23,7 @@ namespace GdUnit3
             }
             return "Null";
         };
+
         private static Dictionary<Type, Func<object, string>> formatters = new Dictionary<Type, Func<object, string>>{
                 {typeof(string), (value) => value?.ToString() ?? "<Null>"},
                 {typeof(object), (value) =>  value?.GetType().Name ?? "<Null>"},
@@ -83,7 +84,6 @@ namespace GdUnit3
                 FormatFailure("Expecting:"),
                 FormatExpected(false),
                 FormatCurrent(true));
-
 
         public static string IsEqual(object current, object expected) =>
             current is IEnumerable || expected is IEnumerable ?

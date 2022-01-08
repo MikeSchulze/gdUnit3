@@ -5,7 +5,6 @@ namespace GdUnit3
 {
     public sealed class TestReportCollector : Godot.Reference
     {
-
         private List<TestReport> _reports = new List<TestReport>();
         public TestReportCollector()
         { }
@@ -19,7 +18,6 @@ namespace GdUnit3
 
         public IEnumerable<TestReport> Reports
         { get => _reports; }
-
 
         public IEnumerable<TestReport> Failures => _reports.Where(r => r.IsFailure);
 

@@ -20,12 +20,13 @@ namespace GdUnit3
 
         private IExecutionStage BeforeStage
         { get; set; }
+
         private IExecutionStage AfterStage
         { get; set; }
 
-
         private IExecutionStage BeforeTestStage
         { get; set; }
+
         private IExecutionStage AfterTestStage
         { get; set; }
 

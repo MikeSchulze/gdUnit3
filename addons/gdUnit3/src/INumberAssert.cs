@@ -1,5 +1,3 @@
-using System;
-
 namespace GdUnit3
 {
     /// <summary> Base interface for number assertions.</summary>

@@ -55,7 +55,6 @@ namespace GdUnit3
                 return "n.a.";
             }
             return property.GetValue(instance);
-
         }
     }
 }

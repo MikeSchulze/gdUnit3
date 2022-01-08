@@ -1,6 +1,6 @@
 namespace GdUnit3
 {
-    public sealed class BoolAssert : AssertBase<bool>, IBoolAssert
+    internal sealed class BoolAssert : AssertBase<bool>, IBoolAssert
     {
 
         public BoolAssert(bool current) : base(current)

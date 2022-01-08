@@ -32,9 +32,8 @@ public class ExecutorTest : TestSuite, ITestEventListener
 
         foreach (TestCase testCase in CsTools.GetTestCases(testSuite.Name))
         {
-            Godot.Collections.Dictionary attributes = testCase.attributes();
             var test = new Godot.Node();
-            test.Name = attributes["name"] as string;
+            test.Name = testCase.Name;
             testSuite.AddChild(test);
         }
         return testSuite;

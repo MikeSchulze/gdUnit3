@@ -8,8 +8,6 @@ namespace GdUnit3
         public OrphanNodesMonitor(bool reportOrphanNodesEnabled)
         {
             ReportOrphanNodesEnabled = reportOrphanNodesEnabled;
-            OrphanCount = 0;
-            OrphanNodesStart = 0;
         }
 
 
@@ -33,9 +31,9 @@ namespace GdUnit3
 
         private bool ReportOrphanNodesEnabled { get; set; }
 
-        public int OrphanCount { get; private set; }
+        public int OrphanCount { get; private set; } = 0;
 
-        private int OrphanNodesStart { get; set; }
+        private int OrphanNodesStart { get; set; } = 0;
 
         public void Reset() => OrphanCount = 0;
     }

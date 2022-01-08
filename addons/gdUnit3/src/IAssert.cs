@@ -3,9 +3,6 @@ namespace GdUnit3
     /// <summary> Main interface of all GdUnit asserts </summary>
     public interface IAssert
     {
-        /// <summary></summary>
-        IAssert TestFail();
-
         /// <summary> Overrides the default failure message by given custom message.</summary>
         IAssert OverrideFailureMessage(string message);
     }

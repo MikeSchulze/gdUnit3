@@ -5,7 +5,6 @@ namespace GdUnit3
 {
     public class MemoryPool
     {
-
         private string _name;
 
         private List<Godot.Object> _registeredObjects = new List<Godot.Object>();

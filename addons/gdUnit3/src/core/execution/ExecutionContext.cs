@@ -31,7 +31,7 @@ namespace GdUnit3
             ReportCollector = context.ReportCollector;
             context.SubExecutionContexts.Add(this);
             CurrentTestCase = context.CurrentTestCase ?? null;
-            IsSkipped = CurrentTestCase?.Skipped ?? false;
+            IsSkipped = CurrentTestCase?.IsSkipped ?? false;
             CurrentIteration = CurrentTestCase?.Attributes.Iterations ?? 0;
         }
 
@@ -40,18 +40,20 @@ namespace GdUnit3
             context.SubExecutionContexts.Add(this);
             CurrentTestCase = testCase;
             CurrentIteration = testCase.Attributes.Iterations;
-            IsSkipped = CurrentTestCase.Skipped;
+            IsSkipped = CurrentTestCase.IsSkipped;
         }
 
-        public bool ReportOrphanNodesEnabled { get; private set; }
-        public bool FailureReporting { get; set; }
+        public bool ReportOrphanNodesEnabled
+        { get; private set; }
+
+        public bool FailureReporting
+        { get; set; }
 
         public OrphanNodesMonitor OrphanMonitor
         { get; set; }
 
         public MemoryPool MemoryPool
         { get; set; }
-
 
         public Stopwatch Stopwatch
         { get; private set; }
@@ -72,8 +74,7 @@ namespace GdUnit3
         { get; set; }
 #nullable disable
 
-        private long Duration
-        { get => Stopwatch.ElapsedMilliseconds; }
+        private long Duration => Stopwatch.ElapsedMilliseconds;
 
         private int _iteration;
         public int CurrentIteration
@@ -90,7 +91,7 @@ namespace GdUnit3
         public bool IsError => ReportCollector.Errors.Any() || SubExecutionContexts.Where(context => context.IsError).Any();
 
         public bool IsWarning => ReportCollector.Warnings.Any() || SubExecutionContexts.Where(context => context.IsWarning).Any();
-        
+
         public bool IsSkipped
         { get; private set; }
 

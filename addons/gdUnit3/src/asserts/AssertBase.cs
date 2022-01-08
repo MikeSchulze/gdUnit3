@@ -1,6 +1,6 @@
 namespace GdUnit3
 {
-    public abstract class AssertBase<V> : IAssertBase<V>
+    internal abstract class AssertBase<V> : IAssertBase<V>
     {
         protected V Current { get; private set; }
 
@@ -74,11 +74,6 @@ namespace GdUnit3
                 rtl.QueueFree();
                 return rtl.Text;
             }
-        }
-
-        public IAssert TestFail()
-        {
-            return ReportTestFailure("Force test to fail", null, null);
         }
 
         protected IAssertBase<V> ReportTestFailure(string message, object current, object expected, int stackFrameOffset = 0)

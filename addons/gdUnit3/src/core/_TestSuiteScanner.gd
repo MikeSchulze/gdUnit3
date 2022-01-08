@@ -81,8 +81,7 @@ func _parse_cs_test_suite(script :Script) -> Node:
 	var cs_tools = load("res://addons/gdUnit3/src/core/CsTools.cs").new()
 	for test_case in cs_tools.GetTestCases(script.resource_path.get_file().replace(".cs", "")):
 		var test := _TestCase.new()
-		var attributes :Dictionary = test_case.attributes();
-		test.configure(attributes.get("name"), attributes.get("line_number"), script.resource_path)
+		test.configure(test_case.Name, test_case.Line, script.resource_path)
 		test_suite.add_child(test)
 	return test_suite
 

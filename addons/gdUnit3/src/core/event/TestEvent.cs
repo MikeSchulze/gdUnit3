@@ -65,6 +65,7 @@ namespace GdUnit3
         {
             return new TestEvent(TYPE.TESTCASE_BEFORE, resourcePath, suiteName, testName);
         }
+        
         public static TestEvent AfterTest(string resourcePath, string suiteName, string testName, IDictionary? statistics = null, IEnumerable<TestReport>? reports = null)
         {
             return new TestEvent(TYPE.TESTCASE_AFTER, resourcePath, suiteName, testName, 0, statistics, reports);

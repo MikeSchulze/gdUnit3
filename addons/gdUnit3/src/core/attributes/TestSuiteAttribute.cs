@@ -4,8 +4,7 @@ namespace GdUnit3
 {
     [AttributeUsage(AttributeTargets.Class)]
     public class TestSuiteAttribute : TestStageAttribute
-    {
-    }
+    { }
 
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
     public class BeforeAttribute : TestStageAttribute
