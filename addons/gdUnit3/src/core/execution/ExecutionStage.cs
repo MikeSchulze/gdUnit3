@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
 
-namespace GdUnit3
+namespace GdUnit3.Executions
 {
     internal abstract class ExecutionStage<T> : IExecutionStage
     {

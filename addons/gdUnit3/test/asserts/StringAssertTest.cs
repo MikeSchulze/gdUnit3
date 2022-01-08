@@ -1,4 +1,5 @@
 using GdUnit3;
+using GdUnit3.Executions;
 
 using static GdUnit3.Assertions;
 using static GdUnit3.Asserts.IStringAssert.Compare;
@@ -6,7 +7,6 @@ using static GdUnit3.Asserts.IStringAssert.Compare;
 [TestSuite]
 public class StringAssertTest : TestSuite
 {
-
     [TestCase]
     public void IsNull()
     {

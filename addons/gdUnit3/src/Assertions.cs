@@ -70,12 +70,12 @@ namespace GdUnit3
         ///<summary>
         /// A litle helper to auto freeing your created objects after test execution
         /// </summary>
-        public static T AutoFree<T>(T obj) => MemoryPool.RegisterForAutoFree(obj);
+        public static T AutoFree<T>(T obj) => Executions.Monitors.MemoryPool.RegisterForAutoFree(obj);
 
         /// <summary>
         /// Buils a tuple by given values
         /// </summary>
-        public static ITuple Tuple(params object[] args) => new Tuple(args);
+        public static ITuple Tuple(params object[] args) => new GdUnit3.Asserts.Tuple(args);
 
         /// <summary>
         ///  Builds an extractor by given method name and optional arguments

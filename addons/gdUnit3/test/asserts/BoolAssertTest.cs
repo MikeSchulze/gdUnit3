@@ -1,11 +1,11 @@
 using GdUnit3;
+using GdUnit3.Executions;
 
 using static GdUnit3.Assertions;
 
 [TestSuite]
 public class BoolAssertTest : TestSuite
 {
-
     [TestCase]
     public void IsTrue()
     {

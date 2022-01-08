@@ -1,7 +1,7 @@
 using System.Threading;
 using System.Collections.Generic;
 
-namespace GdUnit3
+namespace GdUnit3.Executions.Monitors
 {
     public class MemoryPool
     {

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 using GdUnit3.Asserts;
 
-namespace GdUnit3
+namespace GdUnit3.Executions
 {
     internal class AfterTestExecutionStage : ExecutionStage<AfterTestAttribute>
     {

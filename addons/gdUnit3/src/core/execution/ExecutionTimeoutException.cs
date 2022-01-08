@@ -1,4 +1,4 @@
-namespace GdUnit3
+namespace GdUnit3.Executions
 {
     internal sealed class ExecutionTimeoutException : System.Exception
     {

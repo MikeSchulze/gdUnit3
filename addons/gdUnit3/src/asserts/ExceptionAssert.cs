@@ -73,7 +73,7 @@ namespace GdUnit3.Asserts
         private IExceptionAssert ReportTestFailure(string message, object current, object expected)
         {
             var failureMessage = CustomFailureMessage ?? message;
-            throw new TestFailedException(failureMessage);
+            throw new Executions.TestFailedException(failureMessage);
         }
     }
 }

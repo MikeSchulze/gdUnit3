@@ -1,7 +1,7 @@
 /// A tuple implementation to hold two or many values 
 using System.Collections.Generic;
 
-namespace GdUnit3
+namespace GdUnit3.Asserts
 {
     public interface ITuple
     {

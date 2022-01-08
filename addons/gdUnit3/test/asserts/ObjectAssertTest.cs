@@ -1,12 +1,13 @@
-using GdUnit3;
 using System.Collections.Generic;
+
+using GdUnit3;
+using GdUnit3.Executions;
 
 using static GdUnit3.Assertions;
 
 [TestSuite]
 public class ObjectAssertTest : TestSuite
 {
-
     class CustomClass
     {
         public class InnerClassA : Godot.Node { }

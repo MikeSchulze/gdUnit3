@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace GdUnit3
+namespace GdUnit3.Executions
 {
     internal sealed class TestFailedException : System.Exception
     {

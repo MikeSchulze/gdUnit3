@@ -1,4 +1,5 @@
 using GdUnit3;
+using GdUnit3.Asserts;
 
 using static GdUnit3.Assertions;
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace GdUnit3
+namespace GdUnit3.Asserts
 {
     public sealed class ValueExtractor : IValueExtractor
     {

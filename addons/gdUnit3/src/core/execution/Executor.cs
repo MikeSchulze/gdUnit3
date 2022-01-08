@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
 
-namespace GdUnit3
+namespace GdUnit3.Executions
 {
     public sealed class Executor : Godot.Reference
     {

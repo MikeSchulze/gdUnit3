@@ -1,6 +1,6 @@
 using static Godot.Performance;
 
-namespace GdUnit3
+namespace GdUnit3.Executions.Monitors
 {
     public class OrphanNodesMonitor
     {

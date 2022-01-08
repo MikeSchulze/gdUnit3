@@ -5,7 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
-namespace GdUnit3
+using GdUnit3.Executions.Monitors;
+
+namespace GdUnit3.Executions
 {
     internal sealed class ExecutionContext : IDisposable
     {
