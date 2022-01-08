@@ -380,8 +380,6 @@ static func clear_push_errors() -> void:
 		runner.clear_push_errors()
 
 static func register_expect_interupted_by_timeout(test_suite :Node, test_case_name :String) -> void:
-	prints(test_suite.get_children())
-	
 	var test_case = test_suite.find_node(test_case_name, false, false)
 	test_case.expect_to_interupt()
 

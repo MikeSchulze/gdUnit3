@@ -1,4 +1,3 @@
-
 using System;
 using System.Linq;
 using System.Reflection;
@@ -11,37 +10,45 @@ namespace GdUnit3
     internal abstract class ExecutionStage<T> : IExecutionStage
     {
         private readonly string _name;
-#nullable enable
-        protected readonly MethodInfo? _mi;
-#nullable disable
-        protected ExecutionStage(string name, Type type)
+
+        protected ExecutionStage(string name, Type type = null)
         {
             _name = name;
-            _mi = type
+            var method = type?
                .GetMethods()
                .FirstOrDefault(m => m.IsDefined(typeof(T)));
-            // evaluate method signature
-            IsAsync = (AsyncStateMachineAttribute)_mi?.GetCustomAttribute(typeof(AsyncStateMachineAttribute)) != null;
-            IsTask = _mi?.ReturnType.IsEquivalentTo(typeof(Task)) ?? false;
-            // set default timeout to 30s
-            DefaultTimeout = 30000;
+            InitExecutionAttributes(method, new object[] { });
+        }
+
+        protected void InitExecutionAttributes(MethodInfo method, object[] args)
+        {
+            Method = method;
+            MethodArguments = args;
+            IsAsync = (AsyncStateMachineAttribute)method?.GetCustomAttribute(typeof(AsyncStateMachineAttribute)) != null;
+            IsTask = method?.ReturnType.IsEquivalentTo(typeof(Task)) ?? false;
         }
 
         public virtual async Task Execute(ExecutionContext context)
         {
+            // no stage defined?
+            if (Method == null)
+            {
+                await Task.Run(() => { });
+                return;
+            }
+
             try
             {
                 // if the method is defined asynchronously, the return type must be a Task
-                if (IsAsync && !IsTask)
+                if (IsAsync != IsTask)
                 {
-                    context.ReportCollector.Consume(new TestReport(TestReport.TYPE.FAILURE, 0, "Invalid method found, you have to return a Task for an async Method."));
+                    context.ReportCollector.Consume(new TestReport(TestReport.TYPE.FAILURE, StageAttributes.Line, $"Invalid method signature found at: {StageAttributes.Name}.\n You must return a <Task> for an asynchronously specified method."));
                     return;
                 }
-                await RunTask(Invoke(context), TimeSpan.FromMilliseconds(context.CurrentTestCase?.Attributes.Timeout ?? DefaultTimeout));
+                await ExecuteStage(context.TestInstance, Method, MethodArguments);
             }
             catch (ExecutionTimeoutException e)
             {
-                Godot.GD.PrintS(e.Message, e.LineNumber);
                 if (context.FailureReporting)
                     context.ReportCollector.Consume(new TestReport(TestReport.TYPE.INTERUPTED, e.LineNumber, e.Message));
             }
@@ -78,30 +85,35 @@ namespace GdUnit3
             }
         }
 
-        private async Task RunTask(object obj, TimeSpan timeout)
+        private async Task ExecuteStage(object instance, MethodInfo method, object[] args)
         {
+            var timeout = TimeSpan.FromMilliseconds(StageAttributes.Timeout != -1 ? StageAttributes.Timeout : DefaultTimeout);
             using (var tokenSource = new CancellationTokenSource())
             {
+                var obj = method.Invoke(instance, args);
                 Task task = obj is Task ? obj as Task : Task.Run(() => { });
                 var completedTask = await Task.WhenAny(task, Task.Delay(timeout, tokenSource.Token));
+                tokenSource.Cancel();
                 if (completedTask == task)
-                {
-                    tokenSource.Cancel();
-                    await task;  // Very important in order to propagate exceptions
-                }
+                    // Very important in order to propagate exceptions
+                    await task;
                 else
-                    throw new ExecutionTimeoutException($"The execution has timed out after {timeout.TotalMilliseconds}ms.");
+                    throw new ExecutionTimeoutException($"The execution has timed out after {timeout.TotalMilliseconds}ms.", StageAttributes?.Line ?? 0);
             }
         }
 
-        protected virtual object Invoke(ExecutionContext context) => _mi?.Invoke(context.TestInstance, new object[] { });
-
         public string StageName() => _name;
 
-        protected bool IsAsync { get; private set; }
+        private bool IsAsync { get; set; }
 
-        protected bool IsTask { get; private set; }
+        private bool IsTask { get; set; }
 
-        public int DefaultTimeout { get; set; }
+        private int DefaultTimeout { get; set; } = 30000;
+
+        private MethodInfo? Method { get; set; }
+
+        private object[] MethodArguments { get; set; } = new object[] { };
+
+        private TestStageAttribute StageAttributes => Method?.GetCustomAttribute<TestStageAttribute>();
     }
 }

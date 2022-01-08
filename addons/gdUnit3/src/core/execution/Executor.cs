@@ -1,16 +1,12 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System;
 
 namespace GdUnit3
 {
     public sealed class Executor : Godot.Reference
     {
         [Godot.Signal] private delegate void ExecutionCompleted();
-
-        public Executor()
-        {
-            ReportOrphanNodesEnabled = true;
-        }
 
         private List<ITestEventListener> _eventListeners = new List<ITestEventListener>();
 
@@ -36,7 +32,7 @@ namespace GdUnit3
             _eventListeners.Add(listener);
         }
 
-        public bool ReportOrphanNodesEnabled { get; set; }
+        public bool ReportOrphanNodesEnabled { get; set; } = true;
 
 
         // this method is called form gdScript and can't handle 'Task'
@@ -56,6 +52,12 @@ namespace GdUnit3
                     task.GetAwaiter().OnCompleted(() => EmitSignal("ExecutionCompleted"));
                     await task;
                 }
+            }
+            catch (Exception e)
+            {
+                // unexpected exceptions
+                Godot.GD.PushError(e.Message);
+                Godot.GD.PushError(e.StackTrace);
             }
             finally
             {

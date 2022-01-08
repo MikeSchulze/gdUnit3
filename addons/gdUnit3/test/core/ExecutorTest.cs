@@ -16,7 +16,7 @@ public class ExecutorTest : TestSuite, ITestEventListener
     private Executor _executor;
     private List<TestEvent> _events = new List<TestEvent>();
 
-    private bool _verbose = true;
+    private bool _verbose = false;
 
     [Before]
     public void Before()
@@ -40,7 +40,6 @@ public class ExecutorTest : TestSuite, ITestEventListener
         return testSuite;
     }
 
-
     public void PublishEvent(TestEvent e)
     {
         if (_verbose)
@@ -57,12 +56,16 @@ public class ExecutorTest : TestSuite, ITestEventListener
 
     private async Task<List<TestEvent>> ExecuteTestSuite(TestSuite testSuite, bool enableOrphanDetection = true)
     {
+        var testSuiteName = testSuite.Name;
         AddChild(testSuite);
         _events.Clear();
 
         _executor.ReportOrphanNodesEnabled = enableOrphanDetection;
+        if (_verbose)
+            Godot.GD.PrintS($"Execute {testSuiteName}.");
         await _executor.ExecuteInternally(testSuite);
-        Godot.GD.PrintS("execution done");
+        if (_verbose)
+            Godot.GD.PrintS($"Execution {testSuiteName} done.");
         return _events;
     }
 
@@ -520,9 +523,9 @@ public class ExecutorTest : TestSuite, ITestEventListener
             Tuple(TESTCASE_BEFORE, "TestCase3", 0, 0, 0),
             Tuple(TESTCASE_AFTER, "TestCase3", 0, 0, 0),
 
-            // expect test succeded
+            // expect to fail, invalic method signature
             Tuple(TESTCASE_BEFORE, "TestCase4", 0, 0, 0),
-            Tuple(TESTCASE_AFTER, "TestCase4", 0, 0, 0),
+            Tuple(TESTCASE_AFTER, "TestCase4", 0, 1, 0),
 
             // expect test succeded
             Tuple(TESTCASE_BEFORE, "TestCase5", 0, 0, 0),
@@ -546,9 +549,9 @@ public class ExecutorTest : TestSuite, ITestEventListener
             Tuple(TESTCASE_BEFORE, "TestCase3", true, false, false, false),
             Tuple(TESTCASE_AFTER, "TestCase3", true, false, false, false),
 
-            //  test case is succeded
+            //  test fails by invalid method signature
             Tuple(TESTCASE_BEFORE, "TestCase4", true, false, false, false),
-            Tuple(TESTCASE_AFTER, "TestCase4", true, false, false, false),
+            Tuple(TESTCASE_AFTER, "TestCase4", false, false, true, false),
 
             //  test case is succeded
             Tuple(TESTCASE_BEFORE, "TestCase5", true, false, false, false),
@@ -562,10 +565,26 @@ public class ExecutorTest : TestSuite, ITestEventListener
             // reports a test interruption due to a timeout
             Tuple(TESTCASE_BEFORE, "TestCase1", new List<TestReport>()),
             Tuple(TESTCASE_AFTER, "TestCase1", new List<TestReport>(){
-                new TestReport(INTERUPTED, 0, "The execution has timed out after 1000ms.") }),
+                new TestReport(INTERUPTED, 39, "The execution has timed out after 1000ms.") }),
 
+            // reports a test failure
             Tuple(TESTCASE_BEFORE, "TestCase2", new List<TestReport>()),
-            Tuple(TESTCASE_AFTER, "TestCase2", new List<TestReport>()),
+            Tuple(TESTCASE_AFTER, "TestCase2", new List<TestReport>(){
+                new TestReport(FAILURE, 52, "Expecting be equal:  'False' but is 'True'") }),
+
+            // succedes with no reports
+            Tuple(TESTCASE_BEFORE, "TestCase3", new List<TestReport>()),
+            Tuple(TESTCASE_AFTER, "TestCase3", new List<TestReport>()),
+
+            // reports a method signature failure
+            Tuple(TESTCASE_BEFORE, "TestCase4", new List<TestReport>()),
+            Tuple(TESTCASE_AFTER, "TestCase4", new List<TestReport>(){
+                new TestReport(FAILURE, 62, "Invalid method signature found at: TestCase4. You must return a <Task> for an asynchronously specified method.") }),
+
+            // succedes with no reports
+            Tuple(TESTCASE_BEFORE, "TestCase5", new List<TestReport>()),
+            Tuple(TESTCASE_AFTER, "TestCase5", new List<TestReport>()),
+
             Tuple(TESTSUITE_AFTER, "After", new List<TestReport>()));
     }
 

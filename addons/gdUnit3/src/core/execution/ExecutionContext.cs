@@ -72,8 +72,8 @@ namespace GdUnit3
         { get; set; }
 #nullable disable
 
-        private int Duration
-        { get => (int)Stopwatch.ElapsedMilliseconds; }
+        private long Duration
+        { get => Stopwatch.ElapsedMilliseconds; }
 
         private int _iteration;
         public int CurrentIteration
@@ -90,6 +90,7 @@ namespace GdUnit3
         public bool IsError => ReportCollector.Errors.Any() || SubExecutionContexts.Where(context => context.IsError).Any();
 
         public bool IsWarning => ReportCollector.Warnings.Any() || SubExecutionContexts.Where(context => context.IsWarning).Any();
+        
         public bool IsSkipped
         { get; private set; }
 

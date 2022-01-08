@@ -1,13 +1,10 @@
-using System.Diagnostics;
-
 namespace GdUnit3
 {
     internal sealed class ExecutionTimeoutException : System.Exception
     {
-        public ExecutionTimeoutException(string message) : base(message)
+        public ExecutionTimeoutException(string message, int line) : base(message)
         {
-            StackFrame CallStack = new StackFrame(2, true);
-            LineNumber = CallStack.GetFileLineNumber();
+            LineNumber = line;
         }
 
         public int LineNumber

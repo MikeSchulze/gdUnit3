@@ -13,7 +13,7 @@ namespace GdUnit3
             AfterStage = new AfterExecutionStage(type);
             BeforeTestStage = new BeforeTestExecutionStage(type);
             AfterTestStage = new AfterTestExecutionStage(type);
-            TestCaseStage = new TestCaseExecutionStage(type);
+            TestCaseStage = new TestCaseExecutionStage();
         }
 
         public string StageName() => "TestSuite";
@@ -50,7 +50,6 @@ namespace GdUnit3
             }
             await AfterStage.Execute(testSuiteContext);
         }
-
 
         private bool IsIncluded(string testCaseName, ExecutionContext context)
         {

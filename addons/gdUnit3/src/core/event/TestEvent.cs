@@ -76,7 +76,7 @@ namespace GdUnit3
             bool isFailure, int failure_count,
             bool is_warning,
             bool is_skipped, int skippedCount,
-            int elapsed_since_ms)
+            long elapsed_since_ms)
         {
             return new Dictionary<string, object>() {
                     { ORPHAN_NODES, orphan_count},

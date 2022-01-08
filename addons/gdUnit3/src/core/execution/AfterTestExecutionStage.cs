@@ -25,13 +25,13 @@ namespace GdUnit3
             context.FireAfterTestEvent();
         }
 
-        private static AfterTestAttribute AfterTestAttribute(ExecutionContext context) => context.TestInstance
+        private static TestStageAttribute AfterTestAttribute(ExecutionContext context) => context.TestInstance
             .GetType()
             .GetMethods()
             .FirstOrDefault(m => m.IsDefined(typeof(AfterTestAttribute)))
             ?.GetCustomAttribute<AfterTestAttribute>();
 
-        private static BeforeTestAttribute BeforeTestAttribute(ExecutionContext context) => context.TestInstance
+        private static TestStageAttribute BeforeTestAttribute(ExecutionContext context) => context.TestInstance
             .GetType()
             .GetMethods()
             .FirstOrDefault(m => m.IsDefined(typeof(BeforeTestAttribute)))
@@ -39,8 +39,8 @@ namespace GdUnit3
 
         private static string ReportOrphans(ExecutionContext context)
         {
-            BeforeTestAttribute beforeAttribute = BeforeTestAttribute(context);
-            AfterTestAttribute afterAttributes = AfterTestAttribute(context);
+            var beforeAttribute = BeforeTestAttribute(context);
+            var afterAttributes = AfterTestAttribute(context);
             if (beforeAttribute != null && afterAttributes != null)
                 return String.Format("{0}\n Detected <{1}> orphan nodes during test setup stage!\n Check [b]{2}[/b] and [b]{3}[/b] for unfreed instances!",
                     AssertFailures.FormatValue("WARNING:", AssertFailures.WARN_COLOR, false),
