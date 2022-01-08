@@ -4,6 +4,8 @@ extends SceneTree
 #warning-ignore-all:return_value_discarded
 class CLIRunner extends Node:
 	
+	signal test_suite_completed()
+	
 	enum {
 		INIT,
 		RUN,
@@ -54,12 +56,17 @@ class CLIRunner extends Node:
 		if GdUnitTools.is_mono_supported():
 			_cs_executor = load("res://addons/gdUnit3/src/core/execution/Executor.cs").new()
 			_cs_executor.AddGdTestEventListener(self)
+			_cs_executor.connect("ExecutionCompleted", self, "_on_ExecutionCompleted")
 		
 		var err := _executor.connect("send_event", self, "_on_executor_event")
 		if err != OK:
 			push_error("Error on startup, can't connect executor for 'send_event'")
 			get_tree().quit(RETURN_ERROR)
 		add_child(_executor)
+	
+	# receives c# executor test suite completed event
+	func _on_ExecutionCompleted():
+		emit_signal("test_suite_completed")
 	
 	func _process(_delta):
 		match _state:
@@ -75,7 +82,9 @@ class CLIRunner extends Node:
 					# process next test suite
 					var test_suite := _test_suites_to_process.pop_front() as Node
 					if GdObjects.is_cs_script(test_suite.get_script()):
+						add_child(test_suite)
 						_cs_executor.Execute(test_suite)
+						var results = yield(self, "test_suite_completed")
 					else:
 						var fs = _executor.execute(test_suite)
 						if fs is GDScriptFunctionState:
