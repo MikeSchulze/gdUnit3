@@ -1,6 +1,4 @@
-using System.Reflection;
-
-namespace GdUnit3
+namespace GdUnit3.Asserts
 {
     /// <summary> An Assertion Tool to verify exceptions </summary>
     public interface IExceptionAssert : IAssert

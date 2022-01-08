@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 using static GdUnit3.Assertions;
 
-
 [TestSuite]
 public class ObjectAssertTest : TestSuite
 {

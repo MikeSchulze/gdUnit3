@@ -1,4 +1,4 @@
-namespace GdUnit3
+namespace GdUnit3.Asserts
 {
     /// <summary> An Assertion Tool to verify string values </summary>
     public interface IStringAssert : IAssertBase<string>

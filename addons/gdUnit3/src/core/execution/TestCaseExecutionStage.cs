@@ -1,6 +1,8 @@
 using System;
 using System.Threading.Tasks;
 
+using GdUnit3.Asserts;
+
 namespace GdUnit3
 {
     internal sealed class TestCaseExecutionStage : ExecutionStage<TestCaseAttribute>

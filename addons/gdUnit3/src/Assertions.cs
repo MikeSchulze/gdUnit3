@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
+using GdUnit3.Asserts;
+
 namespace GdUnit3
 {
     /// <summary>

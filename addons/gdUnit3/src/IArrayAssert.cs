@@ -1,6 +1,6 @@
 using System.Collections;
 
-namespace GdUnit3
+namespace GdUnit3.Asserts
 {
     /// <summary> An Assertion tool to verify arrays </summary>
     public interface IArrayAssert : IAssertBase<IEnumerable>

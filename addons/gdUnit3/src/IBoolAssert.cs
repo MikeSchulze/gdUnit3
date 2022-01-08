@@ -1,4 +1,4 @@
-namespace GdUnit3
+namespace GdUnit3.Asserts
 {
     /// <summary> An Assertion Tool to verify boolean values </summary>
     public interface IBoolAssert : IAssertBase<bool>

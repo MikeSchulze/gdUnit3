@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using GdUnit3;
+using GdUnit3.Asserts;
 
 using static GdUnit3.Assertions;
 using static GdUnit3.TestEvent.TYPE;

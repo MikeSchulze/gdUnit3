@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace GdUnit3
+namespace GdUnit3.Asserts
 {
     internal sealed class AssertFailures
     {

@@ -3,6 +3,8 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
+using GdUnit3.Asserts;
+
 namespace GdUnit3
 {
     internal class AfterExecutionStage : ExecutionStage<AfterAttribute>

@@ -1,7 +1,7 @@
 using GdUnit3;
 
 using static GdUnit3.Assertions;
-using static GdUnit3.IStringAssert.Compare;
+using static GdUnit3.Asserts.IStringAssert.Compare;
 
 [TestSuite]
 public class StringAssertTest : TestSuite

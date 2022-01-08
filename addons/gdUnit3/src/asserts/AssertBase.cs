@@ -1,4 +1,4 @@
-namespace GdUnit3
+namespace GdUnit3.Asserts
 {
     internal abstract class AssertBase<V> : IAssertBase<V>
     {

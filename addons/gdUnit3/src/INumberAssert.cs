@@ -1,4 +1,4 @@
-namespace GdUnit3
+namespace GdUnit3.Asserts
 {
     /// <summary> Base interface for number assertions.</summary>
     public interface INumberAssert<V> : IAssertBase<V>

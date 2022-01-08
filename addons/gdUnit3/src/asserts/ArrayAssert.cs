@@ -4,7 +4,7 @@ using System.Linq;
 
 using static GdUnit3.Assertions;
 
-namespace GdUnit3
+namespace GdUnit3.Asserts
 {
     internal sealed class ArrayAssert : AssertBase<IEnumerable>, IArrayAssert
     {
