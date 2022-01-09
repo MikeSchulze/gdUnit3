@@ -21,11 +21,11 @@ func _on_executor_event(event :GdUnitEvent) -> void:
 
 func execute(test_suite :Node, enable_orphan_detection := true):
 	yield(get_tree(), "idle_frame")
+	add_child(test_suite)
 	_events.clear()
 	_executor._memory_pool.configure(enable_orphan_detection)
-	var fs = _executor.execute(test_suite)
-	if GdUnitTools.is_yielded(fs):
-		yield(fs, "completed" )
+	_executor.execute(test_suite)
+	yield(_executor, "ExecutionCompleted")
 	return _events
 
 func filter_failures(events :Array) -> Array:
