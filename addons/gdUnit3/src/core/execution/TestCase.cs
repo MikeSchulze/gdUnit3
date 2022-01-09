@@ -3,7 +3,9 @@ using System.Reflection;
 using System.Linq;
 using System;
 
-namespace GdUnit3
+using GdUnit3.Tools;
+
+namespace GdUnit3.Executions
 {
     public sealed class TestCase : Godot.Reference
     {

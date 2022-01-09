@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace GdUnit3.Executions
@@ -37,7 +35,7 @@ namespace GdUnit3.Executions
         {
             await BeforeStage.Execute(testSuiteContext);
 
-            foreach (TestCase testCase in TestCases(testSuiteContext))
+            foreach (TestCase testCase in testSuiteContext.TestInstance.TestCases)
             {
                 using (ExecutionContext testCaseContext = new ExecutionContext(testSuiteContext, testCase))
                 {
@@ -50,24 +48,6 @@ namespace GdUnit3.Executions
                 }
             }
             await AfterStage.Execute(testSuiteContext);
-        }
-
-        private bool IsIncluded(string testCaseName, ExecutionContext context)
-        {
-            foreach (Godot.Node element in context.TestInstance.GetChildren())
-            {
-                if (testCaseName == element.Name)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        private IEnumerable<TestCase> TestCases(ExecutionContext context)
-        {
-            // filter by only included test cases
-            return CsTools.GetTestCases(context.TestInstance.GetType()).Where(test => IsIncluded(test.Name, context));
         }
     }
 }

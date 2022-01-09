@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -13,8 +14,6 @@ using static GdUnit3.TestReport.TYPE;
 [TestSuite]
 public class ExecutorTest : TestSuite, ITestEventListener
 {
-    [Godot.Signal] private delegate void TestExecutionCompleted();
-
     private Executor _executor;
     private List<TestEvent> _events = new List<TestEvent>();
 
@@ -24,20 +23,14 @@ public class ExecutorTest : TestSuite, ITestEventListener
     public void Before()
     {
         _executor = new Executor();
-        _executor.AddGdTestEventListener(this);
+        _executor.AddTestEventListener(this);
     }
 
-    private TestSuite LoadTestSuite(string resourcePath)
+    private static TestSuite LoadTestSuite(Type clazz)
     {
-        TestSuite testSuite = Godot.ResourceLoader.Load(resourcePath).Call("new") as TestSuite;
-        testSuite.Name = testSuite.GetType().FullName;
-
-        foreach (TestCase testCase in CsTools.GetTestCases(testSuite.Name))
-        {
-            var test = new Godot.Node();
-            test.Name = testCase.Name;
-            testSuite.AddChild(test);
-        }
+        TestSuite testSuite = Activator.CreateInstance(clazz) as TestSuite;
+        // we disable default test filtering
+        testSuite.FilterDisabled = true;
         return testSuite;
     }
 
@@ -116,12 +109,11 @@ public class ExecutorTest : TestSuite, ITestEventListener
         }
     }
 
-
     [TestCase(Description = "Verifies the complete test suite ends with success and no failures are reported.")]
     public async Task Execute_Success()
     {
-        TestSuite testSuite = LoadTestSuite("res://addons/gdUnit3/test/core/resources/testsuites/mono/TestSuiteAllStagesSuccess.cs");
-        AssertArray(testSuite.GetChildren()).Extract("GetName").ContainsExactly(new string[] { "TestCase1", "TestCase2" });
+        TestSuite testSuite = LoadTestSuite(typeof(TestSuiteAllStagesSuccess));
+        AssertArray(testSuite.TestCases).Extract("Name").ContainsExactly(new string[] { "TestCase1", "TestCase2" });
 
         var events = await ExecuteTestSuite(testSuite);
 
@@ -158,8 +150,8 @@ public class ExecutorTest : TestSuite, ITestEventListener
     [TestCase(Description = "Verifies report a failure on stage 'Before'.")]
     public async Task Execute_FailureOnStage_Before()
     {
-        TestSuite testSuite = LoadTestSuite("res://addons/gdUnit3/test/core/resources/testsuites/mono/TestSuiteFailOnStageBefore.cs");
-        AssertArray(testSuite.GetChildren()).Extract("GetName").ContainsExactly(new string[] { "TestCase1", "TestCase2" });
+        TestSuite testSuite = LoadTestSuite(typeof(TestSuiteFailOnStageBefore));
+        AssertArray(testSuite.TestCases).Extract("Name").ContainsExactly(new string[] { "TestCase1", "TestCase2" });
 
         var events = await ExecuteTestSuite(testSuite);
 
@@ -199,8 +191,8 @@ public class ExecutorTest : TestSuite, ITestEventListener
     [TestCase(Description = "Verifies report a failure on stage 'After'.")]
     public async Task Execute_FailureOnStage_After()
     {
-        TestSuite testSuite = LoadTestSuite("res://addons/gdUnit3/test/core/resources/testsuites/mono/TestSuiteFailOnStageAfter.cs");
-        AssertArray(testSuite.GetChildren()).Extract("GetName").ContainsExactly(new string[] { "TestCase1", "TestCase2" });
+        TestSuite testSuite = LoadTestSuite(typeof(TestSuiteFailOnStageAfter));
+        AssertArray(testSuite.TestCases).Extract("Name").ContainsExactly(new string[] { "TestCase1", "TestCase2" });
 
         var events = await ExecuteTestSuite(testSuite);
 
@@ -240,8 +232,8 @@ public class ExecutorTest : TestSuite, ITestEventListener
     [TestCase(Description = "Verifies report a failure on stage 'BeforeTest'.")]
     public async Task Execute_FailureOnStage_BeforeTest()
     {
-        TestSuite testSuite = LoadTestSuite("res://addons/gdUnit3/test/core/resources/testsuites/mono/TestSuiteFailOnStageBeforeTest.cs");
-        AssertArray(testSuite.GetChildren()).Extract("GetName").ContainsExactly(new string[] { "TestCase1", "TestCase2" });
+        TestSuite testSuite = LoadTestSuite(typeof(TestSuiteFailOnStageBeforeTest));
+        AssertArray(testSuite.TestCases).Extract("Name").ContainsExactly(new string[] { "TestCase1", "TestCase2" });
 
         var events = await ExecuteTestSuite(testSuite);
 
@@ -280,8 +272,8 @@ public class ExecutorTest : TestSuite, ITestEventListener
     [TestCase(Description = "Verifies report a failure on stage 'AfterTest'.")]
     public async Task Execute_FailureOnStage_AfterTest()
     {
-        TestSuite testSuite = LoadTestSuite("res://addons/gdUnit3/test/core/resources/testsuites/mono/TestSuiteFailOnStageAfterTest.cs");
-        AssertArray(testSuite.GetChildren()).Extract("GetName").ContainsExactly(new string[] { "TestCase1", "TestCase2" });
+        TestSuite testSuite = LoadTestSuite(typeof(TestSuiteFailOnStageAfterTest));
+        AssertArray(testSuite.TestCases).Extract("Name").ContainsExactly(new string[] { "TestCase1", "TestCase2" });
 
         var events = await ExecuteTestSuite(testSuite);
 
@@ -320,8 +312,8 @@ public class ExecutorTest : TestSuite, ITestEventListener
     [TestCase(Description = "Verifies a failure is reportes for a single test case.")]
     public async Task Execute_FailureOn_TestCase1()
     {
-        TestSuite testSuite = LoadTestSuite("res://addons/gdUnit3/test/core/resources/testsuites/mono/TestSuiteFailOnTestCase1.cs");
-        AssertArray(testSuite.GetChildren()).Extract("GetName").ContainsExactly(new string[] { "TestCase1", "TestCase2" });
+        TestSuite testSuite = LoadTestSuite(typeof(TestSuiteFailOnTestCase1));
+        AssertArray(testSuite.TestCases).Extract("Name").ContainsExactly(new string[] { "TestCase1", "TestCase2" });
 
         var events = await ExecuteTestSuite(testSuite);
 
@@ -359,8 +351,8 @@ public class ExecutorTest : TestSuite, ITestEventListener
     [TestCase(Description = "Verifies multiple failures are reportes for different stages.")]
     public async Task Execute_FailureOn_MultiStages()
     {
-        TestSuite testSuite = LoadTestSuite("res://addons/gdUnit3/test/core/resources/testsuites/mono/TestSuiteFailOnMultiStages.cs");
-        AssertArray(testSuite.GetChildren()).Extract("GetName").ContainsExactly(new string[] { "TestCase1", "TestCase2" });
+        TestSuite testSuite = LoadTestSuite(typeof(TestSuiteFailOnMultiStages));
+        AssertArray(testSuite.TestCases).Extract("Name").ContainsExactly(new string[] { "TestCase1", "TestCase2" });
 
         var events = await ExecuteTestSuite(testSuite);
 
@@ -403,8 +395,8 @@ public class ExecutorTest : TestSuite, ITestEventListener
     [TestCase(Description = "GD-63: Execution must detect orphan nodes in the different test stages.")]
     public async Task Execute_Failure_OrphanNodesDetected()
     {
-        TestSuite testSuite = LoadTestSuite("res://addons/gdUnit3/test/core/resources/testsuites/mono/TestSuiteFailAndOrpahnsDetected.cs");
-        AssertArray(testSuite.GetChildren()).Extract("GetName").ContainsExactly(new string[] { "TestCase1", "TestCase2" });
+        TestSuite testSuite = LoadTestSuite(typeof(TestSuiteFailAndOrpahnsDetected));
+        AssertArray(testSuite.TestCases).Extract("Name").ContainsExactly(new string[] { "TestCase1", "TestCase2" });
 
         var events = await ExecuteTestSuite(testSuite);
 
@@ -457,8 +449,8 @@ public class ExecutorTest : TestSuite, ITestEventListener
     [TestCase(Description = "GD-62: Execution must ignore detect orphan nodes if is disabled.")]
     public async Task Execute_Failure_OrphanNodesDetection_Disabled()
     {
-        TestSuite testSuite = LoadTestSuite("res://addons/gdUnit3/test/core/resources/testsuites/mono/TestSuiteFailAndOrpahnsDetected.cs");
-        AssertArray(testSuite.GetChildren()).Extract("GetName").ContainsExactly(new string[] { "TestCase1", "TestCase2" });
+        TestSuite testSuite = LoadTestSuite(typeof(TestSuiteFailAndOrpahnsDetected));
+        AssertArray(testSuite.TestCases).Extract("Name").ContainsExactly(new string[] { "TestCase1", "TestCase2" });
 
         // simulate test suite execution with disabled orphan detection
         var events = await ExecuteTestSuite(testSuite, false);
@@ -499,8 +491,8 @@ public class ExecutorTest : TestSuite, ITestEventListener
     [TestCase(Description = "GD-66: The execution must be aborted by a test timeout.")]
     public async Task Execute_Abort_OnTimeOut()
     {
-        TestSuite testSuite = LoadTestSuite("res://addons/gdUnit3/test/core/resources/testsuites/mono/TestSuiteAbortOnTestTimeout.cs");
-        AssertArray(testSuite.GetChildren()).Extract("GetName").ContainsExactly(new string[] { "TestCase1", "TestCase2", "TestCase3", "TestCase4", "TestCase5" });
+        TestSuite testSuite = LoadTestSuite(typeof(TestSuiteAbortOnTestTimeout));
+        AssertArray(testSuite.TestCases).Extract("Name").ContainsExactly(new string[] { "TestCase1", "TestCase2", "TestCase3", "TestCase4", "TestCase5" });
 
         var events = await ExecuteTestSuite(testSuite);
 

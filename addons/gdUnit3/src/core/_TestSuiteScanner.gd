@@ -77,7 +77,6 @@ static func _is_script_format_supported(resource_path :String) -> bool:
 
 func _parse_cs_test_suite(script :Script) -> Node:
 	var test_suite = script.new()
-	test_suite.set_name(parse_test_suite_name(script))
 	var cs_tools = load("res://addons/gdUnit3/src/core/CsTools.cs").new()
 	for test_case in cs_tools.GetTestCases(script.resource_path.get_file().replace(".cs", "")):
 		var test := _TestCase.new()
@@ -113,7 +112,7 @@ func _extract_test_case_names(script :GDScript) -> PoolStringArray:
 	return names
 
 static func parse_test_suite_name(script :Script) -> String:
-	return script.resource_path.get_file().replace(".gd", "").replace(".cs", "")
+	return script.resource_path.get_file().replace(".gd", "")
 
 func _parse_and_add_test_cases(test_suite, script :GDScript, test_case_names :PoolStringArray):
 	var test_cases_to_find = Array(test_case_names)

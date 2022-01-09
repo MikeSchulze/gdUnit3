@@ -1,5 +1,10 @@
 using Godot;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using System.Linq;
+using System.Reflection;
+
 
 namespace GdUnit3
 {
@@ -13,56 +18,48 @@ namespace GdUnit3
     <example>For example:
     
     <code>
-    public class MyExampleTest : GdUnit3.GdUnitTestSuite
+    [TestSuite]
+    public class MyExampleTest : GdUnit3.TestSuite
     {
-         public void testCaseA()
-         {
+        [TestCase]
+        public void testCaseA()
+        {
              AssertThat("value").IsEqual("value");
-         }
-     }
+        }
+    }
     </code>
     </example>
     </summary> */
     public abstract class TestSuite : Node
     {
-        private String _active_test_case;
+        private Lazy<IEnumerable<Executions.TestCase>> _testCases = null;
 
-        private static Godot.Resource GdUnitTools = (Resource)GD.Load<GDScript>("res://addons/gdUnit3/src/core/GdUnitTools.gd").New();
+        public int TestCaseCount => TestCases.Count<Executions.TestCase>();
 
-        // current we overide it to get the correct count of tests
-        public int get_child_count()
-        {
-            return TestCaseCount;
-        }
-
-        // Discard the error message triggered by a timeout (interruption).
-        // By default, an interrupted test is reported as an error.
-        // This function allows you to change the message to Success when an interrupted error is reported.
-        public void discard_error_interupted_by_timeout()
-        {
-            //GdUnitTools.register_expect_interupted_by_timeout(self, __active_test_case)
-        }
-
-        // Creates a new directory under the temporary directory *user://tmp*
-        // Useful for storing data during test execution. 
-        // The directory is automatically deleted after test suite execution
-        public String create_temp_dir(String relative_path)
-        {
-            //return GdUnitTools.create_temp_dir(relative_path)
-            return "";
-        }
-
-        // Deletes the temporary base directory
-        // Is called automatically after each execution of the test suite
-        public void clean_temp_dir()
-        {
-            //GdUnitTools.clear_tmp()
-        }
-
-        public int TestCaseCount => CsTools.TestCaseCount(GetType());
+        public IEnumerable<Executions.TestCase> TestCases => _testCases.Value;
 
         public string ResourcePath => (GetScript() as Script).ResourcePath;
 
-        public bool Skipped => false;
+        public new string Name => base.Name;
+
+        public string FullName => GetType().FullName;
+
+        public bool FilterDisabled { get; set; } = false;
+
+        public TestSuite()
+        {
+            Type type = GetType();
+            base.Name = type.Name;
+            // we do lazy loding to only load test case one times
+            _testCases = new Lazy<IEnumerable<Executions.TestCase>>(() => LoadTestCases(type));
+        }
+
+        private IEnumerable<Executions.TestCase> LoadTestCases(Type type)
+        {
+            return type.GetMethods()
+                .Where(m => m.IsDefined(typeof(TestCaseAttribute)))
+                .Where(m => FilterDisabled || FindNode(m.Name, false, false) != null)
+                .Select(mi => new Executions.TestCase(mi));
+        }
     }
 }

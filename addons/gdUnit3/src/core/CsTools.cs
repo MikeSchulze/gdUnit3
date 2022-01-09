@@ -4,19 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace GdUnit3
+using GdUnit3.Executions;
+
+namespace GdUnit3.Tools
 {
     public class CsTools : Godot.Reference
     {
-        // used from GdScript side, will be remove later
-        public static int TestCaseCount(Type type)
-        {
-            Contract.Requires(Attribute.IsDefined(type, typeof(TestSuiteAttribute)), "The class must have TestSuiteAttribute.");
-            return type.GetMethods()
-                .Where(m => m.IsDefined(typeof(TestCaseAttribute)))
-                .Count();
-        }
-
         public static IEnumerable<TestCase> GetTestCases(String className)
         {
             System.Type type = System.Type.GetType(className);
@@ -36,14 +29,6 @@ namespace GdUnit3
                 return false;
             }
             return Attribute.IsDefined(type, typeof(TestSuiteAttribute));
-        }
-
-        public static IEnumerable<TestCase> GetTestCases(Type type)
-        {
-            Contract.Requires(Attribute.IsDefined(type, typeof(TestSuiteAttribute)), "The class must have TestSuiteAttribute.");
-            return type.GetMethods()
-                .Where(m => m.IsDefined(typeof(TestCaseAttribute)))
-                .Select(mi => new TestCase(mi));
         }
 
         public static IEnumerable<object> GetTestMethodParameters(MethodInfo methodInfo)
