@@ -346,7 +346,7 @@ static func _is_extends_test_suite(script :Script) -> bool:
 
 static func _is_annotated_test_suite(script :Script) -> bool:
 	var csTools = GdUnitSingleton.get_or_create_singleton("CsTools", "res://addons/gdUnit3/src/core/CsTools.cs")
-	return csTools.IsTestSuite(script.resource_path.get_file().replace(".cs", ""))
+	return csTools.IsTestSuite(script.resource_path)
 
 static func is_native_class(value) -> bool:
 	return is_object(value) and value.to_string() != null and value.to_string().find("GDScriptNativeClass") != -1

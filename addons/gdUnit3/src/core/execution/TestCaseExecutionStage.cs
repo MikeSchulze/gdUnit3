@@ -12,12 +12,13 @@ namespace GdUnit3.Executions
 
         public override async Task Execute(ExecutionContext context)
         {
-            InitExecutionAttributes(context.CurrentTestCase.MethodInfo, context.CurrentTestCase.Arguments);
+            InitExecutionAttributes(context.CurrentTestCase.MethodInfo);
 
             context.MemoryPool.SetActive(StageName());
             context.OrphanMonitor.Start(true);
             while (!context.IsSkipped && context.CurrentIteration > 0)
             {
+                MethodArguments = context.CurrentTestCase.Arguments;
                 await base.Execute(context);
             }
 

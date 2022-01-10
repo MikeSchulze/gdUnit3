@@ -1,21 +1,21 @@
-using GdUnit3;
-
-using static GdUnit3.Assertions;
-
-// will be ignored because of missing `[TestSuite]` anotation
-// used by executor integration test
-public class ExampleTestSuiteA : TestSuite
+namespace GdUnit3.Tests.Resources
 {
-
-    [TestCase]
-    public void TestCase1()
+    using static Assertions;
+    // will be ignored because of missing `[TestSuite]` anotation
+    // used by executor integration test
+    public class ExampleTestSuiteA : TestSuite
     {
-        AssertBool(true).IsEqual(false);
-    }
 
-    [TestCase]
-    public void TestCase2()
-    {
-        AssertBool(true).IsEqual(false);
+        [TestCase]
+        public void TestCase1()
+        {
+            AssertBool(true).IsEqual(false);
+        }
+
+        [TestCase]
+        public void TestCase2()
+        {
+            AssertBool(true).IsEqual(false);
+        }
     }
 }

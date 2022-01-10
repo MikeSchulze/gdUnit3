@@ -1,46 +1,46 @@
 using Godot;
-using GdUnit3;
-
-using static GdUnit3.Assertions;
-
-
-[TestSuite]
-public class ExampleTestSuite : TestSuite
+namespace GdUnit3.Tests.Asserts
 {
-    [Before]
-    public void Before()
-    {
-        GD.PrintS("calling Before");
-    }
+    using Executions;
+    using static Assertions;
 
-    [After]
-    public void After()
+    [TestSuite]
+    public class ExampleTestSuite : TestSuite
     {
-        GD.PrintS("calling After");
-    }
+        [Before]
+        public void Before()
+        {
+            GD.PrintS("calling Before");
+        }
 
-    [BeforeTest]
-    public void BeforeTest()
-    {
-        GD.PrintS("calling BeforeTest");
-    }
+        [After]
+        public void After()
+        {
+            GD.PrintS("calling After");
+        }
 
-    [AfterTest]
-    public void AfterTest()
-    {
-        GD.PrintS("calling AfterTest");
-    }
+        [BeforeTest]
+        public void BeforeTest()
+        {
+            GD.PrintS("calling BeforeTest");
+        }
 
-    [TestCase]
-    public void TestFoo()
-    {
-        AssertBool(true).IsEqual(true);
-    }
+        [AfterTest]
+        public void AfterTest()
+        {
+            GD.PrintS("calling AfterTest");
+        }
 
-    [TestCase]
-    public void TestBar()
-    {
-        AssertBool(true).IsEqual(true);
-    }
+        [TestCase]
+        public void TestFoo()
+        {
+            AssertBool(true).IsEqual(true);
+        }
 
+        [TestCase]
+        public void TestBar()
+        {
+            AssertBool(true).IsEqual(true);
+        }
+    }
 }

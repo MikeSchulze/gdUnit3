@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics.Contracts;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 
@@ -10,39 +11,30 @@ namespace GdUnit3.Tools
 {
     public class CsTools : Godot.Reference
     {
-        public static IEnumerable<TestCase> GetTestCases(String className)
-        {
-            System.Type type = System.Type.GetType(className);
-            Contract.Requires(Attribute.IsDefined(type, typeof(TestSuiteAttribute)), "The class must have TestSuiteAttribute.");
-            return type.GetMethods()
-                .Where(m => m.IsDefined(typeof(TestCaseAttribute)))
-                .Select(mi => new TestCase(mi))
-                .ToArray();
-        }
 
-        // used from GdScript side, will be remove later
-        public static bool IsTestSuite(String className)
+        // used from GdScript side to verify it given resource a gdunit test-suite
+        public static bool IsTestSuite(String classPath)
         {
-            System.Type type = System.Type.GetType(className);
-            if (type == null)
+            try
             {
+                var instance = (Godot.Object)Godot.ResourceLoader.Load<Godot.CSharpScript>(classPath).New();
+                System.Type type = instance.GetType();
+                instance.Free();
+
+                if (type == null)
+                {
+                    return false;
+                }
+                return Attribute.IsDefined(type, typeof(TestSuiteAttribute));
+            }
+#pragma warning disable CS0168
+            catch (Exception e)
+            {
+#pragma warning restore CS0168
+                // ignore exception
                 return false;
             }
-            return Attribute.IsDefined(type, typeof(TestSuiteAttribute));
-        }
 
-        public static IEnumerable<object> GetTestMethodParameters(MethodInfo methodInfo)
-        {
-            return methodInfo.GetParameters()
-                .SelectMany(pi => pi.GetCustomAttributesData()
-                    .Where(attr => attr.AttributeType == typeof(FuzzerAttribute))
-                    .Select(attr =>
-                    {
-                        var arguments = attr.ConstructorArguments.Select(arg => arg.Value).ToArray();
-                        return attr.Constructor.Invoke(arguments);
-                    }
-                )
-             );
         }
     }
 }

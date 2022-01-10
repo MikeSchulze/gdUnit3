@@ -36,7 +36,8 @@ namespace GdUnit3
 
         public int TestCaseCount => TestCases.Count<Executions.TestCase>();
 
-        public IEnumerable<Executions.TestCase> TestCases => _testCases.Value;
+        // to do explicit convert to array (used from godot gdScript side)
+        public IEnumerable<Executions.TestCase> TestCases => _testCases.Value.ToArray();
 
         public string ResourcePath => (GetScript() as Script).ResourcePath;
 

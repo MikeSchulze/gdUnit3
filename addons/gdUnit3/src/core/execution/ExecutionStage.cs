@@ -17,13 +17,12 @@ namespace GdUnit3.Executions
             var method = type?
                .GetMethods()
                .FirstOrDefault(m => m.IsDefined(typeof(T)));
-            InitExecutionAttributes(method, new object[] { });
+            InitExecutionAttributes(method);
         }
 
-        protected void InitExecutionAttributes(MethodInfo method, object[] args)
+        protected void InitExecutionAttributes(MethodInfo method)
         {
             Method = method;
-            MethodArguments = args;
             IsAsync = (AsyncStateMachineAttribute)method?.GetCustomAttribute(typeof(AsyncStateMachineAttribute)) != null;
             IsTask = method?.ReturnType.IsEquivalentTo(typeof(Task)) ?? false;
         }
@@ -112,7 +111,7 @@ namespace GdUnit3.Executions
 
         private MethodInfo? Method { get; set; }
 
-        private object[] MethodArguments { get; set; } = new object[] { };
+        protected object[] MethodArguments { get; set; } = new object[] { };
 
         private TestStageAttribute StageAttributes => Method?.GetCustomAttribute<TestStageAttribute>();
     }

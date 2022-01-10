@@ -2,10 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-using GdUnit3.Asserts;
-
 namespace GdUnit3
 {
+    using Asserts;
+
     /// <summary>
     /// A collection of assertions and helpers to verify values
     /// </summary>

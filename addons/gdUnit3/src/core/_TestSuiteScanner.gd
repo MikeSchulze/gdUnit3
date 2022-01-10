@@ -77,13 +77,14 @@ static func _is_script_format_supported(resource_path :String) -> bool:
 
 func _parse_cs_test_suite(script :Script) -> Node:
 	var test_suite = script.new()
-	var cs_tools = load("res://addons/gdUnit3/src/core/CsTools.cs").new()
-	for test_case in cs_tools.GetTestCases(script.resource_path.get_file().replace(".cs", "")):
+	# get unfiltered test cases
+	test_suite.FilterDisabled = true
+	for test_case in test_suite.TestCases:
 		var test := _TestCase.new()
 		test.configure(test_case.Name, test_case.Line, script.resource_path)
 		test_suite.add_child(test)
+	test_suite.FilterDisabled = false
 	return test_suite
-
 
 func _parse_test_suite(script :GDScript) -> GdUnitTestSuite:
 	var test_suite = script.new()
