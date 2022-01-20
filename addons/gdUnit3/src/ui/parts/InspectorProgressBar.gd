@@ -10,6 +10,10 @@ onready var _signal_handler :SignalHandler = GdUnitSingleton.get_singleton(Signa
 func _ready():
 	_signal_handler.register_on_gdunit_events(self, "_on_event")
 	style.bg_color = Color.darkgreen
+	var plugin := EditorPlugin.new()
+	var settings := plugin.get_editor_interface().get_editor_settings()
+	var font_size = settings.get_setting("interface/editor/main_font_size")
+	bar.rect_min_size.y = font_size + 4 * plugin.get_editor_interface().get_editor_scale()
 
 func progress_init(max_value :int) -> void:
 	bar.value = 0

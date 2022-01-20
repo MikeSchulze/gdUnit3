@@ -37,11 +37,14 @@ func is_greater(other :GdUnit3Version) -> bool:
 		return true
 	return _major == other._major and _minor == other._minor and _patch > other._patch
 
-static func init_version_label(label :RichTextLabel) -> void:
+static func init_version_label(label :Control) -> void:
 	var config = ConfigFile.new()
 	config.load('addons/gdUnit3/plugin.cfg')
 	var version = config.get_value('plugin', 'version')
-	label.bbcode_text = VERSION_PATTERN.replace('${version}', version)
+	if label is RichTextLabel:
+		label.bbcode_text = VERSION_PATTERN.replace('${version}', version)
+	else:
+		label.text = "gdUnit3 " + version
 
 func _to_string() -> String:
 	return "v%d.%d.%d" % [_major, _minor, _patch]

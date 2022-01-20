@@ -8,12 +8,11 @@ bg_color = Color( 0, 0.39, 0, 1 )
 [node name="ProgressBar" type="ProgressBar"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_bottom = -580.0
 grow_horizontal = 2
 grow_vertical = 2
-rect_min_size = Vector2( 0, 20 )
-size_flags_horizontal = 3
-size_flags_vertical = 1
+rect_min_size = Vector2( 0, 22 )
+size_flags_horizontal = 11
+size_flags_vertical = 9
 custom_styles/fg = SubResource( 1 )
 min_value = -1.0
 max_value = 0.0
@@ -28,9 +27,14 @@ __meta__ = {
 
 [node name="Label" type="Label" parent="."]
 use_parent_material = true
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_bottom = -6.0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -10.0
+margin_top = -7.0
+margin_right = 10.0
+margin_bottom = 7.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_vertical = 3

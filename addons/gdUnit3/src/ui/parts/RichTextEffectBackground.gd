@@ -18,15 +18,19 @@ var _indent := Dictionary()
 var diff_sub_color := Color(0, 0, 0, 0)
 var _cache := Dictionary() 
 
-func _init(label :RichTextLabel):
+func set_source(label :RichTextLabel) -> void:
 	_label = weakref(label)
+	init_properties()
+
+func init_properties() :
+	_cache.clear()
 	# determine character size
-	var custom_font = label.get("custom_fonts/normal_font")
+	var custom_font = _label.get_ref().get("custom_fonts/mono_font")
 	if custom_font is Font:
 		_char_height = custom_font.get_height()
 		_char_width = custom_font.get_char_size(23).x
 	_char_size = Vector2(_char_width, _char_height)
-	_tab_size = label.tab_size
+	_tab_size = _label.get_ref().tab_size
 
 func push_indent(line :int, indent :int) -> void:
 	_indent[line] = indent
@@ -106,3 +110,7 @@ func get_line_height() -> int:
 
 func get_char_size() -> Vector2:
 	return _char_size
+
+func _notification(what):
+	if what == EditorSettings.NOTIFICATION_EDITOR_SETTINGS_CHANGED:
+		init_properties()

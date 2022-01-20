@@ -1,7 +1,6 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=2 format=2]
 
 [ext_resource path="res://addons/gdUnit3/src/ui/templates/TestSuiteTemplate.gd" type="Script" id=1]
-[ext_resource path="res://addons/gdUnit3/src/update/assets/fonts/RobotoMono-14.tres" type="DynamicFont" id=2]
 
 [node name="TestSuiteTemplate" type="MarginContainer"]
 anchor_right = 1.0
@@ -57,7 +56,6 @@ margin_right = 1024.0
 margin_bottom = 434.0
 rect_min_size = Vector2( 0, 400 )
 size_flags_horizontal = 3
-custom_fonts/font = ExtResource( 2 )
 custom_colors/font_color_selected = Color( 0.41, 0.61, 0.91, 0.35 )
 custom_colors/font_color = Color( 0.8, 0.8075, 0.8275, 1 )
 custom_colors/background_color = Color( 0.125, 0.14375, 0.19375, 1 )
@@ -68,8 +66,8 @@ syntax_highlighting = true
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_top = -31.0
-margin_bottom = -1.0
+margin_top = -28.0
+margin_bottom = 2.0
 rect_min_size = Vector2( 0, 20 )
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -97,6 +95,7 @@ margin_right = 1024.0
 margin_bottom = 30.0
 rect_min_size = Vector2( 200, 0 )
 hint_tooltip = "Select the script type specific template."
+text = "GD - GDScript"
 items = [ "GD - GDScript", null, false, 0, null, "C# - CSharpScript", null, true, 1, null ]
 selected = 0
 __meta__ = {
@@ -156,7 +155,6 @@ margin_right = 1008.0
 margin_bottom = 584.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-custom_fonts/font = ExtResource( 2 )
 custom_colors/font_color_selected = Color( 0.41, 0.61, 0.91, 0.35 )
 custom_colors/font_color = Color( 0.8, 0.8075, 0.8275, 1 )
 custom_colors/background_color = Color( 0.125, 0.14375, 0.19375, 1 )
