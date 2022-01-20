@@ -3,7 +3,8 @@ extends Control
 
 const TITLE = "gdUnit3 ${version} Console"
 
-onready var header := $VBoxContainer/Header/header_title
+onready var header := $VBoxContainer/Header
+onready var title :RichTextLabel = $VBoxContainer/Header/header_title
 onready var output := $VBoxContainer/Console/TextEdit
 
 onready var _signal_handler:SignalHandler = GdUnitSingleton.get_singleton(SignalHandler.SINGLETON_NAME)
@@ -15,16 +16,12 @@ var _statistics = {}
 
 func _ready():
 	init_colors()
-	var config = ConfigFile.new()
-	config.load('addons/gdUnit3/plugin.cfg')
-	var version = config.get_value('plugin', 'version')
+	GdUnit3Version.init_version_label(title)
 	_signal_handler.register_on_gdunit_events(self, "_on_event_test_suite")
 	_signal_handler.register_on_message(self, "_on_message")
 	_signal_handler.register_on_client_connected(self, "_on_client_connected")
 	_signal_handler.register_on_client_disconnected(self, "_on_client_disconnected")
-	header.bbcode_text = TITLE.replace('${version}', version)
 	output.clear()
-	output.setup_effects()
 
 func _notification(what):
 	if what == EditorSettings.NOTIFICATION_EDITOR_SETTINGS_CHANGED:

@@ -68,6 +68,7 @@ __meta__ = {
 
 [node name="sub_category" type="Panel" parent="property_template"]
 anchor_right = 1.0
+margin_bottom = 30.0
 rect_min_size = Vector2( 0, 30 )
 size_flags_horizontal = 3
 
@@ -167,9 +168,7 @@ rect_min_size = Vector2( 200, 30 )
 rect_clip_content = false
 size_flags_horizontal = 3
 bbcode_enabled = true
-bbcode_text = "[center][color=#9887c4]gd[/color][color=#7a57d6]Unit[/color][color=#9887c4]3[/color] [color=#9887c4]1.0.3[/color][/center]"
 meta_underlined = false
-text = "gdUnit3 1.0.3"
 scroll_active = false
 __meta__ = {
 "_edit_use_anchors_": false

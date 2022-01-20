@@ -4,21 +4,25 @@ extends MarginContainer
 
 onready var _template_editor :TextEdit = $ScrollContainer/VBoxContainer/Editor
 onready var _tags_editor :TextEdit = $Tags/MarginContainer/TextEdit
+onready var _title_bar :Panel = $ScrollContainer/VBoxContainer/sub_category
 onready var _save_button :Button = $ScrollContainer/VBoxContainer/Panel/HBoxContainer/Save
+onready var _tag_container :Container = $ScrollContainer/VBoxContainer/Editor/MarginContainer
 onready var _selected_type :OptionButton = $ScrollContainer/VBoxContainer/Editor/MarginContainer/HBoxContainer/SelectType
 onready var _show_tags :Popup = $Tags
-
-
 
 var gd_key_words := ["extends", "class_name", "const", "var", "onready", "func", "void", "pass"]
 var gdunit_key_words := ["GdUnitTestSuite", "before", "after", "before_test", "after_test"]
 
-	
 func _ready():
 	setup_editor_colors()
+	setup_fonts()
 	setup_supported_types()
 	setup_tags_help()
 	load_template()
+
+func _notification(what):
+	if what == EditorSettings.NOTIFICATION_EDITOR_SETTINGS_CHANGED:
+		setup_fonts()
 
 func setup_editor_colors() -> void:
 	if not Engine.is_editor_hint():
@@ -46,6 +50,14 @@ func setup_editor_colors() -> void:
 			editor.add_keyword_color(word, keyword_color)
 		for word in gdunit_key_words:
 			editor.add_keyword_color(word, base_type_color)
+
+func setup_fonts() -> void:
+	if _template_editor:
+		Fonts.init_fonts(_template_editor)
+		var font_size = Fonts.init_fonts(_tags_editor)
+		_title_bar.rect_size.y = font_size + 16
+		_title_bar.rect_min_size.y = font_size + 16
+		_tag_container.rect_position.y = 400-font_size*2
 
 func setup_supported_types() -> void:
 	_selected_type.clear()

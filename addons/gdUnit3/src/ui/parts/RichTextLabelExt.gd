@@ -7,26 +7,29 @@ tool
 extends RichTextLabel
 class_name RichTextLabelExt
 
-var _effect :RichTextEffectBackground
+var _effect :RichTextEffectBackground = RichTextEffectBackground.new()
 var _indent :int
 
-func setup_effects() -> void:
-	_effect = RichTextEffectBackground.new(self)
+func _ready():
+	Fonts.init_fonts(self)
+	_effect.set_source(self)
+	# clear effects otherwies a duplicate will result in errors
+	set_effects([])
 	install_effect(_effect)
 
+func _notification(what):
+	if what == EditorSettings.NOTIFICATION_EDITOR_SETTINGS_CHANGED:
+		Fonts.init_fonts(self)
+		if _effect:
+			_effect._notification(what)
+
 func set_bbcode(code) -> void:
-	_effect.reset()
 	.parse_bbcode(code)
 	updateMinSize()
 
 func append_bbcode(text :String):
 	# replace all tabs, it results in invalid background coloring
 	return .append_bbcode(text.replace("\t", ""))
-
-func clone() -> RichTextLabelExt:
-	var clone = .duplicate()
-	clone.setup_effects()
-	return clone
 
 func push_indent(indent :int) -> void:
 	.push_indent(indent)

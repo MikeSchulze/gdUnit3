@@ -281,7 +281,9 @@ func collect_failures_and_errors() -> Array:
 				if is_state_failed(item) or is_state_error(item):
 					_current_failures.append(item)
 					# we remove the test_suite to enforce test case select
-					_current_failures.remove(_current_failures.find(parent))
+					var index = _current_failures.find(parent)
+					if index != -1:
+						_current_failures.remove(index)
 				item = item.get_next()
 		parent = parent.get_next()
 	return _current_failures
@@ -335,10 +337,10 @@ func show_failed_report(selected_item :TreeItem) -> void:
 	# add new reports
 	for r in selected_item.get_meta(META_GDUNIT_REPORT):
 		var report := r as GdUnitReport
-		var reportNode = _report_template.clone()
-		reportNode.visible = true
-		reportNode.set_bbcode(report.to_string())
+		var reportNode = _report_template.duplicate()
 		_report_list.add_child(reportNode)
+		reportNode.set_bbcode(report.to_string())
+		reportNode.visible = true
 
 func update_test_suite(event :GdUnitEvent) -> void:
 	var item := _find_by_resource_path(_tree_root, event.resource_path())

@@ -14,8 +14,11 @@ onready var _properties_template :Node = $property_template
 onready var _properties_common :Node = $v/MarginContainer/GridContainer/Properties/Common/VBoxContainer
 onready var _properties_report :Node = $v/MarginContainer/GridContainer/Properties/Report/VBoxContainer
 
+var _font_size :int
+
 func _ready():
 	GdUnit3Version.init_version_label(_version_label)
+	_font_size = Fonts.init_fonts(_version_label)
 	setup_common_properties(_properties_common, GdUnitSettings.COMMON_SETTINGS)
 	setup_common_properties(_properties_report, GdUnitSettings.REPORT_SETTINGS)
 	yield(get_tree(), "idle_frame")
@@ -41,6 +44,8 @@ func setup_common_properties(properties_parent :Node, property_category) -> void
 		if current_category != last_category:
 			var sub_category :Node = _properties_template.get_child(3).duplicate()
 			sub_category.get_child(0).text = current_category.capitalize()
+			sub_category.rect_size.y = _font_size + 16
+			sub_category.rect_min_size.y = _font_size + 16
 			properties_parent.add_child(sub_category)
 			last_category = current_category
 		# property name

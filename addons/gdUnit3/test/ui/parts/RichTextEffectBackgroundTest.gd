@@ -25,7 +25,8 @@ func assert_mapping(mapping :Dictionary, message :String, effect :RichTextEffect
 
 func test_build_char_mapping_singe_line() -> void:
 	var rtl = auto_free(RichTextLabelExt.new())
-	var effect := RichTextEffectBackground.new(rtl)
+	var effect := RichTextEffectBackground.new()
+	effect.set_source(rtl)
 	rtl.install_effect(effect)
 	
 	var message := "This is a Message"
@@ -35,7 +36,8 @@ func test_build_char_mapping_singe_line() -> void:
 
 func test_build_char_mapping_multi_line() -> void:
 	var rtl = auto_free(RichTextLabelExt.new())
-	var effect := RichTextEffectBackground.new(rtl)
+	var effect := RichTextEffectBackground.new()
+	effect.set_source(rtl)
 	rtl.install_effect(effect)
 	
 	var message := "This is a Message\nAnd an another Message\nEOF"
@@ -45,7 +47,8 @@ func test_build_char_mapping_multi_line() -> void:
 
 func test_get_line_indent() -> void:
 	var rtl = auto_free(RichTextLabelExt.new())
-	var effect := RichTextEffectBackground.new(rtl)
+	var effect := RichTextEffectBackground.new()
+	effect.set_source(rtl)
 	rtl._effect = effect
 	
 	assert_int(effect.get_line_indent(1)).is_equal(0)

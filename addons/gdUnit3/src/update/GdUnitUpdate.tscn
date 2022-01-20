@@ -1,19 +1,23 @@
-[gd_scene load_steps=12 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://addons/gdUnit3/src/update/GdUnitUpdate.gd" type="Script" id=1]
 [ext_resource path="res://addons/gdUnit3/src/update/assets/fonts/RobotoMono-14-bold.tres" type="DynamicFont" id=2]
 [ext_resource path="res://addons/gdUnit3/src/update/assets/fonts/RobotoMono-14.tres" type="DynamicFont" id=3]
 [ext_resource path="res://addons/gdUnit3/src/update/assets/fonts/RobotoMono-14-italics.tres" type="DynamicFont" id=4]
 [ext_resource path="res://addons/gdUnit3/src/update/assets/fonts/RobotoMono-14-bold-italics.tres" type="DynamicFont" id=5]
-[ext_resource path="res://addons/gdUnit3/src/update/assets/fonts/RobotoMono-h3.tres" type="DynamicFont" id=6]
+[ext_resource path="res://addons/gdUnit3/src/update/assets/fonts/static/RobotoMono-Regular.ttf" type="DynamicFontData" id=6]
 [ext_resource path="res://addons/gdUnit3/src/update/GdMarkDownReader.gd" type="Script" id=7]
 [ext_resource path="res://addons/gdUnit3/src/update/GdUnitUpdateClient.gd" type="Script" id=8]
 [ext_resource path="res://addons/gdUnit3/src/update/assets/progress-background.png" type="Texture" id=9]
 
-[sub_resource type="StyleBoxFlat" id=1]
-bg_color = Color( 0.929412, 0.909804, 0.462745, 1 )
+[sub_resource type="DynamicFont" id=1]
+size = 18
+font_data = ExtResource( 6 )
 
 [sub_resource type="StyleBoxFlat" id=2]
+bg_color = Color( 0.929412, 0.909804, 0.462745, 1 )
+
+[sub_resource type="StyleBoxFlat" id=3]
 
 [node name="Control" type="WindowDialog"]
 anchor_right = 1.0
@@ -43,19 +47,19 @@ __meta__ = {
 
 [node name="PanelContainer" type="PanelContainer" parent="GridContainer"]
 margin_right = 512.0
-margin_bottom = 41.0
+margin_bottom = 38.0
 size_flags_horizontal = 3
 
 [node name="header" type="Label" parent="GridContainer/PanelContainer"]
 margin_left = 7.0
 margin_top = 7.0
 margin_right = 505.0
-margin_bottom = 34.0
+margin_bottom = 31.0
 size_flags_horizontal = 9
-custom_fonts/font = ExtResource( 6 )
+custom_fonts/font = SubResource( 1 )
 
 [node name="PanelContainer2" type="PanelContainer" parent="GridContainer"]
-margin_top = 45.0
+margin_top = 42.0
 margin_right = 512.0
 margin_bottom = 266.0
 size_flags_horizontal = 3
@@ -65,13 +69,13 @@ size_flags_vertical = 3
 margin_left = 7.0
 margin_top = 7.0
 margin_right = 505.0
-margin_bottom = 214.0
+margin_bottom = 217.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="content" type="RichTextLabel" parent="GridContainer/PanelContainer2/ScrollContainer"]
 margin_right = 498.0
-margin_bottom = 207.0
+margin_bottom = 210.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 custom_fonts/mono_font = ExtResource( 3 )
@@ -154,8 +158,8 @@ margin_left = 4.0
 margin_top = 4.0
 margin_right = -4.0
 margin_bottom = -4.0
-custom_styles/fg = SubResource( 1 )
-custom_styles/bg = SubResource( 2 )
+custom_styles/fg = SubResource( 2 )
+custom_styles/bg = SubResource( 3 )
 percent_visible = false
 __meta__ = {
 "_edit_use_anchors_": false

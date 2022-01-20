@@ -1,21 +1,17 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://addons/gdUnit3/src/ui/parts/InspectorTreeMainPanel.gd" type="Script" id=1]
-[ext_resource path="res://addons/gdUnit3/src/update/assets/fonts/RobotoMono-14-bold.tres" type="DynamicFont" id=2]
-[ext_resource path="res://addons/gdUnit3/src/update/assets/fonts/RobotoMono-14-bold-italics.tres" type="DynamicFont" id=3]
-[ext_resource path="res://addons/gdUnit3/src/update/assets/fonts/RobotoMono-14-italics.tres" type="DynamicFont" id=4]
-[ext_resource path="res://addons/gdUnit3/src/update/assets/fonts/RobotoMono-14.tres" type="DynamicFont" id=5]
 [ext_resource path="res://addons/gdUnit3/src/ui/parts/RichTextLabelExt.gd" type="Script" id=6]
 
-[sub_resource type="StyleBoxFlat" id=6]
+[sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 0.14902, 0.172549, 0.231373, 1 )
 border_width_top = 2
 border_width_bottom = 2
 border_color = Color( 0.2, 0.227451, 0.309804, 1 )
 
-[sub_resource type="StyleBoxLine" id=7]
+[sub_resource type="StyleBoxLine" id=2]
 
-[sub_resource type="StyleBoxFlat" id=8]
+[sub_resource type="StyleBoxFlat" id=3]
 bg_color = Color( 0.14902, 0.172549, 0.231373, 1 )
 border_width_top = 2
 border_width_bottom = 2
@@ -26,7 +22,7 @@ use_parent_material = true
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_right = -924.0
-rect_min_size = Vector2( 100, 0 )
+rect_min_size = Vector2( 60, 0 )
 rect_clip_content = true
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -37,20 +33,20 @@ __meta__ = {
 }
 
 [node name="Panel" type="PanelContainer" parent="."]
-margin_right = 400.0
+margin_right = 100.0
 margin_bottom = 494.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-custom_styles/panel = SubResource( 6 )
+custom_styles/panel = SubResource( 1 )
 
 [node name="Tree" type="Tree" parent="Panel"]
 use_parent_material = true
 margin_top = 2.0
-margin_right = 400.0
+margin_right = 100.0
 margin_bottom = 492.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-custom_styles/bg = SubResource( 7 )
+custom_styles/bg = SubResource( 2 )
 allow_rmb_select = true
 hide_root = true
 select_mode = 1
@@ -60,13 +56,13 @@ __meta__ = {
 
 [node name="report" type="PanelContainer" parent="."]
 margin_top = 506.0
-margin_right = 400.0
+margin_right = 100.0
 margin_bottom = 600.0
 rect_min_size = Vector2( 0, 80 )
 rect_clip_content = true
 size_flags_horizontal = 11
 size_flags_vertical = 11
-custom_styles/panel = SubResource( 8 )
+custom_styles/panel = SubResource( 3 )
 
 [node name="report_template" type="RichTextLabel" parent="report"]
 visible = false
@@ -74,14 +70,8 @@ use_parent_material = true
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_right = -200.0
-rect_min_size = Vector2( 200, 0 )
 size_flags_horizontal = 3
 size_flags_vertical = 11
-custom_fonts/mono_font = ExtResource( 5 )
-custom_fonts/bold_italics_font = ExtResource( 3 )
-custom_fonts/italics_font = ExtResource( 4 )
-custom_fonts/bold_font = ExtResource( 2 )
-custom_fonts/normal_font = ExtResource( 5 )
 custom_constants/line_separation = 2
 bbcode_enabled = true
 fit_content_height = true
@@ -93,9 +83,8 @@ __meta__ = {
 [node name="ScrollContainer" type="ScrollContainer" parent="report"]
 use_parent_material = true
 margin_top = 2.0
-margin_right = 400.0
+margin_right = 100.0
 margin_bottom = 92.0
-rect_min_size = Vector2( 400, 0 )
 size_flags_horizontal = 3
 size_flags_vertical = 11
 __meta__ = {
@@ -103,9 +92,9 @@ __meta__ = {
 }
 
 [node name="list" type="VBoxContainer" parent="report/ScrollContainer"]
-margin_right = 400.0
-margin_bottom = 90.0
-rect_min_size = Vector2( 100, 0 )
+margin_right = 600.0
+margin_bottom = 78.0
+rect_min_size = Vector2( 600, 0 )
 rect_clip_content = true
 size_flags_horizontal = 3
 size_flags_vertical = 3
