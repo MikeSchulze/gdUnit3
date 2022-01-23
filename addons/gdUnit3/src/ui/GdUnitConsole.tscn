@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=15 format=2]
 
 [ext_resource path="res://addons/gdUnit3/src/ui/GdUnitConsole.gd" type="Script" id=1]
 [ext_resource path="res://addons/gdUnit3/src/update/assets/fonts/static/RobotoMono-Bold.ttf" type="DynamicFontData" id=2]
@@ -6,22 +6,32 @@
 [ext_resource path="res://addons/gdUnit3/src/update/assets/fonts/static/RobotoMono-Regular.ttf" type="DynamicFontData" id=4]
 [ext_resource path="res://addons/gdUnit3/src/update/assets/fonts/static/RobotoMono-Italic.ttf" type="DynamicFontData" id=5]
 [ext_resource path="res://addons/gdUnit3/src/ui/parts/RichTextLabelExt.gd" type="Script" id=6]
+[ext_resource path="res://addons/gdUnit3/src/ui/parts/RichTextEffectBackground.gd" type="Script" id=7]
 
 [sub_resource type="DynamicFont" id=1]
-size = 14
+size = 18
 font_data = ExtResource( 4 )
 
 [sub_resource type="DynamicFont" id=2]
-size = 14
+size = 18
 font_data = ExtResource( 3 )
 
 [sub_resource type="DynamicFont" id=3]
-size = 14
+size = 18
 font_data = ExtResource( 5 )
 
 [sub_resource type="DynamicFont" id=4]
-size = 14
+size = 18
 font_data = ExtResource( 2 )
+
+[sub_resource type="RichTextEffect" id=5]
+script = ExtResource( 7 )
+
+[sub_resource type="RichTextEffect" id=6]
+script = ExtResource( 7 )
+
+[sub_resource type="RichTextEffect" id=7]
+script = ExtResource( 7 )
 
 [node name="Control" type="Control"]
 use_parent_material = true
@@ -29,8 +39,6 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 rect_min_size = Vector2( 0, 100 )
 rect_clip_content = true
-size_flags_horizontal = 3
-size_flags_vertical = 3
 script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
@@ -70,21 +78,18 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Console" type="ScrollContainer" parent="VBoxContainer"]
+[node name="Console" type="Panel" parent="VBoxContainer"]
+use_parent_material = true
 margin_top = 33.0
 margin_right = 1024.0
 margin_bottom = 600.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="TextEdit" type="RichTextLabel" parent="VBoxContainer/Console"]
 use_parent_material = true
-margin_right = 1024.0
-margin_bottom = 567.0
-rect_min_size = Vector2( 80, 19 )
+anchor_right = 1.0
+anchor_bottom = 1.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 custom_fonts/mono_font = SubResource( 1 )
@@ -94,6 +99,7 @@ custom_fonts/bold_font = SubResource( 4 )
 custom_fonts/normal_font = SubResource( 1 )
 bbcode_enabled = true
 scroll_following = true
+custom_effects = [ SubResource( 5 ), SubResource( 6 ), SubResource( 7 ) ]
 script = ExtResource( 6 )
 __meta__ = {
 "_edit_use_anchors_": false

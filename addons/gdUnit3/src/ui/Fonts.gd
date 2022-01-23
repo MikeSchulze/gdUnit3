@@ -7,11 +7,11 @@ const FONT_MONO_BOLT_ITALIC = "res://addons/gdUnit3/src/update/assets/fonts/stat
 const FONT_MONO_ITALIC      = "res://addons/gdUnit3/src/update/assets/fonts/static/RobotoMono-Italic.ttf"
 
 
-static func init_fonts(item: CanvasItem) -> float:
+static func init_fonts(item: CanvasItem) -> int:
 	if Engine.editor_hint:
 		var plugin :EditorPlugin = Engine.get_meta("GdUnitEditorPlugin")
 		var settings := plugin.get_editor_interface().get_editor_settings()
-		var scale_factor :=  plugin.get_editor_interface().get_editor_scale()
+		var scale_factor =  plugin.get_editor_interface().get_editor_scale()
 		var font_size = settings.get_setting("interface/editor/main_font_size")
 		font_size *= scale_factor
 		var font_mono := create_font(FONT_MONO, font_size)
@@ -22,9 +22,9 @@ static func init_fonts(item: CanvasItem) -> float:
 		item.set("custom_fonts/bold_italics_font", create_font(FONT_MONO_BOLT_ITALIC, font_size))
 		item.set("custom_fonts/italics_font", create_font(FONT_MONO_ITALIC, font_size))
 		return font_size
-	return 16.0
+	return 16
 
-static func create_font(font_resource: String, size: float) -> Font:
+static func create_font(font_resource: String, size: int) -> Font:
 	var font = DynamicFont.new()
 	font.font_data = load(font_resource)
 	font.size = size
