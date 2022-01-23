@@ -9,7 +9,7 @@ class_name RichTextLabelExt
 
 var _effect :RichTextEffectBackground = RichTextEffectBackground.new()
 var _indent :int
-
+var _max_indent : int = 0
 
 func _ready():
 	_update_ui_settings()
@@ -43,6 +43,9 @@ func push_indent(indent :int) -> void:
 	if _effect:
 		_indent += indent
 		_effect.push_indent(get_line_count(), _indent)
+	if _indent > _max_indent:
+		_max_indent = _indent
+		prints("_max_indent", _max_indent)
 
 func pop_indent(indent :int) -> void:
 	.pop()
@@ -57,9 +60,13 @@ func updateMinSize() -> void:
 	rect_min_size.x = 0
 	var font := get("custom_fonts/font") as Font
 	var lines := get_text().split("\n")
+	# calculate additional indent characters
+	var indent_chars = _max_indent * get_tab_size()
+	var extra_chars = ("%+" + str(indent_chars) + "s") % " "
+	
 	for line in lines:
-		var line_size := font.get_string_size(line)
+		var line_size := font.get_string_size(line + extra_chars)
 		if rect_min_size < line_size:
 			rect_min_size = line_size
-	# add extra space of 80, the calculated 'get_string_size' not fits right the line wrap size
-	rect_min_size.x += 80
+	# add extra spacing of 40px for possible scrollbar
+	rect_min_size.x += 40
