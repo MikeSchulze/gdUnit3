@@ -45,6 +45,7 @@ func push_indent(indent :int) -> void:
 		_effect.push_indent(get_line_count(), _indent)
 	if _indent > _max_indent:
 		_max_indent = _indent
+		prints("_max_indent", _max_indent)
 
 func pop_indent(indent :int) -> void:
 	.pop()
