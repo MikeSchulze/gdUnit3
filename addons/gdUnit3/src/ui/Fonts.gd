@@ -8,6 +8,8 @@ const FONT_MONO_ITALIC      = "res://addons/gdUnit3/src/update/assets/fonts/stat
 
 
 static func init_fonts(item: CanvasItem) -> float:
+	# add a defauld fallback font
+	item.set("custom_fonts/font", create_font(FONT_MONO, 16))
 	if Engine.editor_hint:
 		var plugin :EditorPlugin = Engine.get_meta("GdUnitEditorPlugin")
 		var settings := plugin.get_editor_interface().get_editor_settings()
