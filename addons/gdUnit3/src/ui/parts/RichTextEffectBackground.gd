@@ -11,8 +11,6 @@ var bbcode = "bg"
 
 var _label: WeakRef
 var _char_size :Vector2
-var _char_width := 8
-var _char_height := 16
 var _tab_size : int
 var _indent := Dictionary()
 var diff_sub_color := Color(0, 0, 0, 0)
@@ -25,11 +23,13 @@ func set_source(label :RichTextLabel) -> void:
 func init_properties() :
 	_cache.clear()
 	# determine character size
+	var char_width := 8
+	var char_height := 16
 	var custom_font = _label.get_ref().get("custom_fonts/mono_font")
 	if custom_font is Font:
-		_char_height = custom_font.get_height()
-		_char_width = custom_font.get_char_size(23).x
-	_char_size = Vector2(_char_width, _char_height)
+		char_height = custom_font.get_height()
+		char_width = custom_font.get_char_size(23).x
+	_char_size = Vector2(char_width, char_height)
 	_tab_size = _label.get_ref().tab_size
 
 func push_indent(line :int, indent :int) -> void:
