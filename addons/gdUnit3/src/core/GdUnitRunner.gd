@@ -35,13 +35,21 @@ func _init():
 		_cs_executor.AddGdTestEventListener(self)
 
 func _ready():
-	_config.load()
+	var config_result := _config.load()
+	if config_result.is_error():
+		push_error(config_result.error_message())
+		_state = EXIT
+		return
+	_client.connect("connection_failed", self, "_on_connection_failed")
 	var result := _client.start("127.0.0.1", _config.server_port())
 	if result.is_error():
 		push_error(result.error_message())
 		return
-	_test_suites_to_process = load_test_suits()
 	_state = INIT
+
+func _on_connection_failed(message :String):
+	prints("_on_connection_failed", message, _test_suites_to_process)
+	_state = STOP
 
 func _notification(what):
 	#prints("GdUnitRunner", self, GdObjects.notification_as_string(what))
@@ -53,6 +61,7 @@ func _process(delta):
 		INIT:
 			# wait until client is connected to the GdUnitServer
 			if _client.is_client_connected():
+				_test_suites_to_process = load_test_suits()
 				gdUnitInit()
 				_state = RUN
 		RUN:
@@ -71,16 +80,12 @@ func _process(delta):
 		STOP:
 			_state = EXIT
 			# give the engine small amount time to finish the rpc
+			_on_Executor_send_event(GdUnitStop.new())
 			yield(get_tree().create_timer(0.1), "timeout")
 			yield(get_tree(), "idle_frame")
-			_on_Executor_send_event(GdUnitStop.new())
+			get_tree().quit(0)
 
 func load_test_suits() -> Array:
-	var result := _config.load()
-	if result.is_error():
-		push_error(result.error_message())
-		_state = EXIT
-		return []
 	var to_execute := _config.to_execute()
 	if to_execute.empty():
 		prints("No tests selected to execute!")

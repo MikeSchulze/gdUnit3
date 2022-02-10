@@ -17,6 +17,7 @@ var _stream :StreamPeerTCP
 func _ready():
 	_connected = false
 	_stream = StreamPeerTCP.new()
+	_stream.set_big_endian(true)
 	_timer = Timer.new()
 	add_child(_timer)
 	_timer.set_one_shot(true)
@@ -39,6 +40,7 @@ func start(host :String, port :int) -> Result:
 	# Connect client to server
 	if not _stream.is_connected_to_host():
 		var err := _stream.connect_to_host(host, port)
+		prints("connect_to_host", host, port, err)
 		if err != OK:
 			return Result.error("GdUnit3: Can't establish client, error code: %s" % err)
 	return Result.success("GdUnit3: Client connected on port %d" % port)
@@ -49,8 +51,8 @@ func _process(_delta):
 			return
 		
 		StreamPeerTCP.STATUS_CONNECTING:
-			set_process(false)
 			console("Connecting...  %s:%d" % [_host, _port])
+			set_process(false)
 			# wait until client is connected to server
 			for retry in 10:
 				console("wait to connect ..")
@@ -66,7 +68,6 @@ func _process(_delta):
 		
 		StreamPeerTCP.STATUS_CONNECTED:
 			if not _connected:
-				console("state Connected")
 				var rpc
 				set_process(false)
 				while rpc == null:
@@ -80,8 +81,8 @@ func _process(_delta):
 			process_rpc()
 		
 		StreamPeerTCP.STATUS_ERROR:
-			_stream.disconnect_from_host()
 			console("connection failed")
+			_stream.disconnect_from_host()
 			emit_signal("connection_failed", "Connect to TCP Server %s:%d faild!" % [_host, _port])
 			return
 
@@ -90,22 +91,31 @@ func is_client_connected() -> bool:
 
 func process_rpc() -> void:
 	if _stream.get_available_bytes() > 0:
-		var rpc = RPC.deserialize(_stream.get_var())
+		var rpc = rpc_receive()
 		if rpc is RPCClientDisconnect:
 			stop()
 
 func rpc_send(rpc :RPC) -> void:
 	if _stream != null:
-		_stream.put_data(("%s|" % rpc.serialize()).to_ascii())
+		var data := "|%s|" % rpc.serialize()
+		_stream.put_data(data.to_ascii())
 
 func rpc_receive() -> RPC:
 	if _stream != null:
 		while _stream.get_available_bytes() > 0:
-			return RPC.deserialize(_stream.get_var(true))
+			var available_bytes := _stream.get_available_bytes()
+			var data = _stream.get_data(available_bytes);
+			var received_data := data[1] as PoolByteArray
+			# data send by Godot has this magic header of 12 bytes
+			var header := Array(received_data.subarray(0,3))
+			if header == [0, 0, 0, 112]:
+				received_data = received_data.subarray(12, available_bytes-1)
+			var decoded := received_data.get_string_from_ascii()
+			return RPC.deserialize(decoded)
 	return null
 
 func console(message :String) -> void:
-	#prints(message)
+	prints("TCP Client:", message)
 	pass
 
 func _on_connection_failed(message :String):

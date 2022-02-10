@@ -103,9 +103,16 @@ func load(path :String = CONFIG_FILE) -> Result:
 	var err := file.open(path, File.READ)
 	if err != OK:
 		return Result.error("Can't load test runner configuration '%s'! ERROR: %s." % [path, GdUnitTools.error_as_string(err)])
-
-	_config = file.get_var() as Dictionary
-	# if old file format than convert into new format
+	var content := file.get_as_text()
+	if content[0] == '{':
+		# Parse as json
+		var result := JSON.parse(content)
+		if result.error != OK:
+			return Result.error("The runner configuration '%s' is invalid! The format is changed please delete it manually and start a new test run." % path)
+		_config = result.result as Dictionary
+	else:
+		# fallback to old format
+		_config = file.get_var() as Dictionary
 	if not _config.has(VERSION):
 		return Result.error("The runner configuration '%s' is invalid! The format is changed please delete it manually and start a new test run." % path)
 	file.close()

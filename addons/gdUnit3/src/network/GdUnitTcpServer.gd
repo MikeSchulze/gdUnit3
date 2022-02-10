@@ -17,6 +17,7 @@ class TcpConnection extends Node:
 	
 	func _init(server :TCP_Server):
 		_stream = server.take_connection()
+		_stream.set_big_endian(true)
 		_id = _stream.get_instance_id()
 		rpc_send(RPCClientConnect.new().with_id(_id))
 	

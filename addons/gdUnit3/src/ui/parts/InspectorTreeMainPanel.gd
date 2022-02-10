@@ -375,8 +375,8 @@ func update_test_case(event :GdUnitEvent) -> void:
 	if event.type() == GdUnitEvent.TESTCASE_AFTER:
 		set_elapsed_time(item, event.elapsed_time())
 		
-		if event.is_success():
-			_update_test_suite_with_successful_case(event.resource_path())
+	if event.is_success():
+		_update_test_suite_with_successful_case(event.resource_path())
 	update_state(item, event)
 
 func add_test_suite(test_suite :GdUnitTestSuiteDto) -> void:
