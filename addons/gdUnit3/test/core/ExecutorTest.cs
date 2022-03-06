@@ -556,7 +556,7 @@ namespace GdUnit3.Tests
                 // report suite is not success, is failed and has a error
                 Tuple(TESTSUITE_AFTER, "After", false, false, true, true)
             );
-            AssertReports(events).Contains(
+            AssertReports(events).ContainsExactly(
                 Tuple(TESTSUITE_BEFORE, "Before", new List<TestReport>()),
                 // reports a test interruption due to a timeout
                 Tuple(TESTCASE_BEFORE, "TestCase1", new List<TestReport>()),
