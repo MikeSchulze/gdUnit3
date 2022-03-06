@@ -329,9 +329,7 @@ static func is_script(value) -> bool:
 static func is_test_suite(script :Script) -> bool:
 	if is_gd_script(script):
 		return _is_extends_test_suite(script)
-	if is_cs_script(script):
-		return _is_annotated_test_suite(script)
-	return false
+	return is_cs_script(script)
 
 static func _is_extends_test_suite(script :Script) -> bool:
 	var stack := [script]
@@ -344,10 +342,6 @@ static func _is_extends_test_suite(script :Script) -> bool:
 			stack.push_back(base)
 	return false
 
-static func _is_annotated_test_suite(script :Script) -> bool:
-	var csTools = GdUnitSingleton.get_or_create_singleton("CsTools", "res://addons/gdUnit3/src/core/CsTools.cs")
-	return csTools.IsTestSuite(script.resource_path)
-
 static func is_native_class(value) -> bool:
 	return is_object(value) and value.to_string() != null and value.to_string().find("GDScriptNativeClass") != -1
 
@@ -357,18 +351,22 @@ static func is_scene(value) -> bool:
 static func is_scene_resource_path(value) -> bool:
 	return value is String and value.ends_with(".tscn")
 
-static func is_cs_script(script :Script) -> bool:
-	# we need to check by stringify name because on non mono Godot the class CSharpScript is not available
-	return str(script).find("CSharpScript") != -1
-
 static func is_vs_script(script :Script) -> bool:
 	return script is VisualScript
 
 static func is_gd_script(script :Script) -> bool:
 	return script is GDScript
 
+static func is_cs_script(script :Script) -> bool:
+	var csTools = GdUnitSingleton.get_or_create_singleton("CsTools", "res://addons/gdUnit3/src/core/CsTools.cs")
+	var clazz_path = ProjectSettings.globalize_path(script.resource_path)
+	return csTools.IsTestSuite(clazz_path)
+
 static func is_native_script(script :Script) -> bool:
 	return script is NativeScript
+
+static func is_cs_test_suite(instance :Node) -> bool:
+	return instance.has_meta("CS_TESTSUITE")
 
 static func is_instance(value) -> bool:
 	if not is_object(value) or is_native_class(value):

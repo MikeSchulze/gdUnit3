@@ -4,7 +4,7 @@ namespace GdUnit3.Tests
     using static Assertions;
 
     [TestSuite]
-    public class ValueExtractorTest : TestSuite
+    public class ValueExtractorTest
     {
 
         class TestObject

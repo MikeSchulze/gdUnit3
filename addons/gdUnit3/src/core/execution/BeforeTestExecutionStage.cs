@@ -5,7 +5,7 @@ namespace GdUnit3.Executions
 {
     internal class BeforeTestExecutionStage : ExecutionStage<BeforeTestAttribute>
     {
-        public BeforeTestExecutionStage(Type type) : base("BeforeTest", type)
+        public BeforeTestExecutionStage(TestSuite testSuite) : base("BeforeTest", testSuite.Instance.GetType())
         { }
 
         public override async Task Execute(ExecutionContext context)

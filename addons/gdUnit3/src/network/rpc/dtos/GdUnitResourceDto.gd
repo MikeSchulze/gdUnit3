@@ -10,6 +10,8 @@ func serialize(resource) -> Dictionary:
 	var script = resource.get_script()
 	if script:
 		serialized["resource_path"] = script.resource_path
+	else:
+		serialized["resource_path"] = resource.get_meta("ResourcePath")
 	return serialized
 
 func deserialize(data :Dictionary) -> GdUnitResourceDto:

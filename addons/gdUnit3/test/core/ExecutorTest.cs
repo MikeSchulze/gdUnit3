@@ -14,7 +14,7 @@ namespace GdUnit3.Tests
 
 
     [TestSuite]
-    public class ExecutorTest : TestSuite, ITestEventListener
+    public class ExecutorTest : ITestEventListener
     {
         private Executor _executor;
         private List<TestEvent> _events = new List<TestEvent>();
@@ -31,7 +31,8 @@ namespace GdUnit3.Tests
 
         private static TestSuite LoadTestSuite(Type clazz)
         {
-            TestSuite testSuite = Activator.CreateInstance(clazz) as TestSuite;
+            TestSuite testSuite = new TestSuite(clazz);
+
             // we disable default test filtering
             testSuite.FilterDisabled = true;
             return testSuite;
@@ -54,7 +55,6 @@ namespace GdUnit3.Tests
         private async Task<List<TestEvent>> ExecuteTestSuite(TestSuite testSuite, bool enableOrphanDetection = true)
         {
             var testSuiteName = testSuite.Name;
-            AddChild(testSuite);
             _events.Clear();
 
             _executor.ReportOrphanNodesEnabled = enableOrphanDetection;
@@ -556,17 +556,17 @@ namespace GdUnit3.Tests
                 // report suite is not success, is failed and has a error
                 Tuple(TESTSUITE_AFTER, "After", false, false, true, true)
             );
-            AssertReports(events).ContainsExactly(
+            AssertReports(events).Contains(
                 Tuple(TESTSUITE_BEFORE, "Before", new List<TestReport>()),
                 // reports a test interruption due to a timeout
                 Tuple(TESTCASE_BEFORE, "TestCase1", new List<TestReport>()),
                 Tuple(TESTCASE_AFTER, "TestCase1", new List<TestReport>(){
-                new TestReport(INTERUPTED, 41, "The execution has timed out after 1000ms.") }),
+                new TestReport(INTERUPTED, 32, "The execution has timed out after 1000ms.") }),
 
                 // reports a test failure
                 Tuple(TESTCASE_BEFORE, "TestCase2", new List<TestReport>()),
                 Tuple(TESTCASE_AFTER, "TestCase2", new List<TestReport>(){
-                new TestReport(FAILURE, 54, "Expecting be equal:  'False' but is 'True'") }),
+                new TestReport(FAILURE, 45, "Expecting be equal:  'False' but is 'True'") }),
 
                 // succedes with no reports
                 Tuple(TESTCASE_BEFORE, "TestCase3", new List<TestReport>()),
@@ -575,7 +575,7 @@ namespace GdUnit3.Tests
                 // reports a method signature failure
                 Tuple(TESTCASE_BEFORE, "TestCase4", new List<TestReport>()),
                 Tuple(TESTCASE_AFTER, "TestCase4", new List<TestReport>(){
-                new TestReport(FAILURE, 64, "Invalid method signature found at: TestCase4. You must return a <Task> for an asynchronously specified method.") }),
+                new TestReport(FAILURE, 55, "Invalid method signature found at: TestCase4. You must return a <Task> for an asynchronously specified method.") }),
 
                 // succedes with no reports
                 Tuple(TESTCASE_BEFORE, "TestCase5", new List<TestReport>()),

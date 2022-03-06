@@ -25,8 +25,6 @@ namespace GdUnit3.Executions
             EventListeners = eventListeners;
             ReportCollector = new TestReportCollector();
             SubExecutionContexts = new List<ExecutionContext>();
-            // fake report consumer for now, will be replaced by TestEvent listener
-            testInstance.SetMeta("gdunit.report.consumer", ReportCollector);
         }
         public ExecutionContext(ExecutionContext context) : this(context.TestInstance, context.EventListeners, context.ReportOrphanNodesEnabled)
         {

@@ -1,24 +1,15 @@
-
 using System.Threading.Tasks;
 
 namespace GdUnit3.Tests.Resources
 {
     using static Assertions;
+    using static Utils;
 
     // will be ignored because of missing `[TestSuite]` anotation
     // used by executor integration test
-    //[TestSuite]
-    public class TestSuiteAbortOnTestTimeout : TestSuite
+    // [TestSuite]
+    public class TestSuiteAbortOnTestTimeout
     {
-        private async Task<long> DoWait(long timeout)
-        {
-            System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
-            stopwatch.Start();
-            float timeSeconds = timeout / 1000f;
-            await ToSignal(GetTree().CreateTimer(timeSeconds), "timeout");
-            stopwatch.Stop();
-            return stopwatch.ElapsedMilliseconds;
-        }
 
         [Before]
         public async Task Before()

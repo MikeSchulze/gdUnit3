@@ -5,12 +5,12 @@ namespace GdUnit3.Executions
 {
     internal sealed class TestSuiteExecutionStage : IExecutionStage
     {
-        public TestSuiteExecutionStage(Type type)
+        public TestSuiteExecutionStage(TestSuite testSuite)
         {
-            BeforeStage = new BeforeExecutionStage(type);
-            AfterStage = new AfterExecutionStage(type);
-            BeforeTestStage = new BeforeTestExecutionStage(type);
-            AfterTestStage = new AfterTestExecutionStage(type);
+            BeforeStage = new BeforeExecutionStage(testSuite);
+            AfterStage = new AfterExecutionStage(testSuite);
+            BeforeTestStage = new BeforeTestExecutionStage(testSuite);
+            AfterTestStage = new AfterTestExecutionStage(testSuite);
             TestCaseStage = new TestCaseExecutionStage();
         }
 

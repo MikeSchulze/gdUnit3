@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace GdUnit3.Tests.Resources
@@ -7,7 +8,7 @@ namespace GdUnit3.Tests.Resources
     // will be ignored because of missing `[TestSuite]` anotation
     // used by executor integration test
     //[TestSuite]
-    public class TestSuiteFailAndOrpahnsDetected : TestSuite
+    public class TestSuiteFailAndOrpahnsDetected : IDisposable
     {
 
         List<Godot.Node> _orphans = new List<Godot.Node>();
@@ -59,14 +60,10 @@ namespace GdUnit3.Tests.Resources
         }
 
         // finally, we manually release the orphans from the simulated test suite to avoid memory leaks
-        public override void _Notification(int what)
+        public void Dispose()
         {
-            if (what == Godot.Object.NotificationPredelete)
-            {
-                _orphans.ForEach(n => n.Free());
-                _orphans.Clear();
-            }
+            _orphans.ForEach(n => n.Free());
+            _orphans.Clear();
         }
-
     }
 }

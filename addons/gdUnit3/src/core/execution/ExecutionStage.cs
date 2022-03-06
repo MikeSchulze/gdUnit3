@@ -84,12 +84,12 @@ namespace GdUnit3.Executions
             }
         }
 
-        private async Task ExecuteStage(object instance, MethodInfo method, object[] args)
+        private async Task ExecuteStage(TestSuite testSuite, MethodInfo method, object[] args)
         {
             var timeout = TimeSpan.FromMilliseconds(StageAttributes.Timeout != -1 ? StageAttributes.Timeout : DefaultTimeout);
             using (var tokenSource = new CancellationTokenSource())
             {
-                var obj = method.Invoke(instance, args);
+                var obj = method.Invoke(testSuite.Instance, args);
                 Task task = obj is Task ? obj as Task : Task.Run(() => { });
                 var completedTask = await Task.WhenAny(task, Task.Delay(timeout, tokenSource.Token));
                 tokenSource.Cancel();
@@ -109,8 +109,9 @@ namespace GdUnit3.Executions
 
         private int DefaultTimeout { get; set; } = 30000;
 
+#nullable enable
         private MethodInfo? Method { get; set; }
-
+#nullable disable
         protected object[] MethodArguments { get; set; } = new object[] { };
 
         private TestStageAttribute StageAttributes => Method?.GetCustomAttribute<TestStageAttribute>();
