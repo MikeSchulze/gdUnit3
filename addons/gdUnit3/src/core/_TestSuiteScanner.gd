@@ -79,8 +79,6 @@ func _parse_cs_test_suite(script :Script) -> Node:
 	var csTools = GdUnitSingleton.get_or_create_singleton("CsTools", "res://addons/gdUnit3/src/core/CsTools.cs")
 	var clazz_path = ProjectSettings.globalize_path(script.resource_path)
 	return csTools.ParseTestSuite(clazz_path)
-
-
 func _parse_test_suite(script :GDScript) -> GdUnitTestSuite:
 	var test_suite = script.new()
 	test_suite.set_name(parse_test_suite_name(script))
