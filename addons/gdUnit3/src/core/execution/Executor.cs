@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
+using System.Linq;
 
 namespace GdUnit3.Executions
 {
@@ -42,7 +43,8 @@ namespace GdUnit3.Executions
             try
             {
                 var resourcePath = node.GetMeta("ResourcePath") as string;
-                await ExecuteInternally(new TestSuite(resourcePath));
+                var includedTests = node.GetChildren().Cast<Godot.Node>().ToList().Select(node => node.Name).ToList();
+                await ExecuteInternally(new TestSuite(resourcePath, includedTests));
             }
             finally
             {
@@ -69,6 +71,10 @@ namespace GdUnit3.Executions
                 // unexpected exceptions
                 Godot.GD.PushError(e.Message);
                 Godot.GD.PushError(e.StackTrace);
+            }
+            finally
+            {
+                testSuite.Dispose();
             }
         }
     }

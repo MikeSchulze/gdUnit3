@@ -10,7 +10,6 @@ namespace GdUnit3.Tests.Resources
     //[TestSuite]
     public class TestSuiteFailAndOrpahnsDetected : IDisposable
     {
-
         List<Godot.Node> _orphans = new List<Godot.Node>();
 
         [Before]

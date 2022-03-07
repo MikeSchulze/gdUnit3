@@ -23,14 +23,14 @@ namespace GdUnit3.Executions
 
         public bool FilterDisabled { get; set; } = false;
 
-        public TestSuite(string classPath)
+        public TestSuite(string classPath, List<string> includedTests)
         {
             Type type = CsTools.loadClass(classPath);
             Instance = Activator.CreateInstance(type);
             Name = type.Name;
             ResourcePath = classPath;
             // we do lazy loding to only load test case one times
-            _testCases = new Lazy<IEnumerable<Executions.TestCase>>(() => LoadTestCases(type));
+            _testCases = new Lazy<IEnumerable<Executions.TestCase>>(() => LoadTestCases(type, includedTests));
         }
 
         public TestSuite(Type type)
@@ -39,19 +39,21 @@ namespace GdUnit3.Executions
             Name = type.Name;
             ResourcePath = type.FullName;
             // we do lazy loding to only load test case one times
-            _testCases = new Lazy<IEnumerable<Executions.TestCase>>(() => LoadTestCases(type));
+            _testCases = new Lazy<IEnumerable<Executions.TestCase>>(() => LoadTestCases(type, null));
         }
 
-        private IEnumerable<Executions.TestCase> LoadTestCases(Type type)
+        private IEnumerable<Executions.TestCase> LoadTestCases(Type type, List<string> includedTests)
         {
             return type.GetMethods()
                 .Where(m => m.IsDefined(typeof(TestCaseAttribute)))
-                //.Where(m => FilterDisabled || FindNode(m.Name, false, false) != null)
+                .Where(m => includedTests == null || includedTests.Contains(m.Name))
                 .Select(mi => new Executions.TestCase(mi));
         }
 
         public void Dispose()
         {
+            if (Instance is IDisposable)
+                (Instance as IDisposable).Dispose();
             Instance = null;
         }
     }
