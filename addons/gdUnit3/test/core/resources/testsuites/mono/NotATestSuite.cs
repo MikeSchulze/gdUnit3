@@ -3,7 +3,7 @@ namespace GdUnit3.Tests.Resources
     using static GdUnit3.Assertions;
 
     // will be ignored because of missing `[TestSuite]` anotation
-    public class NotATestSuite : TestSuite
+    public class NotATestSuite
     {
         [TestCase]
         public void TestFoo()

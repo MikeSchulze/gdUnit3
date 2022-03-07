@@ -3,7 +3,7 @@ namespace GdUnit3.Tests.Resources
     using static Assertions;
     // will be ignored because of missing `[TestSuite]` anotation
     // used by executor integration test
-    public class TestSuiteFailOnTestCase1 : TestSuite
+    public class TestSuiteFailOnTestCase1
     {
 
         [Before]

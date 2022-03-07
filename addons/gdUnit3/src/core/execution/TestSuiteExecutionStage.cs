@@ -5,12 +5,12 @@ namespace GdUnit3.Executions
 {
     internal sealed class TestSuiteExecutionStage : IExecutionStage
     {
-        public TestSuiteExecutionStage(Type type)
+        public TestSuiteExecutionStage(TestSuite testSuite)
         {
-            BeforeStage = new BeforeExecutionStage(type);
-            AfterStage = new AfterExecutionStage(type);
-            BeforeTestStage = new BeforeTestExecutionStage(type);
-            AfterTestStage = new AfterTestExecutionStage(type);
+            BeforeStage = new BeforeExecutionStage(testSuite);
+            AfterStage = new AfterExecutionStage(testSuite);
+            BeforeTestStage = new BeforeTestExecutionStage(testSuite);
+            AfterTestStage = new AfterTestExecutionStage(testSuite);
             TestCaseStage = new TestCaseExecutionStage();
         }
 
@@ -35,7 +35,7 @@ namespace GdUnit3.Executions
         {
             await BeforeStage.Execute(testSuiteContext);
 
-            foreach (TestCase testCase in testSuiteContext.TestInstance.TestCases)
+            foreach (TestCase testCase in testSuiteContext.TestSuite.TestCases)
             {
                 using (ExecutionContext testCaseContext = new ExecutionContext(testSuiteContext, testCase))
                 {

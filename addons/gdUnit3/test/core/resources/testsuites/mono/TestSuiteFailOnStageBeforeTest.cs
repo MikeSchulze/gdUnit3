@@ -4,7 +4,7 @@ namespace GdUnit3.Tests.Resources
 
     // will be ignored because of missing `[TestSuite]` anotation
     // used by executor integration test
-    public class TestSuiteFailOnStageBeforeTest : TestSuite
+    public class TestSuiteFailOnStageBeforeTest
     {
 
         [Before]

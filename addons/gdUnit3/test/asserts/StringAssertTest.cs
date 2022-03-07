@@ -5,7 +5,7 @@ namespace GdUnit3.Tests.Asserts
     using static GdUnit3.Asserts.IStringAssert.Compare;
 
     [TestSuite]
-    public class StringAssertTest : TestSuite
+    public class StringAssertTest
     {
         [TestCase]
         public void IsNull()

@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
+using System.Linq;
 
 namespace GdUnit3.Executions
 {
-    public sealed class Executor : Godot.Reference
+    internal sealed class Executor : Godot.Reference
     {
         [Godot.Signal] private delegate void ExecutionCompleted();
 
@@ -37,8 +38,19 @@ namespace GdUnit3.Executions
 
         // this method is called form gdScript and can't handle 'Task'
         // we used explicit 'async void' to avoid  'Attempted to convert an unmarshallable managed type to Variant Task'
-        public async void Execute(TestSuite testSuite) =>
-            await ExecuteInternally(testSuite);
+        public async void Execute(Godot.Node node)
+        {
+            try
+            {
+                var resourcePath = node.GetMeta("ResourcePath") as string;
+                var includedTests = node.GetChildren().Cast<Godot.Node>().ToList().Select(node => node.Name).ToList();
+                await ExecuteInternally(new TestSuite(resourcePath, includedTests));
+            }
+            finally
+            {
+                node.Free();
+            }
+        }
 
         public async Task ExecuteInternally(TestSuite testSuite)
         {
@@ -46,9 +58,10 @@ namespace GdUnit3.Executions
                 Godot.GD.PushWarning("!!! Reporting orphan nodes is disabled. Please check GdUnit settings.");
             try
             {
+
                 using (ExecutionContext context = new ExecutionContext(testSuite, _eventListeners, ReportOrphanNodesEnabled))
                 {
-                    var task = new TestSuiteExecutionStage(testSuite.GetType()).Execute(context);
+                    var task = new TestSuiteExecutionStage(testSuite).Execute(context);
                     task.GetAwaiter().OnCompleted(() => EmitSignal("ExecutionCompleted"));
                     await task;
                 }
@@ -61,7 +74,7 @@ namespace GdUnit3.Executions
             }
             finally
             {
-                testSuite.Free();
+                testSuite.Dispose();
             }
         }
     }

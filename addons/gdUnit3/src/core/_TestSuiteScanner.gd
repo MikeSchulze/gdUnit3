@@ -63,7 +63,7 @@ func _parse_is_test_suite(resource_path :String) -> Node:
 		return null
 	if GdObjects.is_gd_script(script):
 		return _parse_test_suite(script)
-	if GdObjects.is_cs_script(script):
+	if GdObjects.is_cs_testsuite(script):
 		return _parse_cs_test_suite(script)
 	return null
 
@@ -76,15 +76,9 @@ static func _is_script_format_supported(resource_path :String) -> bool:
 	return false
 
 func _parse_cs_test_suite(script :Script) -> Node:
-	var test_suite = script.new()
-	# get unfiltered test cases
-	test_suite.FilterDisabled = true
-	for test_case in test_suite.TestCases:
-		var test := _TestCase.new()
-		test.configure(test_case.Name, test_case.Line, script.resource_path)
-		test_suite.add_child(test)
-	test_suite.FilterDisabled = false
-	return test_suite
+	var csTools = GdUnitSingleton.get_or_create_singleton("CsTools", "res://addons/gdUnit3/src/core/CsTools.cs")
+	var clazz_path = ProjectSettings.globalize_path(script.resource_path)
+	return csTools.ParseTestSuite(clazz_path)
 
 func _parse_test_suite(script :GDScript) -> GdUnitTestSuite:
 	var test_suite = script.new()

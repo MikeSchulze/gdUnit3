@@ -4,7 +4,7 @@ namespace GdUnit3.Tests.Asserts
     using static Assertions;
 
     [TestSuite]
-    public class BoolAssertTest : TestSuite
+    public class BoolAssertTest
     {
         [TestCase]
         public void IsTrue()

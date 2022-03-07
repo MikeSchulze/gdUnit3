@@ -6,7 +6,7 @@ namespace GdUnit3.Tests.Asserts
     using static Assertions;
 
     [TestSuite]
-    public class ObjectAssertTest : TestSuite
+    public class ObjectAssertTest
     {
         class CustomClass
         {

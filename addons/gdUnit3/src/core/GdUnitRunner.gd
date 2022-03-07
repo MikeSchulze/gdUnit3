@@ -73,7 +73,7 @@ func _process(delta):
 				set_process(false)
 				var test_suite = _test_suites_to_process.pop_front()
 				add_child(test_suite)
-				var executor = _cs_executor if GdObjects.is_cs_script(test_suite.get_script()) else _executor
+				var executor = _cs_executor if GdObjects.is_cs_test_suite(test_suite) else _executor
 				var fs = executor.Execute(test_suite)
 				yield(executor, "ExecutionCompleted")
 				set_process(true)

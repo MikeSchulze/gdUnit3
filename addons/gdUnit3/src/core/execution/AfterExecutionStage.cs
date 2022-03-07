@@ -9,7 +9,7 @@ namespace GdUnit3.Executions
 {
     internal class AfterExecutionStage : ExecutionStage<AfterAttribute>
     {
-        public AfterExecutionStage(Type type) : base("After", type)
+        public AfterExecutionStage(TestSuite testSuite) : base("After", testSuite.Instance.GetType())
         { }
 
         public override async Task Execute(ExecutionContext context)
@@ -24,13 +24,13 @@ namespace GdUnit3.Executions
             context.FireAfterEvent();
         }
 
-        private static TestStageAttribute AfterAttribute(ExecutionContext context) => context.TestInstance
+        private static TestStageAttribute AfterAttribute(ExecutionContext context) => context.TestSuite.Instance
             .GetType()
             .GetMethods()
             .FirstOrDefault(m => m.IsDefined(typeof(AfterAttribute)))
             ?.GetCustomAttribute<AfterAttribute>();
 
-        private static TestStageAttribute BeforeAttribute(ExecutionContext context) => context.TestInstance
+        private static TestStageAttribute BeforeAttribute(ExecutionContext context) => context.TestSuite.Instance
             .GetType()
             .GetMethods()
             .FirstOrDefault(m => m.IsDefined(typeof(BeforeAttribute)))

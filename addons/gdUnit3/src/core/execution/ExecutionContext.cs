@@ -21,14 +21,12 @@ namespace GdUnit3.Executions
 
             ReportOrphanNodesEnabled = reportOrphanNodesEnabled;
             FailureReporting = true;
-            TestInstance = testInstance;
+            TestSuite = testInstance;
             EventListeners = eventListeners;
             ReportCollector = new TestReportCollector();
             SubExecutionContexts = new List<ExecutionContext>();
-            // fake report consumer for now, will be replaced by TestEvent listener
-            testInstance.SetMeta("gdunit.report.consumer", ReportCollector);
         }
-        public ExecutionContext(ExecutionContext context) : this(context.TestInstance, context.EventListeners, context.ReportOrphanNodesEnabled)
+        public ExecutionContext(ExecutionContext context) : this(context.TestSuite, context.EventListeners, context.ReportOrphanNodesEnabled)
         {
             ReportCollector = context.ReportCollector;
             context.SubExecutionContexts.Add(this);
@@ -37,7 +35,7 @@ namespace GdUnit3.Executions
             CurrentIteration = CurrentTestCase?.Attributes.Iterations ?? 0;
         }
 
-        public ExecutionContext(ExecutionContext context, TestCase testCase) : this(context.TestInstance, context.EventListeners, context.ReportOrphanNodesEnabled)
+        public ExecutionContext(ExecutionContext context, TestCase testCase) : this(context.TestSuite, context.EventListeners, context.ReportOrphanNodesEnabled)
         {
             context.SubExecutionContexts.Add(this);
             CurrentTestCase = testCase;
@@ -60,7 +58,7 @@ namespace GdUnit3.Executions
         public Stopwatch Stopwatch
         { get; private set; }
 
-        public TestSuite TestInstance
+        public TestSuite TestSuite
         { get; private set; }
 
         public static ExecutionContext Current => Thread.GetData(Thread.GetNamedDataSlot("ExecutionContext")) as ExecutionContext;
@@ -128,16 +126,16 @@ namespace GdUnit3.Executions
             EventListeners.ToList().ForEach(l => l.PublishEvent(e));
 
         public void FireBeforeEvent() =>
-            FireTestEvent(TestEvent.Before(TestInstance.ResourcePath, TestInstance.Name, TestInstance.TestCaseCount));
+            FireTestEvent(TestEvent.Before(TestSuite.ResourcePath, TestSuite.Name, TestSuite.TestCaseCount));
 
         public void FireAfterEvent() =>
-            FireTestEvent(TestEvent.After(TestInstance.ResourcePath, TestInstance.Name, BuildStatistics(OrphanCount(false)), CollectReports));
+            FireTestEvent(TestEvent.After(TestSuite.ResourcePath, TestSuite.Name, BuildStatistics(OrphanCount(false)), CollectReports));
 
         public void FireBeforeTestEvent() =>
-            FireTestEvent(TestEvent.BeforeTest(TestInstance.ResourcePath, TestInstance.Name, CurrentTestCase.Name));
+            FireTestEvent(TestEvent.BeforeTest(TestSuite.ResourcePath, TestSuite.Name, CurrentTestCase.Name));
 
         public void FireAfterTestEvent() =>
-            FireTestEvent(TestEvent.AfterTest(TestInstance.ResourcePath, TestInstance.Name, CurrentTestCase.Name, BuildStatistics(OrphanCount(true)), CollectReports));
+            FireTestEvent(TestEvent.AfterTest(TestSuite.ResourcePath, TestSuite.Name, CurrentTestCase.Name, BuildStatistics(OrphanCount(true)), CollectReports));
 
         public void Dispose()
         {
@@ -146,7 +144,7 @@ namespace GdUnit3.Executions
 
         public void PrintDebug(string name = "")
         {
-            Godot.GD.PrintS(name, "test context", TestInstance.Name, CurrentTestCase?.Name, "error:" + IsError, "failed:" + IsFailed, "skipped:" + IsSkipped);
+            Godot.GD.PrintS(name, "test context", TestSuite.Name, CurrentTestCase?.Name, "error:" + IsError, "failed:" + IsFailed, "skipped:" + IsSkipped);
         }
     }
 
