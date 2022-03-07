@@ -63,7 +63,7 @@ func _parse_is_test_suite(resource_path :String) -> Node:
 		return null
 	if GdObjects.is_gd_script(script):
 		return _parse_test_suite(script)
-	if GdObjects.is_cs_script(script):
+	if GdObjects.is_cs_testsuite(script):
 		return _parse_cs_test_suite(script)
 	return null
 
