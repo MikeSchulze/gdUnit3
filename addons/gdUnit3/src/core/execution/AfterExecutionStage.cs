@@ -24,13 +24,13 @@ namespace GdUnit3.Executions
             context.FireAfterEvent();
         }
 
-        private static TestStageAttribute AfterAttribute(ExecutionContext context) => context.TestInstance.Instance
+        private static TestStageAttribute AfterAttribute(ExecutionContext context) => context.TestSuite.Instance
             .GetType()
             .GetMethods()
             .FirstOrDefault(m => m.IsDefined(typeof(AfterAttribute)))
             ?.GetCustomAttribute<AfterAttribute>();
 
-        private static TestStageAttribute BeforeAttribute(ExecutionContext context) => context.TestInstance.Instance
+        private static TestStageAttribute BeforeAttribute(ExecutionContext context) => context.TestSuite.Instance
             .GetType()
             .GetMethods()
             .FirstOrDefault(m => m.IsDefined(typeof(BeforeAttribute)))

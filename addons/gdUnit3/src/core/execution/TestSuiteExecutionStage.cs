@@ -35,7 +35,7 @@ namespace GdUnit3.Executions
         {
             await BeforeStage.Execute(testSuiteContext);
 
-            foreach (TestCase testCase in testSuiteContext.TestInstance.TestCases)
+            foreach (TestCase testCase in testSuiteContext.TestSuite.TestCases)
             {
                 using (ExecutionContext testCaseContext = new ExecutionContext(testSuiteContext, testCase))
                 {

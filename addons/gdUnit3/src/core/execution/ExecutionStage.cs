@@ -44,7 +44,7 @@ namespace GdUnit3.Executions
                     context.ReportCollector.Consume(new TestReport(TestReport.TYPE.FAILURE, StageAttributes.Line, $"Invalid method signature found at: {StageAttributes.Name}.\n You must return a <Task> for an asynchronously specified method."));
                     return;
                 }
-                await ExecuteStage(context.TestInstance, Method, MethodArguments);
+                await ExecuteStage(context.TestSuite, Method, MethodArguments);
             }
             catch (ExecutionTimeoutException e)
             {
