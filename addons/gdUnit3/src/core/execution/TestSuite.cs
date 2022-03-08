@@ -25,7 +25,7 @@ namespace GdUnit3.Executions
 
         public TestSuite(string classPath, List<string> includedTests)
         {
-            Type type = CsTools.loadClass(classPath);
+            Type type = CsTools.ParseType(classPath);
             Instance = Activator.CreateInstance(type);
             Name = type.Name;
             ResourcePath = classPath;

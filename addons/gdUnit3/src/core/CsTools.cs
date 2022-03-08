@@ -1,40 +1,42 @@
 using System;
-using System.Diagnostics.Contracts;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-
-using GdUnit3.Executions;
+using System.Text.RegularExpressions;
 
 namespace GdUnit3.Tools
 {
     public class CsTools : Godot.Reference
     {
-        public static Type loadClass(String classPath)
+        readonly static Regex RegexNamespace = new Regex("(?<=^namespace\\s)((?:\\w+)(?:[.](?:\\w+))*)", RegexOptions.Multiline);
+
+        internal static string ParseNameSpace(String classPath)
         {
-            //AppDomain currentDomain = AppDomain.CurrentDomain;
-            //var types = currentDomain.GetAssemblies().First(a => a.GetName().Name == "gdUnit3").GetTypes();
+            if (!new FileInfo(classPath).Exists)
+                return null;
+            using (StreamReader sr = File.OpenText(classPath))
+            {
+                var all = sr.ReadToEnd();
+                var match = RegexNamespace.Match(all);
+                if (match.Success)
+                {
+                    return match.Value;
+                }
+            }
+            return null;
+        }
 
-            //.First( t => t.Name);
-            //.ToList().ForEach(a => Godot.GD.PrintS(a.GetTypes()));
-            //Assembly compiledAssembly = CSScriptLibrary.CSScript.LoadCode(classPath, null, true);
-
-
-            //var instance = (Godot.Object)Godot.ResourceLoader.Load<Godot.CSharpScript>(classPath).New();
-            //System.Type type = instance.GetType();
-            //instance.Free()
-
+        internal static Type ParseType(String classPath)
+        {
             try
             {
-                var assembly = typeof(CsTools).Assembly;
                 var fi = new FileInfo(classPath);
                 if (!fi.Exists)
                 {
                     return null;
                 }
-                return assembly.GetTypes()
-                        .First(type => fi.Name.StartsWith(type.Name));
+                return Type.GetType(ParseNameSpace(classPath) + "." + fi.Name.Replace(".cs", ""));
             }
 #pragma warning disable CS0168
             catch (Exception e)
@@ -47,20 +49,20 @@ namespace GdUnit3.Tools
 
         public static bool IsTestSuite(String classPath)
         {
-            var classType = loadClass(classPath);
-            return classType != null ? Attribute.IsDefined(classType, typeof(TestSuiteAttribute)) : false;
+            var type = ParseType(classPath);
+            return type != null ? Attribute.IsDefined(type, typeof(TestSuiteAttribute)) : false;
         }
 
         public static Godot.Node ParseTestSuite(String classPath)
         {
             try
             {
-                var classType = loadClass(classPath);
+                var type = ParseType(classPath);
                 var testSuite = new Godot.Node();
                 testSuite.SetMeta("CS_TESTSUITE", true);
                 testSuite.SetMeta("ResourcePath", classPath);
-                testSuite.Name = classType.Name;
-                LoadTestCases(classType)
+                testSuite.Name = type.Name;
+                LoadTestCases(type)
                     .ToList()
                     .ForEach(testCase =>
                     {
