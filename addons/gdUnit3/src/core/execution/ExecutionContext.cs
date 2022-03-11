@@ -25,6 +25,7 @@ namespace GdUnit3.Executions
             EventListeners = eventListeners;
             ReportCollector = new TestReportCollector();
             SubExecutionContexts = new List<ExecutionContext>();
+            Disposables = new List<IDisposable>();
         }
         public ExecutionContext(ExecutionContext context) : this(context.TestSuite, context.EventListeners, context.ReportOrphanNodesEnabled)
         {
@@ -60,6 +61,9 @@ namespace GdUnit3.Executions
 
         public TestSuite TestSuite
         { get; private set; }
+
+        private List<IDisposable> Disposables
+        { get; set; }
 
         public static ExecutionContext Current => Thread.GetData(Thread.GetNamedDataSlot("ExecutionContext")) as ExecutionContext;
 
@@ -137,8 +141,13 @@ namespace GdUnit3.Executions
         public void FireAfterTestEvent() =>
             FireTestEvent(TestEvent.AfterTest(TestSuite.ResourcePath, TestSuite.Name, CurrentTestCase.Name, BuildStatistics(OrphanCount(true)), CollectReports));
 
+
+        public static void RegisterDisposable(IDisposable disposable) =>
+            ExecutionContext.Current.Disposables.Add(disposable);
+
         public void Dispose()
         {
+            Disposables.ForEach(disposable => disposable.Dispose());
             Stopwatch.Stop();
         }
 
