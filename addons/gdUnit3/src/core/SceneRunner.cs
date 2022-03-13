@@ -1,5 +1,42 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Linq;
+
+namespace GdUnit3
+{
+    public static class GdUnitAwaiter
+    {
+        public static async Task<T> WithTimeout<T>(this Task<T> task, int timeoutMillis)
+        {
+            var wrapperTask = Task.Run(async () => await task);
+            using var token = new CancellationTokenSource();
+            var completedTask = await Task.WhenAny(wrapperTask, Task.Delay(timeoutMillis, token.Token));
+            if (completedTask == wrapperTask)
+            {
+                token.Cancel();
+                return await task;
+            }
+            throw new TimeoutException($"AwaitOnSignal: timed out after {timeoutMillis}ms.");
+        }
+
+        public static async Task<object> AwaitOnSignal(this GdUnit3.SceneRunner runner, string signal, params object[] args)
+        {
+            object[] signalArgs = await runner.Scene().ToSignal(runner.Scene(), signal);
+            if (signalArgs.SequenceEqual(args))
+                return default;
+            return await AwaitOnSignal(runner, signal, args);
+        }
+
+        public static async Task<object> AwaitOnSignal(this Godot.Node node, string signal, params object[] args)
+        {
+            object[] signalArgs = await node.ToSignal(node, signal);
+            if (signalArgs.SequenceEqual(args))
+                return default;
+            return await AwaitOnSignal(node, signal, args);
+        }
+    }
+}
 
 namespace GdUnit3.Core
 {
@@ -8,16 +45,12 @@ namespace GdUnit3.Core
     using Tools;
     internal sealed class SceneRunner : GdUnit3.SceneRunner
     {
-        private bool isSimulateRunnig;
-
         private SceneTree SceneTree { get; set; }
-
         private Node CurrentScene { get; set; }
         private bool Verbose { get; set; }
         private Vector2 CurrentMousePos { get; set; }
         private double TimeFactor { get; set; }
         private int SavedIterationsPerSecond { get; set; }
-        private bool IsSimulateRunnig { get; set; }
 
         public SceneRunner(string resourcePath, bool verbose = false)
         {
@@ -29,7 +62,12 @@ namespace GdUnit3.Core
             CurrentMousePos = default;
             SavedIterationsPerSecond = (int)ProjectSettings.GetSetting("physics/common/physics_fps");
             SetTimeFactor(1.0);
-            IsSimulateRunnig = false;
+        }
+
+        public GdUnit3.SceneRunner SetMousePos(Vector2 position)
+        {
+            CurrentScene.GetViewport().WarpMouse(position);
+            CurrentMousePos = position; return this;
         }
 
         public GdUnit3.SceneRunner SimulateKeyPress(KeyList key_code, bool shift = false, bool control = false)
@@ -87,11 +125,13 @@ namespace GdUnit3.Core
 
         public GdUnit3.SceneRunner SimulateMouseButtonPress(ButtonList buttonIndex)
         {
+            PrintCurrentFocus();
             var action = new InputEventMouseButton();
             action.ButtonIndex = (int)buttonIndex;
             action.ButtonMask = (int)buttonIndex;
             action.Pressed = true;
             action.Position = CurrentMousePos;
+            action.GlobalPosition = CurrentMousePos;
 
             Print("	process mouse button event {0} ({1}) <- {2}", CurrentScene, SceneName(), action.AsText());
             SceneTree.InputEvent(action);
@@ -105,6 +145,7 @@ namespace GdUnit3.Core
             action.ButtonMask = 0;
             action.Pressed = false;
             action.Position = CurrentMousePos;
+            action.GlobalPosition = CurrentMousePos;
 
             Print("	process mouse button event {0} ({1}) <- {2}", CurrentScene, SceneName(), action.AsText());
             SceneTree.InputEvent(action);
@@ -123,10 +164,8 @@ namespace GdUnit3.Core
         public async Task<GdUnit3.SceneRunner> Simulate(int frames, long deltaPeerFrame)
         {
             DeactivateTimeFactor();
-            IsSimulateRunnig = true;
             for (int frame = 0; frame < frames; frame++)
                 await OnWait(deltaPeerFrame);
-            IsSimulateRunnig = false;
             return this;
         }
 
@@ -134,11 +173,9 @@ namespace GdUnit3.Core
         {
             var timeShiftFrames = Math.Max(1, frames / TimeFactor);
             ActivateTimeFactor();
-            IsSimulateRunnig = true;
             for (int frame = 0; frame < frames; frame++)
                 await OnIdleFrame();
             DeactivateTimeFactor();
-            IsSimulateRunnig = false;
             return this;
         }
 
@@ -186,11 +223,32 @@ namespace GdUnit3.Core
 
         public Node Scene() => CurrentScene;
 
-        public SignalAwaiter OnIdleFrame() => CurrentScene.ToSignal(CurrentScene.GetTree(), "idle_frame");
+        public SignalAwaiter OnIdleFrame() => SceneTree.ToSignal(SceneTree, "idle_frame");
 
-        public SignalAwaiter OnWait(float timeSec) => CurrentScene.ToSignal(CurrentScene.GetTree().CreateTimer(timeSec), "timeout");
+        public SignalAwaiter OnWait(float timeSec) => SceneTree.ToSignal(SceneTree.CreateTimer(timeSec), "timeout");
 
-        public void ShowScene()
+        public SignalAwaiter OnSignal(string signal) => SceneTree.ToSignal(CurrentScene, signal);
+
+        public object Invoke(string name, params object[] args)
+        {
+            if (!CurrentScene.HasMethod(name))
+                throw new MissingMethodException($"The method '{name}' not exist on loaded scene.");
+            return CurrentScene.Call(name, args);
+        }
+
+        public T GetProperty<T>(string name)
+        {
+            foreach (var element in CurrentScene.GetPropertyList())
+            {
+                if (element.ToString().Contains($"name:{name}"))
+                    return (T)CurrentScene.Get(name);
+            }
+            throw new MissingFieldException($"The property '{name}' not exist on loaded scene.");
+        }
+
+        public Node FindNode(string name, bool recursive = true) => CurrentScene.FindNode(name, recursive, false);
+
+        public void MoveWindowToForeground()
         {
             OS.WindowMaximized = true;
             OS.CenterWindow();
@@ -199,7 +257,7 @@ namespace GdUnit3.Core
 
         public void Dispose()
         {
-            Console.WriteLine("Dispose SceneRunner");
+            Godot.GD.PrintS("Dispose Scene");
             SceneTree.Root.RemoveChild(CurrentScene);
             CurrentScene.QueueFree();
         }

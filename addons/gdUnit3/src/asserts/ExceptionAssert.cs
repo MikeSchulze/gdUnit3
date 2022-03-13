@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 
 namespace GdUnit3.Asserts
 {
@@ -10,14 +11,13 @@ namespace GdUnit3.Asserts
 
         public ExceptionAssert(Func<T> supplier)
         {
-            try
-            {
-                supplier.Invoke();
-            }
-            catch (Exception e)
-            {
-                Current = e;
-            }
+            try { supplier.Invoke(); }
+            catch (Exception e) { Current = e; }
+        }
+
+        public ExceptionAssert(Exception e)
+        {
+            Current = e;
         }
 
         public IExceptionAssert IsInstanceOf<ExpectedType>()

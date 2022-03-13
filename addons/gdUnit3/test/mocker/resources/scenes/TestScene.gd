@@ -66,3 +66,6 @@ func _destroy_spell(spell :Spell) -> void:
 func _input(event):
 	if event.is_action_released("ui_accept"):
 		add_child(create_spell())
+
+func add(a: int, b :int) -> int:
+	return a + b

@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -72,7 +73,10 @@ namespace GdUnit3.Executions
                     // unexpected exceptions
                     Godot.GD.PushError(baseException.Message);
                     Godot.GD.PushError(baseException.StackTrace);
-                    context.ReportCollector.Consume(new TestReport(TestReport.TYPE.ABORT, -1, baseException.Message));
+
+                    StackTrace stack = new StackTrace(baseException, true);
+                    var lineNumber = stack.FrameCount > 1 ? stack.GetFrame(1).GetFileLineNumber() : -1;
+                    context.ReportCollector.Consume(new TestReport(TestReport.TYPE.ABORT, lineNumber, baseException.Message));
                 }
             }
             catch (Exception e)
@@ -80,7 +84,9 @@ namespace GdUnit3.Executions
                 // unexpected exceptions
                 Godot.GD.PushError(e.Message);
                 Godot.GD.PushError(e.StackTrace);
-                context.ReportCollector.Consume(new TestReport(TestReport.TYPE.ABORT, -1, e.Message));
+                StackTrace stack = new StackTrace(e, true);
+                var lineNumber = stack.FrameCount > 1 ? stack.GetFrame(1).GetFileLineNumber() : -1;
+                context.ReportCollector.Consume(new TestReport(TestReport.TYPE.ABORT, lineNumber, e.Message));
             }
         }
 
