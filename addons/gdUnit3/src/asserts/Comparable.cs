@@ -60,20 +60,20 @@ namespace GdUnit3
             if (left == null || right == null)
                 return new Result(false, left, right);
 
+            if (object.ReferenceEquals(left, right))
+                return new Result(true, left, right, r);
+
             var type = left.GetType();
             if (type.IsEnum)
                 return new Result(left.Equals(right), left, right, r);
 
-            if (type.IsPrimitive || typeof(string).Equals(type) || left is IEquatable<T>)
+            if (type.IsPrimitive || typeof(string).Equals(type) || left is IEquatable<T> || left is System.ValueType)
             {
                 //Godot.GD.PrintS("IsPrimitive", type, left, right);
                 if (left is String && compareMode == MODE.CASE_INSENSITIVE)
                     return new Result(left.ToString().ToLower().Equals(right.ToString().ToLower()), left, right, r);
                 return new Result(left.Equals(right), left, right, r);
             }
-
-            if (object.ReferenceEquals(left, right))
-                return new Result(true, left, right, r);
 
             if (type.IsArray)
             {
@@ -115,6 +115,7 @@ namespace GdUnit3
 
             if (!left.GetType().Equals(right.GetType()))
                 return new Result(false, left, right, r);
+
 
             // deep compare
             foreach (var property in type.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))

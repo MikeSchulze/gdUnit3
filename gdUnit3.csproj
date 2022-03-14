@@ -1,6 +1,6 @@
 <Project Sdk="Godot.NET.Sdk/3.3.0">
   <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
-	<LangVersion>preview</LangVersion>
+    <TargetFramework>netstandard2.1</TargetFramework>
+	<LangVersion>8.0</LangVersion>
   </PropertyGroup>
 </Project>

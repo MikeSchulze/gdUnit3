@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace GdUnit3
 {
@@ -62,8 +63,32 @@ namespace GdUnit3
         /// An Assertion to verify for expecting exceptions
         /// </summary>
         /// <param name="supplier">A function callback where throw possible exceptions</param>
-        /// <returns></returns>  
+        /// <returns>IExceptionAssert</returns>
         public static IExceptionAssert AssertThrown<T>(Func<T> supplier) => new ExceptionAssert<T>(supplier);
+
+        /// <summary>
+        /// An Assertion to verify for expecting exceptions when performing a task.
+        /// <example>
+        /// <code>
+        ///     await AssertThrown(task.WithTimeout(500))
+        ///        .ContinueWith(result => result.Result.HasMessage("timed out after 500ms."));
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <param name="task">A task where throw possible exceptions</param>
+        /// <returns>a task of <c>IExceptionAssert</c> to await</returns>
+        public async static Task<IExceptionAssert> AssertThrown<T>(Task<T> task)
+        {
+            try
+            {
+                await task;
+                return default;
+            }
+            catch (Exception e)
+            {
+                return new ExceptionAssert<T>(e);
+            }
+        }
 
         /// ----------- Helpers -------------------------------------------------------------------------------------------------------
 
