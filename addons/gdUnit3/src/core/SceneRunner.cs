@@ -161,20 +161,20 @@ namespace GdUnit3.Core
             return this;
         }
 
-        public async Task<GdUnit3.SceneRunner> Simulate(int frames, long deltaPeerFrame)
+        public async Task<GdUnit3.SceneRunner> SimulateFrames(uint frames, uint deltaPeerFrame)
         {
             DeactivateTimeFactor();
             for (int frame = 0; frame < frames; frame++)
-                await OnWait(deltaPeerFrame);
+                await AwaitOnMillis(deltaPeerFrame);
             return this;
         }
 
-        public async Task<GdUnit3.SceneRunner> SimulateFrames(int frames)
+        public async Task<GdUnit3.SceneRunner> SimulateFrames(uint frames)
         {
             var timeShiftFrames = Math.Max(1, frames / TimeFactor);
             ActivateTimeFactor();
             for (int frame = 0; frame < frames; frame++)
-                await OnIdleFrame();
+                await AwaitOnIdleFrame();
             DeactivateTimeFactor();
             return this;
         }
@@ -223,11 +223,17 @@ namespace GdUnit3.Core
 
         public Node Scene() => CurrentScene;
 
-        public SignalAwaiter OnIdleFrame() => SceneTree.ToSignal(SceneTree, "idle_frame");
+        public SignalAwaiter AwaitOnIdleFrame() => SceneTree.ToSignal(SceneTree, "idle_frame");
 
-        public SignalAwaiter OnWait(float timeSec) => SceneTree.ToSignal(SceneTree.CreateTimer(timeSec), "timeout");
+        public async Task AwaitOnMillis(uint timeMillis)
+        {
+            using (var tokenSource = new CancellationTokenSource())
+            {
+                await Task.Delay(System.TimeSpan.FromMilliseconds(timeMillis), tokenSource.Token);
+            }
+        }
 
-        public SignalAwaiter OnSignal(string signal) => SceneTree.ToSignal(CurrentScene, signal);
+        public SignalAwaiter AwaitOnSignal(string signal) => SceneTree.ToSignal(CurrentScene, signal);
 
         public object Invoke(string name, params object[] args)
         {
@@ -257,7 +263,6 @@ namespace GdUnit3.Core
 
         public void Dispose()
         {
-            Godot.GD.PrintS("Dispose Scene");
             SceneTree.Root.RemoveChild(CurrentScene);
             CurrentScene.QueueFree();
         }

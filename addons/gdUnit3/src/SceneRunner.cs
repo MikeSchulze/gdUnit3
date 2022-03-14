@@ -97,15 +97,15 @@ namespace GdUnit3
         /// Simulates scene processing for a certain number of frames by given delta peer frame by ignoring the current time factor
         /// <example>
         /// <code>
-        ///     'Waits until given frames are rendered with a delta of 20 peer frame'
+        ///     'Waits until 100 frames are rendered with a delta of 20ms peer frame'
         ///     await runner.SimulateFrames(100, 20);
         /// </code>
         /// </example>
         /// </summary>
         /// <param name="frames">amount of frames to process</param>
-        /// <param name="deltaPeerFrame">the time delta between a frame in ms</param>
+        /// <param name="deltaPeerFrame">the time delta between a frame in milliseconds</param>
         /// <returns></returns>
-        Task<SceneRunner> Simulate(int frames, long deltaPeerFrame);
+        Task<SceneRunner> SimulateFrames(uint frames, uint deltaPeerFrame);
 
         /// <summary>
         /// Simulates scene processing for a certain number of frames.
@@ -118,46 +118,46 @@ namespace GdUnit3
         /// </summary>
         /// <param name="frames">amount of frames to process</param>
         /// <returns></returns>
-        Task<SceneRunner> SimulateFrames(int frames);
+        Task<SceneRunner> SimulateFrames(uint frames);
 
         /// <summary>
-        /// Waits until next frame is processed (idle_frame)
+        /// Waits until next frame is processed (signal idle_frame)
         /// <example>
         /// <code>
         ///     'Waits until next frame is processed'
-        ///     await runner.OnIdleFrame();
+        ///     await runner.AwaitOnIdleFrame();
         /// </code>
         /// </example>
         /// <code>await OnIdleFrame();</code>
         /// </summary>
         /// <returns>SignalAwaiter</returns>
-        SignalAwaiter OnIdleFrame();
+        SignalAwaiter AwaitOnIdleFrame();
 
         /// <summary>
         /// Waits for given signal is emited.
         /// <example>
         /// <code>
         ///     'Waits for signal "mySignal"'
-        ///     await runner.OnSignal("mySignal");
+        ///     await runner.AwaitOnSignal("mySignal");
         /// </code>
         /// </example>
         /// </summary>
         /// <param name="signal">The name of signal to wait</param>
         /// <returns>SignalAwaiter</returns>
-        SignalAwaiter OnSignal(string signal);
+        SignalAwaiter AwaitOnSignal(string signal);
 
         /// <summary>
-        /// Waits for a specific amount of seconds.
+        /// Waits for a specific amount of milliseconds.
         /// <example>
         /// <code>
         ///     'Waits for two seconds'
-        ///     await runner.OnWait(2.0);
+        ///     await runner.AwaitOnMillis(2000);
         /// </code>
         /// </example>
         /// </summary>
-        /// <param name="timeSec">Seconds to wait. 1.0 for one Second</param>
+        /// <param name="timeMillis">Seconds to wait. 1.0 for one Second</param>
         /// <returns>SignalAwaiter</returns>
-        SignalAwaiter OnWait(float timeSec);
+        Task AwaitOnMillis(uint timeMillis);
 
         /// <summary>
         /// Access to current running scene

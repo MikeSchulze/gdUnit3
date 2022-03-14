@@ -28,6 +28,61 @@ namespace GdUnit3.Tests
                 .HasMessage("The method 'sub' not exist on loaded scene.");
         }
 
+        [TestCase]
+        public async Task AwaitForMilliseconds()
+        {
+            SceneRunner scene = SceneRunner.Load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn");
+            System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
+            stopwatch.Start();
+            await scene.AwaitOnMillis(1000);
+            stopwatch.Stop();
+            // verify we wait around 1000 ms (using 100ms offset because timing is not 100% accurate)
+            AssertInt((int)stopwatch.ElapsedMilliseconds).IsBetween(900, 1100);
+        }
+
+        [TestCase]
+        public async Task SimulateFrames()
+        {
+            SceneRunner scene = SceneRunner.Load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn");
+            System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
+
+            var box1 = scene.GetProperty<Godot.ColorRect>("_box1");
+            // initial is white
+            AssertObject(box1.Color).IsEqual(Colors.White);
+
+            // start color cycle by invoke the function 'start_color_cycle'
+            scene.Invoke("start_color_cycle");
+
+            // we wait for 10 frames
+            await scene.SimulateFrames(10);
+            // after 10 frame is still white
+            AssertObject(box1.Color).IsEqual(Colors.White);
+
+            // we wait 90 more frames
+            await scene.SimulateFrames(90);
+            // after 100 frames the box one should be changed to red
+            AssertObject(box1.Color).IsEqual(Colors.Red);
+        }
+
+        [TestCase]
+        public async Task SimulateFramesWithDelay()
+        {
+            SceneRunner scene = SceneRunner.Load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn");
+            System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
+
+            var box1 = scene.GetProperty<Godot.ColorRect>("_box1");
+            // initial is white
+            AssertObject(box1.Color).IsEqual(Colors.White);
+
+            // start color cycle by invoke the function 'start_color_cycle'
+            scene.Invoke("start_color_cycle");
+
+            // we wait for 10 frames each with a 50ms delay
+            await scene.SimulateFrames(10, 50);
+            // after 10 frame and in sum 500ms is should be changed to red
+            AssertObject(box1.Color).IsEqual(Colors.Red);
+        }
+
         [TestCase(Description = "Example to test a scene with do a color cycle on box one each 500ms", Timeout = 4000)]
         public async Task RunScene_ColorCycle()
         {
@@ -38,7 +93,7 @@ namespace GdUnit3.Tests
             // verify inital color
             AssertObject(box1.Color).IsEqual(Colors.White);
 
-            // start color cycle by invoke the function 'start_color_cycle' 
+            // start color cycle by invoke the function 'start_color_cycle'
             scene.Invoke("start_color_cycle");
 
             // await for each color cycle is emited
@@ -67,7 +122,7 @@ namespace GdUnit3.Tests
             // fire spell be pressing enter key
             scene.SimulateKeyPressed(KeyList.Enter);
             // wait until next frame
-            await scene.OnIdleFrame();
+            await scene.AwaitOnIdleFrame();
 
             // verify a spell is created
             AssertObject(scene.FindNode("Spell")).IsNotNull();
@@ -100,7 +155,7 @@ namespace GdUnit3.Tests
                 .SimulateMouseButtonPressed(ButtonList.Left);
 
             // wait until next frame
-            await scene.OnIdleFrame();
+            await scene.AwaitOnIdleFrame();
             // verify box one is changed to gray
             AssertObject(box1.Color).IsEqual(Colors.Gray);
             AssertObject(box2.Color).IsEqual(Colors.White);
