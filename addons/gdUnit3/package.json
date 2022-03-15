@@ -21,7 +21,6 @@
 	],
 	"dependencies": {
 		"gdUnit3": "MikeSchulze/gdUnit3",
-		"git-gdUnit3": "github:MikeSchulze/gdUnit3:^1.0.0",
-		"a": "git+https://isaacs@github.com/npm/cli.git"
+		"git-gdUnit3": "github:MikeSchulze/gdUnit3:^1.0.0"
 	}
 }
