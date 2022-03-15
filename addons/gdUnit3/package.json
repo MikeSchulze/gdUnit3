@@ -1,0 +1,26 @@
+{
+	"name": "gdunit3",
+	"displayName": "GdUnit3",
+	"description": "A Unit Test Framework for Godot",
+	"version": "1.5.0",
+	"publisher": "mikeschulze",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com:MikeSchulze/gdUnit3.git"
+	},
+	"icon": "icon.png",
+	"engines": {
+		"godot": "3.3.3",
+    "godot": "3.3.4"
+	},
+	"categories": [
+		"Testing"
+	],
+	"keywords": [
+		"GdUnit3",
+		"Godot",
+		"GdScript",
+    "c#"
+	]
+}
