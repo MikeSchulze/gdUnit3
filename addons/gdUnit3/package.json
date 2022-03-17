@@ -6,6 +6,6 @@
 	"publisher": "mikeschulze",
 	"license": "MIT",
 	"dependencies": {
-		"gdUnit3": "github:MikeSchulze/gdUnit3:^1.5.0"
+		"gdUnit3": "git+https://github.com/MikeSchulze/gdUnit3.git"
 	}
 }
