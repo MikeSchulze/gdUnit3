@@ -8,7 +8,7 @@ namespace GdUnit3
     /// <summary>
     /// Scene runner to test interactions like keybord/mouse inputs on a Godot scene.
     /// </summary>
-    public interface SceneRunner : IDisposable
+    public interface ISceneRunner : IDisposable
     {
 
         /// <summary>
@@ -17,14 +17,14 @@ namespace GdUnit3
         /// <param name="resourcePath">The path to the scene resource.</param>
         /// <param name="verbose">Prints detailt infos on scene simmulation.</param>
         /// <returns></returns>
-        public static SceneRunner Load(string resourcePath, bool verbose = false) => new Core.SceneRunner(resourcePath, verbose);
+        public static ISceneRunner Load(string resourcePath, bool verbose = false) => new Core.SceneRunner(resourcePath, verbose);
 
         /// <summary>
         /// Sets the actual mouse position relative to the viewport.
         /// </summary>
         /// <param name="position">The position in x/y coordinates</param>
         /// <returns></returns>
-        SceneRunner SetMousePos(Vector2 position);
+        ISceneRunner SetMousePos(Vector2 position);
 
         /// <summary>
         /// Simulates that a key has been pressed.
@@ -33,7 +33,7 @@ namespace GdUnit3
         /// <param name="shift">false by default set to true if simmulate shift is press</param>
         /// <param name="control">false by default set to true if simmulate control is press</param>
         /// <returns>SceneRunner</returns>
-        SceneRunner SimulateKeyPressed(KeyList keyCode, bool shift = false, bool control = false);
+        ISceneRunner SimulateKeyPressed(KeyList keyCode, bool shift = false, bool control = false);
 
         /// <summary>
         /// Simulates that a key is pressed.
@@ -42,7 +42,7 @@ namespace GdUnit3
         /// <param name="shift">false by default set to true if simmulate shift is press</param>
         /// <param name="control">false by default set to true if simmulate control is press</param>
         /// <returns>SceneRunner</returns>
-        SceneRunner SimulateKeyPress(KeyList keyCode, bool shift = false, bool control = false);
+        ISceneRunner SimulateKeyPress(KeyList keyCode, bool shift = false, bool control = false);
 
         /// <summary>
         /// Simulates that a key has been released.
@@ -51,7 +51,7 @@ namespace GdUnit3
         /// <param name="shift">false by default set to true if simmulate shift is press</param>
         /// <param name="control">false by default set to true if simmulate control is press</param>
         /// <returns>SceneRunner</returns>
-        SceneRunner SimulateKeyRelease(KeyList keyCode, bool shift = false, bool control = false);
+        ISceneRunner SimulateKeyRelease(KeyList keyCode, bool shift = false, bool control = false);
 
         /// <summary>
         /// Simulates a mouse moved to relative position by given speed.
@@ -59,28 +59,28 @@ namespace GdUnit3
         /// <param name="relative">The mouse position relative to the previous position (position at the last frame).</param>
         /// <param name="speed">The mouse speed in pixels per second.</param>
         /// <returns>SceneRunner</returns>
-        SceneRunner SimulateMouseMove(Vector2 relative, Vector2 speeds = default);
+        ISceneRunner SimulateMouseMove(Vector2 relative, Vector2 speeds = default);
 
         /// <summary>
         /// Simulates a mouse button pressed.
         /// </summary>
         /// <param name="button">The mouse button identifier, one of the ButtonList button or button wheel constants.</param>
         /// <returns>SceneRunner</returns>
-        SceneRunner SimulateMouseButtonPressed(ButtonList button);
+        ISceneRunner SimulateMouseButtonPressed(ButtonList button);
 
         /// <summary>
         /// Simulates a mouse button press. (holding)
         /// </summary>
         /// <param name="button">The mouse button identifier, one of the ButtonList button or button wheel constants.</param>
         /// <returns>SceneRunner</returns>
-        SceneRunner SimulateMouseButtonPress(ButtonList button);
+        ISceneRunner SimulateMouseButtonPress(ButtonList button);
 
         /// <summary>
         /// Simulates a mouse button released.
         /// </summary>
         /// <param name="button">The mouse button identifier, one of the ButtonList button or button wheel constants.</param>
         /// <returns>SceneRunner</returns>
-        SceneRunner SimulateMouseButtonRelease(ButtonList button);
+        ISceneRunner SimulateMouseButtonRelease(ButtonList button);
 
         /// <summary>
         /// Sets how fast or slow the scene simulation is processed (clock ticks versus the real).
@@ -91,7 +91,7 @@ namespace GdUnit3
         /// </summary>
         /// <param name="timeFactor"></param>
         /// <returns>SceneRunner</returns>
-        SceneRunner SetTimeFactor(double timeFactor = 1.0);
+        ISceneRunner SetTimeFactor(double timeFactor = 1.0);
 
         /// <summary>
         /// Simulates scene processing for a certain number of frames by given delta peer frame by ignoring the current time factor
@@ -105,7 +105,7 @@ namespace GdUnit3
         /// <param name="frames">amount of frames to process</param>
         /// <param name="deltaPeerFrame">the time delta between a frame in milliseconds</param>
         /// <returns></returns>
-        Task<SceneRunner> SimulateFrames(uint frames, uint deltaPeerFrame);
+        Task<ISceneRunner> SimulateFrames(uint frames, uint deltaPeerFrame);
 
         /// <summary>
         /// Simulates scene processing for a certain number of frames.
@@ -118,7 +118,7 @@ namespace GdUnit3
         /// </summary>
         /// <param name="frames">amount of frames to process</param>
         /// <returns></returns>
-        Task<SceneRunner> SimulateFrames(uint frames);
+        Task<ISceneRunner> SimulateFrames(uint frames);
 
         /// <summary>
         /// Waits until next frame is processed (signal idle_frame)

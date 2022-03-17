@@ -14,6 +14,8 @@
 class_name GdUnitTestSuite
 extends Node
 
+const NO_ARG = GdUnitAwaiter.NO_ARG
+
 # This function is called before a test suite starts
 # You can overwrite to prepare test data or initalizize necessary variables
 func before() -> void:
@@ -98,9 +100,13 @@ func resource_as_var(resource_path :String):
 func clear_push_errors() -> void:
 	GdUnitTools.clear_push_errors()
 
+# waits for a signal on given source and matching signal arguments
+func awaitOnSignal(source :Object, signal_name :String, arg0=NO_ARG, arg1=NO_ARG, arg2=NO_ARG, arg3=NO_ARG, arg4=NO_ARG, arg5=NO_ARG) -> GDScriptFunctionState:
+	return yield(GdUnitAwaiter.awaitOnSignal(source, signal_name, arg0,arg1,arg2,arg3,arg4,arg5), "completed")
+	
 # Creates a new scene runner to allow simulate interactions on a scene
 func scene_runner(scene :Node, verbose := false) -> GdUnitSceneRunner:
-	return auto_free(GdUnitSceneRunner.new(weakref(self), scene, verbose))
+	return auto_free(GdUnitSceneRunnerImpl.new(weakref(self), scene, verbose))
 
 # === Mocking  & Spy ===========================================================
 

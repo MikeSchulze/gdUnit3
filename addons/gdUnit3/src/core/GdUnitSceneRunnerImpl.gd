@@ -1,11 +1,12 @@
 # This class provides a runner for scense to simulate interactions like keyboard or mouse
-class_name GdUnitSceneRunner
-extends Node
+class_name GdUnitSceneRunnerImpl
+extends GdUnitSceneRunner
+
+const NO_ARG = "<--null-->"
 
 var _test_suite :WeakRef
 var _scene_tree :SceneTree = null
-var _scene :Node = null
-var _scene_name :String
+var _current_scene :Node = null
 var _verbose :bool
 var _simulate_start_time :LocalTime
 var _current_mouse_pos :Vector2
@@ -18,44 +19,36 @@ var _saved_time_scale :float
 var _saved_iterations_per_second :float
 
 func _init(test_suite :WeakRef, scene :Node, verbose :bool):
+	_verbose = verbose
 	_test_suite = test_suite
 	assert(scene != null, "Scene must be not null!")
 	_scene_tree = Engine.get_main_loop()
-	_scene_tree.root.add_child(self)
-	add_child(scene)
-	_verbose = verbose
-	_saved_time_scale = 1
+	_current_scene = scene
+	_scene_tree.root.add_child(_current_scene)
+	
 	_saved_iterations_per_second = ProjectSettings.get_setting("physics/common/physics_fps")
-	set_time_factor(1.0)
-	_scene = scene
-	_scene_name = __extract_scene_name(scene)
+	set_time_factor(1)
 	_simulate_start_time = LocalTime.now()
-	__print("Start simulate %s" % _scene_name)
-	# we have to remove the scene before tree exists, 
-	# otherwise the scene is deleted by tree_exiting and causes into errors
-	connect("tree_exited", self, "_tree_exiting")
-
-func _tree_exiting():
-	if is_instance_valid(_scene):
-		self.remove_child(_scene)
-	_test_suite = null
 
 func _notification(what):
 	if what == NOTIFICATION_PREDELETE:
 		_test_suite = null
+		if is_instance_valid(_current_scene):
+			_scene_tree.root.remove_child(_current_scene)
+			_current_scene.queue_free()
 		# reset time factor to normal
 		__deactivate_time_factor()
 		# we hide the scene/main window after runner is finished 
 		OS.window_maximized = false
 		OS.set_window_minimized(true)
-		__print("End simulate %s, total time %s" % [_scene_name, _simulate_start_time.elapsed_since()])
+
 
 # resets the scene to inital state
 # needs to more investigate how to reset a loaded scene fully, calling _ready is not enough
 #func reset() -> Node:
 #	__print("reset scene")
-#	__reset(_scene)
-#	return _scene
+#	__reset(_current_scene)
+#	return _current_scene
 
 #func __reset(node: Node):
 #	for child in node.get_children():
@@ -83,7 +76,7 @@ func simulate_key_press(key_code :int, shift :bool = false, control := false) ->
 	action.scancode = key_code
 	action.shift = shift
 	action.control = control
-	__print("	process key event %s (%s) <- %s:%s" % [_scene, _scene_name, action.as_text(), "pressing" if action.is_pressed() else "released"])
+	__print("	process key event %s (%s) <- %s:%s" % [_current_scene, _scene_name(), action.as_text(), "pressing" if action.is_pressed() else "released"])
 	_scene_tree.input_event(action)
 	return self
 
@@ -98,7 +91,7 @@ func simulate_key_release(key_code :int, shift :bool = false, control := false) 
 	action.scancode = key_code
 	action.shift = shift
 	action.control = control
-	__print("	process key event %s (%s) <- %s:%s" % [_scene, _scene_name, action.as_text(), "pressing" if action.is_pressed() else "released"])
+	__print("	process key event %s (%s) <- %s:%s" % [_current_scene, _scene_name(), action.as_text(), "pressing" if action.is_pressed() else "released"])
 	_scene_tree.input_event(action)
 	return self
 
@@ -109,7 +102,7 @@ func simulate_mouse_move(relative :Vector2, speed :Vector2 = Vector2.ONE) -> GdU
 	var action := InputEventMouseMotion.new()
 	action.relative = relative
 	action.speed = speed
-	__print("	process mouse motion event %s (%s) <- %s" % [_scene, _scene_name, action.as_text()])
+	__print("	process mouse motion event %s (%s) <- %s" % [_current_scene, _scene_name(), action.as_text()])
 	_scene_tree.input_event(action)
 	return self
 
@@ -128,7 +121,7 @@ func simulate_mouse_button_press(buttonIndex :int) -> GdUnitSceneRunner:
 	action.button_mask = buttonIndex
 	action.pressed = true
 	action.position = _current_mouse_pos
-	__print("	process mouse button event %s (%s) <- %s" % [_scene, _scene_name, action.as_text()])
+	__print("	process mouse button event %s (%s) <- %s" % [_current_scene, _scene_name(), action.as_text()])
 	_scene_tree.input_event(action)
 	return self
 
@@ -140,7 +133,7 @@ func simulate_mouse_button_release(buttonIndex :int) -> GdUnitSceneRunner:
 	action.button_mask = 0
 	action.pressed = false
 	action.position = _current_mouse_pos
-	__print("	process mouse button event %s (%s) <- %s" % [_scene, _scene_name, action.as_text()])
+	__print("	process mouse button event %s (%s) <- %s" % [_current_scene, _scene_name(), action.as_text()])
 	_scene_tree.input_event(action)
 	return self
 
@@ -157,22 +150,32 @@ func set_time_factor(time_factor := 1.0) -> GdUnitSceneRunner:
 # frames: amount of frames to process
 # delta_peer_frame: the time delta between a frame in ms
 func simulate(frames: int, delta_peer_frame :float) -> GdUnitSceneRunner:
+	push_warning("DEPRECATED!: 'simulate(<frames>, <delta_peer_frame>)' is deprecated. Use  'simulate_frames(<frames>, <delta_milli>) insted.'")
+	return simulate_frames(frames, delta_peer_frame * 1000)
+
+# Simulates scene processing for a certain number of frames
+# frames: amount of frames to process
+# delta_milli: the time delta between a frame in milliseconds
+func simulate_frames(frames: int, delta_milli :int = -1) -> GdUnitSceneRunner:
+	if delta_milli == -1:
+		return __simulate_frames_on_idle(frames);
+	
 	__deactivate_time_factor()
 	for frame in frames:
 		_is_simulate_runnig = true
-		yield(get_tree().create_timer(delta_peer_frame), "timeout")
+		yield(awaitOnMillis(delta_milli), "completed")
 	_is_simulate_runnig = false
 	return self
 
 # Simulates scene processing for a certain number of frames
 # frames: amount of frames to process
-func simulate_frames(frames: int) -> GdUnitSceneRunner:
+func __simulate_frames_on_idle(frames: int) -> GdUnitSceneRunner:
 	var time_shift_frames := max(1, frames / _time_factor)
 	#prints("time_shift_frames:", time_shift_frames)
 	__activate_time_factor()
 	for frame in time_shift_frames:
 		_is_simulate_runnig = true
-		yield(get_tree(), "idle_frame")
+		yield(awaitOnIdleFrame(), "completed")
 	__deactivate_time_factor()
 	_is_simulate_runnig = false
 	return self
@@ -181,7 +184,7 @@ func simulate_frames(frames: int) -> GdUnitSceneRunner:
 # signal_name: the signal to stop the simulation
 # arg..: optional signal arguments to be matched for stop
 func simulate_until_signal(signal_name :String, arg0 = null, arg1 = null, arg2 = null, arg3 = null, arg4 = null, arg5 = null) -> GdUnitSceneRunner:
-	return simulate_until_object_signal(_scene, signal_name, arg0, arg1, arg2, arg3, arg4, arg5)
+	return simulate_until_object_signal(_current_scene, signal_name, arg0, arg1, arg2, arg3, arg4, arg5)
 
 # Simulates scene processing until the given signal is emitted by the given object
 # source: the object that should emit the signal
@@ -193,7 +196,7 @@ func simulate_until_object_signal(source :Object, signal_name :String, arg0 = nu
 	_is_simulate_runnig = true
 	__activate_time_factor()
 	while _is_simulate_runnig:
-		yield(get_tree(), "idle_frame")
+		yield(_scene_tree, "idle_frame")
 	__deactivate_time_factor()
 	return self
 
@@ -236,7 +239,7 @@ func __interupt_simulate(arg0 = null, arg1 = null, arg2 = null, arg3 = null, arg
 
 # Sets the mouse cursor to given position relative to the viewport.
 func set_mouse_pos(pos :Vector2) -> GdUnitSceneRunner:
-	_scene.get_viewport().warp_mouse(pos)
+	_current_scene.get_viewport().warp_mouse(pos)
 	_current_mouse_pos = pos
 	return self
 
@@ -247,12 +250,12 @@ func maximize_view() -> GdUnitSceneRunner:
 	OS.move_window_to_foreground()
 	return self
 
-func __extract_scene_name(node :Node) -> String:
-	var scene_script :GDScript = node.get_script()
+func _scene_name() -> String:
+	var scene_script :GDScript = _current_scene.get_script()
 	if not scene_script:
-		return node.get_name()
-	if not node.get_name().begins_with("@"):
-		return node.get_name()
+		return _current_scene.get_name()
+	if not _current_scene.get_name().begins_with("@"):
+		return _current_scene.get_name()
 	return scene_script.resource_name.get_basename()
 
 func __activate_time_factor() -> void:
@@ -261,7 +264,31 @@ func __activate_time_factor() -> void:
 
 func __deactivate_time_factor() -> void:
 	Engine.set_time_scale(1)
-	Engine.set_iterations_per_second(_saved_iterations_per_second * 1)
+	Engine.set_iterations_per_second(_saved_iterations_per_second)
+
+func awaitOnIdleFrame() -> GDScriptFunctionState:
+	return yield(_scene_tree, "idle_frame")
+
+func awaitOnMillis(timeMillis :int) -> GDScriptFunctionState:
+	return yield(_scene_tree.create_timer( timeMillis * 0.001), "timeout")
+
+func awaitOnSignal(signal_name :String, arg0=NO_ARG, arg1=NO_ARG, arg2=NO_ARG, arg3=NO_ARG, arg4=NO_ARG, arg5=NO_ARG) -> GDScriptFunctionState:
+	return yield(GdUnitAwaiter.awaitOnSignal(_current_scene, signal_name, arg0,arg1,arg2,arg3,arg4,arg5), "completed")
+
+func get_property(name :String):
+	var property = _current_scene.get(name)
+	if property != null:
+		return property
+	return  "The property '%s' not exist on loaded scene." % name
+
+func invoke(name :String, arg0=NO_ARG, arg1=NO_ARG, arg2=NO_ARG, arg3=NO_ARG, arg4=NO_ARG, arg5=NO_ARG, arg6=NO_ARG, arg7=NO_ARG, arg8=NO_ARG, arg9=NO_ARG):
+	var args = GdObjects.array_filter_value([arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9], NO_ARG)
+	if _current_scene.has_method(name):
+		return _current_scene.callv(name, args)
+	return "The method '%s' not exist on loaded scene." % name
+
+func find_node(name :String, recursive :bool = true, owned :bool = false) -> Node:
+	return _current_scene.find_node(name, recursive, owned)
 
 func __print(message :String) -> void:
 	if _verbose:
@@ -270,7 +297,7 @@ func __print(message :String) -> void:
 func __print_current_focus() -> void:
 	if not _verbose:
 		return
-	var focused_node = _scene.get_focus_owner()
+	var focused_node = _current_scene.get_focus_owner()
 	if focused_node:
 		prints("	focus on %s" % focused_node)
 	else:

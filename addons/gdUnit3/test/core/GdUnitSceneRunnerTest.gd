@@ -5,44 +5,100 @@ extends GdUnitTestSuite
 # TestSuite generated from
 const __source = 'res://addons/gdUnit3/src/core/GdUnitSceneRunner.gd'
 
-func test_simulate_key_pressed_on_mock():
-	var mocked_scene :Control = mock("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
-	assert_object(mocked_scene).is_not_null()
-	assert_array(mocked_scene.get_children())\
-		.extract("get_name")\
-		.contains_exactly(["VBoxContainer"])
+func test_get_property() -> void:
+	var scene := scene_runner(load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn").instance())
 	
-	# create a scene runner
-	var runner := scene_runner(mocked_scene)
-	
-	# simulate a key event to fire the spell
-	runner.simulate_key_pressed(KEY_ENTER)
-	# verify the spell is created and added to the scene tree
-	verify(mocked_scene).create_spell()
-	verify(mocked_scene).add_child(any_class(Spell))
-	assert_array(mocked_scene.get_children())\
-		.extract("get_name")\
-		.contains_exactly(["VBoxContainer", "Spell"])
+	assert_that(scene.get_property("_box1")).is_instanceof(ColorRect)
+	assert_that(scene.get_property("_invalid")).is_equal("The property '_invalid' not exist on loaded scene.")
 
-func test_simulate_key_pressed_on_spy():
-	var scene := load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
-	var spyed_scene = spy(scene)
-	assert_object(spyed_scene).is_not_null()
-	assert_array(spyed_scene.get_children())\
-		.extract("get_name")\
-		.contains_exactly(["VBoxContainer"])
+func test_invoke_method() -> void:
+	var scene := scene_runner(load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn").instance())
 	
-	# create a scene runner
-	var runner := scene_runner(spyed_scene)
+	assert_that(scene.invoke("add", 10, 12)).is_equal(22)
+	assert_that(scene.invoke("sub", 10, 12)).is_equal("The method 'sub' not exist on loaded scene.")
+
+func test_awaitForMilliseconds() -> void:
+	var scene := scene_runner(load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn").instance())
 	
-	# simulate a key event to fire the spell
-	runner.simulate_key_pressed(KEY_ENTER)
-	# verify the spell is created and added to the scene tree
-	verify(spyed_scene).create_spell()
-	verify(spyed_scene).add_child(any_class(Spell))
-	assert_array(spyed_scene.get_children())\
-		.extract("get_name")\
-		.contains_exactly(["VBoxContainer", "Spell"])
+	var stopwatch = LocalTime.now()
+	yield(scene.awaitOnMillis(1000), "completed")
+	
+	# verify we wait around 1000 ms (using 100ms offset because timing is not 100% accurate)
+	assert_int(stopwatch.elapsed_since_ms()).is_between(900, 1100)
+
+func test_simulate_frames(timeout = 1000) -> void:
+	var scene := scene_runner(load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn").instance())
+	
+	var box1 :ColorRect = scene.get_property("_box1")
+	# initial is white
+	assert_object(box1.color).is_equal(Color.white)
+	
+	# start color cycle by invoke the function 'start_color_cycle'
+	scene.invoke("start_color_cycle")
+	
+	# we wait for 10 frames
+	yield(scene.simulate_frames(10), "completed")
+	# after 10 frame is still white
+	assert_object(box1.color).is_equal(Color.white)
+	
+	# we wait 90 more frames
+	yield(scene.simulate_frames(90), "completed")
+	# after 100 frames the box one should be changed to red
+	assert_object(box1.color).is_equal(Color.red)
+
+func test_simulate_frames_withdelay(timeout = 1000) -> void:
+	var scene := scene_runner(load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn").instance())
+	
+	var box1 :ColorRect = scene.get_property("_box1")
+	# initial is white
+	assert_object(box1.color).is_equal(Color.white)
+	
+	# start color cycle by invoke the function 'start_color_cycle'
+	scene.invoke("start_color_cycle")
+	
+	# we wait for 10 frames each with a 50ms delay
+	yield(scene.simulate_frames(10, 50), "completed")
+	# after 10 frame and in sum 500ms is should be changed to red
+	assert_object(box1.color).is_equal(Color.red)
+
+func test_run_scene_colorcycle(timeout=1700) -> void:
+	var scene := scene_runner(load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn").instance())
+
+	var box1 :ColorRect = scene.get_property("_box1")
+	# verify inital color
+	assert_object(box1.color).is_equal(Color.white)
+	
+	# start color cycle by invoke the function 'start_color_cycle'
+	scene.invoke("start_color_cycle")
+	
+	# await for each color cycle is emited
+	yield(scene.awaitOnSignal("panel_color_change", box1, Color.red), "completed")
+	assert_object(box1.color).is_equal(Color.red)
+	yield(scene.awaitOnSignal("panel_color_change", box1, Color.blue), "completed")
+	assert_object(box1.color).is_equal(Color.blue)
+	yield(scene.awaitOnSignal("panel_color_change", box1, Color.green), "completed")
+	assert_object(box1.color).is_equal(Color.green)
+
+func test_simulate_key_pressed(timeout=2000) -> void:
+	var scene := scene_runner(load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn").instance())
+	
+	# inital no spell is fired
+	assert_object(scene.find_node("Spell")).is_null()
+	
+	# fire spell be pressing enter key
+	scene.simulate_key_pressed(KEY_ENTER)
+	# wait until next frame
+	yield(scene.awaitOnIdleFrame(), "completed")
+	
+	# verify a spell is created
+	assert_object(scene.find_node("Spell")).is_not_null()
+	
+	# wait until spell is explode after around 1s
+	var spell = scene.find_node("Spell")
+	yield(awaitOnSignal(spell, "spell_explode", spell), "completed")
+	
+	# verify spell is removed when is explode
+	assert_object(scene.find_node("Spell")).is_null()
 
 # mock on a scene and spy on created spell
 func test_simulate_key_pressed_in_combination_with_spy():

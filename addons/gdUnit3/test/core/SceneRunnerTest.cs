@@ -11,7 +11,7 @@ namespace GdUnit3.Tests
         [TestCase]
         public void GetProperty()
         {
-            SceneRunner scene = SceneRunner.Load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn");
+            ISceneRunner scene = ISceneRunner.Load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn");
             AssertObject(scene.GetProperty<Godot.ColorRect>("_box1")).IsInstanceOf<Godot.ColorRect>();
             AssertThrown(() => scene.GetProperty<Godot.ColorRect>("_invalid"))
                 .IsInstanceOf<System.MissingFieldException>()
@@ -21,17 +21,17 @@ namespace GdUnit3.Tests
         [TestCase]
         public void InvokeSceneMethod()
         {
-            SceneRunner scene = SceneRunner.Load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn");
+            ISceneRunner scene = ISceneRunner.Load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn");
             AssertString(scene.Invoke("add", 10, 12).ToString()).IsEqual("22");
             AssertThrown(() => scene.Invoke("sub", 12, 10))
                 .IsInstanceOf<System.MissingMethodException>()
                 .HasMessage("The method 'sub' not exist on loaded scene.");
         }
 
-        [TestCase]
+        [TestCase(Timeout =1200)]
         public async Task AwaitForMilliseconds()
         {
-            SceneRunner scene = SceneRunner.Load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn");
+            ISceneRunner scene = ISceneRunner.Load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn");
             System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
             stopwatch.Start();
             await scene.AwaitOnMillis(1000);
@@ -40,11 +40,10 @@ namespace GdUnit3.Tests
             AssertInt((int)stopwatch.ElapsedMilliseconds).IsBetween(900, 1100);
         }
 
-        [TestCase]
+        [TestCase(Timeout =1000)]
         public async Task SimulateFrames()
         {
-            SceneRunner scene = SceneRunner.Load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn");
-            System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
+            ISceneRunner scene = ISceneRunner.Load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn");
 
             var box1 = scene.GetProperty<Godot.ColorRect>("_box1");
             // initial is white
@@ -64,11 +63,10 @@ namespace GdUnit3.Tests
             AssertObject(box1.Color).IsEqual(Colors.Red);
         }
 
-        [TestCase]
+        [TestCase(Timeout =1000)]
         public async Task SimulateFramesWithDelay()
         {
-            SceneRunner scene = SceneRunner.Load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn");
-            System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
+            ISceneRunner scene = ISceneRunner.Load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn");
 
             var box1 = scene.GetProperty<Godot.ColorRect>("_box1");
             // initial is white
@@ -86,7 +84,7 @@ namespace GdUnit3.Tests
         [TestCase(Description = "Example to test a scene with do a color cycle on box one each 500ms", Timeout = 4000)]
         public async Task RunScene_ColorCycle()
         {
-            SceneRunner scene = SceneRunner.Load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn");
+            ISceneRunner scene = ISceneRunner.Load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn");
             scene.MoveWindowToForeground();
 
             var box1 = scene.GetProperty<Godot.ColorRect>("_box1");
@@ -114,7 +112,7 @@ namespace GdUnit3.Tests
         [TestCase(Description = "Example to simulate the enter key is pressed to shoot a spell", Timeout = 2000)]
         public async Task RunScene_SimulateKeyPressed()
         {
-            SceneRunner scene = SceneRunner.Load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn");
+            ISceneRunner scene = ISceneRunner.Load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn");
 
             // inital no spell is fired
             AssertObject(scene.FindNode("Spell")).IsNull();
@@ -138,7 +136,7 @@ namespace GdUnit3.Tests
         [TestCase(Description = "Example to simulate mouse pressed on buttons", Timeout = 2000)]
         public async Task RunScene_SimulateMouseEvents()
         {
-            SceneRunner scene = SceneRunner.Load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn");
+            ISceneRunner scene = ISceneRunner.Load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn");
             scene.MoveWindowToForeground();
 
             var box1 = scene.GetProperty<Godot.ColorRect>("_box1");
