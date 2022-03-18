@@ -26,7 +26,7 @@ func test_awaitForMilliseconds() -> void:
 	# verify we wait around 1000 ms (using 100ms offset because timing is not 100% accurate)
 	assert_int(stopwatch.elapsed_since_ms()).is_between(900, 1100)
 
-func test_simulate_frames(timeout = 1000) -> void:
+func test_simulate_frames(timeout = 1500) -> void:
 	var scene := scene_runner(load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn").instance())
 	
 	var box1 :ColorRect = scene.get_property("_box1")
