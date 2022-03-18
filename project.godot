@@ -354,6 +354,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/test/asserts/GdUnitAssertImplTest.gd"
 }, {
+"base": "Reference",
+"class": "GdUnitAwaiter",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/src/core/GdUnitAwaiter.gd"
+}, {
 "base": "GdUnitAssert",
 "class": "GdUnitBoolAssert",
 "language": "GDScript",
@@ -667,7 +672,12 @@ _global_script_classes=[ {
 "base": "Node",
 "class": "GdUnitSceneRunner",
 "language": "GDScript",
-"path": "res://addons/gdUnit3/src/core/GdUnitSceneRunner.gd"
+"path": "res://addons/gdUnit3/src/GdUnitSceneRunner.gd"
+}, {
+"base": "GdUnitSceneRunner",
+"class": "GdUnitSceneRunnerImpl",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/src/core/GdUnitSceneRunnerImpl.gd"
 }, {
 "base": "GdUnitTestSuite",
 "class": "GdUnitSceneRunnerTest",
@@ -1164,6 +1174,7 @@ _global_script_class_icons={
 "GdUnitAssert": "",
 "GdUnitAssertImpl": "",
 "GdUnitAssertImplTest": "",
+"GdUnitAwaiter": "",
 "GdUnitBoolAssert": "",
 "GdUnitBoolAssertImpl": "",
 "GdUnitBoolAssertImplTest": "",
@@ -1227,6 +1238,7 @@ _global_script_class_icons={
 "GdUnitRunnerConfig": "",
 "GdUnitRunnerConfigTest": "",
 "GdUnitSceneRunner": "",
+"GdUnitSceneRunnerImpl": "",
 "GdUnitSceneRunnerTest": "",
 "GdUnitScriptType": "",
 "GdUnitScriptTypeTest": "",
