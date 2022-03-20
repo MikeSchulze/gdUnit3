@@ -18,7 +18,6 @@ var TOKEN_FUNCTION_RETURN_TYPE := Token.new("->")
 var TOKEN_FUNCTION_END := Token.new("):")
 var TOKEN_ARGUMENT_ASIGNMENT := Token.new("=")
 var TOKEN_ARGUMENT_TYPE_ASIGNMENT := Token.new(":=")
-var TOKEN_TEST_TIMEOUT := Token.new("timeout")
 var TOKEN_FUZZER_ITERATIONS := Token.new("fuzzer_iterations")
 var TOKEN_FUZZER_SEED := Token.new("fuzzer_seed")
 var TOKEN_ARGUMENT_FUZZER_ASIGNMENT1 := regex_token("fuzzer(|[a-z,A-Z,0-9,_]+):Fuzzer=")
@@ -47,7 +46,6 @@ var TOKENS := [
 	TOKEN_ENUM,
 	TOKEN_FUNCTION_STATIC_DECLARATION,
 	TOKEN_FUNCTION_DECLARATION,
-	TOKEN_TEST_TIMEOUT,
 	TOKEN_FUZZER_ITERATIONS,
 	TOKEN_FUZZER_SEED,
 	TOKEN_ARGUMENT_FUZZER_ASIGNMENT1,

@@ -13,16 +13,13 @@ var _script_path: String
 var _skipped := false
 var _expect_to_interupt := false
 
-var _timer : Timer = Timer.new()
-var _fs
+var _timer : Timer
+var _fs : GDScriptFunctionState
 var _interupted :bool = false
 var _timeout :int
 var _default_timeout :int
 
 func _init() -> void:
-	add_child(_timer)
-	_timer.set_one_shot(true)
-	_timer.connect('timeout', self, '_test_case_timeout')
 	_default_timeout = GdUnitSettings.test_timeout()
 
 func configure(name: String, line_number: int, script_path: String, timeout :int = DEFAULT_TIMEOUT, fuzzers:= PoolStringArray(), iterations: int = 1, seed_ :int = -1, skipped := false) -> _TestCase:
@@ -57,15 +54,26 @@ func update_fuzzers(fuzzers :Array, iteration :int):
 
 func set_timeout():
 	var time :float = _timeout / 1000.0
+	_timer = Timer.new()
+	add_child(_timer)
+	_timer.set_one_shot(true)
+	_timer.connect('timeout', self, '_test_case_timeout')
 	_timer.set_wait_time(time)
 	_timer.set_autostart(false)
 	_timer.start()
 
 func _test_case_timeout():
-	_timer.stop()
+	prints("interrupted by timeout",  self,  _timer.time_left)
 	_interupted = true
 	if _fs is GDScriptFunctionState:
 		_fs.emit_signal("completed")
+
+func reset_timer() :
+	# finish outstanding timeouts
+	if is_instance_valid(_timer):
+		_timer.disconnect("timeout", self, '_test_case_timeout')
+		_timer.stop()
+		_timer.connect('timeout', self, '_test_case_timeout')
 
 func is_interupted() -> bool:
 	return _interupted

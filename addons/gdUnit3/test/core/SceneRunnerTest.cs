@@ -28,7 +28,7 @@ namespace GdUnit3.Tests
                 .HasMessage("The method 'sub' not exist on loaded scene.");
         }
 
-        [TestCase(Timeout =1200)]
+        [TestCase(Timeout = 1200)]
         public async Task AwaitForMilliseconds()
         {
             ISceneRunner scene = ISceneRunner.Load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn");
@@ -40,10 +40,10 @@ namespace GdUnit3.Tests
             AssertInt((int)stopwatch.ElapsedMilliseconds).IsBetween(900, 1100);
         }
 
-        [TestCase(Timeout =1000)]
+        [TestCase(Timeout = 2000)]
         public async Task SimulateFrames()
         {
-            ISceneRunner scene = ISceneRunner.Load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn");
+            ISceneRunner scene = ISceneRunner.Load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn", true);
 
             var box1 = scene.GetProperty<Godot.ColorRect>("_box1");
             // initial is white
@@ -59,11 +59,11 @@ namespace GdUnit3.Tests
 
             // we wait 90 more frames
             await scene.SimulateFrames(90);
-            // after 100 frames the box one should be changed to red
-            AssertObject(box1.Color).IsEqual(Colors.Red);
+            // after 100 frames the box one should be changed the color
+            AssertObject(box1.Color).IsNotEqual(Colors.White);
         }
 
-        [TestCase(Timeout =1000)]
+        [TestCase(Timeout = 1000)]
         public async Task SimulateFramesWithDelay()
         {
             ISceneRunner scene = ISceneRunner.Load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn");

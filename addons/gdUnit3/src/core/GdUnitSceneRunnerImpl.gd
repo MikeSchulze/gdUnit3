@@ -25,23 +25,25 @@ func _init(test_suite :WeakRef, scene :Node, verbose :bool):
 	_scene_tree = Engine.get_main_loop()
 	_current_scene = scene
 	_scene_tree.root.add_child(_current_scene)
-	
+	#add_child(_current_scene)
 	_saved_iterations_per_second = ProjectSettings.get_setting("physics/common/physics_fps")
 	set_time_factor(1)
 	_simulate_start_time = LocalTime.now()
 
 func _notification(what):
+	#prints("_notification", GdObjects.notification_as_string(what), self, _current_scene, _scene_tree)
 	if what == NOTIFICATION_PREDELETE:
-		_test_suite = null
+		__deactivate_time_factor()
 		if is_instance_valid(_current_scene):
 			_scene_tree.root.remove_child(_current_scene)
-			_current_scene.queue_free()
+		
+		_scene_tree = null
+		_current_scene = null
+		_test_suite = null
 		# reset time factor to normal
-		__deactivate_time_factor()
 		# we hide the scene/main window after runner is finished 
 		OS.window_maximized = false
 		OS.set_window_minimized(true)
-
 
 # resets the scene to inital state
 # needs to more investigate how to reset a loaded scene fully, calling _ready is not enough
@@ -163,7 +165,7 @@ func simulate_frames(frames: int, delta_milli :int = -1) -> GdUnitSceneRunner:
 	__deactivate_time_factor()
 	for frame in frames:
 		_is_simulate_runnig = true
-		yield(awaitOnMillis(delta_milli), "completed")
+		yield(doAwaitOnMillis(delta_milli), "completed")
 	_is_simulate_runnig = false
 	return self
 
@@ -175,7 +177,7 @@ func __simulate_frames_on_idle(frames: int) -> GdUnitSceneRunner:
 	__activate_time_factor()
 	for frame in time_shift_frames:
 		_is_simulate_runnig = true
-		yield(awaitOnIdleFrame(), "completed")
+		yield(doAwaitOnIdleFrame(), "completed")
 	__deactivate_time_factor()
 	_is_simulate_runnig = false
 	return self
@@ -212,17 +214,13 @@ func wait_func(instance :Object, func_name :String, args := [], expeced := GdUni
 # signal_name: signal name
 # args: args send be the signal
 # timeout: the timeout in ms, default is set to 2000ms
-func wait_emit_signal(instance :Object, signal_name :String, args := [], timeout := 2000, expeced := GdUnitAssert.EXPECT_SUCCESS) -> GdUnitSignalAssert:
-	_is_simulate_runnig = true
-	__activate_time_factor()
-	var assert_signal = GdUnitSignalAssertImpl.new(_test_suite, instance, expeced)
-	var fs = assert_signal.wait_until(timeout).is_emitted(signal_name, args)
-	fs.connect("completed", self, "__wait_signal_completed")
-	
-	while _is_simulate_runnig:
-		yield(fs, "completed")
-	__deactivate_time_factor()
-	return assert_signal
+func wait_emit_signal(instance :Object, signal_name :String, args := [], timeout := 2000, expeced := GdUnitAssert.EXPECT_SUCCESS) -> GDScriptFunctionState:
+	return doAwaitOnSignal(signal_name, _get_arg(0, args), _get_arg(1, args), _get_arg(2, args), _get_arg(3, args), _get_arg(4, args), _get_arg(5, args))
+
+func _get_arg(index :int, args: Array):
+	if index < args.size():
+		return args[index]
+	return NO_ARG
 
 func __wait_signal_completed(arg):
 	_is_simulate_runnig = false
@@ -266,14 +264,19 @@ func __deactivate_time_factor() -> void:
 	Engine.set_time_scale(1)
 	Engine.set_iterations_per_second(_saved_iterations_per_second)
 
-func awaitOnIdleFrame() -> GDScriptFunctionState:
+func doAwaitOnIdleFrame() -> GDScriptFunctionState:
 	return yield(_scene_tree, "idle_frame")
 
-func awaitOnMillis(timeMillis :int) -> GDScriptFunctionState:
+func doAwaitOnMillis(timeMillis :int) -> GDScriptFunctionState:
 	return yield(_scene_tree.create_timer( timeMillis * 0.001), "timeout")
 
-func awaitOnSignal(signal_name :String, arg0=NO_ARG, arg1=NO_ARG, arg2=NO_ARG, arg3=NO_ARG, arg4=NO_ARG, arg5=NO_ARG) -> GDScriptFunctionState:
-	return yield(GdUnitAwaiter.awaitOnSignal(_current_scene, signal_name, arg0,arg1,arg2,arg3,arg4,arg5), "completed")
+func doAwaitOnSignal(signal_name :String, arg0=NO_ARG, arg1=NO_ARG, arg2=NO_ARG, arg3=NO_ARG, arg4=NO_ARG, arg5=NO_ARG) -> GDScriptFunctionState:
+	__activate_time_factor()
+	var fs = yield(GdUnitAwaiter.doAwaitOnSignal(_current_scene, signal_name, arg0,arg1,arg2,arg3,arg4,arg5), "completed")
+	if fs is GDScriptFunctionState:
+		return yield(fs, "completed")
+	__deactivate_time_factor()
+	return fs
 
 func get_property(name :String):
 	var property = _current_scene.get(name)

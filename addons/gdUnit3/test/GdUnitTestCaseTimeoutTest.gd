@@ -22,16 +22,16 @@ func before_test():
 func test_timeout_after_test_completes():
 	assert_str(_before_arg).is_equal("---before---")
 	var counter := 0
-	yield(get_tree().create_timer(1.0), "timeout")
+	yield(GdUnitAwaiter.doAwaitOnMillis(self, 1000), "completed")
 	prints("A","1s")
 	counter += 1
-	yield(get_tree().create_timer(1.0), "timeout")
+	yield(GdUnitAwaiter.doAwaitOnMillis(self, 1000), "completed")
 	prints("A","2s")
 	counter += 1
-	yield(get_tree().create_timer(1.0), "timeout")
+	yield(GdUnitAwaiter.doAwaitOnMillis(self, 1000), "completed")
 	prints("A","3s")
 	counter += 1
-	yield(get_tree().create_timer(2.0), "timeout")
+	yield(GdUnitAwaiter.doAwaitOnMillis(self, 1000), "completed")
 	prints("A","5s")
 	counter += 2
 	prints("A","end test test_timeout_after_test_completes")
@@ -41,11 +41,11 @@ func test_timeout_after_test_completes():
 func test_timeout_2s(timeout=2000):
 	assert_str(_before_arg).is_equal("---before---")
 	prints("B", "0s")
-	yield(get_tree().create_timer(1.0), "timeout")
+	yield(GdUnitAwaiter.doAwaitOnMillis(self, 1000), "completed")
 	prints("B", "1s")
-	yield(get_tree().create_timer(1.0), "timeout")
+	yield(GdUnitAwaiter.doAwaitOnMillis(self, 1000), "completed")
 	prints("B", "2s")
-	yield(get_tree().create_timer(1.0), "timeout")
+	yield(GdUnitAwaiter.doAwaitOnMillis(self, 1000), "completed")
 	# this line should not reach if timeout aborts the test case after 2s
 	assert_bool(true).override_failure_message("The test case must be interupted by a timeout after 2s").is_false()
 	prints("B", "3s")
@@ -55,13 +55,13 @@ func test_timeout_2s(timeout=2000):
 func test_timeout_4s(timeout=4000):
 	assert_str(_before_arg).is_equal("---before---")
 	prints("C", "0s")
-	yield(get_tree().create_timer(1.0), "timeout")
+	yield(GdUnitAwaiter.doAwaitOnMillis(self, 1000), "completed")
 	prints("C", "1s")
-	yield(get_tree().create_timer(1.0), "timeout")
+	yield(GdUnitAwaiter.doAwaitOnMillis(self, 1000), "completed")
 	prints("C", "2s")
-	yield(get_tree().create_timer(1.0), "timeout")
+	yield(GdUnitAwaiter.doAwaitOnMillis(self, 1000), "completed")
 	prints("C", "3s")
-	yield(get_tree().create_timer(4.0), "timeout")
+	yield(GdUnitAwaiter.doAwaitOnMillis(self, 4000), "completed")
 	# this line should not reach if timeout aborts the test case after 4s
 	assert_bool(true).override_failure_message("The test case must be interupted by a timeout after 4s").is_false()
 	prints("C", "7s")
@@ -70,7 +70,7 @@ func test_timeout_4s(timeout=4000):
 func test_timeout_single_yield_wait(timeout=3000):
 	assert_str(_before_arg).is_equal("---before---")
 	prints("D", "0s")
-	yield(get_tree().create_timer(6.0), "timeout")
+	yield(GdUnitAwaiter.doAwaitOnMillis(self, 6000), "completed")
 	prints("D", "6s")
 	# this line should not reach if timeout aborts the test case after 3s
 	assert_bool(true).override_failure_message("The test case must be interupted by a timeout after 3s").is_false()
@@ -90,7 +90,8 @@ func test_timeout_long_running_test_abort(timeout=4000):
 		
 		var sec_time = OS.get_system_time_msecs() - sec_start_time
 		
-		yield(get_tree(), "idle_frame")
+		# give system time to check for timeout
+		yield(GdUnitAwaiter.doAwaitOnMillis(self, 10), "completed")
 		if sec_time > 1000:
 			sec_start_time = OS.get_system_time_msecs()
 			prints("E", start.elapsed_since())
@@ -104,10 +105,10 @@ func test_timeout_long_running_test_abort(timeout=4000):
 	prints("F", "end test test_timeout")
 
 func test_timeout_fuzzer(fuzzer := Fuzzers.rangei(-23, 22), timeout=2000):
+	discard_error_interupted_by_timeout()
 	var value = fuzzer.next_value()
 	# wait each iteration 200ms 
-	yield(get_tree().create_timer(0.200), "timeout")
-
+	yield(GdUnitAwaiter.doAwaitOnMillis(self, 220), "completed")
 	# we expects the test is interupped after 10 iterations because each test takes 200ms
 	# and the test should not longer run than 2000ms
 	assert_int(fuzzer.iteration_index())\

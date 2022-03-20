@@ -64,6 +64,15 @@ func test_fuzzer_inject_value(fuzzer := Fuzzers.rangei(-23, 22), fuzzer_iteratio
 	_current_iterations["test_fuzzer_inject_value"] += 1
 	assert_int(fuzzer.next_value()).is_between(-23, 22)
 
+func test_fuzzer_with_timeout(fuzzer := Fuzzers.rangei(-23, 22), fuzzer_iterations = 20, timeout = 100):
+	discard_error_interupted_by_timeout()
+	assert_int(fuzzer.next_value()).is_between(-23, 22)
+	
+	if fuzzer.iteration_index() == 10:
+		yield(GdUnitAwaiter.doAwaitOnMillis(self, 100), "completed")
+	# we not expect more than 10 iterations it should be interuptead by a timeout
+	assert_int(fuzzer.iteration_index()).is_less_equal(10)
+
 var expected_value := [-20, 6, -18, 8, 9, 9, 3, 16, -12, 0]
 func test_fuzzer_inject_value_with_seed(fuzzer := Fuzzers.rangei(-23, 22), fuzzer_iterations = 10, fuzzer_seed = 187772):
 	assert_object(fuzzer).is_not_null()

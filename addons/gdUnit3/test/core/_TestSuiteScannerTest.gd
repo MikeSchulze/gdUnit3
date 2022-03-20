@@ -73,10 +73,10 @@ func test_create_test_suite_pascal_case_path():
 	var temp_dir := GdUnitTools.create_temp_dir("TestSuiteScannerTest")
 	# on source with class_name is set
 	var source_path := "res://addons/gdUnit3/test/core/resources/naming_conventions/PascalCaseWithClassName.gd"
-	var suite_path := temp_dir + "/test/MyClassTest.gd"
+	var suite_path := temp_dir + "/test/MyClassTest1.gd"
 	var result := _TestSuiteScanner.create_test_suite(suite_path, source_path)
 	assert_that(result.is_success()).is_true()
-	assert_str(result.value()).is_equal("user://tmp/TestSuiteScannerTest/test/MyClassTest.gd")
+	assert_str(result.value()).is_equal(suite_path)
 	assert_file(result.value()).exists()\
 		.is_file()\
 		.is_script()\
@@ -92,10 +92,10 @@ func test_create_test_suite_pascal_case_path():
 			""])
 	# on source with class_name is NOT set
 	source_path = "res://addons/gdUnit3/test/core/resources/naming_conventions/PascalCaseWithoutClassName.gd"
-	suite_path = temp_dir + "/test/MyClassTest.gd"
+	suite_path = temp_dir + "/test/MyClassTest2.gd"
 	result = _TestSuiteScanner.create_test_suite(suite_path, source_path)
 	assert_that(result.is_success()).is_true()
-	assert_str(result.value()).is_equal("user://tmp/TestSuiteScannerTest/test/MyClassTest.gd")
+	assert_str(result.value()).is_equal(suite_path)
 	assert_file(result.value()).exists()\
 		.is_file()\
 		.is_script()\
@@ -114,10 +114,10 @@ func test_create_test_suite_snake_case_path():
 	var temp_dir := GdUnitTools.create_temp_dir("TestSuiteScannerTest")
 	# on source with class_name is set
 	var source_path :="res://addons/gdUnit3/test/core/resources/naming_conventions/snake_case_with_class_name.gd"
-	var suite_path := temp_dir + "/test/my_class_test.gd"
+	var suite_path := temp_dir + "/test/my_class_test1.gd"
 	var result := _TestSuiteScanner.create_test_suite(suite_path, source_path)
 	assert_that(result.is_success()).is_true()
-	assert_str(result.value()).is_equal("user://tmp/TestSuiteScannerTest/test/my_class_test.gd")
+	assert_str(result.value()).is_equal(suite_path)
 	assert_file(result.value()).exists()\
 		.is_file()\
 		.is_script()\
@@ -133,10 +133,10 @@ func test_create_test_suite_snake_case_path():
 			""])
 	# on source with class_name is NOT set
 	source_path ="res://addons/gdUnit3/test/core/resources/naming_conventions/snake_case_without_class_name.gd"
-	suite_path = temp_dir + "/test/my_class_test.gd"
+	suite_path = temp_dir + "/test/my_class_test2.gd"
 	result = _TestSuiteScanner.create_test_suite(suite_path, source_path)
 	assert_that(result.is_success()).is_true()
-	assert_str(result.value()).is_equal("user://tmp/TestSuiteScannerTest/test/my_class_test.gd")
+	assert_str(result.value()).is_equal(suite_path)
 	assert_file(result.value()).exists()\
 		.is_file()\
 		.is_script()\

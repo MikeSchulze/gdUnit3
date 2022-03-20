@@ -70,8 +70,9 @@ static func _normalize_bbcode(message :String) -> String:
 	rtl._ready()
 	rtl.bbcode_enabled = true
 	rtl.parse_bbcode(message)
-	rtl.queue_free()
-	return rtl.get_text()
+	var normalized = rtl.get_text()
+	rtl.free()
+	return normalized
 
 func has_failure_message(expected :String):
 	var current_error := _normalize_bbcode(_current_error_message)

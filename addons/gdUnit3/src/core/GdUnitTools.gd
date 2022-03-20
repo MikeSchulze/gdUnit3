@@ -296,18 +296,32 @@ static func resource_as_string(resource_path :String) -> String:
 static func normalize_text(text :String) -> String:
 	return text.replace("\r", "");
 
-
 static func free_instance(instance :Object):
 	# needs to manually exculde JavaClass
 	# see https://github.com/godotengine/godot/issues/44932
 	if is_instance_valid(instance) and not(instance is JavaClass):
 		if not instance is Reference:
 			release_double(instance)
+			release_connections(instance)
+			if instance is Timer:
+				instance.stop()
+				instance.queue_free()
+				return
 			instance.free()
 		else:
 			instance.notification(Object.NOTIFICATION_PREDELETE)
 			release_double(instance)
- 
+
+static func release_connections(instance :Object):
+	for connection in instance.get_incoming_connections():
+		var signal_name = connection["signal_name"]
+		var source = connection["source"]
+		var method = connection["method_name"]
+		if source == instance:
+			prints("disconnect signal", connection)
+			source.disconnect(signal_name, instance, method)
+
+
 # if instance an mock or spy we need manually freeing the self reference
 static func release_double(instance :Object):
 	var fr := funcref(instance, "__release_double")
@@ -319,9 +333,14 @@ static func register_auto_free(obj, pool :int):
 	# only register real object values
 	if not obj is Object:
 		return obj
+	if obj is MainLoop:
+		push_error("avoid to add mainloop to auto_free queue  %s" % obj)
+		return
 	# only register pure objects
-	#prints("register_auto_free on Pool", pool, obj)
-	_objects_to_delete[pool].append(obj)
+	if obj is GdUnitSceneRunner:
+		_objects_to_delete[pool].push_front(obj)
+	else:
+		_objects_to_delete[pool].append(obj)
 	return obj
 
 # runs over all registered objects and frees it
