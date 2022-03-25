@@ -14,7 +14,7 @@
 class_name GdUnitTestSuite
 extends Node
 
-const NO_ARG = GdUnitAwaiter.NO_ARG
+const NO_ARG = GdUnitConstants.NO_ARG
 
 # This function is called before a test suite starts
 # You can overwrite to prepare test data or initalizize necessary variables
@@ -100,10 +100,26 @@ func resource_as_var(resource_path :String):
 func clear_push_errors() -> void:
 	GdUnitTools.clear_push_errors()
 
-# waits for a signal on given source and matching signal arguments
-func doAwaitOnSignal(source :Object, signal_name :String, arg0=NO_ARG, arg1=NO_ARG, arg2=NO_ARG, arg3=NO_ARG, arg4=NO_ARG, arg5=NO_ARG) -> GDScriptFunctionState:
-	return yield(GdUnitAwaiter.doAwaitOnSignal(source, signal_name, arg0,arg1,arg2,arg3,arg4,arg5), "completed")
-	
+# Waits for given signal is emited by the <source> until a specified timeout to fail
+# source: the object from which the signal is emitted
+# signal_name: signal name
+# args: the expected signal arguments as an array
+# timeout: the timeout in ms, default is set to 2000ms
+func await_signal_on(source :Object, signal_name :String, args :Array, timeout :int = 2000) -> GDScriptFunctionState:
+	return yield(GdUnitAwaiter.await_signal_on(source, signal_name, args, timeout), "completed")
+
+# Waits until the next idle frame
+func await_idle_frame() -> GDScriptFunctionState:
+	return yield(GdUnitAwaiter.await_idle_frame(), "completed")
+
+# Waits for for a given amount of milliseconds
+# example:
+#    # waits for 100ms
+#    yield(GdUnitAwaiter.await_millis(myNode, 100), "completed")
+# use this waiter and not `yield(get_tree().create_timer(), "timeout") to prevent errors when a test case is timed out
+func await_millis(timeout :int) -> GDScriptFunctionState:
+	return yield(GdUnitAwaiter.await_millis(self, timeout), "completed")
+
 # Creates a new scene runner to allow simulate interactions on a scene
 func scene_runner(scene :Node, verbose := false) -> GdUnitSceneRunner:
 	return auto_free(GdUnitSceneRunnerImpl.new(weakref(self), scene, verbose))

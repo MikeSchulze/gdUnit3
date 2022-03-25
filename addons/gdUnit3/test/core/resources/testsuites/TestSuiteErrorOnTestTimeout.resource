@@ -17,7 +17,7 @@ func after_test():
 func test_case1(timeout=2000):
 	assert_str("test_case1").is_equal("test_case1")
 	# wait 3s to let the test fail by timeout
-	yield(GdUnitAwaiter.doAwaitOnMillis(self, 3000), "completed")
+	yield(await_millis(3000), "completed")
 
 func test_case2():
 	assert_str("test_case2").is_equal("test_case2")

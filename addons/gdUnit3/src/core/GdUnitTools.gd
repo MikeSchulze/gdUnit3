@@ -305,7 +305,8 @@ static func free_instance(instance :Object):
 			release_connections(instance)
 			if instance is Timer:
 				instance.stop()
-				instance.queue_free()
+				#instance.queue_free()
+				instance.call_deferred("free")
 				return
 			instance.free()
 		else:
@@ -318,7 +319,6 @@ static func release_connections(instance :Object):
 		var source = connection["source"]
 		var method = connection["method_name"]
 		if source == instance:
-			prints("disconnect signal", connection)
 			source.disconnect(signal_name, instance, method)
 
 
@@ -331,6 +331,7 @@ static func release_double(instance :Object):
 # register an instance to be freed when a test suite is finished
 static func register_auto_free(obj, pool :int):
 	# only register real object values
+	#prints("register auto free", pool, obj)
 	if not obj is Object:
 		return obj
 	if obj is MainLoop:
@@ -350,6 +351,7 @@ static func run_auto_free(pool :int):
 	while not obj_pool.empty():
 		var obj = obj_pool.pop_front()
 		free_instance(obj)
+
 
 # tests if given object is registered for auto freeing
 static func is_auto_free_registered(obj, pool :int) -> bool:

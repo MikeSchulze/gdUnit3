@@ -132,8 +132,7 @@ func test_before(test_suite :GdUnitTestSuite, test_case :_TestCase, fire_event :
 func test_after(test_suite :GdUnitTestSuite, test_case :_TestCase, fire_event := true) -> GDScriptFunctionState:
 	_memory_pool.free_pool()
 	# give objects time to finallize
-	if fire_event:
-		yield(get_tree(), "idle_frame")
+	yield(get_tree(), "idle_frame")
 	_memory_pool.monitor_stop()
 	var execution_orphan_nodes = _memory_pool.orphan_nodes()
 	if execution_orphan_nodes > 0:
@@ -205,6 +204,7 @@ func execute_test_case_single(test_suite :GdUnitTestSuite, test_case :_TestCase)
 	if GdUnitTools.is_yielded(_test_run_state):
 		yield(_test_run_state, "completed")
 		_test_run_state = null
+	test_case.stop_timer()
 	return _test_run_state
 
 func execute_test_case_iterative(test_suite :GdUnitTestSuite, test_case :_TestCase) -> GDScriptFunctionState:
@@ -245,6 +245,7 @@ func execute_test_case_iterative(test_suite :GdUnitTestSuite, test_case :_TestCa
 		
 		if test_case.is_interupted() or is_failure:
 			break
+	test_case.stop_timer()
 	return _test_run_state
 
 func execute(test_suite :GdUnitTestSuite) -> GDScriptFunctionState:
@@ -314,10 +315,6 @@ func clone_test_suite(test_suite :GdUnitTestSuite) -> GdUnitTestSuite:
 	
 	for child in test_suite.get_children():
 		copy_properties(child, _test_suite.find_node(child.get_name(), true, false))
-		if child.has_method("reset_timer"):
-			var doWait = child.reset_timer()
-			if GdUnitTools.is_yielded(doWait):
-				yield(doWait, "completed")
 	# finally free current test suite instance
 	parent.remove_child(test_suite)
 	yield(get_tree(), "idle_frame")

@@ -53,7 +53,7 @@ func update_fuzzers(fuzzers :Array, iteration :int):
 		fuzzer._iteration_index = iteration + 1
 
 func set_timeout():
-	var time :float = _timeout / 1000.0
+	var time :float = _timeout * 0.001
 	_timer = Timer.new()
 	add_child(_timer)
 	_timer.set_one_shot(true)
@@ -63,17 +63,18 @@ func set_timeout():
 	_timer.start()
 
 func _test_case_timeout():
-	prints("interrupted by timeout",  self,  _timer.time_left)
+	prints("interrupted by timeout",  self,  _timer,  _timer.time_left)
 	_interupted = true
 	if _fs is GDScriptFunctionState:
 		_fs.emit_signal("completed")
 
-func reset_timer() :
+func stop_timer() :
 	# finish outstanding timeouts
 	if is_instance_valid(_timer):
-		_timer.disconnect("timeout", self, '_test_case_timeout')
+		if _timer.is_connected("timeout", self, '_test_case_timeout'):
+			_timer.disconnect("timeout", self, '_test_case_timeout')
 		_timer.stop()
-		_timer.connect('timeout', self, '_test_case_timeout')
+		_timer.call_deferred("free")
 
 func is_interupted() -> bool:
 	return _interupted

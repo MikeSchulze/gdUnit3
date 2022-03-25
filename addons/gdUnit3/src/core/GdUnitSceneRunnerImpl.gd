@@ -2,8 +2,6 @@
 class_name GdUnitSceneRunnerImpl
 extends GdUnitSceneRunner
 
-const NO_ARG = "<--null-->"
-
 var _test_suite :WeakRef
 var _scene_tree :SceneTree = null
 var _current_scene :Node = null
@@ -25,7 +23,6 @@ func _init(test_suite :WeakRef, scene :Node, verbose :bool):
 	_scene_tree = Engine.get_main_loop()
 	_current_scene = scene
 	_scene_tree.root.add_child(_current_scene)
-	#add_child(_current_scene)
 	_saved_iterations_per_second = ProjectSettings.get_setting("physics/common/physics_fps")
 	set_time_factor(1)
 	_simulate_start_time = LocalTime.now()
@@ -36,7 +33,6 @@ func _notification(what):
 		__deactivate_time_factor()
 		if is_instance_valid(_current_scene):
 			_scene_tree.root.remove_child(_current_scene)
-		
 		_scene_tree = null
 		_current_scene = null
 		_test_suite = null
@@ -148,36 +144,18 @@ func set_time_factor(time_factor := 1.0) -> GdUnitSceneRunner:
 	__print("set physics iterations_per_second: %d" % (_saved_iterations_per_second*_time_factor))
 	return self
 
-# Simulates scene processing for a certain number of frames by given delta peer frame by ignoring the time factor
-# frames: amount of frames to process
-# delta_peer_frame: the time delta between a frame in ms
-func simulate(frames: int, delta_peer_frame :float) -> GdUnitSceneRunner:
-	push_warning("DEPRECATED!: 'simulate(<frames>, <delta_peer_frame>)' is deprecated. Use  'simulate_frames(<frames>, <delta_milli>) insted.'")
-	return simulate_frames(frames, delta_peer_frame * 1000)
-
 # Simulates scene processing for a certain number of frames
 # frames: amount of frames to process
 # delta_milli: the time delta between a frame in milliseconds
 func simulate_frames(frames: int, delta_milli :int = -1) -> GdUnitSceneRunner:
-	if delta_milli == -1:
-		return __simulate_frames_on_idle(frames);
-	
-	__deactivate_time_factor()
-	for frame in frames:
-		_is_simulate_runnig = true
-		yield(doAwaitOnMillis(delta_milli), "completed")
-	_is_simulate_runnig = false
-	return self
-
-# Simulates scene processing for a certain number of frames
-# frames: amount of frames to process
-func __simulate_frames_on_idle(frames: int) -> GdUnitSceneRunner:
-	var time_shift_frames := max(1, frames / _time_factor)
-	#prints("time_shift_frames:", time_shift_frames)
 	__activate_time_factor()
+	var time_shift_frames := max(1, frames / _time_factor)
 	for frame in time_shift_frames:
 		_is_simulate_runnig = true
-		yield(doAwaitOnIdleFrame(), "completed")
+		if delta_milli == -1:
+			yield(_scene_tree, "idle_frame")
+		else:
+			yield(_scene_tree.create_timer(delta_milli * 0.001), "timeout")
 	__deactivate_time_factor()
 	_is_simulate_runnig = false
 	return self
@@ -202,28 +180,32 @@ func simulate_until_object_signal(source :Object, signal_name :String, arg0 = nu
 	__deactivate_time_factor()
 	return self
 
-# Waits for function return value until specified timeout or fails
-# instance: the object instance where implements the function
-# args : optional function arguments
-func wait_func(instance :Object, func_name :String, args := [], expeced := GdUnitAssert.EXPECT_SUCCESS) -> GdUnitFuncAssert:
+func await_func(func_name :String, args := [], expeced := GdUnitAssert.EXPECT_SUCCESS) -> GdUnitFuncAssert:
+	__activate_time_factor()
+	return GdUnitFuncAssertImpl.new(_test_suite, _current_scene, func_name, args, expeced)
+
+func await_func_on(instance :Object, func_name :String, args := [], expeced := GdUnitAssert.EXPECT_SUCCESS) -> GdUnitFuncAssert:
 	__activate_time_factor()
 	return GdUnitFuncAssertImpl.new(_test_suite, instance, func_name, args, expeced)
 
-# Waits for given signal until specified timeout or fails
-# instance: the object where emittes the signal
+# Waits for given signal is emited by the scene until a specified timeout to fail
 # signal_name: signal name
-# args: args send be the signal
+# args: the expected signal arguments as an array
 # timeout: the timeout in ms, default is set to 2000ms
-func wait_emit_signal(instance :Object, signal_name :String, args := [], timeout := 2000, expeced := GdUnitAssert.EXPECT_SUCCESS) -> GDScriptFunctionState:
-	return doAwaitOnSignal(signal_name, _get_arg(0, args), _get_arg(1, args), _get_arg(2, args), _get_arg(3, args), _get_arg(4, args), _get_arg(5, args))
+func await_signal(signal_name :String, args := [], timeout := 2000 ):
+	__activate_time_factor()
+	yield(GdUnitAwaiter.await_signal_on(_current_scene, signal_name, args, timeout), "completed")
+	__deactivate_time_factor()
 
-func _get_arg(index :int, args: Array):
-	if index < args.size():
-		return args[index]
-	return NO_ARG
-
-func __wait_signal_completed(arg):
-	_is_simulate_runnig = false
+# Waits for given signal is emited by the <source> until a specified timeout to fail
+# source: the object from which the signal is emitted
+# signal_name: signal name
+# args: the expected signal arguments as an array
+# timeout: the timeout in ms, default is set to 2000ms
+func await_signal_on(source :Object, signal_name :String, args := [], timeout := 2000 ):
+	__activate_time_factor()
+	yield(GdUnitAwaiter.await_signal_on(source, signal_name, args, timeout), "completed")
+	__deactivate_time_factor()
 
 func __interupt_simulate(arg0 = null, arg1 = null, arg2 = null, arg3 = null, arg4 = null, arg5 = null):
 	var current_signal_args = [arg0, arg1, arg2, arg3, arg4, arg5]
@@ -248,6 +230,21 @@ func maximize_view() -> GdUnitSceneRunner:
 	OS.move_window_to_foreground()
 	return self
 
+func get_property(name :String):
+	var property = _current_scene.get(name)
+	if property != null:
+		return property
+	return  "The property '%s' not exist on loaded scene." % name
+
+func invoke(name :String, arg0=NO_ARG, arg1=NO_ARG, arg2=NO_ARG, arg3=NO_ARG, arg4=NO_ARG, arg5=NO_ARG, arg6=NO_ARG, arg7=NO_ARG, arg8=NO_ARG, arg9=NO_ARG):
+	var args = GdObjects.array_filter_value([arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9], NO_ARG)
+	if _current_scene.has_method(name):
+		return _current_scene.callv(name, args)
+	return "The method '%s' not exist on loaded scene." % name
+
+func find_node(name :String, recursive :bool = true, owned :bool = false) -> Node:
+	return _current_scene.find_node(name, recursive, owned)
+
 func _scene_name() -> String:
 	var scene_script :GDScript = _current_scene.get_script()
 	if not scene_script:
@@ -263,35 +260,6 @@ func __activate_time_factor() -> void:
 func __deactivate_time_factor() -> void:
 	Engine.set_time_scale(1)
 	Engine.set_iterations_per_second(_saved_iterations_per_second)
-
-func doAwaitOnIdleFrame() -> GDScriptFunctionState:
-	return yield(_scene_tree, "idle_frame")
-
-func doAwaitOnMillis(timeMillis :int) -> GDScriptFunctionState:
-	return yield(_scene_tree.create_timer( timeMillis * 0.001), "timeout")
-
-func doAwaitOnSignal(signal_name :String, arg0=NO_ARG, arg1=NO_ARG, arg2=NO_ARG, arg3=NO_ARG, arg4=NO_ARG, arg5=NO_ARG) -> GDScriptFunctionState:
-	__activate_time_factor()
-	var fs = yield(GdUnitAwaiter.doAwaitOnSignal(_current_scene, signal_name, arg0,arg1,arg2,arg3,arg4,arg5), "completed")
-	if fs is GDScriptFunctionState:
-		return yield(fs, "completed")
-	__deactivate_time_factor()
-	return fs
-
-func get_property(name :String):
-	var property = _current_scene.get(name)
-	if property != null:
-		return property
-	return  "The property '%s' not exist on loaded scene." % name
-
-func invoke(name :String, arg0=NO_ARG, arg1=NO_ARG, arg2=NO_ARG, arg3=NO_ARG, arg4=NO_ARG, arg5=NO_ARG, arg6=NO_ARG, arg7=NO_ARG, arg8=NO_ARG, arg9=NO_ARG):
-	var args = GdObjects.array_filter_value([arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9], NO_ARG)
-	if _current_scene.has_method(name):
-		return _current_scene.callv(name, args)
-	return "The method '%s' not exist on loaded scene." % name
-
-func find_node(name :String, recursive :bool = true, owned :bool = false) -> Node:
-	return _current_scene.find_node(name, recursive, owned)
 
 func __print(message :String) -> void:
 	if _verbose:

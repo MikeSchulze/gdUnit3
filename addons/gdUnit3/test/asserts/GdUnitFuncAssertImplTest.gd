@@ -244,11 +244,11 @@ func test_timeout_and_assert_fails(timeout = 500) -> void:
 
 func timed_function() -> String:
 	var color = Color.red
-	yield(GdUnitAwaiter.doAwaitOnMillis(self, 100), "completed")
+	yield(await_millis(100), "completed")
 	color = Color.green
-	yield(GdUnitAwaiter.doAwaitOnMillis(self, 100), "completed")
+	yield(await_millis(100), "completed")
 	color = Color.blue
-	yield(GdUnitAwaiter.doAwaitOnMillis(self, 100), "completed")
+	yield(await_millis(100), "completed")
 	color = Color.black
 	return color
 

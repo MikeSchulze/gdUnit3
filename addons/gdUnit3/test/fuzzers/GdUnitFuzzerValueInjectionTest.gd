@@ -69,7 +69,7 @@ func test_fuzzer_with_timeout(fuzzer := Fuzzers.rangei(-23, 22), fuzzer_iteratio
 	assert_int(fuzzer.next_value()).is_between(-23, 22)
 	
 	if fuzzer.iteration_index() == 10:
-		yield(GdUnitAwaiter.doAwaitOnMillis(self, 100), "completed")
+		yield(await_millis(100), "completed")
 	# we not expect more than 10 iterations it should be interuptead by a timeout
 	assert_int(fuzzer.iteration_index()).is_less_equal(10)
 
