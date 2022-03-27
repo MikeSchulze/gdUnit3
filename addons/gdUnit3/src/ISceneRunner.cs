@@ -15,9 +15,10 @@ namespace GdUnit3
         /// Loads a scene into the SceneRunner to be simmulated.
         /// </summary>
         /// <param name="resourcePath">The path to the scene resource.</param>
+        /// <param name="autofree">If true the loaded scene will be automatic freed when the runner is freed.</param>
         /// <param name="verbose">Prints detailt infos on scene simmulation.</param>
         /// <returns></returns>
-        public static ISceneRunner Load(string resourcePath, bool verbose = false) => new Core.SceneRunner(resourcePath, verbose);
+        public static ISceneRunner Load(string resourcePath, bool autofree = false, bool verbose = false) => new Core.SceneRunner(resourcePath, autofree, verbose);
 
         /// <summary>
         /// Sets the actual mouse position relative to the viewport.
@@ -131,7 +132,10 @@ namespace GdUnit3
         /// <code>await OnIdleFrame();</code>
         /// </summary>
         /// <returns>SignalAwaiter</returns>
-        SignalAwaiter AwaitOnIdleFrame();
+        SignalAwaiter AwaitIdleFrame();
+
+
+        GdUnitAwaiter.GodotMethodAwaiter<V> AwaitMethod<V>(string methodName);
 
         /// <summary>
         /// Waits for given signal is emited.
@@ -144,7 +148,7 @@ namespace GdUnit3
         /// </summary>
         /// <param name="signal">The name of signal to wait</param>
         /// <returns>SignalAwaiter</returns>
-        SignalAwaiter AwaitOnSignal(string signal);
+        SignalAwaiter AwaitSignal(string signal);
 
         /// <summary>
         /// Waits for a specific amount of milliseconds.
@@ -157,7 +161,7 @@ namespace GdUnit3
         /// </summary>
         /// <param name="timeMillis">Seconds to wait. 1.0 for one Second</param>
         /// <returns>SignalAwaiter</returns>
-        Task AwaitOnMillis(uint timeMillis);
+        Task AwaitMillis(uint timeMillis);
 
         /// <summary>
         /// Access to current running scene
