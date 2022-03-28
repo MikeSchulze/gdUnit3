@@ -105,7 +105,7 @@ func clear_push_errors() -> void:
 # signal_name: signal name
 # args: the expected signal arguments as an array
 # timeout: the timeout in ms, default is set to 2000ms
-func await_signal_on(source :Object, signal_name :String, args :Array, timeout :int = 2000) -> GDScriptFunctionState:
+func await_signal_on(source :Object, signal_name :String, args :Array = [], timeout :int = 2000) -> GDScriptFunctionState:
 	return yield(GdUnitAwaiter.await_signal_on(source, signal_name, args, timeout), "completed")
 
 # Waits until the next idle frame
@@ -115,7 +115,7 @@ func await_idle_frame() -> GDScriptFunctionState:
 # Waits for for a given amount of milliseconds
 # example:
 #    # waits for 100ms
-#    yield(GdUnitAwaiter.await_millis(myNode, 100), "completed")
+#    yield(await_millis(myNode, 100), "completed")
 # use this waiter and not `yield(get_tree().create_timer(), "timeout") to prevent errors when a test case is timed out
 func await_millis(timeout :int) -> GDScriptFunctionState:
 	return yield(GdUnitAwaiter.await_millis(self, timeout), "completed")

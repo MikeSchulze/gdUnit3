@@ -1,7 +1,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-
 using System.Linq;
 
 namespace GdUnit3
@@ -30,14 +29,15 @@ namespace GdUnit3
             var wrapperTask = Task.Run(async () => await task);
             using var token = new CancellationTokenSource();
             var completedTask = await Task.WhenAny(wrapperTask, Task.Delay(timeoutMillis, token.Token));
+            Console.WriteLine($"completedTask: {completedTask}");
             if (completedTask == wrapperTask)
             {
+                Console.WriteLine($"Cancel: {completedTask}");
                 token.Cancel();
                 return await task;
             }
             throw new TimeoutException($"Assertion: timed out after {timeoutMillis}ms.");
         }
-
 
         public static async Task<object> AwaitSignal(this GdUnit3.ISceneRunner runner, string signal, params object[] args)
         {
@@ -46,7 +46,6 @@ namespace GdUnit3
                 return default;
             return await AwaitSignal(runner, signal, args);
         }
-
 
         public sealed class GodotMethodAwaiter<V>
         {
@@ -81,7 +80,6 @@ namespace GdUnit3
                 });
             }
         }
-
 
         public static async Task<object> AwaitSignal(this Godot.Node node, string signal, params object[] args)
         {
@@ -240,12 +238,14 @@ namespace GdUnit3.Core
         {
             Engine.TimeScale = (float)TimeFactor;
             Engine.IterationsPerSecond = (int)(SavedIterationsPerSecond * TimeFactor);
+            Console.WriteLine($"Activate time factor {Engine.TimeScale} {Engine.IterationsPerSecond}");
         }
 
         private void DeactivateTimeFactor()
         {
             Engine.TimeScale = 1;
             Engine.IterationsPerSecond = SavedIterationsPerSecond;
+            Console.WriteLine($"Deaktivate time factor {Engine.TimeScale} {Engine.IterationsPerSecond}");
         }
 
         private void Print(string message, params object[] args)

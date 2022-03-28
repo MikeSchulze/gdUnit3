@@ -6,14 +6,13 @@ extends Reference
 # signal_name: signal name
 # args: the expected signal arguments as an array
 # timeout: the timeout in ms, default is set to 2000ms
-static func await_signal_on(source :Object, signal_name :String, args :Array, timeout_millis :int = 2000) -> GDScriptFunctionState:
+static func await_signal_on(source :Object, signal_name :String, args :Array = [], timeout_millis :int = 2000) -> GDScriptFunctionState:
 	var awaiter = GdUnitSignalAwaiter.new(timeout_millis)
 	yield(awaiter.on_signal(source, signal_name, args), "completed")
 	if awaiter.is_interrupted():
 		# TODO add failure report!!!
 		prints("interruped await_signal_on", signal_name, args, timeout_millis, "ms")
 	return
-	#prints("emitted after", awaiter.elapsed_time(), "ms")
 
 # Waits for for a given amount of milliseconds
 # example:

@@ -109,7 +109,6 @@ func test_timeout_fuzzer(fuzzer := Fuzzers.rangei(-23, 22), timeout=2000):
 	var value = fuzzer.next_value()
 	# wait each iteration 200ms 
 	yield(await_millis(200), "completed")
-	prints(fuzzer.iteration_index())
 	# we expects the test is interupped after 10 iterations because each test takes 200ms
 	# and the test should not longer run than 2000ms
 	assert_int(fuzzer.iteration_index())\

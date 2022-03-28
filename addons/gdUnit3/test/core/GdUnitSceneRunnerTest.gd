@@ -9,6 +9,14 @@ const __source = 'res://addons/gdUnit3/src/core/GdUnitSceneRunner.gd'
 func load_test_scene() -> Node:
 	return auto_free(load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn").instance())
 
+
+func before():
+	# use a dedicated FPS because we calculate frames by time
+	Engine.set_target_fps(60)
+
+func after():
+	Engine.set_target_fps(0)
+
 func test_get_property() -> void:
 	var runner := scene_runner(load_test_scene())
 	
@@ -44,9 +52,9 @@ func test_simulate_frames(timeout = 5000) -> void:
 	# after 10 frame is still white
 	assert_object(box1.color).is_equal(Color.white)
 	
-	# we wait 90 more frames
-	yield(runner.simulate_frames(90), "completed")
-	# after 100 frames the box one should be changed to red
+	# we wait 30 more frames
+	yield(runner.simulate_frames(30), "completed")
+	# after 40 frames the box one should be changed to red
 	assert_object(box1.color).is_equal(Color.red)
 
 func test_simulate_frames_withdelay(timeout = 4000) -> void:

@@ -8,6 +8,20 @@ namespace GdUnit3.Tests
     [TestSuite]
     class SceneRunnerTest
     {
+
+        [Before]
+        public void Setup()
+        {
+            // use a dedicated FPS because we calculate frames by time
+            Engine.TargetFps = 60;
+        }
+
+        [After]
+        public void TearDown()
+        {
+            Engine.TargetFps = 0;
+        }
+
         [TestCase]
         public void GetProperty()
         {
@@ -199,14 +213,14 @@ namespace GdUnit3.Tests
 
             runner.SetTimeFactor(10);
             // wait until 'color_cycle()' returns 'black' (using small timeout we expect the method will now processes 10 times faster)
-            await runner.AwaitMethod<string>("color_cycle").IsEqual("black").WithTimeout(200);
+            await runner.AwaitMethod<string>("color_cycle").IsEqual("black").WithTimeout(300);
             // verify the box is changed to green (last color cycle step)
             var box1 = runner.GetProperty<Godot.ColorRect>("_box1");
             AssertObject(box1.Color).IsEqual(Colors.Green);
 
-            // wait for returns 'red' but will never happen and expect is interrupted after 200ms
-            await AssertThrown(runner.AwaitMethod<string>("color_cycle").IsEqual("red").WithTimeout(200))
-               .ContinueWith(result => result.Result.HasMessage("Assertion: timed out after 200ms."));
+            // wait for returns 'red' but will never happen and expect is interrupted after 250ms
+            await AssertThrown(runner.AwaitMethod<string>("color_cycle").IsEqual("red").WithTimeout(250))
+               .ContinueWith(result => result.Result.HasMessage("Assertion: timed out after 250ms."));
         }
     }
 }

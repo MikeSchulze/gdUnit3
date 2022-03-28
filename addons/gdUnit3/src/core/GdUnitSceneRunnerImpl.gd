@@ -28,15 +28,14 @@ func _init(test_suite :WeakRef, scene :Node, verbose :bool):
 	_simulate_start_time = LocalTime.now()
 
 func _notification(what):
-	#prints("_notification", GdObjects.notification_as_string(what), self, _current_scene, _scene_tree)
 	if what == NOTIFICATION_PREDELETE:
+		# reset time factor to normal
 		__deactivate_time_factor()
 		if is_instance_valid(_current_scene):
 			_scene_tree.root.remove_child(_current_scene)
 		_scene_tree = null
 		_current_scene = null
 		_test_suite = null
-		# reset time factor to normal
 		# we hide the scene/main window after runner is finished 
 		OS.window_maximized = false
 		OS.set_window_minimized(true)
@@ -140,6 +139,7 @@ func simulate_mouse_button_release(buttonIndex :int) -> GdUnitSceneRunner:
 # whilst a value of 0.5 means the game moves at half the regular speed.
 func set_time_factor(time_factor := 1.0) -> GdUnitSceneRunner:
 	_time_factor = min(9.0, time_factor)
+	__activate_time_factor()
 	__print("set time factor: %f" % _time_factor)
 	__print("set physics iterations_per_second: %d" % (_saved_iterations_per_second*_time_factor))
 	return self
@@ -148,7 +148,6 @@ func set_time_factor(time_factor := 1.0) -> GdUnitSceneRunner:
 # frames: amount of frames to process
 # delta_milli: the time delta between a frame in milliseconds
 func simulate_frames(frames: int, delta_milli :int = -1) -> GdUnitSceneRunner:
-	__activate_time_factor()
 	var time_shift_frames := max(1, frames / _time_factor)
 	for frame in time_shift_frames:
 		_is_simulate_runnig = true
@@ -156,7 +155,6 @@ func simulate_frames(frames: int, delta_milli :int = -1) -> GdUnitSceneRunner:
 			yield(_scene_tree, "idle_frame")
 		else:
 			yield(_scene_tree.create_timer(delta_milli * 0.001), "timeout")
-	__deactivate_time_factor()
 	_is_simulate_runnig = false
 	return self
 
@@ -174,18 +172,14 @@ func simulate_until_object_signal(source :Object, signal_name :String, arg0 = nu
 	source.connect(signal_name, self, "__interupt_simulate")
 	_expected_signal_args = [arg0, arg1, arg2, arg3, arg4, arg5]
 	_is_simulate_runnig = true
-	__activate_time_factor()
 	while _is_simulate_runnig:
 		yield(_scene_tree, "idle_frame")
-	__deactivate_time_factor()
 	return self
 
 func await_func(func_name :String, args := [], expeced := GdUnitAssert.EXPECT_SUCCESS) -> GdUnitFuncAssert:
-	__activate_time_factor()
 	return GdUnitFuncAssertImpl.new(_test_suite, _current_scene, func_name, args, expeced)
 
 func await_func_on(instance :Object, func_name :String, args := [], expeced := GdUnitAssert.EXPECT_SUCCESS) -> GdUnitFuncAssert:
-	__activate_time_factor()
 	return GdUnitFuncAssertImpl.new(_test_suite, instance, func_name, args, expeced)
 
 # Waits for given signal is emited by the scene until a specified timeout to fail
@@ -193,9 +187,7 @@ func await_func_on(instance :Object, func_name :String, args := [], expeced := G
 # args: the expected signal arguments as an array
 # timeout: the timeout in ms, default is set to 2000ms
 func await_signal(signal_name :String, args := [], timeout := 2000 ):
-	__activate_time_factor()
 	yield(GdUnitAwaiter.await_signal_on(_current_scene, signal_name, args, timeout), "completed")
-	__deactivate_time_factor()
 
 # Waits for given signal is emited by the <source> until a specified timeout to fail
 # source: the object from which the signal is emitted
@@ -203,9 +195,7 @@ func await_signal(signal_name :String, args := [], timeout := 2000 ):
 # args: the expected signal arguments as an array
 # timeout: the timeout in ms, default is set to 2000ms
 func await_signal_on(source :Object, signal_name :String, args := [], timeout := 2000 ):
-	__activate_time_factor()
 	yield(GdUnitAwaiter.await_signal_on(source, signal_name, args, timeout), "completed")
-	__deactivate_time_factor()
 
 func __interupt_simulate(arg0 = null, arg1 = null, arg2 = null, arg3 = null, arg4 = null, arg5 = null):
 	var current_signal_args = [arg0, arg1, arg2, arg3, arg4, arg5]

@@ -221,7 +221,6 @@ static func mock_on_script(clazz, mock_mode :String, memory_pool :int, function_
 	
 	if debug_write:
 		mock.resource_path = GdUnitTools.create_temp_dir("mock") + "/Mock%s.gd" % clazz_name
-		prints("debug mock at:", ProjectSettings.globalize_path(mock.resource_path))
 		Directory.new().remove(mock.resource_path)
 		ResourceSaver.save(mock.resource_path, mock)
 	var error = mock.reload(true)
