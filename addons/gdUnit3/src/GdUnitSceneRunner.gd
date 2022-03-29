@@ -12,7 +12,7 @@ func wait_emit_signal(instance :Object, signal_name :String, args := [], timeout
 	return yield(await_signal_on(instance, signal_name, args, timeout), "completed")
 
 func wait_func(source :Object, func_name :String, args := [], expeced := GdUnitAssert.EXPECT_SUCCESS) -> GdUnitFuncAssert:
-	push_warning("DEPRECATED!: 'wait_func(<source>, <func_name>, <args>)' is deprecated. Use  'await_func_on(<source>, <func_name>, <args>) instead.'")
+	push_warning("DEPRECATED!: 'wait_func(<source>, <func_name>, <args>)' is deprecated. Use  'await_func(<func_name>, <args>)' or 'await_func_on(<source>, <func_name>, <args>)' instead.")
 	return await_func_on(source, func_name, args, expeced)
 
 # Sets the mouse cursor to given position relative to the viewport.

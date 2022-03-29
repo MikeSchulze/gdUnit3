@@ -114,6 +114,19 @@ namespace GdUnit3
             }
         }
 
+        public async static Task<IExceptionAssert> AssertThrown(Task task)
+        {
+            try
+            {
+                await task;
+                return default;
+            }
+            catch (Exception e)
+            {
+                return new ExceptionAssert<object>(e);
+            }
+        }
+
         /// ----------- Helpers -------------------------------------------------------------------------------------------------------
 
         ///<summary>

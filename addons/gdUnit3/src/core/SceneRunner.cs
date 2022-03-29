@@ -11,17 +11,26 @@ namespace GdUnit3
 
     public static class GdUnitAwaiter
     {
+        public static async Task WithTimeout(this Task task, int timeoutMillis)
+        {
+            var wrapperTask = Task.Run(async () => await task);
+            using var token = new CancellationTokenSource();
+            var completedTask = await Task.WhenAny(wrapperTask, Task.Delay(timeoutMillis, token.Token));
+            if (completedTask != wrapperTask)
+                throw new TimeoutException($"Timed out after {timeoutMillis}ms.");
+            token.Cancel();
+            await task;
+        }
+
         public static async Task<T> WithTimeout<T>(this Task<T> task, int timeoutMillis)
         {
             var wrapperTask = Task.Run(async () => await task);
             using var token = new CancellationTokenSource();
             var completedTask = await Task.WhenAny(wrapperTask, Task.Delay(timeoutMillis, token.Token));
-            if (completedTask == wrapperTask)
-            {
-                token.Cancel();
-                return await task;
-            }
-            throw new TimeoutException($"AwaitOnSignal: timed out after {timeoutMillis}ms.");
+            if (completedTask != wrapperTask)
+                throw new TimeoutException($"Timed out after {timeoutMillis}ms.");
+            token.Cancel();
+            return await task;
         }
 
         public static async Task<IAssertBase<V>> WithTimeout<V>(this Task<IAssertBase<V>> task, int timeoutMillis)
@@ -29,22 +38,10 @@ namespace GdUnit3
             var wrapperTask = Task.Run(async () => await task);
             using var token = new CancellationTokenSource();
             var completedTask = await Task.WhenAny(wrapperTask, Task.Delay(timeoutMillis, token.Token));
-            Console.WriteLine($"completedTask: {completedTask}");
-            if (completedTask == wrapperTask)
-            {
-                Console.WriteLine($"Cancel: {completedTask}");
-                token.Cancel();
-                return await task;
-            }
-            throw new TimeoutException($"Assertion: timed out after {timeoutMillis}ms.");
-        }
-
-        public static async Task<object> AwaitSignal(this GdUnit3.ISceneRunner runner, string signal, params object[] args)
-        {
-            object[] signalArgs = await runner.Scene().ToSignal(runner.Scene(), signal);
-            if (signalArgs.SequenceEqual(args))
-                return default;
-            return await AwaitSignal(runner, signal, args);
+            if (completedTask != wrapperTask)
+                throw new TimeoutException($"Assertion: timed out after {timeoutMillis}ms.");
+            token.Cancel();
+            return await task;
         }
 
         public sealed class GodotMethodAwaiter<V>
@@ -81,14 +78,13 @@ namespace GdUnit3
             }
         }
 
-        public static async Task<object> AwaitSignal(this Godot.Node node, string signal, params object[] args)
+        public static async Task AwaitSignal(this Godot.Node node, string signal, params object[] args)
         {
-            object[] signalArgs = await node.ToSignal(node, signal);
+            object[] signalArgs = await Engine.GetMainLoop().ToSignal(node, signal);
             if (signalArgs.SequenceEqual(args))
-                return default;
-            return await AwaitSignal(node, signal, args);
+                return;
+            await AwaitSignal(node, signal, args);
         }
-
     }
 }
 
@@ -96,7 +92,6 @@ namespace GdUnit3.Core
 {
     using Godot;
     using Executions;
-    using Tools;
     internal sealed class SceneRunner : GdUnit3.ISceneRunner
     {
         private SceneTree SceneTree { get; set; }
@@ -219,33 +214,29 @@ namespace GdUnit3.Core
             return this;
         }
 
-        public async Task<GdUnit3.ISceneRunner> SimulateFrames(uint frames, uint deltaPeerFrame)
+        public async Task SimulateFrames(uint frames, uint deltaPeerFrame)
         {
             for (int frame = 0; frame < frames; frame++)
                 await AwaitMillis(deltaPeerFrame);
-            return this;
         }
 
-        public async Task<GdUnit3.ISceneRunner> SimulateFrames(uint frames)
+        public async Task SimulateFrames(uint frames)
         {
             var timeShiftFrames = Math.Max(1, frames / TimeFactor);
             for (int frame = 0; frame < timeShiftFrames; frame++)
                 await AwaitIdleFrame();
-            return this;
         }
 
         private void ActivateTimeFactor()
         {
             Engine.TimeScale = (float)TimeFactor;
             Engine.IterationsPerSecond = (int)(SavedIterationsPerSecond * TimeFactor);
-            Console.WriteLine($"Activate time factor {Engine.TimeScale} {Engine.IterationsPerSecond}");
         }
 
         private void DeactivateTimeFactor()
         {
             Engine.TimeScale = 1;
             Engine.IterationsPerSecond = SavedIterationsPerSecond;
-            Console.WriteLine($"Deaktivate time factor {Engine.TimeScale} {Engine.IterationsPerSecond}");
         }
 
         private void Print(string message, params object[] args)
@@ -283,7 +274,7 @@ namespace GdUnit3.Core
         public GdUnitAwaiter.GodotMethodAwaiter<V> AwaitMethod<V>(string methodName) =>
             new GdUnitAwaiter.GodotMethodAwaiter<V>(CurrentScene, methodName);
 
-        public SignalAwaiter AwaitIdleFrame() => SceneTree.ToSignal(SceneTree, "idle_frame");
+        public async Task AwaitIdleFrame() => await Task.Run(() => SceneTree.ToSignal(SceneTree, "idle_frame"));
 
         public async Task AwaitMillis(uint timeMillis)
         {
@@ -293,7 +284,13 @@ namespace GdUnit3.Core
             }
         }
 
-        public SignalAwaiter AwaitSignal(string signal) => SceneTree.ToSignal(CurrentScene, signal);
+        public async Task AwaitSignal(string signal, params object[] args)
+        {
+            object[] signalArgs = await SceneTree.ToSignal(CurrentScene, signal);
+            if (signalArgs.SequenceEqual(args))
+                return;
+            await AwaitSignal(signal, args);
+        }
 
         public object Invoke(string name, params object[] args)
         {

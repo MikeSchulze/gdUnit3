@@ -86,8 +86,8 @@ namespace GdUnit3
         /// <summary>
         /// Sets how fast or slow the scene simulation is processed (clock ticks versus the real).
         /// <code>
-        ///     'It defaults to 1.0. A value of 2.0 means the game moves twice as fast as real life,'
-        ///     'whilst a value of 0.5 means the game moves at half the regular speed'
+        ///     // It defaults to 1.0. A value of 2.0 means the game moves twice as fast as real life,
+        ///     // whilst a value of 0.5 means the game moves at half the regular speed
         /// </code>
         /// </summary>
         /// <param name="timeFactor"></param>
@@ -96,71 +96,79 @@ namespace GdUnit3
 
         /// <summary>
         /// Simulates scene processing for a certain number of frames by given delta peer frame by ignoring the current time factor
-        /// <example>
         /// <code>
-        ///     'Waits until 100 frames are rendered with a delta of 20ms peer frame'
+        ///     // Waits until 100 frames are processed with a delta of 20ms peer frame
         ///     await runner.SimulateFrames(100, 20);
         /// </code>
-        /// </example>
         /// </summary>
         /// <param name="frames">amount of frames to process</param>
         /// <param name="deltaPeerFrame">the time delta between a frame in milliseconds</param>
-        /// <returns></returns>
-        Task<ISceneRunner> SimulateFrames(uint frames, uint deltaPeerFrame);
+        /// <returns>Task to wait</returns>
+        Task SimulateFrames(uint frames, uint deltaPeerFrame);
 
         /// <summary>
         /// Simulates scene processing for a certain number of frames.
         /// <example>
         /// <code>
-        ///     'Waits until 100 frames are rendered'
+        ///     // Waits until 100 frames are processed
         ///     await runner.SimulateFrames(100);
         /// </code>
         /// </example>
         /// </summary>
         /// <param name="frames">amount of frames to process</param>
-        /// <returns></returns>
-        Task<ISceneRunner> SimulateFrames(uint frames);
+        /// <returns>Task to wait</returns>
+        Task SimulateFrames(uint frames);
 
         /// <summary>
         /// Waits until next frame is processed (signal idle_frame)
         /// <example>
         /// <code>
-        ///     'Waits until next frame is processed'
-        ///     await runner.AwaitOnIdleFrame();
+        ///     // Waits until next frame is processed
+        ///     await runner.AwaitIdleFrame();
         /// </code>
         /// </example>
-        /// <code>await OnIdleFrame();</code>
         /// </summary>
-        /// <returns>SignalAwaiter</returns>
-        SignalAwaiter AwaitIdleFrame();
+        /// <returns>Task to wait</returns>
+        Task AwaitIdleFrame();
 
-
+        /// <summary>
+        /// Returns a method awaiter to wait for a specific method result.
+        /// <example>
+        /// <code>
+        ///     // Waits until '10' is returnd by the method 'calculateX()' or will be interrupted after a timeout of 3s
+        ///     await runner.AwaitMethod("calculateX").IsEqual(10).WithTimeout(3000);
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="V">The expected result type</typeparam>
+        /// <param name="methodName">The name of the method to wait</param>
+        /// <returns>GodotMethodAwaiter</returns>
         GdUnitAwaiter.GodotMethodAwaiter<V> AwaitMethod<V>(string methodName);
 
         /// <summary>
         /// Waits for given signal is emited.
         /// <example>
         /// <code>
-        ///     'Waits for signal "mySignal"'
-        ///     await runner.AwaitOnSignal("mySignal");
+        ///     // Waits for signal "mySignal" is emited by the scene.
+        ///     await runner.AwaitSignal("mySignal");
         /// </code>
         /// </example>
         /// </summary>
-        /// <param name="signal">The name of signal to wait</param>
-        /// <returns>SignalAwaiter</returns>
-        SignalAwaiter AwaitSignal(string signal);
+        /// <param name="signal">The name of the signal to wait</param>
+        /// <returns>Task to wait</returns>
+        Task AwaitSignal(string signal, params object[] args);
 
         /// <summary>
         /// Waits for a specific amount of milliseconds.
         /// <example>
         /// <code>
-        ///     'Waits for two seconds'
-        ///     await runner.AwaitOnMillis(2000);
+        ///     // Waits for two seconds
+        ///     await runner.AwaitMillis(2000);
         /// </code>
         /// </example>
         /// </summary>
         /// <param name="timeMillis">Seconds to wait. 1.0 for one Second</param>
-        /// <returns>SignalAwaiter</returns>
+        /// <returns>Task to wait</returns>
         Task AwaitMillis(uint timeMillis);
 
         /// <summary>
@@ -179,7 +187,7 @@ namespace GdUnit3
         /// </summary>
         /// <param name="name">The name of method to invoke</param>
         /// <param name="args">The function arguments</param>
-        /// <returns>The invoced method return value</returns>
+        /// <returns>The return value of invoked method</returns>
         /// <exception cref="MissingMethodException"/>
         public object Invoke(string name, params object[] args);
 
@@ -188,7 +196,7 @@ namespace GdUnit3
         /// </summary>
         /// <typeparam name="T">The type of the property</typeparam>
         /// <param name="name">The parameter name</param>
-        /// <returns>Returns the value of property or throws a MissingFieldException</returns>
+        /// <returns>The value of the property or throws a MissingFieldException</returns>
         /// <exception cref="MissingFieldException"/>
         public T GetProperty<T>(string name);
 
