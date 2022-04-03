@@ -59,6 +59,30 @@ namespace GdUnit3
         /// <returns></returns>  
         public static IArrayAssert AssertArray(IEnumerable current) => new ArrayAssert(current);
 
+
+        public static IAssertBase<T> AssertThat<T>(T current)
+        {
+            if (typeof(string) == typeof(T))
+                return (IAssertBase<T>)AssertString(Convert.ToString(current));
+            if (typeof(bool) == typeof(T))
+                return (IAssertBase<T>)AssertBool(Convert.ToBoolean(current));
+            if (typeof(int) == typeof(T))
+                return (IAssertBase<T>)AssertInt(Convert.ToInt32(current));
+            if (typeof(double) == typeof(T))
+                return (IAssertBase<T>)AssertFloat(Convert.ToDouble(current));
+            if (typeof(IEnumerable) == typeof(T))
+                return (IAssertBase<T>)AssertArray(current as IEnumerable);
+            return (IAssertBase<T>)AssertObject(current as object);
+        }
+
+        public static IStringAssert AssertThat(string current) => AssertString(current);
+        public static IBoolAssert AssertThat(bool current) => AssertBool(current);
+        public static IIntAssert AssertThat(int current) => AssertInt(current);
+        public static IDoubleAssert AssertThat(double current) => AssertFloat(current);
+        public static IObjectAssert AssertThat(object current) => AssertObject(current);
+        public static IArrayAssert AssertThat(IEnumerable current) => AssertArray(current);
+
+
         /// <summary>
         /// An Assertion to verify for expecting exceptions
         /// </summary>
@@ -87,6 +111,19 @@ namespace GdUnit3
             catch (Exception e)
             {
                 return new ExceptionAssert<T>(e);
+            }
+        }
+
+        public async static Task<IExceptionAssert> AssertThrown(Task task)
+        {
+            try
+            {
+                await task;
+                return default;
+            }
+            catch (Exception e)
+            {
+                return new ExceptionAssert<object>(e);
             }
         }
 

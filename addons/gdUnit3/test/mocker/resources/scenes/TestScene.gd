@@ -32,15 +32,27 @@ func _on_test_pressed(button_id :int):
 func _on_panel_color_changed(box :ColorRect, color :Color):
 	box.color = color
 
+func create_timer(timeout :float) -> Timer:
+	var timer :Timer = Timer.new()
+	add_child(timer)
+	timer.connect("timeout", self, "_on_timeout", [timer])
+	timer.set_one_shot(true)
+	timer.start(timeout)
+	return timer
+
+func _on_timeout(timer :Timer):
+	remove_child(timer)
+	timer.queue_free()
+
 func color_cycle() -> String:
 	prints("color_cycle")
-	yield(get_tree().create_timer(0.500), "timeout")
+	yield(create_timer(0.500), "timeout")
 	emit_signal("panel_color_change", _box1, Color.red)
 	prints("timer1")
-	yield(get_tree().create_timer(0.500), "timeout")
+	yield(create_timer(0.500), "timeout")
 	emit_signal("panel_color_change", _box1, Color.blue)
 	prints("timer2")
-	yield(get_tree().create_timer(0.500), "timeout")
+	yield(create_timer(0.500), "timeout")
 	emit_signal("panel_color_change", _box1, Color.green)
 	prints("cycle end")
 	return "black"

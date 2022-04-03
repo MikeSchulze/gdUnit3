@@ -153,6 +153,7 @@ func _validate_callback(func_name :String, expected = null):
 	
 	sleep.stop()
 	sleep.queue_free()
+	timeout.stop()
 	timeout.queue_free()
 	#if caller deleted? the test is intrrupted by a timeout
 	if not is_instance_valid(caller):

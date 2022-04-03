@@ -107,6 +107,10 @@ func test_parse_arguments():
 	# enum as prefix in value name
 	assert_array(_parser.parse_arguments("func get_value( type := ENUM_A) -> int:"))\
 		.contains_exactly([GdFunctionArgument.new("type", "", "ENUM_A")])
+	
+	assert_array(_parser.parse_arguments("func create_timer(timeout :float) -> Timer:")) \
+		.contains_exactly([
+			GdFunctionArgument.new("timeout", "float")])
 
 func test_parse_arguments_default_build_in_type_String():
 	assert_array(_parser.parse_arguments("func foo(arg1 :String, arg2=\"default\"):")) \

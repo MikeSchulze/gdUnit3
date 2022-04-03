@@ -132,8 +132,7 @@ func test_before(test_suite :GdUnitTestSuite, test_case :_TestCase, fire_event :
 func test_after(test_suite :GdUnitTestSuite, test_case :_TestCase, fire_event := true) -> GDScriptFunctionState:
 	_memory_pool.free_pool()
 	# give objects time to finallize
-	if fire_event:
-		yield(get_tree(), "idle_frame")
+	yield(get_tree(), "idle_frame")
 	_memory_pool.monitor_stop()
 	var execution_orphan_nodes = _memory_pool.orphan_nodes()
 	if execution_orphan_nodes > 0:
@@ -163,7 +162,7 @@ func test_after(test_suite :GdUnitTestSuite, test_case :_TestCase, fire_event :=
 	
 	var reports := _report_collector.get_reports(STAGE_TEST_CASE_BEFORE|STAGE_TEST_CASE_EXECUTE|STAGE_TEST_CASE_AFTER)
 	var is_error :bool = test_case.is_interupted() and not test_case.is_expect_interupted()
-	var error_count := _report_collector.count_errors(STAGE_TEST_CASE_BEFORE|STAGE_TEST_CASE_EXECUTE|STAGE_TEST_CASE_AFTER)
+	var error_count := _report_collector.count_errors(STAGE_TEST_CASE_BEFORE|STAGE_TEST_CASE_EXECUTE|STAGE_TEST_CASE_AFTER) if is_error else 0
 	var failure_count := _report_collector.count_failures(STAGE_TEST_CASE_BEFORE|STAGE_TEST_CASE_EXECUTE|STAGE_TEST_CASE_AFTER)
 	var is_warning := _report_collector.has_warnings(STAGE_TEST_CASE_BEFORE|STAGE_TEST_CASE_EXECUTE|STAGE_TEST_CASE_AFTER)
 	
@@ -231,6 +230,12 @@ func execute_test_case_iterative(test_suite :GdUnitTestSuite, test_case :_TestCa
 			var report :GdUnitReport = _report_collector.pop_front(STAGE_TEST_CASE_EXECUTE)
 			_report_collector.add_report(STAGE_TEST_CASE_EXECUTE, GdUnitReport.new() \
 					.create(GdUnitReport.FAILURE, report.line_number(), GdAssertMessages.fuzzer_interuped(iteration, report.message())))
+		
+		if test_case.is_interupted():
+			is_failure = true
+			_report_collector.add_report(STAGE_TEST_CASE_EXECUTE, GdUnitReport.new() \
+					.create(GdUnitReport.INTERUPTED, test_case.line_number(), GdAssertMessages.fuzzer_interuped(iteration, "timedout")))
+		
 		# call after_test for each iteration
 		_test_run_state = test_after(test_suite, test_case, iteration==test_case.iterations()-1 or is_failure)
 		if GdUnitTools.is_yielded(_test_run_state):
@@ -258,12 +263,12 @@ func Execute(test_suite :GdUnitTestSuite) -> GDScriptFunctionState:
 		yield(fs, "completed")
 	
 	if not test_suite.is_skipped():
-		# needs at least one yielding otherwise the waiting funxtion is blocked
+		# needs at least one yielding otherwise the waiting function is blocked
 		if test_suite.get_child_count() == 0:
 			yield(get_tree(), "idle_frame")
 		
 		for test_case_index in test_suite.get_child_count():
-			var test_case = test_suite.get_child(test_case_index)
+			var test_case := test_suite.get_child(test_case_index) as _TestCase
 			# only iterate over test case, we need to filter because of possible adding other child types on before() or before_test()
 			if not test_case is _TestCase:
 				continue
@@ -279,12 +284,11 @@ func Execute(test_suite :GdUnitTestSuite) -> GDScriptFunctionState:
 			# is yielded than wait for completed
 			if GdUnitTools.is_yielded(fs):
 				yield(fs, "completed")
-				if test_case.is_interupted():
-					# it needs to go this hard way to kill the outstanding yields of a test case when the test timed out
-					# we delete the current test suite where is execute the current test case to kill the function state
-					# and replace it by a clone without function state
-					test_suite = clone_test_suite(test_suite)
-	
+			if test_case.is_interupted():
+				# it needs to go this hard way to kill the outstanding yields of a test case when the test timed out
+				# we delete the current test suite where is execute the current test case to kill the function state
+				# and replace it by a clone without function state
+				test_suite = yield(clone_test_suite(test_suite), "completed")
 	fs = suite_after(test_suite)
 	if GdUnitTools.is_yielded(fs):
 		yield(fs, "completed")
@@ -292,29 +296,34 @@ func Execute(test_suite :GdUnitTestSuite) -> GDScriptFunctionState:
 	emit_signal("ExecutionCompleted")
 	return null
 
+func copy_properties(source :Object, target :Object):
+	if not source is _TestCase and not source is GdUnitTestSuite:
+		return
+	for property in source.get_property_list():
+		var property_name = property["name"]
+		target.set(property_name, source.get(property_name))
+
 # clones a test suite and moves the test cases to new instance
 func clone_test_suite(test_suite :GdUnitTestSuite) -> GdUnitTestSuite:
+	dispose_timers(test_suite)
 	var parent := test_suite.get_parent()
 	var _test_suite = test_suite.duplicate()
-	# copy all property values
-	for property in test_suite.get_property_list():
-		var property_name = property["name"]
-		_test_suite.set(property_name, test_suite.get(property_name))
-	
-	# remove incomplete duplicated childs
-	for child in _test_suite.get_children():
-		_test_suite.remove_child(child)
-		child.free()
-	assert(_test_suite.get_child_count() == 0)
-	# now move original test cases to duplicated test suite
+	copy_properties(test_suite, _test_suite)
 	for child in test_suite.get_children():
-		child.get_parent().remove_child(child)
-		_test_suite.add_child(child)
+		copy_properties(child, _test_suite.find_node(child.get_name(), true, false))
 	# finally free current test suite instance
 	parent.remove_child(test_suite)
+	yield(get_tree(), "idle_frame")
 	test_suite.free()
 	parent.add_child(_test_suite)
 	return _test_suite
+
+func dispose_timers(test_suite :GdUnitTestSuite):
+	for child in test_suite.get_children():
+		if child is Timer:
+			child.stop()
+			test_suite.remove_child(child)
+			child.free()
 
 static func create_fuzzers(test_suite :GdUnitTestSuite, test_case :_TestCase) -> Array:
 	if not test_case.has_fuzzer():
