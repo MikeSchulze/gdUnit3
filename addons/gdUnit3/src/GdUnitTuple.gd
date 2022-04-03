@@ -2,8 +2,8 @@
 class_name GdUnitTuple
 extends Reference
 
+const NO_ARG = GdUnitConstants.NO_ARG
 
-const NO_ARG = "<--null-->"
 var __values :Array = Array()
 
 func _init(arg0, arg1, arg2=NO_ARG, arg3=NO_ARG, arg4=NO_ARG, arg5=NO_ARG, arg6=NO_ARG, arg7=NO_ARG, arg8=NO_ARG, arg9=NO_ARG):

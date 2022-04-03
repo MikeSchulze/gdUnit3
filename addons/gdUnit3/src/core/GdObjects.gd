@@ -326,18 +326,8 @@ static func is_object(value) -> bool:
 static func is_script(value) -> bool:
 	return is_object(value) and value is Script
 
-static func is_testsuite(script :GDScript) -> bool:
-	if not script:
-		return false
-	var stack := [script]
-	while not stack.empty():
-		var current := stack.pop_front() as Script
-		var base := current.get_base_script() as Script
-		if base != null:
-			if base.resource_path.find("GdUnitTestSuite") != -1:
-				return true
-			stack.push_back(base)
-	return false
+static func is_test_suite(script :Script) -> bool:
+	return is_gd_testsuite(script) or is_cs_testsuite(script)
 
 static func is_native_class(value) -> bool:
 	return is_object(value) and value.to_string() != null and value.to_string().find("GDScriptNativeClass") != -1
@@ -347,6 +337,41 @@ static func is_scene(value) -> bool:
 
 static func is_scene_resource_path(value) -> bool:
 	return value is String and value.ends_with(".tscn")
+
+static func is_cs_script(script :Script) -> bool:
+	# we need to check by stringify name because on non mono Godot the class CSharpScript is not available
+	return str(script).find("CSharpScript") != -1
+
+static func is_vs_script(script :Script) -> bool:
+	return script is VisualScript
+
+static func is_gd_script(script :Script) -> bool:
+	return script is GDScript
+
+static func is_native_script(script :Script) -> bool:
+	return script is NativeScript
+
+static func is_cs_test_suite(instance :Node) -> bool:
+	return instance.has_meta("CS_TESTSUITE")
+	
+static func is_cs_testsuite(script :Script) -> bool:
+	if GdUnitTools.is_mono_supported():
+		var csTools = GdUnitSingleton.get_or_create_singleton("CsTools", "res://addons/gdUnit3/src/core/CsTools.cs")
+		var clazz_path = ProjectSettings.globalize_path(script.resource_path)
+		return csTools.IsTestSuite(clazz_path)
+	return false;
+	
+static func is_gd_testsuite(script :Script) -> bool:
+	if is_gd_script(script):
+		var stack := [script]
+		while not stack.empty():
+			var current := stack.pop_front() as Script
+			var base := current.get_base_script() as Script
+			if base != null:
+				if base.resource_path.find("GdUnitTestSuite") != -1:
+					return true
+				stack.push_back(base)
+	return false
 
 static func is_instance(value) -> bool:
 	if not is_object(value) or is_native_class(value):
@@ -547,8 +572,8 @@ static func array_to_string(elements, delimiter := "\n") -> String:
 		if formatted.length() > 0 :
 			formatted += delimiter
 		formatted += str(element)
-		if formatted.length() > 64:
-			return formatted + delimiter + "..."
+		#if formatted.length() > 64:
+		#	return formatted + delimiter + "..."
 	return formatted
 
 # Filters an array by given value

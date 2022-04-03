@@ -244,11 +244,11 @@ func test_timeout_and_assert_fails(timeout = 500) -> void:
 
 func timed_function() -> String:
 	var color = Color.red
-	yield(get_tree().create_timer(0.100), "timeout")
+	yield(await_millis(100), "completed")
 	color = Color.green
-	yield(get_tree().create_timer(0.100), "timeout")
+	yield(await_millis(100), "completed")
 	color = Color.blue
-	yield(get_tree().create_timer(0.100), "timeout")
+	yield(await_millis(100), "completed")
 	color = Color.black
 	return color
 

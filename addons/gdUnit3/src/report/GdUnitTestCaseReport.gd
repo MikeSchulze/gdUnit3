@@ -3,7 +3,8 @@ extends GdUnitReportSummary
 
 var _failure_reports :Array
 
-func _init(test_name :String, is_error :bool = false, is_failed :bool = false, orphans :int = 0, skipped :int = 0, failure_reports :Array = [], duration :int = 0):
+func _init(resource_path :String, test_name :String, is_error :bool = false, is_failed :bool = false, orphans :int = 0, skipped :int = 0, failure_reports :Array = [], duration :int = 0):
+	_resource_path = resource_path
 	_name = test_name
 	_test_count = 1
 	_error_count = is_error

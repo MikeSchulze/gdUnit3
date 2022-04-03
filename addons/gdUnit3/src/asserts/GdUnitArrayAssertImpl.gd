@@ -148,7 +148,7 @@ func contains(expected) -> GdUnitArrayAssert:
 	return report_success()
 
 # Verifies that the current Array contains only the given values and nothing else, in order.
-func contains_exactly(expected) -> GdUnitArrayAssert:
+func contains_exactly(expected :Array) -> GdUnitArrayAssert:
 	var current_ := __current()
 	var expected_ := __expected(expected)
 	

@@ -7,7 +7,6 @@ signal sync_rpc_id_result_received
 onready var _client :GdUnitTcpClient = $GdUnitTcpClient
 onready var _executor :GdUnitExecutor = $GdUnitExecutor
 
-
 enum {
 	INIT,
 	RUN,
@@ -18,6 +17,7 @@ var _config := GdUnitRunnerConfig.new()
 var _test_suites_to_process :Array
 var _state = INIT
 var _signal_handler :SignalHandler
+var _cs_executor
 
 # holds the received sync rpc result
 var _result :Result
@@ -30,15 +30,26 @@ func _init():
 	_signal_handler = GdUnitSingleton.get_or_create_singleton(SignalHandler.SINGLETON_NAME, "res://addons/gdUnit3/src/core/event/SignalHandler.gd")
 	# store current runner instance to engine meta data to can be access in as a singleton
 	Engine.set_meta(GDUNIT_RUNNER, self)
+	if GdUnitTools.is_mono_supported():
+		_cs_executor = load("res://addons/gdUnit3/src/core/execution/Executor.cs").new()
+		_cs_executor.AddGdTestEventListener(self)
 
 func _ready():
-	_config.load()
+	var config_result := _config.load()
+	if config_result.is_error():
+		push_error(config_result.error_message())
+		_state = EXIT
+		return
+	_client.connect("connection_failed", self, "_on_connection_failed")
 	var result := _client.start("127.0.0.1", _config.server_port())
 	if result.is_error():
 		push_error(result.error_message())
 		return
-	_test_suites_to_process = load_test_suits()
 	_state = INIT
+
+func _on_connection_failed(message :String):
+	prints("_on_connection_failed", message, _test_suites_to_process)
+	_state = STOP
 
 func _notification(what):
 	#prints("GdUnitRunner", self, GdObjects.notification_as_string(what))
@@ -50,6 +61,7 @@ func _process(delta):
 		INIT:
 			# wait until client is connected to the GdUnitServer
 			if _client.is_client_connected():
+				_test_suites_to_process = load_test_suits()
 				gdUnitInit()
 				_state = RUN
 		RUN:
@@ -58,26 +70,22 @@ func _process(delta):
 				_state = STOP
 			else:
 				# process next test suite
-				var test_suite := _test_suites_to_process.pop_front() as GdUnitTestSuite
-				var fs = _executor.execute(test_suite)
-				# is yielded than wait for completed
-				if GdUnitTools.is_yielded(fs):
-					set_process(false)
-					yield(fs, "completed")
-					set_process(true)
+				set_process(false)
+				var test_suite = _test_suites_to_process.pop_front()
+				add_child(test_suite)
+				var executor = _cs_executor if GdObjects.is_cs_test_suite(test_suite) else _executor
+				var fs = executor.Execute(test_suite)
+				yield(executor, "ExecutionCompleted")
+				set_process(true)
 		STOP:
 			_state = EXIT
 			# give the engine small amount time to finish the rpc
+			_on_Executor_send_event(GdUnitStop.new())
 			yield(get_tree().create_timer(0.1), "timeout")
 			yield(get_tree(), "idle_frame")
-			_on_Executor_send_event(GdUnitStop.new())
+			get_tree().quit(0)
 
 func load_test_suits() -> Array:
-	var result := _config.load()
-	if result.is_error():
-		push_error(result.error_message())
-		_state = EXIT
-		return []
 	var to_execute := _config.to_execute()
 	if to_execute.empty():
 		prints("No tests selected to execute!")
@@ -99,16 +107,15 @@ func gdUnitInit() -> void:
 	send_message("Scaned %d test suites" % _test_suites_to_process.size())
 	var total_count = _collect_test_case_count(_test_suites_to_process)
 	_on_Executor_send_event(GdUnitInit.new(_test_suites_to_process.size(), total_count))
-	for t in _test_suites_to_process:
-		var test_suite := t as GdUnitTestSuite
+	for test_suite in _test_suites_to_process:
 		send_test_suite(test_suite)
 
-func _filter_test_case(test_suites :Array, test_case_names :Array) -> void:
-	if test_case_names.empty():
+func _filter_test_case(test_suites :Array, includes_tests :Array) -> void:
+	if includes_tests.empty():
 		return
 	for test_suite in test_suites:
 		for test_case in test_suite.get_children():
-			if not test_case_names.has(test_case.get_name()):
+			if not includes_tests.has(test_case.get_name()):
 				test_suite.remove_child(test_case)
 				test_case.free()
 
@@ -122,10 +129,14 @@ func _collect_test_case_count(testSuites :Array) -> int:
 func send_message(message :String):
 	_client.rpc_send(RPCMessage.of(message))
 
-func send_test_suite(test_suite :GdUnitTestSuite):
+func send_test_suite(test_suite):
 	_client.rpc_send(RPCGdUnitTestSuite.of(test_suite))
 
 func _on_Executor_send_event(event :GdUnitEvent):
+	_client.rpc_send(RPCGdUnitEvent.of(event))
+
+func PublishEvent(data) -> void:
+	var event := GdUnitEvent.new().deserialize(data.AsDictionary())
 	_client.rpc_send(RPCGdUnitEvent.of(event))
 
 #func get_last_push_error() -> Result:

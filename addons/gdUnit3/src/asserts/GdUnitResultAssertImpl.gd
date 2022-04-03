@@ -26,7 +26,7 @@ func report_error(error :String) -> GdUnitResultAssert:
 func has_failure_message(expected: String) -> GdUnitResultAssert:
 	_base.has_failure_message(expected)
 	return self
-	
+
 func starts_with_failure_message(expected: String) -> GdUnitResultAssert:
 	_base.starts_with_failure_message(expected)
 	return self
@@ -52,7 +52,7 @@ func is_not_null() -> GdUnitResultAssert:
 	_base.is_not_null()
 	return self
 
-# Verifies that the result is ends up with empty 
+# Verifies that the result is ends up with empty
 func is_empty() -> GdUnitResultAssert:
 	var result := __current()
 	if result == null or not result.is_empty():

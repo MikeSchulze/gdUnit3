@@ -57,12 +57,6 @@ func test_is_not_instanceof():
 		.is_not_instanceof(Node)\
 		.has_failure_message("Expected not be a instance of <Node>")
 
-func test_is_not_instanceof_on_null_value():
-	assert_object(null, GdUnitAssert.EXPECT_FAIL)\
-		.is_not_null()\
-		.is_instanceof(Node)\
-		.has_failure_message("Expected instance of:\n 'Node'\n But it was 'Null'")
-
 func test_is_null():
 	assert_object(null).is_null()
 	# should fail because the current is not null

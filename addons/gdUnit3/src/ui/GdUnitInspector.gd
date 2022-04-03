@@ -192,7 +192,7 @@ func extend_script_editor_popup(tab_container :Control) -> void:
 
 func _on_script_editor_context_menu_show(context_menu :PopupMenu):
 	var current_script := _editor_interface.get_script_editor().get_current_script()
-	if GdObjects.is_testsuite(current_script):
+	if GdObjects.is_test_suite(current_script):
 		context_menu.add_separator()
 		# save menu entry index
 		var current_index := context_menu.get_item_count()
@@ -281,7 +281,7 @@ func _gdUnit_run(debug :bool) -> void:
 	# before start we have to save all changed test suites
 	save_test_suites_before_run()
 	# wait until all changes are saved
-	yield(get_tree(), "idle_frame")
+	#yield(get_tree(), "idle_frame")
 
 	emit_signal("gdunit_runner_start")
 	if debug:
@@ -300,7 +300,6 @@ func _gdUnit_run(debug :bool) -> void:
 	#prints("execute ", OS.get_executable_path(), arguments)
 	_current_runner_process_id = OS.execute(OS.get_executable_path(), arguments, false, output, false);
 	_is_running = true
-
 
 func _gdUnit_stop(client_id :int) -> void:
 	# don't stop if is already stopped

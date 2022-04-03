@@ -6,7 +6,7 @@ func test_equals_string():
 	var c := "abc"
 	var d := "abC"
 	
-	assert_bool(GdObjects.equals("", "")).is_true()	
+	assert_bool(GdObjects.equals("", "")).is_true()
 	assert_bool(GdObjects.equals(a, "")).is_true()
 	assert_bool(GdObjects.equals("", a)).is_true()
 	assert_bool(GdObjects.equals(a, a)).is_true()
@@ -55,8 +55,7 @@ func test_equals_array():
 	assert_bool(GdObjects.equals(a, Dictionary())).is_false()
 	assert_bool(GdObjects.equals(a, Vector2.ONE)).is_false()
 	assert_bool(GdObjects.equals(a, Vector3.ONE)).is_false()
-	
-	
+
 func test_equals_dictionary():
 	var a := {}
 	var b := {}
@@ -112,7 +111,6 @@ func test_equals_class():
 	assert_bool(GdObjects.equals(c, d)).is_true()
 	assert_bool(GdObjects.equals(d, c)).is_true()
 	
-	
 	assert_bool(GdObjects.equals(a, null)).is_false()
 	assert_bool(GdObjects.equals(null, a)).is_false()
 	assert_bool(GdObjects.equals(a, c)).is_false()
@@ -146,7 +144,6 @@ func test_is_primitive_type():
 	assert_bool(GdObjects.is_primitive_type(0)).is_true()
 	assert_bool(GdObjects.is_primitive_type(0.1)).is_true()
 	assert_bool(GdObjects.is_primitive_type("")).is_true()
-
 	assert_bool(GdObjects.is_primitive_type(Vector2.ONE)).is_false()
 
 func test_is_array_type():
@@ -159,7 +156,6 @@ func test_is_array_type():
 	assert_bool(GdObjects.is_array_type(PoolStringArray())).is_true()
 	assert_bool(GdObjects.is_array_type(PoolVector2Array())).is_true()
 	assert_bool(GdObjects.is_array_type(PoolVector3Array())).is_true()
-	
 	assert_bool(GdObjects.is_array_type(false)).is_false()
 
 func test_string_diff_empty():
@@ -167,7 +163,7 @@ func test_string_diff_empty():
 	assert_array(diffs).has_size(2)
 	assert_array(diffs[0].to_ascii()).is_empty()
 	assert_array(diffs[1].to_ascii()).is_empty()
-	
+
 func test_string_diff_equals():
 	var diffs := GdObjects.string_diff("Abc", "Abc")
 	var expected_l_diff = PoolByteArray([ord('A'), ord('b'), ord('c')])
@@ -206,7 +202,6 @@ func test_is_type():
 	assert_bool(GdObjects.is_type([])).is_false()
 	assert_bool(GdObjects.is_type("abc")).is_false()
 	
-	
 	assert_bool(GdObjects.is_type(null)).is_false()
 	# an object type
 	assert_bool(GdObjects.is_type(Node)).is_true()
@@ -219,7 +214,6 @@ func test_is_type():
 	# on inner class type
 	assert_bool(GdObjects.is_type(CustomClass.InnerClassA)).is_true()
 	assert_bool(GdObjects.is_type(CustomClass.InnerClassC)).is_true()
-	
 	
 	# for instances must allways endup with false
 	assert_bool(GdObjects.is_type(auto_free(Node.new()))).is_false()
@@ -425,7 +419,6 @@ func test_can_instance():
 	assert_bool(GdObjects.can_instance(Camera)).is_true()
 	assert_bool(GdObjects.can_instance(Person)).is_true()
 	assert_bool(GdObjects.can_instance(CustomClass.InnerClassA)).is_true()
-	
 	assert_bool(GdObjects.can_instance(TreeItem)).is_true()
 
 # creates a test instance by given class name or resource path
@@ -532,7 +525,7 @@ func test_extract_class_functions() -> void:
 	for f in functions:
 		if f["name"] == "get_path":
 			assert_str(GdFunctionDescriptor.extract_from(f)._to_string()).is_equal("func get_path() -> String:")
-
+	
 	functions = GdObjects.extract_class_functions("CustomResourceTestClass", ["res://addons/gdUnit3/test/mocker/resources/CustomResourceTestClass.gd"])
 	for f in functions:
 		if f["name"] == "get_path":
@@ -591,3 +584,13 @@ func test_is_snake_case() -> void:
 	assert_bool(GdObjects.is_snake_case("myclassname")).is_true()
 	assert_bool(GdObjects.is_snake_case("MyClassName")).is_false()
 	assert_bool(GdObjects.is_snake_case("my_class_nameTest")).is_false()
+
+func test_is_test_suite() -> void:
+	assert_bool(GdObjects.is_test_suite(GdUnitTestResourceLoader.load_gd_script("res://addons/gdUnit3/test/core/ResultTest.gd"))).is_true()
+	if GdUnitTools.is_mono_supported():
+		assert_bool(GdObjects.is_test_suite(GdUnitTestResourceLoader.load_cs_script("res://addons/gdUnit3/test/core/ExampleTestSuite.cs"))).is_true()
+	assert_bool(GdObjects.is_test_suite(GdUnitTestResourceLoader.load_cs_script("res://addons/gdUnit3/test/core/resources/testsuites/mono/NotATestSuite.cs"))).is_false()
+	# currently not supported
+	assert_bool(GdObjects.is_test_suite(NativeScript.new())).is_false()
+	assert_bool(GdObjects.is_test_suite(PluginScript.new())).is_false()
+	assert_bool(GdObjects.is_test_suite(VisualScript.new())).is_false()

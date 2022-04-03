@@ -73,10 +73,10 @@ func test_create_test_suite_pascal_case_path():
 	var temp_dir := GdUnitTools.create_temp_dir("TestSuiteScannerTest")
 	# on source with class_name is set
 	var source_path := "res://addons/gdUnit3/test/core/resources/naming_conventions/PascalCaseWithClassName.gd"
-	var suite_path := temp_dir + "/test/MyClassTest.gd"
+	var suite_path := temp_dir + "/test/MyClassTest1.gd"
 	var result := _TestSuiteScanner.create_test_suite(suite_path, source_path)
 	assert_that(result.is_success()).is_true()
-	assert_str(result.value()).is_equal("user://tmp/TestSuiteScannerTest/test/MyClassTest.gd")
+	assert_str(result.value()).is_equal(suite_path)
 	assert_file(result.value()).exists()\
 		.is_file()\
 		.is_script()\
@@ -92,10 +92,10 @@ func test_create_test_suite_pascal_case_path():
 			""])
 	# on source with class_name is NOT set
 	source_path = "res://addons/gdUnit3/test/core/resources/naming_conventions/PascalCaseWithoutClassName.gd"
-	suite_path = temp_dir + "/test/MyClassTest.gd"
+	suite_path = temp_dir + "/test/MyClassTest2.gd"
 	result = _TestSuiteScanner.create_test_suite(suite_path, source_path)
 	assert_that(result.is_success()).is_true()
-	assert_str(result.value()).is_equal("user://tmp/TestSuiteScannerTest/test/MyClassTest.gd")
+	assert_str(result.value()).is_equal(suite_path)
 	assert_file(result.value()).exists()\
 		.is_file()\
 		.is_script()\
@@ -114,10 +114,10 @@ func test_create_test_suite_snake_case_path():
 	var temp_dir := GdUnitTools.create_temp_dir("TestSuiteScannerTest")
 	# on source with class_name is set
 	var source_path :="res://addons/gdUnit3/test/core/resources/naming_conventions/snake_case_with_class_name.gd"
-	var suite_path := temp_dir + "/test/my_class_test.gd"
+	var suite_path := temp_dir + "/test/my_class_test1.gd"
 	var result := _TestSuiteScanner.create_test_suite(suite_path, source_path)
 	assert_that(result.is_success()).is_true()
-	assert_str(result.value()).is_equal("user://tmp/TestSuiteScannerTest/test/my_class_test.gd")
+	assert_str(result.value()).is_equal(suite_path)
 	assert_file(result.value()).exists()\
 		.is_file()\
 		.is_script()\
@@ -133,10 +133,10 @@ func test_create_test_suite_snake_case_path():
 			""])
 	# on source with class_name is NOT set
 	source_path ="res://addons/gdUnit3/test/core/resources/naming_conventions/snake_case_without_class_name.gd"
-	suite_path = temp_dir + "/test/my_class_test.gd"
+	suite_path = temp_dir + "/test/my_class_test2.gd"
 	result = _TestSuiteScanner.create_test_suite(suite_path, source_path)
 	assert_that(result.is_success()).is_true()
-	assert_str(result.value()).is_equal("user://tmp/TestSuiteScannerTest/test/my_class_test.gd")
+	assert_str(result.value()).is_equal(suite_path)
 	assert_file(result.value()).exists()\
 		.is_file()\
 		.is_script()\
@@ -209,19 +209,22 @@ func test_build_test_suite_path() -> void:
 
 func test_parse_and_add_test_cases() -> void:
 	var default_time := GdUnitSettings.test_timeout()
-	var scanner = auto_free(_TestSuiteScanner.new())
+	var scanner :_TestSuiteScanner = auto_free(_TestSuiteScanner.new())
+	# fake a test suite
 	var test_suite :GdUnitTestSuite = auto_free(GdUnitTestSuite.new())
-	var script_path := "res://addons/gdUnit3/test/core/resources/test_script_with_arguments.gd"
+	var script := GDScript.new()
+	script.resource_path = "res://addons/gdUnit3/test/core/resources/test_script_with_arguments.gd"
+	test_suite.set_script(script)
 	var test_case_names := PoolStringArray([
-			"test_no_args",
-			"test_with_timeout",
-			"test_with_fuzzer",
-			"test_with_fuzzer_iterations",
-			"test_with_multible_fuzzers",
-			"test_multiline_arguments_a",
-			"test_multiline_arguments_b",
-			"test_multiline_arguments_c"])
-	scanner._parse_and_add_test_cases(test_suite, script_path, test_case_names)
+		"test_no_args",
+		"test_with_timeout",
+		"test_with_fuzzer",
+		"test_with_fuzzer_iterations",
+		"test_with_multible_fuzzers",
+		"test_multiline_arguments_a",
+		"test_multiline_arguments_b",
+		"test_multiline_arguments_c"])
+	scanner._parse_and_add_test_cases(test_suite, test_suite.get_script(), test_case_names)
 	assert_array(test_suite.get_children())\
 		.extractv(extr("get_name"), extr("timeout"), extr("fuzzers"), extr("iterations"))\
 		.contains_exactly([
@@ -264,7 +267,7 @@ func test_scan_by_inheritance_class_path() -> void:
 		ts.free()
 
 func test_get_test_case_line_number() -> void:
-	assert_int(_TestSuiteScanner.get_test_case_line_number("res://addons/gdUnit3/test/core/_TestSuiteScannerTest.gd", "get_test_case_line_number")).is_equal(266)
+	assert_int(_TestSuiteScanner.get_test_case_line_number("res://addons/gdUnit3/test/core/_TestSuiteScannerTest.gd", "get_test_case_line_number")).is_equal(269)
 	assert_int(_TestSuiteScanner.get_test_case_line_number("res://addons/gdUnit3/test/core/_TestSuiteScannerTest.gd", "unknown")).is_equal(-1)
 
 func test__to_naming_convention() -> void:
@@ -282,3 +285,13 @@ func test__to_naming_convention() -> void:
 	assert_str(_TestSuiteScanner._to_naming_convention("MyClass")).is_equal("MyClassTest")
 	assert_str(_TestSuiteScanner._to_naming_convention("my_class")).is_equal("MyClassTest")
 	assert_str(_TestSuiteScanner._to_naming_convention("myclass")).is_equal("MyclassTest")
+
+func test_is_script_format_supported() -> void:
+	assert_bool(_TestSuiteScanner._is_script_format_supported("res://exampe.gd")).is_true()
+	if GdUnitTools.is_mono_supported():
+		assert_bool(_TestSuiteScanner._is_script_format_supported("res://exampe.cs")).is_true()
+	else:
+		assert_bool(_TestSuiteScanner._is_script_format_supported("res://exampe.cs")).is_false()
+	assert_bool(_TestSuiteScanner._is_script_format_supported("res://exampe.gdns")).is_false()
+	assert_bool(_TestSuiteScanner._is_script_format_supported("res://exampe.vs")).is_false()
+	assert_bool(_TestSuiteScanner._is_script_format_supported("res://exampe.tres")).is_false()

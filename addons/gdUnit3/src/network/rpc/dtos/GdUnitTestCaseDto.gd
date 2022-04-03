@@ -3,9 +3,12 @@ extends GdUnitResourceDto
 
 var _line_number :int = -1
 
-func serialize(test_case :Object) -> Dictionary:
+func serialize(test_case) -> Dictionary:
 	var serialized := .serialize(test_case)
-	serialized["line_number"] = test_case.line_number()
+	if test_case.has_method("line_number"):
+		serialized["line_number"] = test_case.line_number()
+	else:
+		serialized["line_number"] = test_case.get_meta("LineNumber")
 	return serialized
 
 func deserialize(data :Dictionary) -> GdUnitResourceDto:

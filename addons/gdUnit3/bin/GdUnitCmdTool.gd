@@ -15,6 +15,7 @@ class CLIRunner extends Node:
 	const RETURN_ERROR    = 100
 	const RETURN_WARNING  = 101
 	
+	
 	var _state = INIT
 	var _signal_handler
 	var _test_suites_to_process :Array
@@ -24,6 +25,7 @@ class CLIRunner extends Node:
 	var _report_max: int = DEFAULT_REPORT_COUNT
 	var _runner_config := GdUnitRunnerConfig.new()
 	var _console := CmdConsole.new()
+	var _cs_executor
 	
 	var _cmd_options: = CmdOptions.new([
 			CmdOption.new("-a, --add", "-a <directory|path of testsuite>", "Adds the given test suite or directory to the execution pipeline.", TYPE_STRING),
@@ -48,6 +50,11 @@ class CLIRunner extends Node:
 		_executor = GdUnitExecutor.new()
 		# stop on first test failure to fail fast
 		_executor.fail_fast(true)
+		
+		if GdUnitTools.is_mono_supported():
+			_cs_executor = load("res://addons/gdUnit3/src/core/execution/Executor.cs").new()
+			_cs_executor.AddGdTestEventListener(self)
+		
 		var err := _executor.connect("send_event", self, "_on_executor_event")
 		if err != OK:
 			push_error("Error on startup, can't connect executor for 'send_event'")
@@ -60,17 +67,18 @@ class CLIRunner extends Node:
 				gdUnitInit()
 				_state = RUN
 			RUN:
-				set_process(false)
 				# all test suites executed
 				if _test_suites_to_process.empty():
 					_state = STOP
 				else:
+					set_process(false)
 					# process next test suite
-					var test_suite := _test_suites_to_process.pop_front() as GdUnitTestSuite
-					var fs = _executor.execute(test_suite)
-					if fs is GDScriptFunctionState:
-						yield(fs, "completed")
-				set_process(true)
+					var test_suite := _test_suites_to_process.pop_front() as Node
+					add_child(test_suite)
+					var executor = _cs_executor if GdObjects.is_cs_test_suite(test_suite) else _executor
+					executor.Execute(test_suite)
+					yield(executor, "ExecutionCompleted")
+					set_process(true)
 			STOP:
 				_state = EXIT
 				_on_executor_event(GdUnitStop.new())
@@ -217,7 +225,7 @@ class CLIRunner extends Node:
 		for test_suite in test_suites:
 			skip_suite(test_suite, skipped)
 	
-	func skip_suite(test_suite :GdUnitTestSuite, skipped :Dictionary) -> void:
+	func skip_suite(test_suite :Node, skipped :Dictionary) -> void:
 		var skipped_suites := skipped.keys()
 		if skipped_suites.empty():
 			return
@@ -233,7 +241,7 @@ class CLIRunner extends Node:
 				else:
 					# skip tests
 					for test_to_skip in skipped_tests:
-						var test_case :_TestCase = test_suite.find_node(test_to_skip, true, false)
+						var test_case :_TestCase = test_suite.get_test_case_by_name(test_to_skip)
 						if test_case:
 							test_case.skip(true)
 						else:
@@ -245,6 +253,9 @@ class CLIRunner extends Node:
 			total += (test_suite as Node).get_child_count()
 		return total
 	
+	func PublishEvent(data) -> void:
+		_on_executor_event(GdUnitEvent.new().deserialize(data.AsDictionary()))
+
 	func _on_executor_event(event :GdUnitEvent):
 		match event.type():
 			GdUnitEvent.INIT:
@@ -260,13 +271,14 @@ class CLIRunner extends Node:
 				_report.add_testsuite_report(GdUnitTestSuiteReport.new(event.resource_path(), event.suite_name()))
 			
 			GdUnitEvent.TESTSUITE_AFTER:
-				_report.update_test_suite_report(event.suite_name(), event.is_failed(), event.skipped_count(), event.orphan_nodes(),  event.elapsed_time())
+				_report.update_test_suite_report(event.resource_path(), event.is_failed(), event.skipped_count(), event.orphan_nodes(),  event.elapsed_time())
 				
 			GdUnitEvent.TESTCASE_BEFORE:
-				_report.add_testcase_report(event.suite_name(), GdUnitTestCaseReport.new(event.test_name()))
+				_report.add_testcase_report(event.resource_path(), GdUnitTestCaseReport.new(event.resource_path(), event.test_name()))
 			
 			GdUnitEvent.TESTCASE_AFTER:
 				var test_report := GdUnitTestCaseReport.new(
+					event.resource_path(),
 					event.test_name(),
 					event.is_error(),
 					event.is_failed(),
@@ -274,7 +286,7 @@ class CLIRunner extends Node:
 					event.skipped_count(),
 					event.reports(),
 					event.elapsed_time())
-				_report.update_testcase_report(event.suite_name(), test_report)
+				_report.update_testcase_report(event.resource_path(), test_report)
 		print_status(event)
 	
 	func report_exit_code(report :GdUnitHtmlReport) -> int:

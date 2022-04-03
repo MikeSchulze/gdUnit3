@@ -66,7 +66,6 @@ margin_bottom = -4.0
 margin_right = 100.0
 margin_bottom = 520.0
 rect_min_size = Vector2( 100, 100 )
-color = Color( 0.694118, 0.207843, 0.207843, 1 )
 
 [node name="Label" type="Label" parent="VBoxContainer/PanelContainer/HBoxContainer/Panel1"]
 anchor_right = 1.0
@@ -82,7 +81,6 @@ margin_left = 104.0
 margin_right = 204.0
 margin_bottom = 520.0
 rect_min_size = Vector2( 100, 100 )
-color = Color( 0.219608, 0.662745, 0.380392, 1 )
 
 [node name="Label" type="Label" parent="VBoxContainer/PanelContainer/HBoxContainer/Panel2"]
 anchor_right = 1.0
@@ -98,7 +96,6 @@ margin_left = 208.0
 margin_right = 308.0
 margin_bottom = 520.0
 rect_min_size = Vector2( 100, 100 )
-color = Color( 0.12549, 0.286275, 0.776471, 1 )
 
 [node name="Label" type="Label" parent="VBoxContainer/PanelContainer/HBoxContainer/Panel3"]
 anchor_right = 1.0
