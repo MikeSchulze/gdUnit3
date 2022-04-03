@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
@@ -6,6 +7,7 @@ using System.Linq;
 namespace GdUnit3
 {
     using Asserts;
+    using Executions;
     using Godot;
     using static Assertions;
 
@@ -13,35 +15,44 @@ namespace GdUnit3
     {
         public static async Task WithTimeout(this Task task, int timeoutMillis)
         {
+            var lineNumber = GetWithTimeoutLineNumber();
             var wrapperTask = Task.Run(async () => await task);
             using var token = new CancellationTokenSource();
             var completedTask = await Task.WhenAny(wrapperTask, Task.Delay(timeoutMillis, token.Token));
             if (completedTask != wrapperTask)
-                throw new TimeoutException($"Timed out after {timeoutMillis}ms.");
+                throw new ExecutionTimeoutException($"Timed out after {timeoutMillis}ms.", lineNumber);
             token.Cancel();
             await task;
         }
 
         public static async Task<T> WithTimeout<T>(this Task<T> task, int timeoutMillis)
         {
+            var lineNumber = GetWithTimeoutLineNumber();
             var wrapperTask = Task.Run(async () => await task);
             using var token = new CancellationTokenSource();
             var completedTask = await Task.WhenAny(wrapperTask, Task.Delay(timeoutMillis, token.Token));
             if (completedTask != wrapperTask)
-                throw new TimeoutException($"Timed out after {timeoutMillis}ms.");
+                throw new ExecutionTimeoutException($"Timed out after {timeoutMillis}ms.", lineNumber);
             token.Cancel();
             return await task;
         }
 
         public static async Task<IAssertBase<V>> WithTimeout<V>(this Task<IAssertBase<V>> task, int timeoutMillis)
         {
+            var lineNumber = GetWithTimeoutLineNumber();
             var wrapperTask = Task.Run(async () => await task);
             using var token = new CancellationTokenSource();
             var completedTask = await Task.WhenAny(wrapperTask, Task.Delay(timeoutMillis, token.Token));
             if (completedTask != wrapperTask)
-                throw new TimeoutException($"Assertion: timed out after {timeoutMillis}ms.");
+                throw new ExecutionTimeoutException($"Assertion: timed out after {timeoutMillis}ms.", lineNumber);
             token.Cancel();
             return await task;
+        }
+
+        private static int GetWithTimeoutLineNumber()
+        {
+            StackTrace saveStackTrace = new StackTrace(true);
+            return saveStackTrace.FrameCount > 4 ? saveStackTrace.GetFrame(4).GetFileLineNumber() : -1;
         }
 
         public sealed class GodotMethodAwaiter<V>
@@ -59,31 +70,40 @@ namespace GdUnit3
                     throw new MissingMethodException($"The method '{methodName}' not exist on loaded scene.");
             }
 
-            public async Task<IAssertBase<V>> IsEqual(V expected)
+            public async Task<IAssertBase<V>> IsEqual(V expected) =>
+                await Task.Run<IAssertBase<V>>(async () => await IsReturnValue((current) => Comparable.IsEqual(current, expected).Valid));
+
+            public async Task<IAssertBase<V>> IsNull() =>
+                await Task.Run<IAssertBase<V>>(async () => await IsReturnValue((current) => current == null));
+
+            public async Task<IAssertBase<V>> IsNotNull() =>
+                await Task.Run<IAssertBase<V>>(async () => await IsReturnValue((current) => current != null));
+
+            private delegate bool Comperator(object current);
+            private async Task<IAssertBase<V>> IsReturnValue(Comperator comperator)
             {
-                return await Task.Run<IAssertBase<V>>(async () =>
+                while (true)
                 {
                     var current = Instance.Call(MethodName, Args);
                     if (current is GDScriptFunctionState)
                     {
                         object[] result = await Instance.ToSignal(current as GDScriptFunctionState, "completed");
-                        if (Comparable.IsEqual(result[0], expected).Valid)
-                            return (IAssertBase<V>)AssertThat<V>((V)result[0]);
+                        current = result[0];
                     }
-                    else if (Comparable.IsEqual(current, expected).Valid)
+                    if (comperator(current))
                         return (IAssertBase<V>)AssertThat<V>((V)current);
-
-                    return await IsEqual(expected);
-                });
+                }
             }
         }
 
-        public static async Task AwaitSignal(this Godot.Node node, string signal, params object[] args)
+        public static async Task AwaitSignal(this Godot.Node node, string signal, params object[] expectedArgs)
         {
-            object[] signalArgs = await Engine.GetMainLoop().ToSignal(node, signal);
-            if (signalArgs.SequenceEqual(args))
-                return;
-            await AwaitSignal(node, signal, args);
+            while (true)
+            {
+                object[] signalArgs = await Engine.GetMainLoop().ToSignal(node, signal);
+                if (expectedArgs.Length == 0 || signalArgs.SequenceEqual(expectedArgs))
+                    return;
+            }
         }
     }
 }
@@ -284,13 +304,8 @@ namespace GdUnit3.Core
             }
         }
 
-        public async Task AwaitSignal(string signal, params object[] args)
-        {
-            object[] signalArgs = await SceneTree.ToSignal(CurrentScene, signal);
-            if (signalArgs.SequenceEqual(args))
-                return;
-            await AwaitSignal(signal, args);
-        }
+        public async Task AwaitSignal(string signal, params object[] args) =>
+            await GdUnitAwaiter.AwaitSignal(CurrentScene, signal, args);
 
         public object Invoke(string name, params object[] args)
         {
