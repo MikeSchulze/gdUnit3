@@ -19,6 +19,8 @@ static func report_error(message:String, gd_assert :GdUnitAssert, line_number :i
 		gd_assert._current_error_message = message
 		# use this kind of hack to enable validate error message for expected failure testing
 		Engine.set_meta(LAST_ERROR, message)
+		# reset we expect to fail
+		expect_fail(false)
 		# if we expect to fail we handle as success test
 		if gd_assert._expect_fail:
 			return gd_assert
@@ -35,3 +37,14 @@ static func get_last_error_line_number() -> int:
 	if Engine.has_meta(LAST_ERROR_LINE):
 		return Engine.get_meta(LAST_ERROR_LINE)
 	return -1
+
+static func expect_fail(enabled :bool = true):
+	Engine.set_meta("report_failures", enabled)
+
+static func is_expect_fail() -> bool:
+	if Engine.has_meta("report_failures"):
+		return Engine.get_meta("report_failures")
+	return false
+
+static func current_failure() -> String:
+	return Engine.get_meta(LAST_ERROR)

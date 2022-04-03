@@ -359,6 +359,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/src/GdUnitAwaiter.gd"
 }, {
+"base": "GdUnitTestSuite",
+"class": "GdUnitAwaiterTest",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/test/GdUnitAwaiterTest.gd"
+}, {
 "base": "GdUnitAssert",
 "class": "GdUnitBoolAssert",
 "language": "GDScript",
@@ -1185,6 +1190,7 @@ _global_script_class_icons={
 "GdUnitAssertImpl": "",
 "GdUnitAssertImplTest": "",
 "GdUnitAwaiter": "",
+"GdUnitAwaiterTest": "",
 "GdUnitBoolAssert": "",
 "GdUnitBoolAssertImpl": "",
 "GdUnitBoolAssertImplTest": "",

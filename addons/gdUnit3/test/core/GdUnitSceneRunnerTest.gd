@@ -130,8 +130,6 @@ func test_simulate_key_pressed_in_combination_with_spy():
 func test_simulate_mouse_events():
 	var spyed_scene = spy("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
 	var runner := scene_runner(spyed_scene)
-	# enable for visualisize
-	runner.maximize_view()
 	
 	# test button 1 interaction
 	runner.set_mouse_pos(Vector2(60, 20))
@@ -165,14 +163,14 @@ func test_simulate_mouse_events():
 	yield(await_millis(1200), "completed")
 	verify(spyed_scene)._on_panel_color_changed(spyed_scene._box3, Color.gray)
 
-func test_wait_func_without_time_factor() -> void:
+func test_await_func_without_time_factor() -> void:
 	var runner := scene_runner(load_test_scene())
 	
 	yield(runner.await_func("color_cycle").is_equal("black"), "completed")
 	yield(runner.await_func("color_cycle", [], GdUnitAssert.EXPECT_FAIL).wait_until(500).is_equal("red"), "completed")\
 		.has_failure_message("Expected: is equal 'red' but timed out after 500ms")
 
-func test_wait_func_with_time_factor() -> void:
+func test_await_func_with_time_factor() -> void:
 	var runner := scene_runner(load_test_scene())
 	
 	# set max time factor to minimize waiting time on `runner.wait_func`
@@ -181,7 +179,7 @@ func test_wait_func_with_time_factor() -> void:
 	yield(runner.await_func("color_cycle", [], GdUnitAssert.EXPECT_FAIL).wait_until(100).is_equal("red"), "completed")\
 		.has_failure_message("Expected: is equal 'red' but timed out after 100ms")
 
-func test_wait_signal_without_time_factor() -> void:
+func test_await_signal_without_time_factor() -> void:
 	var runner := scene_runner(load_test_scene())
 	var box1 :ColorRect = runner.get_property("_box1")
 	
@@ -191,12 +189,13 @@ func test_wait_signal_without_time_factor() -> void:
 	yield(runner.await_signal("panel_color_change", [box1, Color.green]), "completed")
 	
 	# should be interrupted is will never change to Color.khaki
+	GdAssertReports.expect_fail()
 	yield(runner.await_signal( "panel_color_change", [box1, Color.khaki], 300), "completed")
-	
-	#yield(runner.wait_emit_signal(runner, "panel_color_change", [runner._box1, Color.khaki], 300, GdUnitAssert.EXPECT_FAIL), "completed")\
-	#	.starts_with_failure_message("Expecting emit signal: 'panel_color_change(")
+	if assert_failed_at(193, "await_signal_on(panel_color_change, [%s, %s]) timed out after 300ms" % [str(box1), str(Color.khaki)]):
+		return
+	fail("test should failed after 300ms on 'await_signal'")
 
-func test_wait_signal_with_time_factor() -> void:
+func test_await_signal_with_time_factor() -> void:
 	var runner := scene_runner(load_test_scene())
 	var box1 :ColorRect = runner.get_property("_box1")
 	# set max time factor to minimize waiting time on `runner.wait_func`
@@ -206,5 +205,41 @@ func test_wait_signal_with_time_factor() -> void:
 	yield(runner.await_signal("panel_color_change", [box1, Color.red], 100), "completed")
 	yield(runner.await_signal("panel_color_change", [box1, Color.blue], 100), "completed")
 	yield(runner.await_signal("panel_color_change", [box1, Color.green], 100), "completed")
+	
+	# should be interrupted is will never change to Color.khaki
+	GdAssertReports.expect_fail()
+	yield(runner.await_signal("panel_color_change", [box1, Color.khaki], 30), "completed")
+	if assert_failed_at(211, "await_signal_on(panel_color_change, [%s, %s]) timed out after 30ms" % [str(box1), str(Color.khaki)]):
+		return
+	fail("test should failed after 30ms on 'await_signal'")
+
+func test_simulate_until_signal() -> void:
+	var runner := scene_runner(load_test_scene())
+	var box1 :ColorRect = runner.get_property("_box1")
+	
+	# set max time factor to minimize waiting time on `runner.wait_func`
+	runner.invoke("start_color_cycle")
+	
+	yield(runner.simulate_until_signal("panel_color_change", box1, Color.red), "completed")
+	yield(runner.simulate_until_signal("panel_color_change", box1, Color.blue), "completed")
+	yield(runner.simulate_until_signal("panel_color_change", box1, Color.green), "completed")
 	#yield(runner.wait_emit_signal(runner, "panel_color_change", [runner._box1, Color.khaki], 30, GdUnitAssert.EXPECT_FAIL), "completed")\
 	#	.starts_with_failure_message("Expecting emit signal: 'panel_color_change(")
+
+func test_simulate_until_object_signal(timeout=2000) -> void:
+	var runner := scene_runner(load_test_scene())
+	
+	# inital no spell is fired
+	assert_object(runner.find_node("Spell")).is_null()
+	
+	# fire spell be pressing enter key
+	runner.simulate_key_pressed(KEY_ENTER)
+	# wait until next frame
+	yield(await_idle_frame(), "completed")
+	var spell = runner.find_node("Spell")
+	
+	# simmulate scene until the spell is explode
+	yield(runner.simulate_until_object_signal(spell, "spell_explode", spell), "completed")
+	
+	# verify spell is removed when is explode
+	assert_object(runner.find_node("Spell")).is_null()

@@ -204,7 +204,6 @@ func execute_test_case_single(test_suite :GdUnitTestSuite, test_case :_TestCase)
 	if GdUnitTools.is_yielded(_test_run_state):
 		yield(_test_run_state, "completed")
 		_test_run_state = null
-	test_case.stop_timer()
 	return _test_run_state
 
 func execute_test_case_iterative(test_suite :GdUnitTestSuite, test_case :_TestCase) -> GDScriptFunctionState:
@@ -245,7 +244,6 @@ func execute_test_case_iterative(test_suite :GdUnitTestSuite, test_case :_TestCa
 		
 		if test_case.is_interupted() or is_failure:
 			break
-	test_case.stop_timer()
 	return _test_run_state
 
 func execute(test_suite :GdUnitTestSuite) -> GDScriptFunctionState:
@@ -270,7 +268,7 @@ func Execute(test_suite :GdUnitTestSuite) -> GDScriptFunctionState:
 			yield(get_tree(), "idle_frame")
 		
 		for test_case_index in test_suite.get_child_count():
-			var test_case = test_suite.get_child(test_case_index)
+			var test_case := test_suite.get_child(test_case_index) as _TestCase
 			# only iterate over test case, we need to filter because of possible adding other child types on before() or before_test()
 			if not test_case is _TestCase:
 				continue
@@ -286,12 +284,11 @@ func Execute(test_suite :GdUnitTestSuite) -> GDScriptFunctionState:
 			# is yielded than wait for completed
 			if GdUnitTools.is_yielded(fs):
 				yield(fs, "completed")
-				if test_case.is_interupted():
-					# it needs to go this hard way to kill the outstanding yields of a test case when the test timed out
-					# we delete the current test suite where is execute the current test case to kill the function state
-					# and replace it by a clone without function state
-					test_suite = yield(clone_test_suite(test_suite), "completed")
-	
+			if test_case.is_interupted():
+				# it needs to go this hard way to kill the outstanding yields of a test case when the test timed out
+				# we delete the current test suite where is execute the current test case to kill the function state
+				# and replace it by a clone without function state
+				test_suite = yield(clone_test_suite(test_suite), "completed")
 	fs = suite_after(test_suite)
 	if GdUnitTools.is_yielded(fs):
 		yield(fs, "completed")
@@ -312,7 +309,6 @@ func clone_test_suite(test_suite :GdUnitTestSuite) -> GdUnitTestSuite:
 	var parent := test_suite.get_parent()
 	var _test_suite = test_suite.duplicate()
 	copy_properties(test_suite, _test_suite)
-	
 	for child in test_suite.get_children():
 		copy_properties(child, _test_suite.find_node(child.get_name(), true, false))
 	# finally free current test suite instance

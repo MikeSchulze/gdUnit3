@@ -76,14 +76,14 @@ func simulate_frames(frames: int, delta_milli :int = -1) -> GdUnitSceneRunner:
 # Simulates scene processing until the given signal is emitted by the scene
 # signal_name: the signal to stop the simulation
 # arg..: optional signal arguments to be matched for stop
-func simulate_until_signal(signal_name :String, arg0 = null, arg1 = null, arg2 = null, arg3 = null, arg4 = null, arg5 = null) -> GdUnitSceneRunner:
+func simulate_until_signal(signal_name :String, arg0=NO_ARG, arg1=NO_ARG, arg2=NO_ARG, arg3=NO_ARG, arg4=NO_ARG, arg5=NO_ARG, arg6=NO_ARG, arg7=NO_ARG, arg8=NO_ARG, arg9=NO_ARG) -> GdUnitSceneRunner:
 	return self
 
 # Simulates scene processing until the given signal is emitted by the given object
 # source: the object that should emit the signal
 # signal_name: the signal to stop the simulation
 # arg..: optional signal arguments to be matched for stop	
-func simulate_until_object_signal(source :Object, signal_name :String, arg0 = null, arg1 = null, arg2 = null, arg3 = null, arg4 = null, arg5 = null) -> GdUnitSceneRunner:
+func simulate_until_object_signal(source :Object, signal_name :String, arg0=NO_ARG, arg1=NO_ARG, arg2=NO_ARG, arg3=NO_ARG, arg4=NO_ARG, arg5=NO_ARG, arg6=NO_ARG, arg7=NO_ARG, arg8=NO_ARG, arg9=NO_ARG) -> GdUnitSceneRunner:
 	return self
 
 # Waits for the function return value until specified timeout or fails

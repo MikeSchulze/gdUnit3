@@ -40,8 +40,17 @@ func after_test() -> void:
 func skip(skipped :bool) -> void:
 	set_meta("gd_skipped", skipped)
 
-func is_failure() -> bool:
+func is_failure(expected_failure :String = NO_ARG) -> bool:
 	return get_meta(GdUnitAssertImpl.GD_TEST_FAILURE) if has_meta(GdUnitAssertImpl.GD_TEST_FAILURE) else false
+
+# Utility to check if a test has failed in a particular line and if there is an error message
+func assert_failed_at(line_number :int, expected_failure :String) -> bool:
+	var is_failed = is_failure()
+	var last_failure = GdAssertReports.current_failure()
+	var last_failure_line = GdAssertReports.get_last_error_line_number()
+	assert_str(last_failure).is_equal(expected_failure)
+	assert_int(last_failure_line).is_equal(line_number)
+	return is_failed
 
 func is_skipped() -> bool:
 	return get_meta("gd_skipped") if has_meta("gd_skipped") else false
@@ -106,7 +115,7 @@ func clear_push_errors() -> void:
 # args: the expected signal arguments as an array
 # timeout: the timeout in ms, default is set to 2000ms
 func await_signal_on(source :Object, signal_name :String, args :Array = [], timeout :int = 2000) -> GDScriptFunctionState:
-	return yield(GdUnitAwaiter.await_signal_on(source, signal_name, args, timeout), "completed")
+	return yield(GdUnitAwaiter.await_signal_on(weakref(self), source, signal_name, args, timeout), "completed")
 
 # Waits until the next idle frame
 func await_idle_frame() -> GDScriptFunctionState:

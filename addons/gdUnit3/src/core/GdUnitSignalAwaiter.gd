@@ -7,12 +7,14 @@ signal signal_emitted(action)
 
 var TIMER_AWAKE = Reference.new()
 var TIMER_INTERRUPTED = Reference.new()
+var _wait_on_idle_frame = false
 var _interrupted := false
 var _time_left := 0
 var _timeout_millis
 
-func _init(timeout_millis :int):
+func _init(timeout_millis :int, wait_on_idle_frame := false):
 	_timeout_millis = timeout_millis
+	_wait_on_idle_frame = wait_on_idle_frame
 
 func _on_sleep_awakening():
 	call_deferred("emit_signal", "signal_emitted", TIMER_AWAKE)
@@ -30,7 +32,7 @@ func is_interrupted() -> bool:
 func elapsed_time() -> int:
 	return _time_left
 
-func on_signal(source :Object, signal_name :String, signal_args :Array):
+func on_signal(source :Object, signal_name :String, expected_signal_args :Array):
 	# register on signal to wait for
 	source.connect(signal_name, self, "_on_signal_emmited")
 	# install timeout timer
@@ -41,13 +43,17 @@ func on_signal(source :Object, signal_name :String, signal_args :Array):
 	timer.start(_timeout_millis * 0.001 * Engine.get_time_scale())
 	# install sleep timer with a time of 50ms between the signal received checks
 	# the sleep timer is need to give engine main loop time to process
+	# if _wait_on_idle_frame set than we skip wait time and wait instead for next idle frame
+	var sleep_time = 0.0001 if _wait_on_idle_frame else 0.05
 	var sleep := Timer.new()
 	Engine.get_main_loop().root.add_child(sleep)
 	sleep.connect("timeout", self, "_on_sleep_awakening")
-	sleep.start(0.05)
+	sleep.start(sleep_time)
 	
 	# wait for signal is emitted or a timeout is happen
 	while true:
+		if _wait_on_idle_frame:
+			yield(Engine.get_main_loop(), "idle_frame")
 		var value = yield(self, "signal_emitted")
 		if value is Reference and value == TIMER_INTERRUPTED:
 			_interrupted = true
@@ -56,7 +62,7 @@ func on_signal(source :Object, signal_name :String, signal_args :Array):
 			continue
 		if not (value is Array):
 			value = [value]
-		if GdObjects.equals(value, signal_args):
+		if expected_signal_args.size() == 0 or GdObjects.equals(value, expected_signal_args):
 			break
 	
 	# stop/cleanup timers

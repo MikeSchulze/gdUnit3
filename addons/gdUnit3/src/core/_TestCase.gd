@@ -46,6 +46,8 @@ func execute(fuzzers := Array(), iteration := 0):
 		_fs = get_parent().call(name)
 	if GdUnitTools.is_yielded(_fs):
 		yield(_fs, "completed")
+	if iteration == _iterations-1:
+		stop_timer()
 	return _fs
 
 func update_fuzzers(fuzzers :Array, iteration :int):
