@@ -1,6 +1,6 @@
 name: CI GdUnit3 on Godot Mono 3.3.x
 
-on: [push, workflow_dispatch]
+on: [push,workflow_dispatch]
   paths-ignore:
     - '**.yml'
 
