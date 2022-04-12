@@ -6,12 +6,6 @@ on:
             - documentation
     workflow_dispatch:
 
-on:
-  push:
-    branches:
-      - documentation
-  workflow_dispatch:
-
 jobs:
   github-pages:
     runs-on: ubuntu-latest
