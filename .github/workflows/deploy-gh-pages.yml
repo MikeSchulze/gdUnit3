@@ -1,24 +1,29 @@
 name: Deploy-GdUnit3-GitHub-Pages
 
 on:
+    push:
+        branches:
+            - documentation
+    workflow_dispatch:
+
+on:
   push:
     branches:
       - documentation
-    paths:	
-      - '_site/**'
   workflow_dispatch:
-      
-jobs:
-  deploy:
-    name: Push static sites to gh-pages
-    runs-on: ubuntu-latest    
-    steps:
-    - uses: actions/checkout@main
 
-    - name: Deploy
-      uses: s0/git-publish-subdir-action@develop
-      env:
-        REPO: self
-        BRANCH: gh-pages
-        FOLDER: _site
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+jobs:
+  github-pages:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/cache@v2
+        with:
+          path: vendor/bundle
+          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile') }}
+          restore-keys: |
+            ${{ runner.os }}-gems-
+      - uses: helaili/jekyll-action@3.9.2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          jekyll_src: '_site'
