@@ -11,8 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      with:
-        ref: documentation
+        with:
+          ref: documentation
       - uses: actions/cache@v2
         with:
           path: vendor/bundle
