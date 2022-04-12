@@ -1,5 +1,8 @@
 name: CI GdUnit3 on Godot 3.4.x
+
 on: [push, workflow_dispatch]
+  paths-ignore:
+    - '**.yml'
 
 jobs:
   testing:
