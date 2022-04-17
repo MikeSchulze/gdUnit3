@@ -7,7 +7,6 @@ assignees: MikeSchulze
 
 ---
 
-
 **Describe What**
 <!-- A clear and concise description of what the refactoring is.-->
 

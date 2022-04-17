@@ -2,7 +2,7 @@
 name: Bug report
 about: Create a issue to help improve GdUnit3
 title: ''
-labels: bug
+labels: bug, task
 assignees: MikeSchulze
 
 ---

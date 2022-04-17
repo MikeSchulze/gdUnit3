@@ -2,8 +2,9 @@
 name: Feature request
 about: Suggest an idea for this project
 title: ''
-labels: 'enhancement'
-assignees: 'MikeSchulze'
+labels: enhancement
+assignees: MikeSchulze
+
 ---
 
 **Is your feature request related to a problem? Please describe.**
