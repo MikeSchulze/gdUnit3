@@ -1,9 +1,9 @@
-
 using Godot;
 
 namespace GdUnit3.Tests.Asserts
 {
     using Executions;
+    using Exceptions;
     using static Assertions;
 
     [TestSuite]

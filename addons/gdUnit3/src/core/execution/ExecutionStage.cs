@@ -8,6 +8,8 @@ using System.Runtime.CompilerServices;
 
 namespace GdUnit3.Executions
 {
+    using Exceptions;
+
     internal abstract class ExecutionStage<T> : IExecutionStage
     {
         private readonly string _name;

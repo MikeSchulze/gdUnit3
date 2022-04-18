@@ -1,5 +1,7 @@
 namespace GdUnit3.Asserts
 {
+    using Exceptions;
+
     internal abstract class AssertBase<V> : IAssertBase<V>
     {
         protected V Current { get; private set; }
@@ -80,7 +82,7 @@ namespace GdUnit3.Asserts
         {
             var failureMessage = CustomFailureMessage ?? message;
             CurrentFailureMessage = failureMessage;
-            throw new Executions.TestFailedException(failureMessage, stackFrameOffset);
+            throw new TestFailedException(failureMessage, stackFrameOffset);
         }
     }
 }
