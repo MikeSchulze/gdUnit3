@@ -13,10 +13,8 @@ extends GdUnitTestSuite
 const __source = '${source_resource_path}'
 """
 
-
 const DEFAULT_TEMP_TS_CS = \
-"""
-// GdUnit generated TestSuite
+"""// GdUnit generated TestSuite
 
 using Godot;
 
