@@ -1,9 +1,6 @@
 tool
 extends MarginContainer
 
-
-
-
 onready var _template_editor :TextEdit = $ScrollContainer/VBoxContainer/Editor
 onready var _tags_editor :TextEdit = $Tags/MarginContainer/TextEdit
 onready var _title_bar :Panel = $ScrollContainer/VBoxContainer/sub_category

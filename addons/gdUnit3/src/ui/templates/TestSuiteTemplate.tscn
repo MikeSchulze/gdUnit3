@@ -1,15 +1,6 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=2 format=2]
 
 [ext_resource path="res://addons/gdUnit3/src/ui/templates/TestSuiteTemplate.gd" type="Script" id=1]
-[ext_resource path="res://addons/gdUnit3/src/update/assets/fonts/static/RobotoMono-Regular.ttf" type="DynamicFontData" id=2]
-
-[sub_resource type="DynamicFont" id=1]
-size = 14
-font_data = ExtResource( 2 )
-
-[sub_resource type="DynamicFont" id=2]
-size = 14
-font_data = ExtResource( 2 )
 
 [node name="TestSuiteTemplate" type="MarginContainer"]
 anchor_right = 1.0
@@ -65,20 +56,10 @@ margin_right = 1024.0
 margin_bottom = 434.0
 rect_min_size = Vector2( 0, 400 )
 size_flags_horizontal = 3
-custom_fonts/font = SubResource( 1 )
 custom_colors/font_color_selected = Color( 0.41, 0.61, 0.91, 0.35 )
 custom_colors/font_color = Color( 0.8, 0.8075, 0.8275, 1 )
 custom_colors/background_color = Color( 0.125, 0.14375, 0.19375, 1 )
 custom_colors/font_color_readonly = Color( 0.8, 0.8075, 0.8275, 1 )
-text = "# GdUnit generated TestSuite
-#warning-ignore-all:unused_argument
-#warning-ignore-all:return_value_discarded
-class_name ${suite_class_name}
-extends GdUnitTestSuite
-
-# TestSuite generated from
-const __source = '${source_resource_path}'
-"
 syntax_highlighting = true
 
 [node name="MarginContainer" type="MarginContainer" parent="ScrollContainer/VBoxContainer/Editor"]
@@ -115,7 +96,7 @@ margin_bottom = 30.0
 rect_min_size = Vector2( 200, 0 )
 hint_tooltip = "Select the script type specific template."
 text = "GD - GDScript"
-items = [ "GD - GDScript", null, false, 0, null, "C# - CSharpScript", null, true, 1, null ]
+items = [ "GD - GDScript", null, false, 1000, null, "C# - CSharpScript", null, false, 2000, null ]
 selected = 0
 __meta__ = {
 "_edit_use_anchors_": false
@@ -174,48 +155,15 @@ margin_right = 1008.0
 margin_bottom = 584.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-custom_fonts/font = SubResource( 2 )
 custom_colors/font_color_selected = Color( 0.41, 0.61, 0.91, 0.35 )
 custom_colors/font_color = Color( 0.8, 0.8075, 0.8275, 1 )
 custom_colors/background_color = Color( 0.125, 0.14375, 0.19375, 1 )
 custom_colors/font_color_readonly = Color( 0.8, 0.8075, 0.8275, 1 )
-text = "
-Tags are replaced when the test-suite is created.
-
-# The class name of the test-suite, formed from the source script.
-${suite_class_name}
-# is used to build the test suite class name
-	class_name ${suite_class_name}
-	extends GdUnitTestSuite
-
-
-# The class name in pascal case, formed from the source script.
-${source_class}
-	# can be used to create the class e.g. for source 'MyClass'
-	var my_test_class := ${source_class}.new()
-	# will be result in
-	var my_test_class := MyClass.new()
-
-# The class as variable name in snake case, formed from the source script.
-${source_var}
-	# Can be used to build the variable name e.g. for source 'MyClass'
-	var ${source_var} := ${source_class}.new()
-	# will be result in
-	var my_class := MyClass.new()
-
-# The full resource path from which the file was created.
-${source_resource_path}
-	# Can be used to load the script in your test
-	var my_script := load(${source_resource_path})
-	# will be result in
-	var my_script := load(\"res://folder/my_class.gd\")
-"
 readonly = true
 syntax_highlighting = true
 context_menu_enabled = false
 shortcut_keys_enabled = false
 virtual_keyboard_enabled = false
-scroll_vertical = 6.0
 
 [connection signal="text_changed" from="ScrollContainer/VBoxContainer/Editor" to="." method="_on_Editor_text_changed"]
 [connection signal="pressed" from="ScrollContainer/VBoxContainer/Editor/MarginContainer/HBoxContainer/Tags" to="." method="_on_Tags_pressed"]

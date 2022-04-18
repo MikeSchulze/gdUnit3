@@ -222,8 +222,6 @@ func _on_fscript_editor_context_menu_pressed(id :int, text_edit :TextEdit):
 	var current_line := text_edit.get_line(cursor_line)
 	# create new test case?
 	if id == MENU_ID_CREATE_TEST:
-		prints("MENU_ID_CREATE_TEST", current_line)
-		
 		var func_name := parser.parse_func_name(current_line)
 		if not func_name.empty():
 			add_test_to_test_suite(current_script, func_name)
