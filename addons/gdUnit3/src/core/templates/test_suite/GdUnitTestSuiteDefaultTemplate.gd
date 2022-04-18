@@ -27,7 +27,7 @@ namespace ${project_name}.Tests
 	public class ${suite_class_name}
 	{
 		// TestSuite generated from
-		private static string __source = "${source_resource_path}";
+		private static string myTestClass = new ${source_class}();
 		
 	}
 }

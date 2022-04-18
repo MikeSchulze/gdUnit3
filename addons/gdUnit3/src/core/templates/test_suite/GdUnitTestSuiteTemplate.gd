@@ -6,8 +6,8 @@ const TEMPLATE_ID_CS = 2000
 
 const DEFAULT_TEMP_TS_GD = GdUnitTestSuiteDefaultTemplate.DEFAULT_TEMP_TS_GD
 const DEFAULT_TEMP_TS_CS = GdUnitTestSuiteDefaultTemplate.DEFAULT_TEMP_TS_CS
-const SUPPORTED_TAGS = """
-Tags are replaced when the test-suite is created.
+const SUPPORTED_TAGS_GD = """
+GdScript Tags are replaced when the test-suite is created.
 
 # The class name of the test-suite, formed from the source script.
 ${suite_class_name}
@@ -36,6 +36,37 @@ ${source_resource_path}
 	var my_script := load(${source_resource_path})
 	# will be result in
 	var my_script := load("res://folder/my_class.gd")
+"""
+
+const SUPPORTED_TAGS_CS = """
+C# Tags are replaced when the test-suite is created.
+
+// The class name of the test-suite, formed from the source class.
+${suite_class_name}
+	// is used to build the test suite class name
+	[TestSuite]
+	public class ${suite_class_name}
+
+// The class name formed from the source class.
+${source_class}
+	// can be used to create the class e.g. for source 'MyClass'
+	private string myTestClass = new ${source_class}();
+	// will be result in
+	private string myTestClass = new MyClass();
+
+// The class as variable name in camelCase, formed from the source class.
+${source_var}
+	// Can be used to build the variable name e.g. for source 'MyClass'
+	private object ${source_var} = new ${source_class}();
+	// will be result in
+	private object myClass = new MyClass();
+
+// The full resource path from which the file was created.
+${source_resource_path}
+	// Can be used to load the script in your test
+	private object myScript = GD.Load(${source_resource_path});
+	// will be result in
+	private object myScript = GD.Load("res://folder/MyClass.cs");
 """
 
 const TAG_TEST_SUITE_CLASS = "${suite_class_name}"
@@ -84,3 +115,12 @@ static func reset_to_default(template_id :int) -> void:
 		GdUnitSettings.save_property(GdUnitSettings.TEMPLATE_TS_GD, DEFAULT_TEMP_TS_GD)
 	else:
 		GdUnitSettings.save_property(GdUnitSettings.TEMPLATE_TS_CS, DEFAULT_TEMP_TS_CS)
+
+static func load_tags(template_id :int) -> String:
+	if template_id != TEMPLATE_ID_GD and template_id != TEMPLATE_ID_CS:
+		push_error("Invalid template '%d' id! Cant load testsuite template" % template_id)
+		return "Error on loading tags"
+	if template_id == TEMPLATE_ID_GD:
+		return SUPPORTED_TAGS_GD
+	else:
+		return SUPPORTED_TAGS_CS

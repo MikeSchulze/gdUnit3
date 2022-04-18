@@ -17,8 +17,8 @@ func _ready():
 	setup_editor_colors()
 	setup_fonts()
 	setup_supported_types()
-	setup_tags_help()
 	load_template(GdUnitTestSuiteTemplate.TEMPLATE_ID_GD)
+	setup_tags_help()
 
 func _notification(what):
 	if what == EditorSettings.NOTIFICATION_EDITOR_SETTINGS_CHANGED:
@@ -65,7 +65,7 @@ func setup_supported_types() -> void:
 	_selected_type.add_item("C# - CSharpScript", GdUnitTestSuiteTemplate.TEMPLATE_ID_CS)
 
 func setup_tags_help() -> void:
-	_tags_editor.set_text(GdUnitTestSuiteTemplate.SUPPORTED_TAGS)
+	_tags_editor.set_text(GdUnitTestSuiteTemplate.load_tags(_selected_template))
 
 func load_template(template_id :int) -> void:
 	_selected_template = template_id
@@ -88,3 +88,4 @@ func _on_Editor_text_changed():
 
 func _on_SelectType_item_selected(index):
 	load_template(_selected_type.get_item_id(index))
+	setup_tags_help()
