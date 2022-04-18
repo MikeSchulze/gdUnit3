@@ -20,7 +20,7 @@ func before() -> void:
 """
 
 func after() -> void:
-	GdUnitTestSuiteTemplate.reset_to_default()
+	GdUnitTestSuiteTemplate.reset_to_default(TEMPLATE_ID_GD)
 
 func test_default_template() -> void:
 	assert_str(GdUnitTestSuiteTemplate.default_template()).is_equal(GdUnitTestSuiteDefaultTemplate.DEFAULT_TEMP_TS_GD)

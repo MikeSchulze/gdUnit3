@@ -959,7 +959,7 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/test/core/resources/naming_conventions/PascalCaseWithClassName.gd"
 }, {
-"base": "Resource",
+"base": "Reference",
 "class": "Person",
 "language": "GDScript",
 "path": "res://addons/gdUnit3/test/resources/core/Person.gd"
