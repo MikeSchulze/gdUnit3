@@ -1,6 +1,7 @@
 namespace GdUnit3.Tests.Asserts
 {
     using Executions;
+    using Exceptions;
     using static Assertions;
 
     [TestSuite]
@@ -12,7 +13,7 @@ namespace GdUnit3.Tests.Asserts
             AssertBool(true).IsTrue();
             AssertThrown(() => AssertBool(false).IsTrue())
                 .IsInstanceOf<TestFailedException>()
-                .HasPropertyValue("LineNumber", 13)
+                .HasPropertyValue("LineNumber", 14)
                 .HasMessage("Expecting: 'True' but is 'False'");
         }
 
@@ -22,7 +23,7 @@ namespace GdUnit3.Tests.Asserts
             AssertBool(false).IsFalse();
             AssertThrown(() => AssertBool(true).IsFalse())
                 .IsInstanceOf<TestFailedException>()
-                .HasPropertyValue("LineNumber", 23)
+                .HasPropertyValue("LineNumber", 24)
                 .HasMessage("Expecting: 'False' but is 'True'");
         }
 
@@ -31,11 +32,11 @@ namespace GdUnit3.Tests.Asserts
         {
             AssertThrown(() => AssertBool(true).IsNull())
                 .IsInstanceOf<TestFailedException>()
-                .HasPropertyValue("LineNumber", 32)
+                .HasPropertyValue("LineNumber", 33)
                 .StartsWithMessage("Expecting be <Null>:\n but is\n  'True'");
             AssertThrown(() => AssertBool(false).IsNull())
                 .IsInstanceOf<TestFailedException>()
-                .HasPropertyValue("LineNumber", 36)
+                .HasPropertyValue("LineNumber", 37)
                 .StartsWithMessage("Expecting be <Null>:\n but is\n  'False'");
         }
 
@@ -53,7 +54,7 @@ namespace GdUnit3.Tests.Asserts
             AssertBool(false).IsEqual(false);
             AssertThrown(() => AssertBool(true).IsEqual(false))
                 .IsInstanceOf<TestFailedException>()
-                .HasPropertyValue("LineNumber", 54)
+                .HasPropertyValue("LineNumber", 55)
                 .HasMessage("Expecting be equal:\n"
                     + "  'False' but is 'True'");
         }
@@ -65,7 +66,7 @@ namespace GdUnit3.Tests.Asserts
             AssertBool(false).IsNotEqual(true);
             AssertThrown(() => AssertBool(true).IsNotEqual(true))
                 .IsInstanceOf<TestFailedException>()
-                .HasPropertyValue("LineNumber", 66)
+                .HasPropertyValue("LineNumber", 67)
                 .HasMessage("Expecting be NOT equal:\n"
                     + "  'True' but is 'True'");
         }
@@ -86,7 +87,7 @@ namespace GdUnit3.Tests.Asserts
                         .OverrideFailureMessage("Custom failure message")
                         .IsFalse())
                 .IsInstanceOf<TestFailedException>()
-                .HasPropertyValue("LineNumber", 85)
+                .HasPropertyValue("LineNumber", 86)
                 .HasMessage("Custom failure message");
         }
 

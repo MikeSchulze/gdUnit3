@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 
 namespace GdUnit3.Asserts
 {
+    using Exceptions;
+
     internal sealed class ExceptionAssert<T> : IExceptionAssert
     {
         private Exception Current { get; set; }
@@ -73,7 +75,7 @@ namespace GdUnit3.Asserts
         private IExceptionAssert ReportTestFailure(string message, object current, object expected)
         {
             var failureMessage = CustomFailureMessage ?? message;
-            throw new Executions.TestFailedException(failureMessage);
+            throw new TestFailedException(failureMessage);
         }
     }
 }
