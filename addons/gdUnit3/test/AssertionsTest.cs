@@ -10,7 +10,7 @@ namespace GdUnit3.Tests
         public void DoAssertNotYetImplemented()
         {
             AssertThrown(() => AssertNotYetImplemented())
-                .HasPropertyValue("LineNumber", 13)
+                .HasPropertyValue("LineNumber", 12)
                 .HasMessage("Test not yet implemented!");
         }
 

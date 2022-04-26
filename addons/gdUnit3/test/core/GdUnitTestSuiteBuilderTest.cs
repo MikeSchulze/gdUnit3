@@ -143,7 +143,7 @@ namespace Example.Test.Resources
 			AssertNotYetImplemented();
 		}
 	}
-}".Replace("${sourceClazzPath}", $"\"{sourceClass}\"");
+}".Replace("${sourceClazzPath}", $"\"{sourceClass}\"").Replace("\r\n", "\n");
 
         private static string NewCreatedTestSuite(string sourceClass) =>
 @"// GdUnit generated TestSuite
@@ -166,7 +166,7 @@ namespace Example.Test.Resources
 			AssertNotYetImplemented();
 		}
 	}
-}".Replace("${sourceClazzPath}", $"\"{sourceClass}\"");
+}".Replace("${sourceClazzPath}", $"\"{sourceClass}\"").Replace("\r\n", "\n");
 
     }
 }

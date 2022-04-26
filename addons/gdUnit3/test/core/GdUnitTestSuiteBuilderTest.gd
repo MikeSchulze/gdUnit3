@@ -62,6 +62,9 @@ func test_create_gd_fail() -> void:
 	assert_result(result).is_error().contains_message("No function found at line: 8.")
 
 func test_create_cs_success() -> void:
+	if not GdUnitTools.is_mono_supported():
+		# ignore this test on none mono installations
+		return
 	var source := load(_example_source_cs)
 	
 	# create initial test suite based on function selected by line 18
