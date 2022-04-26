@@ -17,6 +17,7 @@ namespace GdUnit3.Executions
             context.MemoryPool.SetActive(StageName());
             context.OrphanMonitor.Start();
             await base.Execute(context);
+            Utils.ClearTempDir();
             context.MemoryPool.ReleaseRegisteredObjects();
             context.OrphanMonitor.Stop();
             if (context.OrphanMonitor.OrphanCount > 0)

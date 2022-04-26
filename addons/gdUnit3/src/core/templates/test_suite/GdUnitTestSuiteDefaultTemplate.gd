@@ -17,17 +17,18 @@ const DEFAULT_TEMP_TS_CS = \
 """// GdUnit generated TestSuite
 
 using Godot;
+using GdUnit3;
 
-namespace ${project_name}.Tests
+namespace ${name_space}
 {
-	using Exceptions;
 	using static Assertions;
+	using static Utils;
 
 	[TestSuite]
 	public class ${suite_class_name}
 	{
 		// TestSuite generated from
-		private static string myTestClass = new ${source_class}();
+		private const string sourceClazzPath = "${source_resource_path}";
 		
 	}
 }

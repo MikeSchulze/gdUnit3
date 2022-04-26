@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using GdUnit3.Tools;
+using GdUnit3.Core;
 
 namespace GdUnit3.Executions
 {
@@ -25,7 +25,7 @@ namespace GdUnit3.Executions
 
         public TestSuite(string classPath, List<string> includedTests)
         {
-            Type type = CsTools.ParseType(classPath);
+            Type type = GdUnitTestSuiteBuilder.ParseType(classPath);
             Instance = Activator.CreateInstance(type);
             Name = type.Name;
             ResourcePath = classPath;

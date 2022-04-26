@@ -356,9 +356,8 @@ static func is_cs_test_suite(instance :Node) -> bool:
 	
 static func is_cs_testsuite(script :Script) -> bool:
 	if GdUnitTools.is_mono_supported():
-		var csTools = GdUnitSingleton.get_or_create_singleton("CsTools", "res://addons/gdUnit3/src/core/CsTools.cs")
-		var clazz_path = ProjectSettings.globalize_path(script.resource_path)
-		return csTools.IsTestSuite(clazz_path)
+		var csTools = load("res://addons/gdUnit3/src/core/CsTools.cs").new()
+		return not script.resource_path.empty() and csTools.IsTestSuite(script.resource_path)
 	return false;
 	
 static func is_gd_testsuite(script :Script) -> bool:

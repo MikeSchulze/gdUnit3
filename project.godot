@@ -814,6 +814,16 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/src/GdUnitTestSuite.gd"
 }, {
+"base": "Resource",
+"class": "GdUnitTestSuiteBuilder",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/src/core/GdUnitTestSuiteBuilder.gd"
+}, {
+"base": "GdUnitTestSuite",
+"class": "GdUnitTestSuiteBuilderTest",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/test/core/GdUnitTestSuiteBuilderTest.gd"
+}, {
 "base": "Reference",
 "class": "GdUnitTestSuiteDefaultTemplate",
 "language": "GDScript",
@@ -1281,6 +1291,8 @@ _global_script_class_icons={
 "GdUnitTestCaseReport": "",
 "GdUnitTestResourceLoader": "",
 "GdUnitTestSuite": "",
+"GdUnitTestSuiteBuilder": "",
+"GdUnitTestSuiteBuilderTest": "",
 "GdUnitTestSuiteDefaultTemplate": "",
 "GdUnitTestSuiteDto": "",
 "GdUnitTestSuiteReport": "",
