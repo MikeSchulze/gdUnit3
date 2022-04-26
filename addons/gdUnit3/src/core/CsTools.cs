@@ -1,63 +1,37 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
+using GdUnit3.Core;
 
 namespace GdUnit3.Tools
 {
+
     public class CsTools : Godot.Reference
     {
-        readonly static Regex RegexNamespace = new Regex("(?<=^namespace\\s)((?:\\w+)(?:[.](?:\\w+))*)", RegexOptions.Multiline);
-
-        internal static string ParseNameSpace(String classPath)
-        {
-            if (!new FileInfo(classPath).Exists)
-                return null;
-            using (StreamReader sr = File.OpenText(classPath))
-            {
-                var all = sr.ReadToEnd();
-                var match = RegexNamespace.Match(all);
-                if (match.Success)
-                {
-                    return match.Value;
-                }
-            }
-            return null;
-        }
-
-        internal static Type ParseType(String classPath)
-        {
-            try
-            {
-                var fi = new FileInfo(classPath);
-                if (!fi.Exists)
-                {
-                    return null;
-                }
-                return Type.GetType(ParseNameSpace(classPath) + "." + fi.Name.Replace(".cs", ""));
-            }
-#pragma warning disable CS0168
-            catch (Exception e)
-            {
-#pragma warning restore CS0168
-                // ignore exception
-                return null;
-            }
-        }
-
+        internal static string NormalisizePath(string path) =>
+            (path.StartsWith("res://") || path.StartsWith("user://")) ? Godot.ProjectSettings.GlobalizePath(path) : path;
         public static bool IsTestSuite(String classPath)
         {
-            var type = ParseType(classPath);
+            var type = GdUnitTestSuiteBuilder.ParseType(NormalisizePath(classPath));
             return type != null ? Attribute.IsDefined(type, typeof(TestSuiteAttribute)) : false;
+        }
+
+        public static Godot.Collections.Dictionary CreateTestSuite(string sourcePath, int lineNumber, string testSuitePath)
+        {
+            var result = GdUnitTestSuiteBuilder.Build(NormalisizePath(sourcePath), lineNumber, NormalisizePath(testSuitePath));
+            // we need to return the original resource name of the test suite on Godot site e.g. `res://foo/..` or `user://foo/..`
+            if (result.ContainsKey("path"))
+                result["path"] = testSuitePath;
+            return new Godot.Collections.Dictionary(result);
         }
 
         public static Godot.Node ParseTestSuite(String classPath)
         {
             try
             {
-                var type = ParseType(classPath);
+                classPath = NormalisizePath(classPath);
+                var type = GdUnitTestSuiteBuilder.ParseType(classPath);
                 var testSuite = new Godot.Node();
                 testSuite.SetMeta("CS_TESTSUITE", true);
                 testSuite.SetMeta("ResourcePath", classPath);
@@ -86,6 +60,5 @@ namespace GdUnit3.Tools
         private static IEnumerable<Executions.TestCase> LoadTestCases(Type type) => type.GetMethods()
             .Where(m => m.IsDefined(typeof(TestCaseAttribute)))
             .Select(mi => new Executions.TestCase(mi));
-
     }
 }

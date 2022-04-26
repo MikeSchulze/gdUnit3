@@ -96,7 +96,7 @@ margin_bottom = 30.0
 rect_min_size = Vector2( 200, 0 )
 hint_tooltip = "Select the script type specific template."
 text = "GD - GDScript"
-items = [ "GD - GDScript", null, false, 0, null, "C# - CSharpScript", null, true, 1, null ]
+items = [ "GD - GDScript", null, false, 1000, null, "C# - CSharpScript", null, false, 2000, null ]
 selected = 0
 __meta__ = {
 "_edit_use_anchors_": false
@@ -167,5 +167,6 @@ virtual_keyboard_enabled = false
 
 [connection signal="text_changed" from="ScrollContainer/VBoxContainer/Editor" to="." method="_on_Editor_text_changed"]
 [connection signal="pressed" from="ScrollContainer/VBoxContainer/Editor/MarginContainer/HBoxContainer/Tags" to="." method="_on_Tags_pressed"]
+[connection signal="item_selected" from="ScrollContainer/VBoxContainer/Editor/MarginContainer/HBoxContainer/SelectType" to="." method="_on_SelectType_item_selected"]
 [connection signal="pressed" from="ScrollContainer/VBoxContainer/Panel/HBoxContainer/Restore" to="." method="_on_Restore_pressed"]
 [connection signal="pressed" from="ScrollContainer/VBoxContainer/Panel/HBoxContainer/Save" to="." method="_on_Save_pressed"]

@@ -60,6 +60,13 @@ namespace GdUnit3
         public static IArrayAssert AssertArray(IEnumerable current) => new ArrayAssert(current);
 
 
+        /// <summary>
+        /// An Assertion used by test generation to notify the test is not yet implemented
+        /// </summary>
+        /// <returns></returns>
+        public static bool AssertNotYetImplemented() => throw new Exceptions.TestFailedException("Test not yet implemented!", -1);
+
+
         public static IAssertBase<T> AssertThat<T>(T current)
         {
             if (typeof(string) == typeof(T))

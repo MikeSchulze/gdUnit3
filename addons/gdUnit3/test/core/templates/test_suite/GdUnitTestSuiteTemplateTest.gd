@@ -20,10 +20,10 @@ func before() -> void:
 """
 
 func after() -> void:
-	GdUnitTestSuiteTemplate.reset_to_default()
+	GdUnitTestSuiteTemplate.reset_to_default(GdUnitTestSuiteTemplate.TEMPLATE_ID_GD)
 
 func test_default_template() -> void:
-	assert_str(GdUnitTestSuiteTemplate.default_template()).is_equal(GdUnitTestSuiteDefaultTemplate.DEFAULT_TEMP_TS_GD)
+	assert_str(GdUnitTestSuiteTemplate.default_template(GdUnitTestSuiteTemplate.TEMPLATE_ID_GD)).is_equal(GdUnitTestSuiteDefaultTemplate.DEFAULT_TEMP_TS_GD)
 
 func test_build_template_default() -> void:
 	var template := GdUnitTestSuiteTemplate.build_template("res://addons/gdUnit3/test/core/resources/script_with_class_name.gd")
@@ -41,7 +41,7 @@ const __source = 'res://addons/gdUnit3/test/core/resources/script_with_class_nam
 
 # on source with class_name definition
 func test_build_template_custom1() -> void:
-	GdUnitTestSuiteTemplate.save_template(CUSTOM_TEMPLATE)
+	GdUnitTestSuiteTemplate.save_template(GdUnitTestSuiteTemplate.TEMPLATE_ID_GD, CUSTOM_TEMPLATE)
 	var template := GdUnitTestSuiteTemplate.build_template("res://addons/gdUnit3/test/core/resources/script_with_class_name.gd")
 	var expected := \
 """# GdUnit generated TestSuite
@@ -58,7 +58,7 @@ func before() -> void:
 
 # on source without class_name definition
 func test_build_template_custom2() -> void:
-	GdUnitTestSuiteTemplate.save_template(CUSTOM_TEMPLATE)
+	GdUnitTestSuiteTemplate.save_template(GdUnitTestSuiteTemplate.TEMPLATE_ID_GD, CUSTOM_TEMPLATE)
 	var template := GdUnitTestSuiteTemplate.build_template("res://addons/gdUnit3/test/core/resources/script_without_class_name.gd")
 	var expected := \
 """# GdUnit generated TestSuite
@@ -76,7 +76,7 @@ func before() -> void:
 
 # on source with class_name definition pascal_case
 func test_build_template_custom3() -> void:
-	GdUnitTestSuiteTemplate.save_template(CUSTOM_TEMPLATE)
+	GdUnitTestSuiteTemplate.save_template(GdUnitTestSuiteTemplate.TEMPLATE_ID_GD, CUSTOM_TEMPLATE)
 	var template := GdUnitTestSuiteTemplate.build_template("res://addons/gdUnit3/test/core/resources/naming_conventions/PascalCaseWithClassName.gd")
 	var expected := \
 """# GdUnit generated TestSuite

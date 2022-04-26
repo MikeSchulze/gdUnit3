@@ -1,7 +1,6 @@
 tool
 extends MarginContainer
 
-
 onready var _template_editor :TextEdit = $ScrollContainer/VBoxContainer/Editor
 onready var _tags_editor :TextEdit = $Tags/MarginContainer/TextEdit
 onready var _title_bar :Panel = $ScrollContainer/VBoxContainer/sub_category
@@ -12,13 +11,14 @@ onready var _show_tags :Popup = $Tags
 
 var gd_key_words := ["extends", "class_name", "const", "var", "onready", "func", "void", "pass"]
 var gdunit_key_words := ["GdUnitTestSuite", "before", "after", "before_test", "after_test"]
+var _selected_template :int
 
 func _ready():
 	setup_editor_colors()
 	setup_fonts()
 	setup_supported_types()
+	load_template(GdUnitTestSuiteTemplate.TEMPLATE_ID_GD)
 	setup_tags_help()
-	load_template()
 
 func _notification(what):
 	if what == EditorSettings.NOTIFICATION_EDITOR_SETTINGS_CHANGED:
@@ -61,23 +61,23 @@ func setup_fonts() -> void:
 
 func setup_supported_types() -> void:
 	_selected_type.clear()
-	_selected_type.add_item("GD - GDScript")
-	_selected_type.add_item("C# - CSharpScript")
-	_selected_type.set_item_disabled(1, true)
+	_selected_type.add_item("GD - GDScript", GdUnitTestSuiteTemplate.TEMPLATE_ID_GD)
+	_selected_type.add_item("C# - CSharpScript", GdUnitTestSuiteTemplate.TEMPLATE_ID_CS)
 
 func setup_tags_help() -> void:
-	_tags_editor.set_text(GdUnitTestSuiteTemplate.SUPPORTED_TAGS)
+	_tags_editor.set_text(GdUnitTestSuiteTemplate.load_tags(_selected_template))
 
-func load_template() -> void:
-	_template_editor.set_text(GdUnitTestSuiteTemplate.load_template())
+func load_template(template_id :int) -> void:
+	_selected_template = template_id
+	_template_editor.set_text(GdUnitTestSuiteTemplate.load_template(template_id))
 
 func _on_Restore_pressed():
-	_template_editor.set_text(GdUnitTestSuiteTemplate.default_template())
-	GdUnitTestSuiteTemplate.reset_to_default()
+	_template_editor.set_text(GdUnitTestSuiteTemplate.default_template(_selected_template))
+	GdUnitTestSuiteTemplate.reset_to_default(_selected_template)
 	_save_button.disabled = true
 
 func _on_Save_pressed():
-	GdUnitTestSuiteTemplate.save_template(_template_editor.get_text())
+	GdUnitTestSuiteTemplate.save_template(_selected_template, _template_editor.get_text())
 	_save_button.disabled = true
 
 func _on_Tags_pressed():
@@ -85,3 +85,7 @@ func _on_Tags_pressed():
 
 func _on_Editor_text_changed():
 	_save_button.disabled = false
+
+func _on_SelectType_item_selected(index):
+	load_template(_selected_type.get_item_id(index))
+	setup_tags_help()
