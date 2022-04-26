@@ -1,8 +1,6 @@
 namespace GdUnit3.Tests
 {
-	using Exceptions;
-	using static Assertions;
-	using static Utils;
+    using static Assertions;
 
     [TestSuite]
     public class AssertionsTest
