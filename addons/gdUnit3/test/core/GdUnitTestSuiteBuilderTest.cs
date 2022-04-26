@@ -91,7 +91,6 @@ namespace GdUnit3.Core.Tests
                 .EndsWith("TestPerson.cs:4.");
         }
 
-
         [TestCase]
         public void CreateTestSuite_TestCaseAlreadyExists()
         {
