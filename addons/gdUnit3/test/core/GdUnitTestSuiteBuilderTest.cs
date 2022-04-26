@@ -88,7 +88,7 @@ namespace GdUnit3.Core.Tests
             Dictionary<string, object> dictionary = GdUnitTestSuiteBuilder.Build(sourceClass, 4, Path.Combine(tmp, "TestPersonTest.cs"));
             AssertThat(dictionary["error"] as string)
                 .StartsWith("Can't parse method name from")
-                .EndsWith("app_userdata\\gdUnit3\\tmp\\build-test-suite-test\\TestPerson.cs:4.");
+                .EndsWith("TestPerson.cs:4.");
         }
 
 
