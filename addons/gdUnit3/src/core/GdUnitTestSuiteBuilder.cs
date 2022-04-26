@@ -78,7 +78,7 @@ namespace GdUnit3.Core
                 var root = CSharpSyntaxTree.ParseText(File.ReadAllText(classPath)).GetCompilationUnitRoot();
                 NamespaceDeclarationSyntax namespaceSyntax = root.Members.OfType<NamespaceDeclarationSyntax>().First();
                 ClassDeclarationSyntax programClassSyntax = namespaceSyntax.Members.OfType<ClassDeclarationSyntax>().First();
-                return Type.GetType(namespaceSyntax.Name.ToString() + "." + programClassSyntax.Identifier.ToString());
+                return Type.GetType(namespaceSyntax.Name.ToString() + "." + programClassSyntax.Identifier.ValueText);
             }
 #pragma warning disable CS0168
             catch (Exception e)

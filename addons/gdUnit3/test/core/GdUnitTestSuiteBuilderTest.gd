@@ -57,7 +57,7 @@ func test_create_gd_success() -> void:
 func test_create_gd_fail() -> void:
 	var source := load(_example_source_gd)
 	
-	# try to create initial test suite based on function selected by line 8 where has no function definition
+	# attempt to create an initial test suite based on the function selected in line 8, which has no function definition
 	var result := _test_suite_builder.create(source, 8)
 	assert_result(result).is_error().contains_message("No function found at line: 8.")
 

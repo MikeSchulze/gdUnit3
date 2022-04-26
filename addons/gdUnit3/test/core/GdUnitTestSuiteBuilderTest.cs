@@ -84,7 +84,7 @@ namespace GdUnit3.Core.Tests
             string sourceClass = Path.Combine(tmp, "TestPerson.cs");
             File.Copy(Path.GetFullPath(Godot.ProjectSettings.GlobalizePath("res://addons/gdUnit3/test/core/resources/sources/TestPerson.cs")), sourceClass);
 
-            // uning a line number where no method is defined in the source class
+            // use of a line number for which no method is defined in the source class
             Dictionary<string, object> dictionary = GdUnitTestSuiteBuilder.Build(sourceClass, 4, Path.Combine(tmp, "TestPersonTest.cs"));
             AssertThat(dictionary["error"] as string)
                 .StartsWith("Can't parse method name from")
@@ -112,7 +112,7 @@ namespace GdUnit3.Core.Tests
             dictionary = GdUnitTestSuiteBuilder.Build(sourceClass, 24, testSuite);
             AssertThat(dictionary["path"]).IsEqual(testSuite);
             AssertThat((int)dictionary["line"]).IsEqual(16);
-            // the content of the test suite sould not be changed
+            // we expect that the contents of the test-suite will not be changed
             AssertThat(File.ReadAllText(testSuite, Encoding.UTF8)).IsEqual(expected);
         }
 

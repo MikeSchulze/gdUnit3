@@ -61,7 +61,7 @@ namespace GdUnit3
 
 
         /// <summary>
-        /// An Assertion used by test gneration to notify the test is not yet implemented
+        /// An Assertion used by test generation to notify the test is not yet implemented
         /// </summary>
         /// <returns></returns>
         public static bool AssertNotYetImplemented() => throw new Exceptions.TestFailedException("Test not yet implemented!", -1);
