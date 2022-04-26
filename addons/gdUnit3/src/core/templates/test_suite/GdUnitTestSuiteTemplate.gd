@@ -41,6 +41,10 @@ ${source_resource_path}
 const SUPPORTED_TAGS_CS = """
 C# Tags are replaced when the test-suite is created.
 
+// The namespace name of the test-suite
+${name_space}
+	namespace ${name_space}
+
 // The class name of the test-suite, formed from the source class.
 ${suite_class_name}
 	// is used to build the test suite class name
