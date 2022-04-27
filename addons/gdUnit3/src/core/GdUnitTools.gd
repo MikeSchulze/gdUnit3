@@ -352,13 +352,18 @@ static func run_auto_free(pool :int):
 		free_instance(obj)
 
 # tests if given object is registered for auto freeing
-static func is_auto_free_registered(obj, pool :int) -> bool:
+static func is_auto_free_registered(obj, pool :int = -1) -> bool:
 	# only register real object values
 	if not obj is Object:
 		return false
+	# check all pools?
+	if pool == -1:
+		return _objects_to_delete[MEMORY_POOL_TESTSUITE].has(obj)\
+			or _objects_to_delete[MEMORY_POOL_TESTCASE].has(obj)\
+			or _objects_to_delete[MEMORY_POOL_TESTRUN].has(obj)
+	# check on a specific pool
 	var obj_pool := _objects_to_delete[pool] as Array
 	return obj_pool.has(obj)
-
 
 # test is given object a valid 'GDScriptFunctionState'
 static func is_yielded(obj) -> bool:

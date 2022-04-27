@@ -136,3 +136,7 @@ func invoke(name :String, arg0=NO_ARG, arg1=NO_ARG, arg2=NO_ARG, arg3=NO_ARG, ar
 func find_node(name :String, recursive :bool = true, owned :bool = false) -> Node:
 	return null
 
+# Access to current running scene
+func scene() -> Node:
+	return null
+

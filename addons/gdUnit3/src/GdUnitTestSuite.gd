@@ -129,8 +129,16 @@ func await_idle_frame() -> GDScriptFunctionState:
 func await_millis(timeout :int) -> GDScriptFunctionState:
 	return yield(GdUnitAwaiter.await_millis(self, timeout), "completed")
 
-# Creates a new scene runner to allow simulate interactions on a scene
-func scene_runner(scene :Node, verbose := false) -> GdUnitSceneRunner:
+# Creates a new scene runner to allow simulate interactions on a scene.
+# The runner will manage the scene instance and release after the runner is released
+# example:
+#    # creates a runner by using a instanciated scene
+#    var scene = load("res://foo/my_scne.tscn").instance() 
+#    var runner := scene_runner(scene)
+#
+#    # or simply creates a runner by using the scene resource path
+#    var runner := scene_runner("res://foo/my_scne.tscn")
+func scene_runner(scene, verbose := false) -> GdUnitSceneRunner:
 	return auto_free(GdUnitSceneRunnerImpl.new(weakref(self), scene, verbose))
 
 # === Mocking  & Spy ===========================================================
