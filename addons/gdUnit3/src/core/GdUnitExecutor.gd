@@ -253,6 +253,7 @@ func Execute(test_suite :GdUnitTestSuite) -> GDScriptFunctionState:
 	# stop on first error if fail fast enabled
 	if _fail_fast and _total_test_failed > 0:
 		test_suite.free()
+		yield(get_tree(), "idle_frame")
 		emit_signal("ExecutionCompleted")
 		return null
 	
