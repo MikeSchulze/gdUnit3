@@ -14,15 +14,35 @@ var _time_factor := 1.0
 var _saved_time_scale :float
 var _saved_iterations_per_second :float
 
-func _init(test_suite :WeakRef, scene :Node, verbose :bool):
+func _init(test_suite :WeakRef, scene, verbose :bool, hide_push_errors = false):
 	_verbose = verbose
 	_test_suite = test_suite
-	assert(scene != null, "Scene must be not null!")
-	_scene_tree = Engine.get_main_loop()
-	_current_scene = scene
-	_scene_tree.root.add_child(_current_scene)
 	_saved_iterations_per_second = ProjectSettings.get_setting("physics/common/physics_fps")
 	set_time_factor(1)
+	# handle scene loading by resource path
+	if typeof(scene) == TYPE_STRING:
+		if !File.new().file_exists(scene):
+			if not hide_push_errors:
+				push_error("GdUnitSceneRunner: Can't load scene by given resource path: '%s'. The resource not exists." % scene)
+			return
+		if !str(scene).ends_with("tscn"):
+			if not hide_push_errors:
+				push_error("GdUnitSceneRunner: The given resource: '%s'. is not a scene." % scene)
+			return
+		_current_scene =  load(scene).instance()
+	else:
+		# verify we have a node instance
+		if not scene is Node:
+			if not hide_push_errors:
+				push_error("GdUnitSceneRunner: The given instance '%s' is not a Node." % scene)
+			return
+		_current_scene = scene
+	if _current_scene == null:
+		if not hide_push_errors:
+			push_error("GdUnitSceneRunner: Scene must be not null!")
+		return
+	_scene_tree = Engine.get_main_loop()
+	_scene_tree.root.add_child(_current_scene)
 	_simulate_start_time = LocalTime.now()
 
 func _notification(what):
@@ -31,6 +51,9 @@ func _notification(what):
 		__deactivate_time_factor()
 		if is_instance_valid(_current_scene):
 			_scene_tree.root.remove_child(_current_scene)
+			# don't free already memory managed instances
+			if not GdUnitTools.is_auto_free_registered(_current_scene):
+				_current_scene.free()
 		_scene_tree = null
 		_current_scene = null
 		_test_suite = null
@@ -191,3 +214,6 @@ func __print_current_focus() -> void:
 		prints("	focus on %s" % focused_node)
 	else:
 		prints("	no focus set")
+
+func scene() -> Node:
+	return _current_scene

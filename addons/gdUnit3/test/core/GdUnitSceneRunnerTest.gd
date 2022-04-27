@@ -243,3 +243,49 @@ func test_simulate_until_object_signal(timeout=2000) -> void:
 	
 	# verify spell is removed when is explode
 	assert_object(runner.find_node("Spell")).is_null()
+
+func test_runner_by_null_instance() -> void:
+	var runner := scene_runner(null)
+	assert_object(runner.scene()).is_null()
+
+func test_runner_by_invalid_resource_path() -> void:
+	# not existing scene
+	assert_object(scene_runner("res://test_scene.tscn").scene()).is_null()
+	# not a path to a scene
+	assert_object(scene_runner("res://addons/gdUnit3/test/core/resources/scenes/simple_scene.gd").scene()).is_null()
+
+func test_runner_by_resource_path() -> void:
+	var runner = scene_runner("res://addons/gdUnit3/test/core/resources/scenes/simple_scene.tscn")
+	assert_object(runner.scene()).is_instanceof(Node2D)
+	
+	# verify the scene is freed when the runner is freed
+	var scene = runner.scene()
+	assert_bool(is_instance_valid(scene)).is_true()
+	runner.free()
+	# give engine time to free the resources
+	yield(await_idle_frame(), "completed")
+	# verify runner and scene is freed
+	assert_bool(is_instance_valid(runner)).is_false()
+	assert_bool(is_instance_valid(scene)).is_false()
+
+func test_runner_by_invalid_scene_instance() -> void:
+	var scene = Reference.new()
+	var runner := scene_runner(scene)
+	assert_object(runner.scene()).is_null()
+
+func test_runner_by_scene_instance() -> void:
+	var scene = load("res://addons/gdUnit3/test/core/resources/scenes/simple_scene.tscn").instance()
+	var runner := scene_runner(scene)
+	assert_object(runner.scene()).is_instanceof(Node2D)
+	
+	# verify the scene is freed when the runner is freed
+	runner.free()
+	# give engine time to free the resources
+	yield(await_idle_frame(), "completed")
+	# verify runner and scene is freed
+	assert_bool(is_instance_valid(runner)).is_false()
+	assert_bool(is_instance_valid(scene)).is_false()
+
+# we override the scene runner function for test purposes to hide push_error notifications
+func scene_runner(scene, verbose := false) -> GdUnitSceneRunner:
+	return auto_free(GdUnitSceneRunnerImpl.new(weakref(self), scene, verbose, true))
