@@ -59,17 +59,19 @@ assert_int(-13).is_not_negative()
  ```
  
  ---
-
-<a href="https://mikeschulze.github.io/gdUnit3/first_steps/install/">
-  <font face="Bedrock" color="#7253ed" size="12">Install GdUnit</font>
-</a>
-
-<a href="https://mikeschulze.github.io/gdUnit3/first_steps/install/">
-  <font face="Bedrock" color="#7253ed" size="16">Documentaion</font>
-</a>
-
-<a href="https://discord.gg/rdq36JwuaJ"><img src="https://discordapp.com/api/guilds/885149082119733269/widget.png?style=banner4" alt="Join GdUnit3 Server"/></a>
-
+<p align="left">
+  <a href="https://mikeschulze.github.io/gdUnit3/first_steps/install/">
+    <font face="Bedrock" color="#7253ed" size="12">Install GdUnit</font>
+  </a>
+</p>
+<p align="left">
+  <a href="https://mikeschulze.github.io/gdUnit3/first_steps/install/">
+    <font face="Bedrock" color="#7253ed" size="16">Documentaion</font>
+  </a>
+</p>
+<p align="left">
+  <a href="https://discord.gg/rdq36JwuaJ"><img src="https://discordapp.com/api/guilds/885149082119733269/widget.png?style=banner4" alt="Join GdUnit3 Server"/></a>
+</p>
 ---
 
 You are welcome to report bugs or create new feature requests.
