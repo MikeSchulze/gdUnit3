@@ -1,16 +1,13 @@
 
 <h1 align="center">GdUnit3 <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/MikeSchulze/gdunit3" width="12%"> </h1>
-<h2 align="center">A Godot Integrated Unit Testing Framework </h2>
+<h2 align="center">A Godot Embedded Unit Testing Framework</h2>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Godot-v3.2.3-%23478cbf?logo=godot-engine&logoColor=cyian&color=brightgreen">
-  <img src="https://img.shields.io/badge/Godot-v3.2.4-%23478cbf?logo=godot-engine&logoColor=cyian&color=brightgreen">
-  <img src="https://img.shields.io/badge/Godot-v3.3-%23478cbf?logo=godot-engine&logoColor=cyian&color=brightgreen">
-  <img src="https://img.shields.io/badge/Godot-v3.3.1-%23478cbf?logo=godot-engine&logoColor=cyian&color=brightgreen">
-  <img src="https://img.shields.io/badge/Godot-v3.3.2-%23478cbf?logo=godot-engine&logoColor=cyian&color=brightgreen">
   <img src="https://img.shields.io/badge/Godot-v3.3.3-%23478cbf?logo=godot-engine&logoColor=cyian&color=brightgreen">
   <img src="https://img.shields.io/badge/Godot-v3.3.4-%23478cbf?logo=godot-engine&logoColor=cyian&color=brightgreen">
-  <img src="https://img.shields.io/badge/Godot-v3.4-%23478cbf?logo=godot-engine&logoColor=cyian&color=brightgreen">
+  <img src="https://img.shields.io/badge/Godot-v3.4-1-%23478cbf?logo=godot-engine&logoColor=cyian&color=brightgreen">
+  <img src="https://img.shields.io/badge/Godot-v3.4-2-%23478cbf?logo=godot-engine&logoColor=cyian&color=brightgreen">
+  <img src="https://img.shields.io/badge/Godot-v3.4-4-%23478cbf?logo=godot-engine&logoColor=cyian&color=brightgreen">
   <img src="https://img.shields.io/badge/Godot-v4.x.x-%23478cbf?logo=godot-engine&logoColor=cyian&color=red">
 </p>
 
@@ -19,20 +16,19 @@
 
 <p align="center">
   <img alt="GitHub branch checks state" src="https://img.shields.io/github/checks-status/MikeSchulze/gdunit3/master"></br>
-  <img src="https://github.com/MikeSchulze/gdUnit3/actions/workflows/selftest-3.2.x.yml/badge.svg?branch=master"></br>
   <img src="https://github.com/MikeSchulze/gdUnit3/actions/workflows/selftest-3.3.x.yml/badge.svg?branch=master"></br>
   <img src="https://github.com/MikeSchulze/gdUnit3/actions/workflows/selftest-3.4.x.yml/badge.svg?branch=master"></br>
   <img src="https://github.com/MikeSchulze/gdUnit3/actions/workflows/selftest-3.3.x-mono.yml/badge.svg?branch=master"></br>
-
 </p>
 
 
 
 ## What is GdUnit3
-GdUnit3 is a framework for testing GdScrips and Scenes within the Godot editor. GdUnit3 is very useful for test-driven development and will help you get your code bug-free.
+GdUnit3 is a framework for testing Gd-Scrips/C# and Scenes within the Godot editor. GdUnit3 is very useful for test-driven development and will help you get your code bug-free.
+ 
  
 ## Features
-* Fully integrated in the Godot editor
+* Fully embedded in the Godot editor
 * Run test-suite(s) by using the context menu on FileSystem, ScriptEditor or GdUnitInspector
 * Create test's directly from the ScriptEditor
 * Configurable template for the creation of a new test-suite
@@ -50,6 +46,7 @@ GdUnit3 is a framework for testing GdScrips and Scenes within the Godot editor. 
 * Update Notifier to install latest version from GitHub
 * Command Line Tool
 * CI - Continuous Integration support 
+* With v2.0.0 C# testing support (beta)
 
  
 ## Short Example
@@ -61,30 +58,22 @@ assert_int(13).is_not_negative()
 assert_int(-13).is_not_negative()
  ```
  
-## To Install the GdUnit3 Plugin
+ ---
 
-You have to install the GdUnit3 plugin over the AssetLib in the Godot Editor.
-![image](https://github.com/MikeSchulze/gdUnit3/wiki/images/Install-AssetLib.png)
-1. Select the tab AssetLib in the middle on the top
-2. Enter GdUnit3 in the search bar
-3. Select GdUnit3 and press the install button
-4. Finally you have to activate the plugin
+<a href="https://mikeschulze.github.io/gdUnit3/first_steps/install/">
+  <font face="Bedrock" color="#7253ed" size="12">Install GdUnit</font>
+</a>
 
-![image](https://github.com/MikeSchulze/gdUnit3/wiki/images/Activate-StepA.png)
-1. Choose Project->Project Settings, click the Plugins tab and activate GdUnit.
+<a href="https://mikeschulze.github.io/gdUnit3/first_steps/install/">
+  <font face="Bedrock" color="#7253ed" size="16">Documentaion</font>
+</a>
 
-![image](https://github.com/MikeSchulze/gdUnit3/wiki/images/Activate-StepB.png)
+<a href="https://discord.gg/rdq36JwuaJ"><img src="https://discordapp.com/api/guilds/885149082119733269/widget.png?style=banner4" alt="Join GdUnit3 Server"/></a>
 
-1. After activation the GdUnit3 inspector is displayed in the top left
-2. Done, GdUnit is ready to use
-
+---
 
 You are welcome to report bugs or create new feature requests.
 I would also appreciate feedback.
-
-<a href="https://discord.gg/rdq36JwuaJ"><img src="https://img.shields.io/discord/885149082119733269?style=style=flat-square&label=Join GdUnit3 on Discord&color=7289DA" alt="Join GdUnit3 Server"/></a>
-
-[Documentation](https://github.com/MikeSchulze/gdUnit3/wiki)
 
 <h1 align="center"></h1>
 <p align="left">

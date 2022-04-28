@@ -4,6 +4,9 @@ on:
   push:
     paths-ignore:
       - '**.yml'
+      - '**.jpg'
+      - '**.png'
+      - '**.md'
   workflow_dispatch:
 
 jobs:
