@@ -5,9 +5,9 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Godot-v3.3.3-%23478cbf?logo=godot-engine&logoColor=cyian&color=brightgreen">
   <img src="https://img.shields.io/badge/Godot-v3.3.4-%23478cbf?logo=godot-engine&logoColor=cyian&color=brightgreen">
-  <img src="https://img.shields.io/badge/Godot-v3.4-1-%23478cbf?logo=godot-engine&logoColor=cyian&color=brightgreen">
-  <img src="https://img.shields.io/badge/Godot-v3.4-2-%23478cbf?logo=godot-engine&logoColor=cyian&color=brightgreen">
-  <img src="https://img.shields.io/badge/Godot-v3.4-4-%23478cbf?logo=godot-engine&logoColor=cyian&color=brightgreen">
+  <img src="https://img.shields.io/badge/Godot-v3.4.1-%23478cbf?logo=godot-engine&logoColor=cyian&color=brightgreen">
+  <img src="https://img.shields.io/badge/Godot-v3.4.2-%23478cbf?logo=godot-engine&logoColor=cyian&color=brightgreen">
+  <img src="https://img.shields.io/badge/Godot-v3.4.4-%23478cbf?logo=godot-engine&logoColor=cyian&color=brightgreen">
   <img src="https://img.shields.io/badge/Godot-v4.x.x-%23478cbf?logo=godot-engine&logoColor=cyian&color=red">
 </p>
 
@@ -59,23 +59,27 @@ assert_int(-13).is_not_negative()
  ```
  
  ---
-<p align="left">
-  <a href="https://mikeschulze.github.io/gdUnit3/first_steps/install/">
-    <font face="Bedrock" color="#7253ed" size="12">Install GdUnit</font>
-  </a>
+
+<p align="left" style="font-family: Bedrock; font-size:21pt; color:#7253ed; font-style:bold">
+  <a href="https://mikeschulze.github.io/gdUnit3/first_steps/install/">How to Install GdUnit</a>
 </p>
-<p align="left">
-  <a href="https://mikeschulze.github.io/gdUnit3/first_steps/install/">
-    <font face="Bedrock" color="#7253ed" size="16">Documentaion</font>
-  </a>
+
+<p align="left" style="font-family: Bedrock; font-size:21pt; color:#7253ed; font-style:bold">
+  <a href="https://mikeschulze.github.io/gdUnit3/first_steps/install/">API Documentaion</a>
 </p>
+
 <p align="left">
   <a href="https://discord.gg/rdq36JwuaJ"><img src="https://discordapp.com/api/guilds/885149082119733269/widget.png?style=banner4" alt="Join GdUnit3 Server"/></a>
 </p>
+
 ---
 
-You are welcome to report bugs or create new feature requests.
-I would also appreciate feedback.
+### You are welcome to:
+  * [Give Feedback](https://github.com/MikeSchulze/gdUnit3/discussions/228)
+  * [Suggest Improvements](https://github.com/MikeSchulze/gdUnit3/issues/new?assignees=MikeSchulze&labels=enhancement&template=feature_request.md&title=)
+  * [Report Bugs](https://github.com/MikeSchulze/gdUnit3/issues/new?assignees=MikeSchulze&labels=bug%2C+task&template=bug_report.md&title=)
+
+
 
 <h1 align="center"></h1>
 <p align="left">
