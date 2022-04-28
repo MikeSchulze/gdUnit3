@@ -60,6 +60,7 @@ assert_int(-13).is_not_negative()
  
  ---
 
+## Documentaion
 <p align="left" style="font-family: Bedrock; font-size:21pt; color:#7253ed; font-style:bold">
   <a href="https://mikeschulze.github.io/gdUnit3/first_steps/install/">How to Install GdUnit</a>
 </p>
@@ -68,9 +69,7 @@ assert_int(-13).is_not_negative()
   <a href="https://mikeschulze.github.io/gdUnit3/">API Documentaion</a>
 </p>
 
-<p align="left">
-  <a href="https://discord.gg/rdq36JwuaJ"><img src="https://discordapp.com/api/guilds/885149082119733269/widget.png?style=banner4" alt="Join GdUnit3 Server"/></a>
-</p>
+
 
 ---
 
@@ -91,5 +90,9 @@ assert_int(-13).is_not_negative()
   <img alt="GitHub top language" src="https://img.shields.io/github/languages/top/MikeSchulze/gdunit3">
   <img alt="GitHub code size in bytes" src="https://img.shields.io/github/languages/code-size/MikeSchulze/gdunit3">
   <img src="https://img.shields.io/badge/License-MIT-blue.svg">
+</p>
+
+<p align="left">
+  <a href="https://discord.gg/rdq36JwuaJ"><img src="https://discordapp.com/api/guilds/885149082119733269/widget.png?style=banner4" alt="Join GdUnit3 Server"/></a>
 </p>
 
