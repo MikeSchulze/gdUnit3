@@ -65,7 +65,7 @@ assert_int(-13).is_not_negative()
 </p>
 
 <p align="left" style="font-family: Bedrock; font-size:21pt; color:#7253ed; font-style:bold">
-  <a href="https://mikeschulze.github.io/gdUnit3/first_steps/install/">API Documentaion</a>
+  <a href="https://mikeschulze.github.io/gdUnit3/">API Documentaion</a>
 </p>
 
 <p align="left">
