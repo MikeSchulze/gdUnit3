@@ -30,20 +30,20 @@ GdUnit3 is a framework for testing Gd-Scrips/C# and Scenes within the Godot edit
 ## Features
 * Fully embedded in the Godot editor
 * Run test-suite(s) by using the context menu on FileSystem, ScriptEditor or GdUnitInspector
-* Create test's directly from the ScriptEditor
+* Create tests directly from the ScriptEditor
 * Configurable template for the creation of a new test-suite
 * A spacious set of Asserts use to verify your code
 * Argument matchers to verify the behavior of a function call by a specified argument type.
 * Fluent syntax support
 * Test Fuzzing support
-* Mocking a class to simulate the implementation which you define the output of certain function
-* Spy on a instance to verify that a function has been called with certain parameters.
+* Mocking a class to simulate the implementation in which you define the output of the certain function
+* Spy on an instance to verify that a function has been called with certain parameters.
 * Mock or Spy on a Scene 
 * Provides a scene runner to simulate interactions on a scene 
   * Simulate by Input events like mouse and/or keyboard
   * Simulate scene processing by a certain number of frames
-  * Simulate scene proccessing by waiting for a specific signal
-* Update Notifier to install latest version from GitHub
+  * Simulate scene processing by waiting for a specific signal
+* Update Notifier to install the latest version from GitHub
 * Command Line Tool
 * CI - Continuous Integration support 
 * With v2.0.0 C# testing support (beta)
@@ -54,13 +54,13 @@ GdUnit3 is a framework for testing Gd-Scrips/C# and Scenes within the Godot edit
  # this assertion succeeds
 assert_int(13).is_not_negative()
 
-# this assertion fail because the value '-13' is negative
+# this assertion fails because the value '-13' is negative
 assert_int(-13).is_not_negative()
  ```
  
  ---
 
-## Documentaion
+## Documentation
 <p align="left" style="font-family: Bedrock; font-size:21pt; color:#7253ed; font-style:bold">
   <a href="https://mikeschulze.github.io/gdUnit3/first_steps/install/">How to Install GdUnit</a>
 </p>
