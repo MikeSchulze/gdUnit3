@@ -50,6 +50,25 @@ func fire_event(event :GdUnitEvent) -> void:
 	else:
 		emit_signal("send_event", event)
 
+func fire_test_skipped(test_suite :GdUnitTestSuite, test_case :_TestCase):
+	fire_event(GdUnitEvent.new()\
+		.test_before(test_suite.get_script().resource_path, test_suite.get_name(), test_case.get_name()))
+	var statistics = {
+		GdUnitEvent.ORPHAN_NODES: 0,
+		GdUnitEvent.ELAPSED_TIME: 0,
+		GdUnitEvent.WARNINGS: false,
+		GdUnitEvent.ERRORS: false,
+		GdUnitEvent.ERROR_COUNT: 0,
+		GdUnitEvent.FAILED: false,
+		GdUnitEvent.FAILED_COUNT: 0,
+		GdUnitEvent.SKIPPED: true,
+		GdUnitEvent.SKIPPED_COUNT: 1,
+	}
+	var report := GdUnitReport.new().create(GdUnitReport.WARN, test_case.line_number(), "Test skipped")
+	fire_event(GdUnitEvent.new()\
+		.test_after(test_suite.get_script().resource_path, test_suite.get_name(), test_case.get_name(), statistics, [report]))
+
+
 func suite_before(test_suite :GdUnitTestSuite, total_count :int) -> GDScriptFunctionState:
 	set_stage(STAGE_TEST_SUITE_BEFORE)
 	fire_event(GdUnitEvent.new()\
@@ -277,7 +296,9 @@ func Execute(test_suite :GdUnitTestSuite) -> GDScriptFunctionState:
 			if _fail_fast and _total_test_failed > 0:
 				break
 			test_suite.set_active_test_case(test_case.get_name())
-			if not test_case.is_skipped():
+			if test_case.is_skipped():
+				fire_test_skipped(test_suite, test_case)
+			else:
 				if test_case.has_fuzzer():
 					fs = execute_test_case_iterative(test_suite, test_case)
 				else:

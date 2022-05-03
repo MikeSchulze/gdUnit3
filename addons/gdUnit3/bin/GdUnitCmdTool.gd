@@ -90,7 +90,7 @@ class CLIRunner extends Node:
 	func set_report_dir(path :String) -> void:
 		_report_dir = ProjectSettings.globalize_path(GdUnitTools.make_qualified_path(path))
 		_console.prints_color("Set write reports to %s" % _report_dir, Color.deepskyblue)
-		
+	
 	func set_report_count(count :String) -> void:
 		var report_count := int(count)
 		if report_count < 1:
@@ -134,7 +134,7 @@ class CLIRunner extends Node:
 		if not cmd_option.help().empty():
 			_console.prints_color("%-4s %s" % ["", cmd_option.help()], Color.darkturquoise)
 		_console.new_line()
-		
+	
 	func load_test_config(path :String = "GdUnitRunner.cfg") -> void:
 		_console.print_color("Loading test configuration %s\n" % path, Color.cornflower)
 		_runner_config.load(path)
@@ -233,20 +233,25 @@ class CLIRunner extends Node:
 		if skipped_suites.empty():
 			return
 		var suite_name := test_suite.get_name()
-		var test_suite_path :String = test_suite.get_script().resource_path
+		# skipp c# testsuites for now
+		if test_suite.get_script() == null:
+			return
+		var test_suite_path :String = test_suite.get_meta("ResourcePath") if test_suite.get_script() == null else test_suite.get_script().resource_path
 		for suite_to_skip in skipped_suites:
 			# if suite skipped by path or name
 			if suite_to_skip == test_suite_path or (suite_to_skip.is_valid_filename() and suite_to_skip == suite_name):
 				var skipped_tests :Array = skipped.get(suite_to_skip)
 				# if no tests skipped test the complete suite is skipped
 				if skipped_tests.empty():
+					_console.prints_warning("Skip test suite %s:%s" % suite_to_skip)
 					test_suite.skip(true)
 				else:
 					# skip tests
 					for test_to_skip in skipped_tests:
-						var test_case :_TestCase = test_suite.get_test_case_by_name(test_to_skip)
+						var test_case :_TestCase = test_suite.find_node(test_to_skip, true, false)
 						if test_case:
 							test_case.skip(true)
+							_console.prints_warning("Skip test case %s:%s" % [suite_to_skip, test_to_skip])
 						else:
 							_console.prints_error("Can't skip test '%s' on test suite '%s', no test with given name exists!" % [test_to_skip, suite_to_skip])
 	
@@ -258,7 +263,7 @@ class CLIRunner extends Node:
 	
 	func PublishEvent(data) -> void:
 		_on_executor_event(GdUnitEvent.new().deserialize(data.AsDictionary()))
-
+	
 	func _on_executor_event(event :GdUnitEvent):
 		match event.type():
 			GdUnitEvent.INIT:
@@ -267,6 +272,7 @@ class CLIRunner extends Node:
 			GdUnitEvent.STOP:
 				var report_path := _report.write()
 				_report.delete_history(_report_max)
+				JUnitXmlReport.new(_report._report_path, _report.iteration(), _rtf).write(_report)
 				_console.prints_color("Total time %s" % LocalTime.elapsed(_report.duration()), Color.darksalmon)
 				_console.prints_color("Open Report at: file://%s" % report_path, Color.cornflower)
 			
@@ -274,20 +280,21 @@ class CLIRunner extends Node:
 				_report.add_testsuite_report(GdUnitTestSuiteReport.new(event.resource_path(), event.suite_name()))
 			
 			GdUnitEvent.TESTSUITE_AFTER:
-				_report.update_test_suite_report(event.resource_path(), event.is_failed(), event.skipped_count(), event.orphan_nodes(),  event.elapsed_time())
-				
+				_report.update_test_suite_report(event.resource_path(), event.elapsed_time())
+			
 			GdUnitEvent.TESTCASE_BEFORE:
-				_report.add_testcase_report(event.resource_path(), GdUnitTestCaseReport.new(_rtf, event.resource_path(), event.test_name()))
+				_report.add_testcase_report(event.resource_path(), GdUnitTestCaseReport.new(_rtf, event.resource_path(), event.suite_name(), event.test_name()))
 			
 			GdUnitEvent.TESTCASE_AFTER:
 				var test_report := GdUnitTestCaseReport.new(
 					_rtf,
 					event.resource_path(),
+					event.suite_name(),
 					event.test_name(),
 					event.is_error(),
 					event.is_failed(),
 					event.orphan_nodes(),
-					event.skipped_count(),
+					event.is_skipped(),
 					event.reports(),
 					event.elapsed_time())
 				_report.update_testcase_report(event.resource_path(), test_report)
@@ -325,9 +332,10 @@ class CLIRunner extends Node:
 		for report in reports:
 			_rtf.clear()
 			_rtf.set_bbcode(report._to_string())
-			_console.prints_color("	Report:", Color.darkturquoise, CmdConsole.BOLD|CmdConsole.UNDERLINE)
-			for line in _rtf.text.split("\n"):
-				_console.prints_color("		%s" % line, Color.darkturquoise)
+			if(report.is_failure() or report.is_error() or report.is_warning()):
+				_console.prints_color("	Report:", Color.darkturquoise, CmdConsole.BOLD|CmdConsole.UNDERLINE)
+				for line in _rtf.text.split("\n"):
+					_console.prints_color("		%s" % line, Color.darkturquoise)
 		_console.new_line()
 	
 	func _print_status(event :GdUnitEvent) -> void:

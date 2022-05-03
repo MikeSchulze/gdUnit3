@@ -60,6 +60,9 @@ func duration() -> int:
 		count += report.duration()
 	return count
 
+func reports() -> Array:
+	return _reports
+
 func add_report(report :GdUnitReportSummary) -> void:
 	_reports.append(report)
 
