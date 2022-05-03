@@ -45,7 +45,7 @@ func _on_GdUnit_gdunit_runner_stop(client_id :int):
 	_button_stop.disabled = true
 
 func _on_wiki_pressed():
-	OS.shell_open("https://github.com/MikeSchulze/gdUnit3/wiki")
+	OS.shell_open("https://mikeschulze.github.io/gdUnit3/")
 
 
 func _on_btn_tool_pressed():
