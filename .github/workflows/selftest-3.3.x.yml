@@ -32,7 +32,7 @@ jobs:
         run: echo "GODOT_BIN=/usr/local/bin/godot" >> $GITHUB_ENV
 
       - name: Run Selftes
-        timeout-minutes: 5
+        timeout-minutes: 10
         shell: bash
         run: ./runtest.sh --selftest
 

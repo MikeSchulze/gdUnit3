@@ -26,6 +26,7 @@ class CLIRunner extends Node:
 	var _runner_config := GdUnitRunnerConfig.new()
 	var _console := CmdConsole.new()
 	var _cs_executor
+	var _rtf :RichTextLabelExt
 	
 	var _cmd_options: = CmdOptions.new([
 			CmdOption.new("-a, --add", "-a <directory|path of testsuite>", "Adds the given test suite or directory to the execution pipeline.", TYPE_STRING),
@@ -60,6 +61,8 @@ class CLIRunner extends Node:
 			push_error("Error on startup, can't connect executor for 'send_event'")
 			get_tree().quit(RETURN_ERROR)
 		add_child(_executor)
+		_rtf = RichTextLabelExt.new()
+		add_child(_rtf)
 	
 	func _process(_delta):
 		match _state:
@@ -274,10 +277,11 @@ class CLIRunner extends Node:
 				_report.update_test_suite_report(event.resource_path(), event.is_failed(), event.skipped_count(), event.orphan_nodes(),  event.elapsed_time())
 				
 			GdUnitEvent.TESTCASE_BEFORE:
-				_report.add_testcase_report(event.resource_path(), GdUnitTestCaseReport.new(event.resource_path(), event.test_name()))
+				_report.add_testcase_report(event.resource_path(), GdUnitTestCaseReport.new(_rtf, event.resource_path(), event.test_name()))
 			
 			GdUnitEvent.TESTCASE_AFTER:
 				var test_report := GdUnitTestCaseReport.new(
+					_rtf,
 					event.resource_path(),
 					event.test_name(),
 					event.is_error(),
@@ -311,10 +315,20 @@ class CLIRunner extends Node:
 			GdUnitEvent.TESTCASE_AFTER:
 				_console.print_color("	Run Test: %s > %s :" % [event.resource_path(), event.test_name()], Color.antiquewhite)
 				_print_status(event)
+				_print_failure_report(event.reports())
 			
 			GdUnitEvent.TESTSUITE_AFTER:
 				_print_status(event)
 				_console.prints_color("	| %d total | %d error | %d failed | %d skipped | %d orphans |\n" % [_report.test_count(), _report.error_count(), _report.failure_count(), _report.skipped_count(), _report.orphan_count()], Color.antiquewhite)
+	
+	func _print_failure_report(reports :Array) -> void:
+		for report in reports:
+			_rtf.clear()
+			_rtf.set_bbcode(report._to_string())
+			_console.prints_color("	Report:", Color.darkturquoise, CmdConsole.BOLD|CmdConsole.UNDERLINE)
+			for line in _rtf.text.split("\n"):
+				_console.prints_color("		%s" % line, Color.darkturquoise)
+		_console.new_line()
 	
 	func _print_status(event :GdUnitEvent) -> void:
 		if event.is_skipped():

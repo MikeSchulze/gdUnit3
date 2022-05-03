@@ -34,7 +34,7 @@ jobs:
           msbuild
 
       - name: Run Selftes
-        timeout-minutes: 7
+        timeout-minutes: 10
         env:
           GODOT_BIN: "/usr/local/bin/godot"
         shell: bash

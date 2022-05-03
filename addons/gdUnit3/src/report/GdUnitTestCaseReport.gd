@@ -2,8 +2,9 @@ class_name GdUnitTestCaseReport
 extends GdUnitReportSummary
 
 var _failure_reports :Array
+var _rtf :RichTextLabel
 
-func _init(resource_path :String, test_name :String, is_error :bool = false, is_failed :bool = false, orphans :int = 0, skipped :int = 0, failure_reports :Array = [], duration :int = 0):
+func _init(rtf :RichTextLabel, resource_path :String, test_name :String, is_error :bool = false, is_failed :bool = false, orphans :int = 0, skipped :int = 0, failure_reports :Array = [], duration :int = 0):
 	_resource_path = resource_path
 	_name = test_name
 	_test_count = 1
@@ -13,6 +14,7 @@ func _init(resource_path :String, test_name :String, is_error :bool = false, is_
 	_skipped_count = skipped
 	_failure_reports = failure_reports
 	_duration = duration
+	_rtf = rtf
 
 func failure_report() -> String:
 	var html_report := ""
@@ -23,10 +25,9 @@ func failure_report() -> String:
 	return html_report
 
 func convert_rtf_to_text(bbcode :String) -> String:
-	var rtf := RichTextLabel.new()
-	rtf.parse_bbcode(bbcode)
-	var as_text: = rtf.text
-	rtf.free()
+	_rtf.clear()
+	_rtf.parse_bbcode(bbcode)
+	var as_text: = _rtf.text
 	var converted := PoolStringArray()
 	var lines := as_text.split("\n")
 	for line in lines:
