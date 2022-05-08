@@ -45,7 +45,9 @@ GdUnit3 is a framework for testing Gd-Scrips/C# and Scenes within the Godot edit
   * Simulate scene processing by waiting for a specific signal
 * Update Notifier to install the latest version from GitHub
 * Command Line Tool
-* CI - Continuous Integration support 
+* CI - Continuous Integration support
+  * generates HTML report
+  * generates JUnit report 
 * With v2.0.0 C# testing support (beta)
 
  
@@ -60,7 +62,7 @@ assert_int(-13).is_not_negative()
  
  ---
 
-## Documentaion
+## Documentation
 <p align="left" style="font-family: Bedrock; font-size:21pt; color:#7253ed; font-style:bold">
   <a href="https://mikeschulze.github.io/gdUnit3/first_steps/install/">How to Install GdUnit</a>
 </p>
