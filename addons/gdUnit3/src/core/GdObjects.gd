@@ -172,9 +172,9 @@ static func equals(obj_a, obj_b, case_sensitive :bool = false, deep_check :bool 
 	match type_a:
 		TYPE_OBJECT:
 			if deep_check:
-				var a := var2str(obj_a)
-				var b := var2str(obj_b)
-				return a == b
+				var a := inst2dict(obj_a)
+				var b := inst2dict(obj_b)
+				return str(a) == str(b)
 			return obj_a == obj_b
 		TYPE_ARRAY:
 			var arr_a:= obj_a as Array

@@ -121,7 +121,7 @@ func test_contains_exactly():
 	assert_array([1, 2, 3, 4, 5], GdUnitAssert.EXPECT_FAIL) \
 		.contains_exactly([1, 4, 3, 2, 5])\
 		.has_failure_message(expected_error_message)
-	
+
 	# should fail because the array contains more elements and in a different order
 	expected_error_message = """Expecting contains exactly elements:
  1, 2, 3, 4, 5, 6, 7
@@ -132,7 +132,7 @@ but some elements where not expected:
 	assert_array([1, 2, 3, 4, 5, 6, 7], GdUnitAssert.EXPECT_FAIL) \
 		.contains_exactly([1, 4, 3, 2, 5])\
 		.has_failure_message(expected_error_message)
-	
+
 	# should fail because the array contains less elements and in a different order
 	expected_error_message = """Expecting contains exactly elements:
  1, 2, 3, 4, 5
@@ -143,7 +143,7 @@ but could not find elements:
 	assert_array([1, 2, 3, 4, 5], GdUnitAssert.EXPECT_FAIL) \
 		.contains_exactly([1, 4, 3, 2, 5, 6, 7])\
 		.has_failure_message(expected_error_message)
-	
+
 	assert_array(null, GdUnitAssert.EXPECT_FAIL) \
 		.contains_exactly([1, 4, 3])\
 		.has_failure_message("Expecting contains exactly elements:\n"
@@ -157,7 +157,7 @@ func test_contains_exactly_in_any_order():
 	assert_array([1, 2, 3, 4, 5]).contains_exactly_in_any_order([1, 2, 3, 4, 5])
 	assert_array([1, 2, 3, 4, 5]).contains_exactly_in_any_order([5, 3, 2, 4, 1])
 	assert_array([1, 2, 3, 4, 5]).contains_exactly_in_any_order([5, 1, 2, 4, 3])
-	
+
 	# should fail because the array contains not exactly the same elements in any order
 	var expected_error_message := """Expecting contains exactly elements:
  1, 2, 6, 4, 5
@@ -170,7 +170,7 @@ and could not find elements:
 	assert_array([1, 2, 6, 4, 5], GdUnitAssert.EXPECT_FAIL) \
 		.contains_exactly_in_any_order([5, 3, 2, 4, 1, 9, 10])\
 		.has_failure_message(expected_error_message)
-		
+
 	#should fail because the array contains the same elements but in a different order
 	expected_error_message = """Expecting contains exactly elements:
  1, 2, 6, 9, 10, 4, 5
@@ -183,7 +183,7 @@ and could not find elements:
 	assert_array([1, 2, 6, 9, 10, 4, 5], GdUnitAssert.EXPECT_FAIL) \
 		.contains_exactly_in_any_order([5, 3, 2, 4, 1])\
 		.has_failure_message(expected_error_message)
-	
+
 	assert_array(null, GdUnitAssert.EXPECT_FAIL) \
 		.contains_exactly_in_any_order([1, 4, 3])\
 		.has_failure_message("Expecting contains exactly elements:\n"
@@ -221,14 +221,14 @@ func test_extract() -> void:
 	# extracting by a func with arguments
 	assert_array([Reference.new(), 2, AStar.new(), auto_free(Node.new())]).extract("has_signal", ["tree_entered"])\
 		.contains_exactly([false, "n.a.", false, true])
-		
+
 	# try extract on object via a func that not exists
 	assert_array([Reference.new(), 2, AStar.new(), auto_free(Node.new())]).extract("invalid_func")\
 		.contains_exactly(["n.a.", "n.a.", "n.a.", "n.a."])
 	# try extract on object via a func that has no return value
 	assert_array([Reference.new(), 2, AStar.new(), auto_free(Node.new())]).extract("remove_meta", [""])\
 		.contains_exactly([null, "n.a.", null, null])
-		
+
 	assert_array(null, GdUnitAssert.EXPECT_FAIL).extract("get_class")\
 		.contains_exactly(["AStar", "Node"])\
 		.has_failure_message("Expecting contains exactly elements:\n"
@@ -244,45 +244,45 @@ class TestObj:
 	var _name :String
 	var _value
 	var _x
-	
+
 	func _init(name :String, value, x = null):
 		_name = name
 		_value = value
 		_x = x
-	
+
 	func get_name() -> String:
 		return _name
-	
+
 	func get_value():
 		return _value
-	
+
 	func get_x():
 		return _x
-	
+
 	func get_x1() -> String:
 		return "x1"
-	
+
 	func get_x2() -> String:
 		return "x2"
-	
+
 	func get_x3() -> String:
 		return "x3"
-	
+
 	func get_x4() -> String:
 		return "x4"
-	
+
 	func get_x5() -> String:
 		return "x5"
-	
+
 	func get_x6() -> String:
 		return "x6"
-	
+
 	func get_x7() -> String:
 		return "x7"
-	
+
 	func get_x8() -> String:
 		return "x8"
-	
+
 	func get_x9() -> String:
 		return "x9"
 
@@ -299,7 +299,7 @@ func test_extractv() -> void:
 	assert_array([TestObj.new("A", 10), TestObj.new("B", "foo", "bar"), TestObj.new("C", 11, 42)])\
 		.extractv(extr("get_name"), extr("get_value"), extr("get_x"))\
 		.contains_exactly([tuple("A", 10, null), tuple("B", "foo", "bar"), tuple("C", 11, 42)])
-	
+
 	assert_array(null, GdUnitAssert.EXPECT_FAIL)\
 		.extractv(extr("get_name"), extr("get_value"), extr("get_x"))\
 		.contains_exactly([tuple("A", 10, null), tuple("B", "foo", "bar"), tuple("C", 11, 42)])\
@@ -320,7 +320,7 @@ func test_extractv_chained_func() -> void:
 	var root_b = TestObj.new("root_b", root_a)
 	var obj_x = TestObj.new("X", root_b)
 	var obj_y = TestObj.new("Y", root_b)
-	
+
 	assert_array([obj_a, obj_b, obj_c, obj_x, obj_y])\
 		.extractv(extr("get_name"), extr("get_value.get_name"))\
 		.contains_exactly([
@@ -339,7 +339,7 @@ func test_extract_chained_func() -> void:
 	var root_b = TestObj.new("root_b", root_a)
 	var obj_x = TestObj.new("X", root_b)
 	var obj_y = TestObj.new("Y", root_b)
-	
+
 	assert_array([obj_a, obj_b, obj_c, obj_x, obj_y])\
 		.extract("get_value.get_name")\
 		.contains_exactly([
@@ -387,21 +387,42 @@ func test_with_value_provider() -> void:
 func test_is_failure() -> void:
 	# initial is false
 	assert_bool(is_failure()).is_false()
-	
+
 	# on success assert
 	assert_array([]).is_empty()
 	assert_bool(is_failure()).is_false()
-	
+
 	# on faild assert
 	assert_array([], GdUnitAssert.EXPECT_FAIL).is_not_empty()
 	assert_bool(is_failure()).is_true()
-	
+
 	# on next success assert
 	assert_array([]).is_empty()
 	# is true because we have an already failed assert
 	assert_bool(is_failure()).is_true()
-	
+
 	# should abort here because we had an failing assert
 	if is_failure():
 		return
 	assert_bool(true).override_failure_message("This line shold never be called").is_false()
+
+class ExampleTestClass extends Reference:
+	var _childs := Array()
+	var _parent = null
+
+	func add_child(child :ExampleTestClass) -> ExampleTestClass:
+		_childs.append(child)
+		child._parent = self
+		return self
+
+func test_contains_exactly_stuck() -> void:
+	var example_a := ExampleTestClass.new()\
+		.add_child(ExampleTestClass.new())\
+		.add_child(ExampleTestClass.new())
+	var example_b := ExampleTestClass.new()\
+		.add_child(ExampleTestClass.new())\
+		.add_child(ExampleTestClass.new())
+	# this test was stuck and ends after a while into an aborted test case
+	# https://github.com/MikeSchulze/gdUnit3/issues/244
+	assert_array([example_a, example_b], GdUnitAssert.EXPECT_FAIL)\
+		.contains_exactly([example_a, example_b, example_a])
