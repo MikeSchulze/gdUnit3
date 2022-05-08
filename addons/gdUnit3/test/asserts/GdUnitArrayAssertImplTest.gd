@@ -157,7 +157,7 @@ func test_contains_exactly_in_any_order():
 	assert_array([1, 2, 3, 4, 5]).contains_exactly_in_any_order([1, 2, 3, 4, 5])
 	assert_array([1, 2, 3, 4, 5]).contains_exactly_in_any_order([5, 3, 2, 4, 1])
 	assert_array([1, 2, 3, 4, 5]).contains_exactly_in_any_order([5, 1, 2, 4, 3])
-
+	
 	# should fail because the array contains not exactly the same elements in any order
 	var expected_error_message := """Expecting contains exactly elements:
  1, 2, 6, 4, 5
