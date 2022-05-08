@@ -1,13 +1,17 @@
 name: publish-test-report
 description: "Publishes the GdUnit test results"
 
+inputs:
+  report-name:
+    description: "Name of the check run which will be created."
+    required: true
+
 runs:
   using: composite
   steps:
     - name: Publish Test Results 
       uses: dorny/test-reporter@v1
       with:
-        artifact: test-results                # artifact name
-        name: JUNIT Tests                     # Name of the check run which will be created
-        path: 'reports/report-**/result.xml'  # Path to test results (inside artifact .zip)
-        reporter: java-junit                  # Format of test results
+        name: ${{ inputs.report-name }}
+        path: 'reports/**/results.xml'
+        reporter: java-junit

@@ -1,20 +1,25 @@
 class_name GdUnitTestCaseReport
 extends GdUnitReportSummary
 
+var _suite_name :String
 var _failure_reports :Array
 var _rtf :RichTextLabel
 
-func _init(rtf :RichTextLabel, resource_path :String, test_name :String, is_error :bool = false, is_failed :bool = false, orphans :int = 0, skipped :int = 0, failure_reports :Array = [], duration :int = 0):
+func _init(rtf :RichTextLabel, resource_path :String, suite_name :String, test_name :String, is_error := false, is_failed := false, orphans :int = 0, is_skipped := false, failure_reports :Array = [], duration :int = 0):
+	_rtf = rtf
 	_resource_path = resource_path
+	_suite_name = suite_name
 	_name = test_name
 	_test_count = 1
 	_error_count = is_error
 	_failure_count = is_failed
 	_orphan_count = orphans
-	_skipped_count = skipped
+	_skipped_count = is_skipped
 	_failure_reports = failure_reports
 	_duration = duration
-	_rtf = rtf
+
+func suite_name() -> String:
+	return _suite_name
 
 func failure_report() -> String:
 	var html_report := ""

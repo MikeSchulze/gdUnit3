@@ -18,13 +18,10 @@ func add_testcase_report(resource_path :String, suite_report :GdUnitTestCaseRepo
 		if report.resource_path() == resource_path:
 			report.add_report(suite_report)
 
-func update_test_suite_report(resource_path :String, failed :bool, skipped :int, orphans :int, duration :int) -> void:
+func update_test_suite_report(resource_path :String, duration :int) -> void:
 	for report in _reports:
 		if report.resource_path() == resource_path:
-			report.set_failed(failed)
 			report.set_duration(duration)
-			report.set_skipped(skipped)
-			report.set_orphans(orphans)
 
 func update_testcase_report(resource_path :String, test_report :GdUnitTestCaseReport):
 	for report in _reports:
@@ -67,3 +64,6 @@ static func apply_testsuite_reports(report_dir :String, template :String, report
 		var report_link :String = report.write(report_dir).replace(report_dir, ".")
 		table_records.append(report.create_record(report_link))
 	return template.replace(GdUnitHtmlPatterns.TABLE_BY_TESTSUITES, table_records.join("\n"))
+
+func iteration() -> int:
+	return _iteration
