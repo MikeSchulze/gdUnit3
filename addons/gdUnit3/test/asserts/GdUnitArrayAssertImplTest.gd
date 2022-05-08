@@ -170,7 +170,7 @@ and could not find elements:
 	assert_array([1, 2, 6, 4, 5], GdUnitAssert.EXPECT_FAIL) \
 		.contains_exactly_in_any_order([5, 3, 2, 4, 1, 9, 10])\
 		.has_failure_message(expected_error_message)
-		
+	
 	#should fail because the array contains the same elements but in a different order
 	expected_error_message = """Expecting contains exactly elements:
  1, 2, 6, 9, 10, 4, 5
@@ -221,14 +221,14 @@ func test_extract() -> void:
 	# extracting by a func with arguments
 	assert_array([Reference.new(), 2, AStar.new(), auto_free(Node.new())]).extract("has_signal", ["tree_entered"])\
 		.contains_exactly([false, "n.a.", false, true])
-		
+	
 	# try extract on object via a func that not exists
 	assert_array([Reference.new(), 2, AStar.new(), auto_free(Node.new())]).extract("invalid_func")\
 		.contains_exactly(["n.a.", "n.a.", "n.a.", "n.a."])
 	# try extract on object via a func that has no return value
 	assert_array([Reference.new(), 2, AStar.new(), auto_free(Node.new())]).extract("remove_meta", [""])\
 		.contains_exactly([null, "n.a.", null, null])
-		
+	
 	assert_array(null, GdUnitAssert.EXPECT_FAIL).extract("get_class")\
 		.contains_exactly(["AStar", "Node"])\
 		.has_failure_message("Expecting contains exactly elements:\n"
@@ -405,3 +405,31 @@ func test_is_failure() -> void:
 	if is_failure():
 		return
 	assert_bool(true).override_failure_message("This line shold never be called").is_false()
+
+class ExampleTestClass extends Reference:
+	var _childs := Array()
+	var _parent = null
+	
+	func add_child(child :ExampleTestClass) -> ExampleTestClass:
+		_childs.append(child)
+		child._parent = self
+		return self
+	
+	func dispose():
+		_parent = null
+		_childs.clear()
+
+func test_contains_exactly_stuck() -> void:
+	var example_a := ExampleTestClass.new()\
+		.add_child(ExampleTestClass.new())\
+		.add_child(ExampleTestClass.new())
+	var example_b := ExampleTestClass.new()\
+		.add_child(ExampleTestClass.new())\
+		.add_child(ExampleTestClass.new())
+	# this test was stuck and ends after a while into an aborted test case
+	# https://github.com/MikeSchulze/gdUnit3/issues/244
+	assert_array([example_a, example_b], GdUnitAssert.EXPECT_FAIL)\
+		.contains_exactly([example_a, example_b, example_a])
+	# manual free because of cross references
+	example_a.dispose()
+	example_b.dispose()
