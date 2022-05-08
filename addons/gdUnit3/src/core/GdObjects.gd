@@ -168,12 +168,12 @@ static func equals(obj_a, obj_b, case_sensitive :bool = false, deep_check :bool 
 		return false
 	if obj_b == null and obj_a != null:
 		return false
-	
+
 	match type_a:
 		TYPE_OBJECT:
 			if deep_check:
-				var a := inst2dict(obj_a)
-				var b := inst2dict(obj_b)
+				var a = var2str(obj_a) if obj_a.get_script() == null else inst2dict(obj_a)
+				var b = var2str(obj_b) if obj_b.get_script() == null else inst2dict(obj_b)
 				return str(a) == str(b)
 			return obj_a == obj_b
 		TYPE_ARRAY:
@@ -353,13 +353,13 @@ static func is_native_script(script :Script) -> bool:
 
 static func is_cs_test_suite(instance :Node) -> bool:
 	return instance.has_meta("CS_TESTSUITE")
-	
+
 static func is_cs_testsuite(script :Script) -> bool:
 	if GdUnitTools.is_mono_supported():
 		var csTools = load("res://addons/gdUnit3/src/core/CsTools.cs").new()
 		return not script.resource_path.empty() and csTools.IsTestSuite(script.resource_path)
 	return false;
-	
+
 static func is_gd_testsuite(script :Script) -> bool:
 	if is_gd_script(script):
 		var stack := [script]
@@ -625,7 +625,7 @@ const DIV_SUB = 245
 static func _diff(lb: PoolByteArray, rb: PoolByteArray, lookup: Array, ldiff: Array, rdiff: Array):
 	var loffset = lb.size()
 	var roffset = rb.size()
-	
+
 	while true:
 		#if last character of X and Y matches
 		if loffset > 0 && roffset > 0 && lb[loffset - 1] == rb[roffset - 1]:

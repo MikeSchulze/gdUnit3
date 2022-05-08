@@ -414,6 +414,10 @@ class ExampleTestClass extends Reference:
 		_childs.append(child)
 		child._parent = self
 		return self
+	
+	func dispose():
+		_parent = null
+		_childs.clear()
 
 func test_contains_exactly_stuck() -> void:
 	var example_a := ExampleTestClass.new()\
@@ -426,3 +430,6 @@ func test_contains_exactly_stuck() -> void:
 	# https://github.com/MikeSchulze/gdUnit3/issues/244
 	assert_array([example_a, example_b], GdUnitAssert.EXPECT_FAIL)\
 		.contains_exactly([example_a, example_b, example_a])
+	# manual free because of cross references
+	example_a.dispose()
+	example_b.dispose()
