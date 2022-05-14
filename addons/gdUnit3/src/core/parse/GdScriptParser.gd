@@ -345,21 +345,21 @@ func parse_arguments(row: String) -> Array:
 	var current_index := 0
 	var token :Token = null
 	var bracket := 0
-	var next_tokens : = [TOKEN_FUNCTION_DECLARATION]
+	var in_function := false
 	while current_index < len(input):
 		token = next_token(input, current_index)
 		current_index += token._consumed
 		if token == TOKEN_BRACKET_OPEN:
+			in_function = true
 			bracket += 1
-		if token == TOKEN_BRACKET_CLOSE:
-			bracket -= 1
-		if not next_tokens.has(token) and not token.is_variable() :
 			continue
+		# if function has no args or all args has parsed?
+		if token == TOKEN_BRACKET_CLOSE or (in_function and bracket == 0):
+			return args
 		# is function
 		if token == TOKEN_FUNCTION_DECLARATION:
 			token = next_token(input, current_index)
 			current_index += token._consumed
-			next_tokens = [TOKEN_BRACKET_OPEN, TOKEN_BRACKET_CLOSE]
 			continue
 		# is argument
 		if bracket == 1 and token.is_variable():

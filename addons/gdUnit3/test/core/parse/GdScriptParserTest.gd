@@ -112,6 +112,11 @@ func test_parse_arguments():
 		.contains_exactly([
 			GdFunctionArgument.new("timeout", "float")])
 
+func test_parse_arguments_with_super_constructor():
+	assert_array(_parser.parse_arguments('func foo().foo("abc"):')).is_empty()
+	assert_array(_parser.parse_arguments('func foo(arg1 = "arg").foo("abc", arg1):'))\
+		.contains_exactly([GdFunctionArgument.new("arg1", "", '"arg"')])
+
 func test_parse_arguments_default_build_in_type_String():
 	assert_array(_parser.parse_arguments("func foo(arg1 :String, arg2=\"default\"):")) \
 		.contains_exactly([
