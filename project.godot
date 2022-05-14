@@ -624,11 +624,6 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/src/core/GdUnitProperty.gd"
 }, {
-"base": "Node",
-"class": "GdUnitPushErrorHandler",
-"language": "GDScript",
-"path": "res://addons/gdUnit3/src/network/GdUnitPushErrorHandler.gd"
-}, {
 "base": "Resource",
 "class": "GdUnitReport",
 "language": "GDScript",
@@ -929,6 +924,16 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/test/mocker/GodotClassNameFuzzer.gd"
 }, {
+"base": "GdUnitMonitor",
+"class": "GodotGdErrorMonitor",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/src/monitor/GodotGdErrorMonitor.gd"
+}, {
+"base": "GdUnitTestSuite",
+"class": "GodotGdErrorMonitorTest",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/test/monitor/GodotGdErrorMonitorTest.gd"
+}, {
 "base": "GdUnitTestSuite",
 "class": "InspectorTreeMainPanelPerformanceTest",
 "language": "GDScript",
@@ -983,16 +988,6 @@ _global_script_classes=[ {
 "class": "Person",
 "language": "GDScript",
 "path": "res://addons/gdUnit3/test/resources/core/Person.gd"
-}, {
-"base": "GdUnitMonitor",
-"class": "PushErrorMonitor",
-"language": "GDScript",
-"path": "res://addons/gdUnit3/src/monitor/PushErrorMonitor.gd"
-}, {
-"base": "GdUnitTestSuite",
-"class": "PushErrorMonitorTest",
-"language": "GDScript",
-"path": "res://addons/gdUnit3/test/monitor/PushErrorMonitorTest.gd"
 }, {
 "base": "Reference",
 "class": "RPC",
@@ -1273,7 +1268,6 @@ _global_script_class_icons={
 "GdUnitPatcher": "",
 "GdUnitPatcherTest": "",
 "GdUnitProperty": "",
-"GdUnitPushErrorHandler": "",
 "GdUnitReport": "",
 "GdUnitReportCollector": "",
 "GdUnitReportConsumer": "",
@@ -1334,6 +1328,8 @@ _global_script_class_icons={
 "GdUnitVector3AssertImplTest": "",
 "GeneratedPersonTest": "",
 "GodotClassNameFuzzer": "",
+"GodotGdErrorMonitor": "",
+"GodotGdErrorMonitorTest": "",
 "InspectorTreeMainPanelPerformanceTest": "",
 "InspectorTreeMainPanelTest": "",
 "IntFuzzer": "",
@@ -1345,8 +1341,6 @@ _global_script_class_icons={
 "OverridenGetClassTestClass": "",
 "PascalCaseWithClassName": "",
 "Person": "",
-"PushErrorMonitor": "",
-"PushErrorMonitorTest": "",
 "RPC": "",
 "RPCClientConnect": "",
 "RPCClientDisconnect": "",
@@ -1397,11 +1391,6 @@ gdscript/warnings/return_value_discarded=false
 [editor_plugins]
 
 enabled=PoolStringArray( "res://addons/gdUnit3/plugin.cfg" )
-
-[gdunit3]
-
-report/assert/verbose_errors=false
-report/assert/verbose_warnings=false
 
 [network]
 

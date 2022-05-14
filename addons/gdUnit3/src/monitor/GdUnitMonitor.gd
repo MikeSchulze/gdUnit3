@@ -2,7 +2,7 @@
 class_name GdUnitMonitor
 extends Resource
 
-var _id:String
+var _id :String
 
 # constructs new Monitor with given id
 func _init(id :String):
