@@ -206,7 +206,7 @@ namespace GdUnit3.Tests
             AssertObject(box1.Color).IsEqual(Colors.Green);
 
             // wait for returns 'red' but will never happen and expect is interrupted after 500ms
-            await AssertThrown(runner.AwaitMethod<string>("color_cycle").IsEqual("red").WithTimeout(1000))
+            await AssertThrown(runner.AwaitMethod<string>("color_cycle").IsEqual("red").WithTimeout(500))
                .ContinueWith(result => result.Result.HasMessage("Assertion: timed out after 500ms."));
         }
 
