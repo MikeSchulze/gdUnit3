@@ -907,3 +907,15 @@ func test_mock_scene_execute_func_yielded() -> void:
 	verify(mocked_scene).emit_signal("panel_color_change", mocked_scene._box1, Color.red)
 	verify(mocked_scene).emit_signal("panel_color_change", mocked_scene._box1, Color.blue)
 	verify(mocked_scene).emit_signal("panel_color_change", mocked_scene._box1, Color.green)
+
+class Base:
+	func _init(value :String):
+		pass
+
+class Foo extends Base:
+	func _init().("test"):
+		pass
+
+func test_mock_with_inheritance_method() -> void:
+	var foo := mock(Foo) as Foo
+	assert_object(foo).is_not_null()
