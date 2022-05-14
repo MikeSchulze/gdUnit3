@@ -18,6 +18,7 @@ var _fs : GDScriptFunctionState
 var _interupted :bool = false
 var _timeout :int
 var _default_timeout :int
+var _monitor := GodotGdErrorMonitor.new()
 
 func _init() -> void:
 	_default_timeout = GdUnitSettings.test_timeout()
@@ -39,6 +40,7 @@ func configure(name: String, line_number: int, script_path: String, timeout :int
 func execute(fuzzers := Array(), iteration := 0):
 	if iteration == 0:
 		set_timeout()
+	_monitor.start()
 	if not fuzzers.empty():
 		update_fuzzers(fuzzers, iteration)
 		_fs = get_parent().callv(name, fuzzers)
@@ -46,6 +48,10 @@ func execute(fuzzers := Array(), iteration := 0):
 		_fs = get_parent().call(name)
 	if GdUnitTools.is_yielded(_fs):
 		yield(_fs, "completed")
+	_monitor.stop()
+	for report in _monitor.reports():
+		GdUnitAssertImpl.new(get_parent(), null).send_report(report)
+	
 	if iteration == _iterations-1:
 		stop_timer()
 	return _fs

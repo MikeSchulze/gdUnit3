@@ -7,14 +7,12 @@ enum  {
 	SUITE_SETUP,
 	TEST_SETUP,
 	TEST_EXECUTE,
-	PUSH_ERROR,
 }
 
 var _monitors := {
 	SUITE_SETUP : GdUnitMemMonitor.new("SUITE_SETUP"),
 	TEST_SETUP : GdUnitMemMonitor.new("TEST_SETUP"),
 	TEST_EXECUTE : GdUnitMemMonitor.new("TEST_EXECUTE"),
-	PUSH_ERROR : PushErrorMonitor.new(),
 }
 
 var _monitored_pool_order := Array()
