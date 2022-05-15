@@ -32,7 +32,7 @@ jobs:
           nuget restore
           mkdir -p .mono/assemblies/Debug
           cp /usr/local/bin/GodotSharp/Api/Release/* .mono/assemblies/Debug
-          msbuild
+          dotnet build -verbosity:m
 
       - name: Run Selftest
         timeout-minutes: 10
