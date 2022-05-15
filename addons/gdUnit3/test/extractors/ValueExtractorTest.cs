@@ -26,7 +26,7 @@ namespace GdUnit3.Tests
 
             public TestObject.STATE State { get; private set; }
 
-            public TestObject Parent { get; set; }
+            public TestObject? Parent { get; set; } = null;
 
             public string Value { get; set; }
 

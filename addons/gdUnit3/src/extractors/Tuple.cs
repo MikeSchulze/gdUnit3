@@ -6,7 +6,7 @@ namespace GdUnit3.Asserts
 {
     sealed class Tuple : ITuple
     {
-        public Tuple(params object[] args)
+        public Tuple(params object?[] args)
         {
             Values = args?.ToList<object>() ?? Enumerable.Empty<object>();
         }

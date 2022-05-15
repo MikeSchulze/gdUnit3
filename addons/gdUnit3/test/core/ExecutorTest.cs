@@ -16,7 +16,7 @@ namespace GdUnit3.Tests
     [TestSuite]
     public class ExecutorTest : ITestEventListener
     {
-        private Executor _executor;
+        private Executor _executor = new Executor();
         private List<TestEvent> _events = new List<TestEvent>();
 
         // enable to verbose debug event 
@@ -25,7 +25,6 @@ namespace GdUnit3.Tests
         [Before]
         public void Before()
         {
-            _executor = new Executor();
             _executor.AddTestEventListener(this);
         }
 

@@ -5,26 +5,21 @@ namespace GdUnit3.Executions.Monitors
 {
     public class MemoryPool
     {
-        private string _name;
-
         private List<Godot.Object> _registeredObjects = new List<Godot.Object>();
 
         public void SetActive(string name)
         {
-            _name = name;
             //Godot.GD.PrintS("MemoryPool.SetActive", name, GetHashCode());
             Thread.SetData(Thread.GetNamedDataSlot("MemoryPool"), this);
         }
 
-        public static T RegisterForAutoFree<T>(T obj)
+        public static T RegisterForAutoFree<T>(T obj) where T : Godot.Object
         {
             MemoryPool pool = (MemoryPool)Thread.GetData(Thread.GetNamedDataSlot("MemoryPool"));
-            pool._registeredObjects.Add(obj as Godot.Object);
-
+            pool._registeredObjects.Add(obj);
             //Godot.GD.PrintS("MemoryPool.RegisterForAutoFree", pool._name, pool.GetHashCode(), "register", obj);
             return obj;
         }
-
 
         public void ReleaseRegisteredObjects()
         {

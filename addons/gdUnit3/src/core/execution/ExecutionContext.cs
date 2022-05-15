@@ -65,18 +65,17 @@ namespace GdUnit3.Executions
         private List<IDisposable> Disposables
         { get; set; }
 
-        public static ExecutionContext Current => Thread.GetData(Thread.GetNamedDataSlot("ExecutionContext")) as ExecutionContext;
+        public static ExecutionContext? Current => Thread.GetData(Thread.GetNamedDataSlot("ExecutionContext")) as ExecutionContext;
 
         private IEnumerable<ITestEventListener> EventListeners
         { get; set; }
 
-#nullable enable
         private List<ExecutionContext> SubExecutionContexts
         { get; set; }
 
         public TestCase? CurrentTestCase
         { get; set; }
-#nullable disable
+
 
         private long Duration => Stopwatch.ElapsedMilliseconds;
 
@@ -136,14 +135,14 @@ namespace GdUnit3.Executions
             FireTestEvent(TestEvent.After(TestSuite.ResourcePath, TestSuite.Name, BuildStatistics(OrphanCount(false)), CollectReports));
 
         public void FireBeforeTestEvent() =>
-            FireTestEvent(TestEvent.BeforeTest(TestSuite.ResourcePath, TestSuite.Name, CurrentTestCase.Name));
+            FireTestEvent(TestEvent.BeforeTest(TestSuite.ResourcePath, TestSuite.Name, CurrentTestCase?.Name ?? "Unknown"));
 
         public void FireAfterTestEvent() =>
-            FireTestEvent(TestEvent.AfterTest(TestSuite.ResourcePath, TestSuite.Name, CurrentTestCase.Name, BuildStatistics(OrphanCount(true)), CollectReports));
+            FireTestEvent(TestEvent.AfterTest(TestSuite.ResourcePath, TestSuite.Name, CurrentTestCase?.Name ?? "Unknown", BuildStatistics(OrphanCount(true)), CollectReports));
 
 
         public static void RegisterDisposable(IDisposable disposable) =>
-            ExecutionContext.Current.Disposables.Add(disposable);
+            ExecutionContext.Current?.Disposables.Add(disposable);
 
         public void Dispose()
         {

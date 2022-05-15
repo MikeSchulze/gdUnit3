@@ -17,7 +17,7 @@ namespace GdUnit3.Asserts
             _args = args.ToList<object>();
         }
 
-        public object ExtractValue(object value)
+        public object? ExtractValue(object? value)
         {
             if (value == null)
                 return null;

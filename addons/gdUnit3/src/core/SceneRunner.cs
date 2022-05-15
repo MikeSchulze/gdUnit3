@@ -96,12 +96,12 @@ namespace GdUnit3
             }
         }
 
-        public static async Task AwaitSignal(this Godot.Node node, string signal, params object[] expectedArgs)
+        public static async Task AwaitSignal(this Godot.Node node, string signal, params object[]? expectedArgs)
         {
             while (true)
             {
                 object[] signalArgs = await Engine.GetMainLoop().ToSignal(node, signal);
-                if (expectedArgs.Length == 0 || signalArgs.SequenceEqual(expectedArgs))
+                if (expectedArgs?.Length == 0 || signalArgs.SequenceEqual(expectedArgs))
                     return;
             }
         }
@@ -127,8 +127,8 @@ namespace GdUnit3.Core
             Verbose = verbose;
             SceneAutoFree = autoFree;
             ExecutionContext.RegisterDisposable(this);
-            SceneTree = Godot.Engine.GetMainLoop() as SceneTree;
-            CurrentScene = (Godot.ResourceLoader.Load(resourcePath) as PackedScene).Instance();
+            SceneTree = (SceneTree)Godot.Engine.GetMainLoop();
+            CurrentScene = ((PackedScene)Godot.ResourceLoader.Load(resourcePath)).Instance();
             SceneTree.Root.AddChild(CurrentScene);
             CurrentMousePos = default;
             SavedIterationsPerSecond = (int)ProjectSettings.GetSetting("physics/common/physics_fps");
@@ -279,14 +279,14 @@ namespace GdUnit3.Core
 
         private string SceneName()
         {
-            var sceneScript = CurrentScene.GetScript();
+            Script? sceneScript = (Script?)CurrentScene.GetScript();
 
             if (!(sceneScript is Script))
                 return CurrentScene.Name;
             if (!CurrentScene.Name.BeginsWith("@"))
                 return CurrentScene.Name;
 
-            return (sceneScript as Script).ResourceName.BaseName();
+            return sceneScript.ResourceName.BaseName();
         }
 
         public Node Scene() => CurrentScene;
@@ -341,8 +341,6 @@ namespace GdUnit3.Core
             SceneTree.Root.RemoveChild(CurrentScene);
             if (SceneAutoFree)
                 CurrentScene.Free();
-            SceneTree = null;
-            CurrentScene = null;
             // we hide the scene/main window after runner is finished 
             OS.WindowMaximized = false;
             OS.WindowMinimized = true;

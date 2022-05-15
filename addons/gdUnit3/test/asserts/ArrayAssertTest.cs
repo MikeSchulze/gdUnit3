@@ -178,7 +178,7 @@ namespace GdUnit3.Tests.Asserts
             AssertThrown(() => AssertArray(null).HasSize(4))
                 .IsInstanceOf<TestFailedException>()
                 .HasPropertyValue("LineNumber", 178)
-                .HasMessage("Expecting size:\n  '4' but is <Null>");
+                .HasMessage("Expecting size:\n  '4' but is 'unknown'");
         }
 
         [TestCase]
@@ -627,7 +627,7 @@ namespace GdUnit3.Tests.Asserts
         public void Extract()
         {
             // try to extract on base types
-            AssertArray(new object[] { 1, false, 3.14, null, Colors.AliceBlue }).Extract("GetClass")
+            AssertArray(new object?[] { 1, false, 3.14, null, Colors.AliceBlue }).Extract("GetClass")
                 .ContainsExactly("n.a.", "n.a.", "n.a.", null, "n.a.");
             // extracting by a func without arguments
             AssertArray(new object[] { new Reference(), 2, new AStar(), AutoFree(new Node()) }).Extract("GetClass")
@@ -657,10 +657,10 @@ namespace GdUnit3.Tests.Asserts
         class TestObj : Godot.Reference
         {
             string _name;
-            object _value;
-            object _x;
+            object? _value;
+            object? _x;
 
-            public TestObj(string name, object value, object x = null)
+            public TestObj(string name, object? value, object? x = null)
             {
                 _name = name;
                 _value = value;
@@ -668,8 +668,8 @@ namespace GdUnit3.Tests.Asserts
             }
 
             public string GetName() => _name;
-            public object GetValue() => _value;
-            public object GetX() => _x;
+            public object? GetValue() => _value;
+            public object? GetX() => _x;
             public string GetX1() => "x1";
             public string GetX2() => "x2";
             public string GetX3() => "x3";
@@ -685,7 +685,7 @@ namespace GdUnit3.Tests.Asserts
         public void ExtractV()
         {
             // single extract
-            AssertArray(new object[] { 1, false, 3.14, null, Colors.AliceBlue })
+            AssertArray(new object?[] { 1, false, 3.14, null, Colors.AliceBlue })
                 .ExtractV(Extr("GetClass"))
                 .ContainsExactly("n.a.", "n.a.", "n.a.", null, "n.a.");
             // tuple of two
@@ -797,10 +797,10 @@ namespace GdUnit3.Tests.Asserts
         public void Interrupt_IsFailure()
         {
             // we disable failure reportion until we simmulate an failure
-            ExecutionContext.Current.FailureReporting = false;
+            if (ExecutionContext.Current != null)
+                ExecutionContext.Current.FailureReporting = false;
             // try to fail
             AssertArray(new object[] { }).IsNotEmpty();
-            ExecutionContext.Current.FailureReporting = true;
 
             // expect this line will never called because of the test is interrupted by a failing assert
             AssertBool(true).OverrideFailureMessage("This line shold never be called").IsFalse();

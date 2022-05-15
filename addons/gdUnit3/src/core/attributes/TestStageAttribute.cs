@@ -7,7 +7,7 @@ namespace GdUnit3
         /// <summary>
         /// Describes the intention of the test, will be shown as a tool tip on the inspector node.
         /// </summary>
-        public string Description { get; set; }
+        public string Description { get; set; } = "";
 
         /// <summary>
         /// Sets the timeout in ms to interrupt the test if the test execution takes longer as the given value.
@@ -22,6 +22,6 @@ namespace GdUnit3
         /// <summary>
         /// The name of the annotated method
         /// </summary>
-        internal string Name { get; set; }
+        internal string Name { get; set; } = "";
     }
 }

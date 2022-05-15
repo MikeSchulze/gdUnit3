@@ -1,5 +1,4 @@
 using System;
-using System.Threading.Tasks;
 
 namespace GdUnit3.Asserts
 {
@@ -7,9 +6,9 @@ namespace GdUnit3.Asserts
 
     internal sealed class ExceptionAssert<T> : IExceptionAssert
     {
-        private Exception Current { get; set; }
+        private Exception? Current { get; set; } = null;
 
-        private string CustomFailureMessage { get; set; }
+        private string? CustomFailureMessage { get; set; }
 
         public ExceptionAssert(Func<T> supplier)
         {
@@ -25,7 +24,7 @@ namespace GdUnit3.Asserts
         public IExceptionAssert IsInstanceOf<ExpectedType>()
         {
             if (!(Current is ExpectedType))
-                return ReportTestFailure(AssertFailures.IsInstanceOf(Current?.GetType(), typeof(ExpectedType)), Current, typeof(ExpectedType));
+                ThrowTestFailureReport(AssertFailures.IsInstanceOf(Current?.GetType(), typeof(ExpectedType)), Current, typeof(ExpectedType));
             return this;
         }
 
@@ -33,15 +32,15 @@ namespace GdUnit3.Asserts
         {
             string current = NormalizedFailureMessage(Current?.Message ?? "");
             if (!current.Equals(message))
-                return ReportTestFailure(AssertFailures.IsEqual(current, message), current, message);
+                ThrowTestFailureReport(AssertFailures.IsEqual(current, message), current, message);
             return this;
         }
 
         public IExceptionAssert HasPropertyValue(string propertyName, object expected)
         {
-            var value = Current.GetType().GetProperty(propertyName).GetValue(Current);
+            var value = Current?.GetType().GetProperty(propertyName).GetValue(Current);
             if (!Comparable.IsEqual(value, expected).Valid)
-                return ReportTestFailure(AssertFailures.HasValue(propertyName, value, expected), value, expected);
+                ThrowTestFailureReport(AssertFailures.HasValue(propertyName, value, expected), value, expected);
             return this;
         }
 
@@ -55,7 +54,7 @@ namespace GdUnit3.Asserts
         {
             var current = NormalizedFailureMessage(Current?.Message ?? "");
             if (!current.StartsWith(message))
-                return ReportTestFailure(AssertFailures.IsEqual(current, message), current, message);
+                ThrowTestFailureReport(AssertFailures.IsEqual(current, message), current, message);
             return this;
         }
 
@@ -72,7 +71,7 @@ namespace GdUnit3.Asserts
             }
         }
 
-        private IExceptionAssert ReportTestFailure(string message, object current, object expected)
+        private void ThrowTestFailureReport(string message, object? current, object? expected)
         {
             var failureMessage = CustomFailureMessage ?? message;
             throw new TestFailedException(failureMessage);

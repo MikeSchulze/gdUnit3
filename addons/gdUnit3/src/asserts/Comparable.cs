@@ -17,7 +17,6 @@ namespace GdUnit3
         {
             public static Result Equal => new Result(true, null, null);
 
-#nullable enable
             public Result(bool valid, object? left, object? right, Result? parent = null)
             {
                 Valid = valid;
@@ -40,7 +39,6 @@ namespace GdUnit3
 
             private Result? Parent
             { get; set; }
-#nullable disable
 
             public bool Valid
             { get; private set; }
@@ -51,7 +49,7 @@ namespace GdUnit3
             typeof(Godot.DynamicGodotObject)
         };
 
-        public static Result IsEqual<T>(T left, T right, MODE compareMode = MODE.CASE_SENSITIVE, Result r = null)
+        public static Result IsEqual<T>(T? left, T? right, MODE compareMode = MODE.CASE_SENSITIVE, Result? r = null)
         {
             //Godot.GD.PrintS(typeof(T), left, right);
             if (left == null && right == null)
@@ -79,11 +77,11 @@ namespace GdUnit3
             {
                 var la = left as Array;
                 var ra = right as Array;
-                if (la.Length != ra.Length)
+                if (la?.Length != ra?.Length)
                     return new Result(false, left, right, r);
-                for (int index = 0; index < la.Length; index++)
+                for (int index = 0; index < la?.Length; index++)
                 {
-                    var result = IsEqual(la.GetValue(index), ra.GetValue(index), compareMode);
+                    var result = IsEqual(la.GetValue(index), ra?.GetValue(index), compareMode);
                     if (!result.Valid)
                         return result;
                 }
@@ -92,8 +90,8 @@ namespace GdUnit3
 
             if (left is IEnumerable)
             {
-                var itLeft = (left as IEnumerable).GetEnumerator();
-                var itRight = (right as IEnumerable).GetEnumerator();
+                var itLeft = ((IEnumerable)left).GetEnumerator();
+                var itRight = ((IEnumerable)right).GetEnumerator();
 
                 while (true)
                 {
@@ -128,7 +126,7 @@ namespace GdUnit3
 
                 // to invoke could be a performance issue
                 var IsEqualMethod = typeof(Comparable).GetMethod("IsEqual").MakeGenericMethod(property.PropertyType);
-                Result result = (Result)IsEqualMethod.Invoke(null, new object[] { lv, rv, compareMode, r });
+                Result result = (Result)IsEqualMethod.Invoke(null, new object?[] { lv, rv, compareMode, r });
                 if (!result.Valid)
                 {
                     return result.WithProperty(property.Name);

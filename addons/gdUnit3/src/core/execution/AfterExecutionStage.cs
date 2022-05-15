@@ -25,13 +25,13 @@ namespace GdUnit3.Executions
             context.FireAfterEvent();
         }
 
-        private static TestStageAttribute AfterAttribute(ExecutionContext context) => context.TestSuite.Instance
+        private static TestStageAttribute? AfterAttribute(ExecutionContext context) => context.TestSuite.Instance
             .GetType()
             .GetMethods()
             .FirstOrDefault(m => m.IsDefined(typeof(AfterAttribute)))
             ?.GetCustomAttribute<AfterAttribute>();
 
-        private static TestStageAttribute BeforeAttribute(ExecutionContext context) => context.TestSuite.Instance
+        private static TestStageAttribute? BeforeAttribute(ExecutionContext context) => context.TestSuite.Instance
             .GetType()
             .GetMethods()
             .FirstOrDefault(m => m.IsDefined(typeof(BeforeAttribute)))
@@ -53,7 +53,7 @@ namespace GdUnit3.Executions
                 context.OrphanMonitor.OrphanCount,
                 beforeAttribute != null
                     ? (beforeAttribute.Name + ":" + beforeAttribute.Line)
-                    : (afterAttributes.Name + ":" + afterAttributes.Line));
+                    : (afterAttributes?.Name + ":" + afterAttributes?.Line));
         }
     }
 }
