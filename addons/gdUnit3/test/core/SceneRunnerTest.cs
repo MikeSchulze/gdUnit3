@@ -118,7 +118,7 @@ namespace GdUnit3.Tests
 
             // AwaitOnSignal must fail after an maximum timeout of 500ms because no signal 'panel_color_change' with given args color=Yellow is emited
             await AssertThrown(runner.AwaitSignal("panel_color_change", box1, Colors.Yellow).WithTimeout(700))
-                .ContinueWith(result => result.Result.IsInstanceOf<GdUnit3.Executions.ExecutionTimeoutException>().HasMessage("Timed out after 700ms."));
+                .ContinueWith(result => result.Result?.IsInstanceOf<GdUnit3.Executions.ExecutionTimeoutException>().HasMessage("Timed out after 700ms."));
             // verify the box is still green
             AssertObject(box1.Color).IsEqual(Colors.Green);
         }
@@ -143,7 +143,7 @@ namespace GdUnit3.Tests
             var spell = runner.FindNode("Spell");
             // test to wait on signal with invlaid argument and must be timed out after 300ms
             await AssertThrown(spell.AwaitSignal("spell_explode", null).WithTimeout(300))
-                .ContinueWith(result => result.Result.IsInstanceOf<GdUnit3.Executions.ExecutionTimeoutException>().HasMessage("Timed out after 300ms."));
+                .ContinueWith(result => result.Result?.IsInstanceOf<GdUnit3.Executions.ExecutionTimeoutException>().HasMessage("Timed out after 300ms."));
             // now wait on signal with correct argument
             await spell.AwaitSignal("spell_explode", spell).WithTimeout(1100);
 
@@ -207,7 +207,7 @@ namespace GdUnit3.Tests
 
             // wait for returns 'red' but will never happen and expect is interrupted after 500ms
             await AssertThrown(runner.AwaitMethod<string>("color_cycle").IsEqual("red").WithTimeout(500))
-               .ContinueWith(result => result.Result.HasMessage("Assertion: timed out after 500ms."));
+               .ContinueWith(result => result.Result?.HasMessage("Assertion: timed out after 500ms."));
         }
 
         [TestCase(Description = "Example to wait for a specific method result and used timefactor of 10", Timeout = 1000)]
@@ -224,7 +224,7 @@ namespace GdUnit3.Tests
 
             // wait for returns 'red' but will never happen and expect is interrupted after 250ms
             await AssertThrown(runner.AwaitMethod<string>("color_cycle").IsEqual("red").WithTimeout(250))
-               .ContinueWith(result => result.Result.HasMessage("Assertion: timed out after 250ms."));
+               .ContinueWith(result => result.Result?.HasMessage("Assertion: timed out after 250ms."));
         }
     }
 }
