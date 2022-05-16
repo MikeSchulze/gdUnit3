@@ -140,7 +140,7 @@ namespace GdUnit3.Core
             var root = syntaxTree.GetCompilationUnitRoot();
             NamespaceDeclarationSyntax? namespaceSyntax = root.Members.OfType<NamespaceDeclarationSyntax>().First();
             ClassDeclarationSyntax? programClassSyntax = namespaceSyntax?.Members.OfType<ClassDeclarationSyntax>().First();
-            SyntaxNode? insertAt = programClassSyntax?.ChildNodes().Last();
+            SyntaxNode insertAt = programClassSyntax?.ChildNodes().Last()!;
 
             AttributeSyntax testCaseAttribute = SyntaxFactory.Attribute(SyntaxFactory.IdentifierName("TestCase"));
             AttributeListSyntax attributes = SyntaxFactory.AttributeList(SyntaxFactory.SingletonSeparatedList<AttributeSyntax>(testCaseAttribute));
@@ -159,7 +159,7 @@ namespace GdUnit3.Core
                 default(SyntaxToken));
 
             BlockSyntax newBody = SyntaxFactory.Block(SyntaxFactory.ParseStatement("AssertNotYetImplemented();"));
-            method = method.ReplaceNode(method.Body, newBody);
+            method = method.ReplaceNode(method.Body!, newBody);
             return root.InsertNodesAfter(insertAt, new[] { method }).NormalizeWhitespace("\t", "\n");
         }
 

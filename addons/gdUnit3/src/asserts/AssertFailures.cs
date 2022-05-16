@@ -258,14 +258,14 @@ namespace GdUnit3.Asserts
                 FormatCurrent(current),
                 FormatExpected(expected));
 
-        public static string Contains(IEnumerable<object>? current, IEnumerable<object> expected, List<object> notFound) =>
+        public static string Contains(IEnumerable<object?>? current, IEnumerable<object?> expected, List<object?> notFound) =>
             string.Format("{0}\n  {1}\n do contains (in any order)\n  {2}\n but could not find elements:\n  {3}",
                 FormatFailure("Expecting contains elements:"),
                 FormatCurrent(current, false),
                 FormatExpected(expected, false),
                 FormatExpected(notFound, false));
 
-        public static string ContainsExactly(IEnumerable<object>? current, IEnumerable<object> expected, List<object> notFound, List<object> notExpected)
+        public static string ContainsExactly(IEnumerable<object?>? current, IEnumerable<object?> expected, List<object?> notFound, List<object?> notExpected)
         {
             if (notExpected.Count == 0 && notFound.Count == 0)
                 return string.Format("{0}\n  {1}\n do contains (in same order)\n  {2}\n but has different order {3}",
@@ -285,7 +285,7 @@ namespace GdUnit3.Asserts
             return message;
         }
 
-        public static string ContainsExactlyInAnyOrder(IEnumerable<object>? current, IEnumerable<object> expected, List<object> notFound, List<object> notExpected)
+        public static string ContainsExactlyInAnyOrder(IEnumerable<object?>? current, IEnumerable<object?> expected, List<object?> notFound, List<object?> notExpected)
         {
             if (notExpected.Count == 0 && notFound.Count == 0)
                 return string.Format("{0}\n  {1}\n do contains (in any order)\n  {2}\n but has different order {3}",
@@ -380,7 +380,7 @@ namespace GdUnit3.Asserts
         }
 
 
-        static string FindFirstDiff(IEnumerable<object>? left, IEnumerable<object>? right)
+        static string FindFirstDiff(IEnumerable<object?>? left, IEnumerable<object?>? right)
         {
             foreach (var it in left.Select((value, i) => new { Value = value, Index = i }))
             {

@@ -10,10 +10,10 @@ namespace GdUnit3.Asserts
     {
         public ArrayAssert(IEnumerable? current) : base(current)
         {
-            Current = current?.Cast<object>();
+            Current = current?.Cast<object?>();
         }
 
-        private new IEnumerable<object>? Current { get; set; }
+        private new IEnumerable<object?>? Current { get; set; }
 
         public IArrayAssert IsEqualIgnoringCase(IEnumerable expected)
         {
@@ -60,10 +60,9 @@ namespace GdUnit3.Asserts
             // we test for contains nothing
             if (expected.Length == 0)
                 return this;
-            var e = expected.Cast<object>();
-            var notFound = ArrayContainsAll(Current, e);
+            var notFound = ArrayContainsAll(Current, expected);
             if (notFound.Count > 0)
-                ThrowTestFailureReport(AssertFailures.Contains(Current, e, notFound), Current, expected);
+                ThrowTestFailureReport(AssertFailures.Contains(Current, expected, notFound), Current, expected);
             return this;
         }
 
@@ -85,22 +84,20 @@ namespace GdUnit3.Asserts
             // we test for contains nothing
             if (expected.Length == 0)
                 return this;
-            var e = expected.Cast<object>();
             // is equal than it contains same elements in same order
-            if (Comparable.IsEqual(Current, e).Valid)
+            if (Comparable.IsEqual(Current, expected).Valid)
                 return this;
-
-            var diff = DiffArray(Current, e);
+            var diff = DiffArray(Current, expected);
             var notExpected = diff.NotExpected;
             var notFound = diff.NotFound;
             if (notFound.Count > 0 || notExpected.Count > 0 || (notFound.Count == 0 && notExpected.Count == 0))
-                ThrowTestFailureReport(AssertFailures.ContainsExactly(Current, e, notFound, notExpected), Current, expected);
+                ThrowTestFailureReport(AssertFailures.ContainsExactly(Current, expected, notFound, notExpected), Current, expected);
             return this;
         }
 
         public IArrayAssert ContainsExactly(IEnumerable expected)
         {
-            var Expected = expected is string ? new object[] { expected } : expected.Cast<object>().ToArray();
+            var Expected = expected is string ? new object?[] { expected } : expected.Cast<object?>().ToArray();
             // we test for contains nothing
             if (Expected.Length == 0)
                 return this;
@@ -121,20 +118,19 @@ namespace GdUnit3.Asserts
             // we test for contains nothing
             if (expected.Length == 0)
                 return this;
-            var e = expected.Cast<object>();
-            var diff = DiffArray(Current, e);
+            var diff = DiffArray(Current, expected);
             var notExpected = diff.NotExpected;
             var notFound = diff.NotFound;
 
             // no difference and additions found
             if (notExpected.Count != 0 || notFound.Count != 0)
-                ThrowTestFailureReport(AssertFailures.ContainsExactlyInAnyOrder(Current, e, notFound, notExpected), Current, expected);
+                ThrowTestFailureReport(AssertFailures.ContainsExactlyInAnyOrder(Current, expected, notFound, notExpected), Current, expected);
             return this;
         }
 
         public IArrayAssert ContainsExactlyInAnyOrder(IEnumerable expected)
         {
-            var Expected = expected.Cast<object>().ToArray();
+            var Expected = expected.Cast<object?>().ToArray();
             // we test for contains nothing
             if (Expected.Length == 0)
                 return this;
@@ -157,8 +153,10 @@ namespace GdUnit3.Asserts
         {
             Current = Current?.Select(v =>
             {
-                object[] values = extractors.Select(e => e.ExtractValue(v)).ToArray<object>();
-                return values.Count() == 1 ? values.First() : Tuple(values);
+                object?[] valus = extractors.Select(e => e.ExtractValue(v)).ToArray<object?>();
+                return valus.Count() == 1
+                    ? valus.First()
+                    : Tuple(valus);
             }).ToList();
             return this;
         }
@@ -169,9 +167,9 @@ namespace GdUnit3.Asserts
             return this;
         }
 
-        private List<object> ArrayContainsAll(IEnumerable<object>? left, IEnumerable<object> right)
+        private List<object?> ArrayContainsAll(IEnumerable<object?>? left, IEnumerable<object?> right)
         {
-            var notFound = right?.ToList() ?? new List<object>();
+            var notFound = right?.ToList() ?? new List<object?>();
 
             if (left != null)
                 foreach (var c in left.ToList())
@@ -190,17 +188,17 @@ namespace GdUnit3.Asserts
 
         private class ArrayDiff
         {
-            public List<object> NotExpected { get; set; } = new List<object>();
-            public List<object> NotFound { get; set; } = new List<object>();
+            public List<object?> NotExpected { get; set; } = new List<object?>();
+            public List<object?> NotFound { get; set; } = new List<object?>();
         }
 
-        private ArrayDiff DiffArray(IEnumerable<object>? left, IEnumerable<object>? right)
+        private ArrayDiff DiffArray(IEnumerable<object?>? left, IEnumerable<object?>? right)
         {
-            var ll = left?.ToList() ?? new List<object>();
-            var rr = right?.ToList() ?? new List<object>();
+            var ll = left?.ToList<object?>() ?? new List<object?>();
+            var rr = right?.ToList<object?>() ?? new List<object?>();
 
-            var notExpected = left?.ToList() ?? new List<object>();
-            var notFound = right?.ToList() ?? new List<object>();
+            var notExpected = left?.ToList<object?>() ?? new List<object?>();
+            var notFound = right?.ToList<object?>() ?? new List<object?>();
 
             foreach (var c in ll)
             {
