@@ -6,14 +6,13 @@ namespace GdUnit3.Asserts
     {
         protected V? Current { get; private set; }
 
-        private string? CustomFailureMessage { get; set; }
+        private string? CustomFailureMessage { get; set; } = null;
 
-        private string CurrentFailureMessage { get; set; }
+        private string CurrentFailureMessage { get; set; } = "";
 
         protected AssertBase(V? current)
         {
             Current = current;
-            CurrentFailureMessage = "";
         }
 
         public IAssertBase<V> IsEqual(V expected)
