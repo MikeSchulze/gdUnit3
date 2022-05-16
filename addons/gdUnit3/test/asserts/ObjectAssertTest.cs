@@ -9,7 +9,7 @@ namespace GdUnit3.Tests.Asserts
     [TestSuite]
     public class ObjectAssertTest
     {
-        class CustomClass
+        class CustomClass : Godot.Object
         {
             public class InnerClassA : Godot.Node { }
 
@@ -131,7 +131,7 @@ namespace GdUnit3.Tests.Asserts
                 .StartsWithMessage("Expecting be <Null>:\n"
                     + " but is\n"
                     + "  <Godot.Node>");
-            AssertThrown(() => AssertObject(AutoFree(new object())).IsNull())
+            AssertThrown(() => AssertObject(new object()).IsNull())
                 .IsInstanceOf<TestFailedException>()
                 .HasPropertyValue("LineNumber", 134)
                 .StartsWithMessage("Expecting be <Null>:\n"
@@ -259,10 +259,10 @@ namespace GdUnit3.Tests.Asserts
         public void Interrupt_IsFailure()
         {
             // we disable failure reportion until we simmulate an failure
-            ExecutionContext.Current.FailureReporting = false;
+            if (ExecutionContext.Current != null)
+                ExecutionContext.Current.FailureReporting = false;
             // try to fail
             AssertObject(null).IsNotNull();
-            ExecutionContext.Current.FailureReporting = true;
 
             // expect this line will never called because of the test is interrupted by a failing assert
             AssertBool(true).OverrideFailureMessage("This line shold never be called").IsFalse();

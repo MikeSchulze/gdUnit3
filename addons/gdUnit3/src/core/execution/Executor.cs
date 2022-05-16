@@ -43,8 +43,17 @@ namespace GdUnit3.Executions
             try
             {
                 var resourcePath = node.GetMeta("ResourcePath") as string;
+                if (resourcePath == null)
+                {
+                    Godot.GD.PushWarning("Skip TestSuite, no 'ResourcePath' is defined.");
+                    return;
+                }
                 var includedTests = node.GetChildren().Cast<Godot.Node>().ToList().Select(node => node.Name).ToList();
                 await ExecuteInternally(new TestSuite(resourcePath, includedTests));
+            }
+            catch (Exception e)
+            {
+                Godot.GD.PushError(e.Message);
             }
             finally
             {

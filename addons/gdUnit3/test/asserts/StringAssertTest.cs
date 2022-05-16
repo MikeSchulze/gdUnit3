@@ -284,7 +284,7 @@ namespace GdUnit3.Tests.Asserts
                 .IsInstanceOf<TestFailedException>()
                 .HasPropertyValue("LineNumber", 283)
                 .HasMessage("Expecting length:\n"
-                    + "  '23' but is <Null>");
+                    + "  '23' but is 'unknown'");
         }
 
         [TestCase]
@@ -301,7 +301,7 @@ namespace GdUnit3.Tests.Asserts
                 .IsInstanceOf<TestFailedException>()
                 .HasPropertyValue("LineNumber", 300)
                 .HasMessage("Expecting length to be less than:\n"
-                    + "  '22' but is <Null>");
+                    + "  '22' but is 'unknown'");
         }
 
         [TestCase]
@@ -318,7 +318,7 @@ namespace GdUnit3.Tests.Asserts
                 .IsInstanceOf<TestFailedException>()
                 .HasPropertyValue("LineNumber", 317)
                 .HasMessage("Expecting length to be less than or equal:\n"
-                    + "  '21' but is <Null>");
+                    + "  '21' but is 'unknown'");
         }
 
         [TestCase]
@@ -334,7 +334,7 @@ namespace GdUnit3.Tests.Asserts
                 .IsInstanceOf<TestFailedException>()
                 .HasPropertyValue("LineNumber", 333)
                 .HasMessage("Expecting length to be greater than:\n"
-                    + "  '22' but is <Null>");
+                    + "  '22' but is 'unknown'");
         }
 
         [TestCase]
@@ -351,7 +351,7 @@ namespace GdUnit3.Tests.Asserts
                 .IsInstanceOf<TestFailedException>()
                 .HasPropertyValue("LineNumber", 350)
                 .HasMessage("Expecting length to be greater than or equal:\n"
-                    + "  '23' but is <Null>");
+                    + "  '23' but is 'unknown'");
         }
 
         [TestCase]
@@ -376,10 +376,10 @@ namespace GdUnit3.Tests.Asserts
         public void Interrupt_IsFailure()
         {
             // we disable failure reportion until we simmulate an failure
-            ExecutionContext.Current.FailureReporting = false;
+            if (ExecutionContext.Current != null)
+                ExecutionContext.Current.FailureReporting = false;
             // try to fail
             AssertString("").IsNotEmpty();
-            ExecutionContext.Current.FailureReporting = true;
 
             // expect this line will never called because of the test is interrupted by a failing assert
             AssertBool(true).OverrideFailureMessage("This line shold never be called").IsFalse();

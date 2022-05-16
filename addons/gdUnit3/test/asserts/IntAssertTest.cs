@@ -347,10 +347,10 @@ namespace GdUnit3.Tests.Asserts
         public void Interrupt_IsFailure()
         {
             // we disable failure reportion until we simmulate an failure
-            ExecutionContext.Current.FailureReporting = false;
+            if (ExecutionContext.Current != null)
+                ExecutionContext.Current.FailureReporting = false;
             // force an assertion failure
             AssertInt(10).IsZero();
-            ExecutionContext.Current.FailureReporting = true;
 
             // expect this line will never called because of the test is interrupted by a failing assert
             AssertBool(true).OverrideFailureMessage("This line shold never be called").IsFalse();

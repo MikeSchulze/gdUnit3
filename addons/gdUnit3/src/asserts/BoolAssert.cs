@@ -9,20 +9,21 @@ namespace GdUnit3.Asserts
         public IBoolAssert IsFalse()
         {
             if (true.Equals(Current))
-                return ReportTestFailure(AssertFailures.IsFalse(), Current, false) as IBoolAssert;
+                ThrowTestFailureReport(AssertFailures.IsFalse(), Current, false);
             return this;
         }
 
         public IBoolAssert IsTrue()
         {
             if (!true.Equals(Current))
-                return ReportTestFailure(AssertFailures.IsTrue(), Current, true) as IBoolAssert;
+                ThrowTestFailureReport(AssertFailures.IsTrue(), Current, true);
             return this;
         }
 
         public new IBoolAssert OverrideFailureMessage(string message)
         {
-            return base.OverrideFailureMessage(message) as IBoolAssert;
+            base.OverrideFailureMessage(message);
+            return this;
         }
     }
 }

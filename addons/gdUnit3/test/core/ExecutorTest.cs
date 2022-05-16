@@ -16,7 +16,7 @@ namespace GdUnit3.Tests
     [TestSuite]
     public class ExecutorTest : ITestEventListener
     {
-        private Executor _executor;
+        private Executor _executor = null!;
         private List<TestEvent> _events = new List<TestEvent>();
 
         // enable to verbose debug event 

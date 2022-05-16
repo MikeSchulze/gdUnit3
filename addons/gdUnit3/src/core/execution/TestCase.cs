@@ -31,7 +31,7 @@ namespace GdUnit3.Executions
         {
             if (input is IValueProvider)
             {
-                return (input as IValueProvider).GetValues();
+                return ((IValueProvider)input).GetValues();
             }
             return new object[] { input };
         }

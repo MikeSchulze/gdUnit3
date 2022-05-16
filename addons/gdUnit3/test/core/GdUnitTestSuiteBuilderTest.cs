@@ -86,7 +86,7 @@ namespace GdUnit3.Core.Tests
 
             // use of a line number for which no method is defined in the source class
             Dictionary<string, object> dictionary = GdUnitTestSuiteBuilder.Build(sourceClass, 4, Path.Combine(tmp, "TestPersonTest.cs"));
-            AssertThat(dictionary["error"] as string)
+            AssertThat((string)dictionary["error"])
                 .StartsWith("Can't parse method name from")
                 .EndsWith("TestPerson.cs:4.");
         }

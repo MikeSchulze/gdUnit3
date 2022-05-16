@@ -53,7 +53,9 @@ namespace GdUnit3.Tests.Resources
         }
 
         [TestCase(Timeout = 1000, Description = "This test has a invalid signature and should be end with a failure.")]
+#pragma warning disable CS1998
         public async void TestCase4()
+#pragma warning restore CS1998
         {
             AssertBool(true).IsEqual(true);
         }

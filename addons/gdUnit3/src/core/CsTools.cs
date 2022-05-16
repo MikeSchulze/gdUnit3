@@ -26,12 +26,14 @@ namespace GdUnit3.Tools
             return new Godot.Collections.Dictionary(result);
         }
 
-        public static Godot.Node ParseTestSuite(String classPath)
+        public static Godot.Node? ParseTestSuite(String classPath)
         {
             try
             {
                 classPath = NormalisizePath(classPath);
-                var type = GdUnitTestSuiteBuilder.ParseType(classPath);
+                Type? type = GdUnitTestSuiteBuilder.ParseType(classPath);
+                if (type == null)
+                    return null;
                 var testSuite = new Godot.Node();
                 testSuite.SetMeta("CS_TESTSUITE", true);
                 testSuite.SetMeta("ResourcePath", classPath);

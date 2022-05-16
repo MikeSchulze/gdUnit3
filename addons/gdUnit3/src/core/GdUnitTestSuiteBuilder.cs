@@ -16,8 +16,13 @@ namespace GdUnit3.Core
             result.Add("path", testSuitePath);
             try
             {
-                Type type = ParseType(sourcePath);
-                string methodToTest = FindMethod(sourcePath, lineNumber);
+                Type? type = ParseType(sourcePath);
+                if (type == null)
+                {
+                    result.Add("error", $"Can't parse class type from {sourcePath}:{lineNumber}.");
+                    return result;
+                }
+                string methodToTest = FindMethod(sourcePath, lineNumber) ?? "";
                 if (String.IsNullOrEmpty(methodToTest))
                 {
                     result.Add("error", $"Can't parse method name from {sourcePath}:{lineNumber}.");
@@ -33,9 +38,8 @@ namespace GdUnit3.Core
                 {
                     string template = FillFromTemplate(LoadTestSuiteTemplate(), type, sourcePath);
                     SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(template);
-                    var toWrite = syntaxTree.WithFilePath(testSuitePath).GetCompilationUnitRoot();
-                    if (methodToTest != null)
-                        toWrite = AddTestCase(syntaxTree, methodToTest);
+                    //var toWrite = syntaxTree.WithFilePath(testSuitePath).GetCompilationUnitRoot();
+                    var toWrite = AddTestCase(syntaxTree, methodToTest);
 
                     using (StreamWriter streamWriter = File.CreateText(testSuitePath))
                     {
@@ -69,7 +73,7 @@ namespace GdUnit3.Core
             }
         }
 
-        internal static Type ParseType(String classPath)
+        internal static Type? ParseType(String classPath)
         {
             if (String.IsNullOrEmpty(classPath) || !new FileInfo(classPath).Exists)
                 return null;
@@ -93,9 +97,9 @@ namespace GdUnit3.Core
         private static string LoadTestSuiteTemplate()
         {
             if (Godot.ProjectSettings.HasSetting("gdunit3/templates/testsuite/CSharpScript"))
-                return Godot.ProjectSettings.GetSetting("gdunit3/templates/testsuite/CSharpScript") as string;
+                return (string)Godot.ProjectSettings.GetSetting("gdunit3/templates/testsuite/CSharpScript");
             var script = Godot.ResourceLoader.Load("res://addons/gdUnit3/src/core/templates/test_suite/GdUnitTestSuiteDefaultTemplate.gd");
-            return script.Get("DEFAULT_TEMP_TS_CS") as string;
+            return (string)script.Get("DEFAULT_TEMP_TS_CS");
         }
 
         private const string TAG_TEST_SUITE_NAMESPACE = "${name_space}";
@@ -116,17 +120,17 @@ namespace GdUnit3.Core
         internal static int TestCaseLineNumber(CompilationUnitSyntax root, string testCaseName)
         {
             NamespaceDeclarationSyntax namespaceSyntax = root.Members.OfType<NamespaceDeclarationSyntax>().First();
-            ClassDeclarationSyntax programClassSyntax = namespaceSyntax?.Members.OfType<ClassDeclarationSyntax>().First();
+            ClassDeclarationSyntax? programClassSyntax = namespaceSyntax?.Members.OfType<ClassDeclarationSyntax>().First();
             // lookup on test cases
             return programClassSyntax?.Members.OfType<MethodDeclarationSyntax>()
                 .FirstOrDefault(method => method.Identifier.Text.Equals(testCaseName))
-                .Body.GetLocation().GetLineSpan().StartLinePosition.Line ?? -1;
+                .Body?.GetLocation().GetLineSpan().StartLinePosition.Line ?? -1;
         }
 
         internal static bool TestCaseExists(CompilationUnitSyntax root, string testCaseName)
         {
             NamespaceDeclarationSyntax namespaceSyntax = root.Members.OfType<NamespaceDeclarationSyntax>().First();
-            ClassDeclarationSyntax programClassSyntax = namespaceSyntax?.Members.OfType<ClassDeclarationSyntax>().First();
+            ClassDeclarationSyntax? programClassSyntax = namespaceSyntax?.Members.OfType<ClassDeclarationSyntax>().First();
             return programClassSyntax?.Members.OfType<MethodDeclarationSyntax>()
                 .Any(method => method.Identifier.Text.Equals(testCaseName)) ?? false;
         }
@@ -134,8 +138,9 @@ namespace GdUnit3.Core
         internal static CompilationUnitSyntax AddTestCase(SyntaxTree syntaxTree, string testCaseName)
         {
             var root = syntaxTree.GetCompilationUnitRoot();
-            NamespaceDeclarationSyntax namespaceSyntax = root.Members.OfType<NamespaceDeclarationSyntax>().First();
-            ClassDeclarationSyntax programClassSyntax = namespaceSyntax?.Members.OfType<ClassDeclarationSyntax>().First();
+            NamespaceDeclarationSyntax? namespaceSyntax = root.Members.OfType<NamespaceDeclarationSyntax>().First();
+            ClassDeclarationSyntax? programClassSyntax = namespaceSyntax?.Members.OfType<ClassDeclarationSyntax>().First();
+            SyntaxNode insertAt = programClassSyntax?.ChildNodes().Last()!;
 
             AttributeSyntax testCaseAttribute = SyntaxFactory.Attribute(SyntaxFactory.IdentifierName("TestCase"));
             AttributeListSyntax attributes = SyntaxFactory.AttributeList(SyntaxFactory.SingletonSeparatedList<AttributeSyntax>(testCaseAttribute));
@@ -154,28 +159,37 @@ namespace GdUnit3.Core
                 default(SyntaxToken));
 
             BlockSyntax newBody = SyntaxFactory.Block(SyntaxFactory.ParseStatement("AssertNotYetImplemented();"));
-            method = method.ReplaceNode(method.Body, newBody);
-            SyntaxNode insertAt = programClassSyntax.ChildNodes().Last();
+            method = method.ReplaceNode(method.Body!, newBody);
             return root.InsertNodesAfter(insertAt, new[] { method }).NormalizeWhitespace("\t", "\n");
         }
 
-        internal static string FindMethod(string sourcePath, int lineNumber)
+        internal static string? FindMethod(string sourcePath, int lineNumber)
         {
             SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(File.ReadAllText(sourcePath));
             var root = syntaxTree.GetCompilationUnitRoot();
             var spanToFind = syntaxTree.GetText().Lines[lineNumber - 1].Span;
 
-            NamespaceDeclarationSyntax namespaceSyntax = root.Members.OfType<NamespaceDeclarationSyntax>().First();
-            ClassDeclarationSyntax programClassSyntax = namespaceSyntax?.Members.OfType<ClassDeclarationSyntax>().First();
+            NamespaceDeclarationSyntax? namespaceSyntax = root.Members.OfType<NamespaceDeclarationSyntax>().First();
+            if (namespaceSyntax == null)
+            {
+                Console.Error.WriteLine($"Can't parse method name from {sourcePath}:{lineNumber}. Error: no namespace found.");
+                return null;
+            }
+            ClassDeclarationSyntax? programClassSyntax = namespaceSyntax.Members.OfType<ClassDeclarationSyntax>().First();
+            if (programClassSyntax == null)
+            {
+                Console.Error.WriteLine($"Can't parse method name from {sourcePath}:{lineNumber}. Error: no class declararion found.");
+                return null;
+            }
 
             // lookup on properties
-            foreach (PropertyDeclarationSyntax m in programClassSyntax?.Members.OfType<PropertyDeclarationSyntax>())
+            foreach (PropertyDeclarationSyntax m in programClassSyntax.Members.OfType<PropertyDeclarationSyntax>())
             {
                 if (m.FullSpan.IntersectsWith(spanToFind))
                     return m.Identifier.Text;
             }
             // lookup on methods
-            foreach (MethodDeclarationSyntax m in programClassSyntax?.Members.OfType<MethodDeclarationSyntax>())
+            foreach (MethodDeclarationSyntax m in programClassSyntax.Members.OfType<MethodDeclarationSyntax>())
             {
                 if (m.FullSpan.IntersectsWith(spanToFind))
                     return m.Identifier.Text;

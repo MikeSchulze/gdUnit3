@@ -25,7 +25,7 @@ namespace GdUnit3
         /// <param name="current">The current string value to verify</param>
         /// <param name="expectResult"></param>
         /// <returns></returns>
-        public static IStringAssert AssertString(string current) => new StringAssert(current);
+        public static IStringAssert AssertString(string? current) => new StringAssert(current);
 
         /// <summary>
         /// An Assertion to verify integer values
@@ -49,7 +49,7 @@ namespace GdUnit3
         /// <param name="current">The current double value to verify</param>
         /// <param name="expectResult"></param>
         /// <returns></returns>        
-        public static IObjectAssert AssertObject(object current) => new ObjectAssert(current);
+        public static IObjectAssert AssertObject(object? current) => new ObjectAssert(current);
 
         /// <summary>
         /// An Assertion to verify array values
@@ -57,7 +57,7 @@ namespace GdUnit3
         /// <param name="current">The current array value to verify</param>
         /// <param name="expectResult"></param>
         /// <returns></returns>  
-        public static IArrayAssert AssertArray(IEnumerable current) => new ArrayAssert(current);
+        public static IArrayAssert AssertArray(IEnumerable? current) => new ArrayAssert(current);
 
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace GdUnit3
         public static bool AssertNotYetImplemented() => throw new Exceptions.TestFailedException("Test not yet implemented!", -1);
 
 
-        public static IAssertBase<T> AssertThat<T>(T current)
+        public static IAssertBase<T> AssertThat<T>(T? current)
         {
             if (typeof(string) == typeof(T))
                 return (IAssertBase<T>)AssertString(Convert.ToString(current));
@@ -108,7 +108,7 @@ namespace GdUnit3
         /// </summary>
         /// <param name="task">A task where throw possible exceptions</param>
         /// <returns>a task of <c>IExceptionAssert</c> to await</returns>
-        public async static Task<IExceptionAssert> AssertThrown<T>(Task<T> task)
+        public async static Task<IExceptionAssert?> AssertThrown<T>(Task<T> task)
         {
             try
             {
@@ -121,7 +121,7 @@ namespace GdUnit3
             }
         }
 
-        public async static Task<IExceptionAssert> AssertThrown(Task task)
+        public async static Task<IExceptionAssert?> AssertThrown(Task task)
         {
             try
             {
@@ -139,12 +139,12 @@ namespace GdUnit3
         ///<summary>
         /// A litle helper to auto freeing your created objects after test execution
         /// </summary>
-        public static T AutoFree<T>(T obj) => Executions.Monitors.MemoryPool.RegisterForAutoFree(obj);
+        public static T AutoFree<T>(T obj) where T : Godot.Object => Executions.Monitors.MemoryPool.RegisterForAutoFree(obj);
 
         /// <summary>
         /// Buils a tuple by given values
         /// </summary>
-        public static ITuple Tuple(params object[] args) => new GdUnit3.Asserts.Tuple(args);
+        public static ITuple Tuple(params object?[] args) => new GdUnit3.Asserts.Tuple(args);
 
         /// <summary>
         ///  Builds an extractor by given method name and optional arguments

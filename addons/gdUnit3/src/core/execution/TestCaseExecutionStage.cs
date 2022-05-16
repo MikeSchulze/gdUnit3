@@ -12,21 +12,25 @@ namespace GdUnit3.Executions
 
         public override async Task Execute(ExecutionContext context)
         {
-            InitExecutionAttributes(context.CurrentTestCase.MethodInfo);
-
-            context.MemoryPool.SetActive(StageName());
-            context.OrphanMonitor.Start(true);
-            while (!context.IsSkipped && context.CurrentIteration > 0)
+            var currentTestCase = context.CurrentTestCase;
+            if (currentTestCase != null)
             {
-                MethodArguments = context.CurrentTestCase.Arguments;
-                await base.Execute(context);
+                InitExecutionAttributes(currentTestCase.MethodInfo);
+
+                context.MemoryPool.SetActive(StageName());
+                context.OrphanMonitor.Start(true);
+                while (!context.IsSkipped && context.CurrentIteration > 0)
+                {
+                    MethodArguments = currentTestCase.Arguments;
+                    await base.Execute(context);
+                }
+
+                context.MemoryPool.ReleaseRegisteredObjects();
+                context.OrphanMonitor.Stop();
+
+                if (context.OrphanMonitor.OrphanCount > 0)
+                    context.ReportCollector.PushFront(new TestReport(TestReport.TYPE.WARN, currentTestCase.Attributes.Line, ReportOrphans(context)));
             }
-
-            context.MemoryPool.ReleaseRegisteredObjects();
-            context.OrphanMonitor.Stop();
-
-            if (context.OrphanMonitor.OrphanCount > 0)
-                context.ReportCollector.PushFront(new TestReport(TestReport.TYPE.WARN, context.CurrentTestCase.Attributes.Line, ReportOrphans(context)));
         }
 
         private static string ReportOrphans(ExecutionContext context) =>

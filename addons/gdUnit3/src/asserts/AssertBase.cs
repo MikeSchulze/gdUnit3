@@ -4,23 +4,22 @@ namespace GdUnit3.Asserts
 
     internal abstract class AssertBase<V> : IAssertBase<V>
     {
-        protected V Current { get; private set; }
+        protected V? Current { get; private set; }
 
-        private string CustomFailureMessage { get; set; }
+        private string? CustomFailureMessage { get; set; } = null;
 
-        private string CurrentFailureMessage { get; set; }
+        private string CurrentFailureMessage { get; set; } = "";
 
-        protected AssertBase(V current)
+        protected AssertBase(V? current)
         {
             Current = current;
-            CurrentFailureMessage = null;
         }
 
         public IAssertBase<V> IsEqual(V expected)
         {
             var result = Comparable.IsEqual(Current, expected);
             if (!result.Valid)
-                return ReportTestFailure(AssertFailures.IsEqual(Current, expected), Current, expected);
+                ThrowTestFailureReport(AssertFailures.IsEqual(Current, expected), Current, expected);
             return this;
         }
 
@@ -28,20 +27,20 @@ namespace GdUnit3.Asserts
         {
             var result = Comparable.IsEqual(Current, expected);
             if (result.Valid)
-                return ReportTestFailure(AssertFailures.IsNotEqual(Current, expected), Current, expected);
+                ThrowTestFailureReport(AssertFailures.IsNotEqual(Current, expected), Current, expected);
             return this;
         }
         public IAssertBase<V> IsNull()
         {
             if (Current != null)
-                return ReportTestFailure(AssertFailures.IsNull(Current), Current, null);
+                ThrowTestFailureReport(AssertFailures.IsNull(Current), Current, null);
             return this;
         }
 
         public IAssertBase<V> IsNotNull()
         {
             if (Current == null)
-                return ReportTestFailure(AssertFailures.IsNotNull(Current), Current, null);
+                ThrowTestFailureReport(AssertFailures.IsNotNull(Current), Current, null);
             return this;
         }
 
@@ -49,7 +48,7 @@ namespace GdUnit3.Asserts
         {
             var current = NormalizedFailureMessage(CurrentFailureMessage);
             if (!current.Equals(message))
-                return ReportTestFailure(AssertFailures.IsEqual(current, message), current, message);
+                ThrowTestFailureReport(AssertFailures.IsEqual(current, message), current, message);
             return this;
         }
 
@@ -63,11 +62,11 @@ namespace GdUnit3.Asserts
         {
             var current = NormalizedFailureMessage(CurrentFailureMessage);
             if (!current.StartsWith(message))
-                return ReportTestFailure(AssertFailures.IsEqual(current, message), current, message);
+                ThrowTestFailureReport(AssertFailures.IsEqual(current, message), current, message);
             return this;
         }
 
-        private static string NormalizedFailureMessage(string input)
+        private static string NormalizedFailureMessage(string? input)
         {
             using (var rtl = new Godot.RichTextLabel())
             {
@@ -78,7 +77,7 @@ namespace GdUnit3.Asserts
             }
         }
 
-        protected IAssertBase<V> ReportTestFailure(string message, object current, object expected, int stackFrameOffset = 0)
+        protected void ThrowTestFailureReport(string message, object? current, object? expected, int stackFrameOffset = 0)
         {
             var failureMessage = CustomFailureMessage ?? message;
             CurrentFailureMessage = failureMessage;

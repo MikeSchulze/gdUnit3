@@ -14,7 +14,7 @@ namespace GdUnit3.Executions
     {
         private readonly string _name;
 
-        protected ExecutionStage(string name, Type type = null)
+        protected ExecutionStage(string name, Type? type = null)
         {
             _name = name;
             var method = type?
@@ -23,10 +23,10 @@ namespace GdUnit3.Executions
             InitExecutionAttributes(method);
         }
 
-        protected void InitExecutionAttributes(MethodInfo method)
+        protected void InitExecutionAttributes(MethodInfo? method)
         {
             Method = method;
-            IsAsync = (AsyncStateMachineAttribute)method?.GetCustomAttribute(typeof(AsyncStateMachineAttribute)) != null;
+            IsAsync = method?.GetCustomAttribute(typeof(AsyncStateMachineAttribute)) != null;
             IsTask = method?.ReturnType.IsEquivalentTo(typeof(Task)) ?? false;
         }
 
@@ -64,11 +64,9 @@ namespace GdUnit3.Executions
                 var baseException = e.GetBaseException();
                 if (baseException is TestFailedException)
                 {
-                    if (context.FailureReporting)
-                    {
-                        var ex = baseException as TestFailedException;
+                    var ex = baseException as TestFailedException;
+                    if (ex != null && context.FailureReporting)
                         context.ReportCollector.Consume(new TestReport(TestReport.TYPE.FAILURE, ex.LineNumber, ex.Message));
-                    }
                 }
                 else
                 {
@@ -97,8 +95,8 @@ namespace GdUnit3.Executions
             var timeout = TimeSpan.FromMilliseconds(StageAttributes.Timeout != -1 ? StageAttributes.Timeout : DefaultTimeout);
             using (var tokenSource = new CancellationTokenSource())
             {
-                var obj = method.Invoke(testSuite.Instance, args);
-                Task task = obj is Task ? obj as Task : Task.Run(() => { });
+                object? obj = method.Invoke(testSuite.Instance, args);
+                Task task = obj is Task ? (Task)obj : Task.Run(() => { });
                 var completedTask = await Task.WhenAny(task, Task.Delay(timeout, tokenSource.Token));
                 tokenSource.Cancel();
                 if (completedTask == task)

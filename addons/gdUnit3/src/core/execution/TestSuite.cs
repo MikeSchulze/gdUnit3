@@ -8,7 +8,7 @@ namespace GdUnit3.Executions
 {
     internal sealed class TestSuite : IDisposable
     {
-        private Lazy<IEnumerable<Executions.TestCase>> _testCases = null;
+        private Lazy<IEnumerable<Executions.TestCase>> _testCases = new Lazy<IEnumerable<Executions.TestCase>>();
 
         public int TestCaseCount => TestCases.Count<Executions.TestCase>();
 
@@ -25,7 +25,11 @@ namespace GdUnit3.Executions
 
         public TestSuite(string classPath, List<string> includedTests)
         {
-            Type type = GdUnitTestSuiteBuilder.ParseType(classPath);
+            Type? type = GdUnitTestSuiteBuilder.ParseType(classPath);
+            if (type == null)
+            {
+                throw new ArgumentException($"Can't parse testsuite {classPath}");
+            }
             Instance = Activator.CreateInstance(type);
             Name = type.Name;
             ResourcePath = classPath;
@@ -42,7 +46,7 @@ namespace GdUnit3.Executions
             _testCases = new Lazy<IEnumerable<Executions.TestCase>>(() => LoadTestCases(type, null));
         }
 
-        private IEnumerable<Executions.TestCase> LoadTestCases(Type type, List<string> includedTests)
+        private IEnumerable<Executions.TestCase> LoadTestCases(Type type, List<string>? includedTests)
         {
             return type.GetMethods()
                 .Where(m => m.IsDefined(typeof(TestCaseAttribute)))
@@ -53,8 +57,7 @@ namespace GdUnit3.Executions
         public void Dispose()
         {
             if (Instance is IDisposable)
-                (Instance as IDisposable).Dispose();
-            Instance = null;
+                ((IDisposable)Instance).Dispose();
         }
     }
 }

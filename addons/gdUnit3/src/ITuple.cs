@@ -5,7 +5,7 @@ namespace GdUnit3.Asserts
 {
     public interface ITuple
     {
-        public IEnumerable<object> Values
+        public IEnumerable<object?> Values
         { get; set; }
     }
 }
