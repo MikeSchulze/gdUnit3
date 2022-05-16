@@ -17,7 +17,12 @@ namespace GdUnit3.Core
             try
             {
                 Type? type = ParseType(sourcePath);
-                string? methodToTest = FindMethod(sourcePath, lineNumber);
+                if (type == null)
+                {
+                    result.Add("error", $"Can't parse class type from {sourcePath}:{lineNumber}.");
+                    return result;
+                }
+                string methodToTest = FindMethod(sourcePath, lineNumber) ?? "";
                 if (String.IsNullOrEmpty(methodToTest))
                 {
                     result.Add("error", $"Can't parse method name from {sourcePath}:{lineNumber}.");
@@ -33,9 +38,8 @@ namespace GdUnit3.Core
                 {
                     string template = FillFromTemplate(LoadTestSuiteTemplate(), type, sourcePath);
                     SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(template);
-                    var toWrite = syntaxTree.WithFilePath(testSuitePath).GetCompilationUnitRoot();
-                    if (methodToTest != null)
-                        toWrite = AddTestCase(syntaxTree, methodToTest);
+                    //var toWrite = syntaxTree.WithFilePath(testSuitePath).GetCompilationUnitRoot();
+                    var toWrite = AddTestCase(syntaxTree, methodToTest);
 
                     using (StreamWriter streamWriter = File.CreateText(testSuitePath))
                     {
