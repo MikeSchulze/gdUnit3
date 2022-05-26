@@ -163,16 +163,17 @@ static func build(caller :Object, clazz, mock_mode :String, debug_write = false)
 	var push_errors := is_push_error_enabled()
 	if not is_mockable(clazz, push_errors):
 		return null
-	
+	# mocking a scene?
 	if GdObjects.is_scene(clazz):
 		return mock_on_scene(caller, clazz as PackedScene, memory_pool, debug_write)
 	elif typeof(clazz) == TYPE_STRING and clazz.ends_with(".tscn"):
 		return mock_on_scene(caller, load(clazz), memory_pool, debug_write)
-	
-	var mock = mock_on_script(clazz, mock_mode, memory_pool, [], debug_write)
+	# mocking a script
+	var mock = mock_on_script(clazz, ["set_script", "get_script"], debug_write)
 	if mock == null:
 		return null
 	var mock_instance = mock.new()
+	mock_instance.set_script(mock)
 	mock_instance.__set_singleton()
 	mock_instance.__set_mode(mock_mode)
 	mock_instance.__set_caller(caller)
@@ -193,7 +194,7 @@ static func mock_on_scene(caller :Object, scene :PackedScene, memory_pool :int, 
 		return null
 	
 	var script_path = scene_instance.get_script().get_path()
-	var mock = mock_on_script(script_path, GdUnitMock.CALL_REAL_FUNC, memory_pool, GdUnitClassDoubler.EXLCUDE_SCENE_FUNCTIONS, debug_write)
+	var mock = mock_on_script(script_path, GdUnitClassDoubler.EXLCUDE_SCENE_FUNCTIONS, debug_write)
 	if mock == null:
 		return null
 	scene_instance.set_script(mock)
@@ -202,13 +203,9 @@ static func mock_on_scene(caller :Object, scene :PackedScene, memory_pool :int, 
 	scene_instance.__set_caller(caller)
 	return GdUnitTools.register_auto_free(scene_instance, memory_pool)
 
-static func mock_on_script(clazz, mock_mode :String, memory_pool :int, function_excludes :PoolStringArray, debug_write :bool) -> GDScript:
-	var clazz_name :String
+static func mock_on_script(clazz, function_excludes :PoolStringArray, debug_write :bool) -> GDScript:
 	var clazz_path := GdObjects.extract_class_path(clazz)
-	if clazz_path.empty():
-		clazz_name = GdObjects.extract_class_name(clazz).value()
-	else:
-		clazz_name = GdObjects.extract_class_name_from_class_path(clazz_path)
+	var	clazz_name = GdObjects.extract_class_name(clazz).value()
 	
 	var push_errors := is_push_error_enabled()
 	var function_doubler := MockFunctionDoubler.new(push_errors)

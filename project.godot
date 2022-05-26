@@ -914,6 +914,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/test/asserts/GdUnitVector3AssertImplTest.gd"
 }, {
+"base": "Resource",
+"class": "GdUnit_Test_CustomClassName",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/test/mocker/resources/ClassWithCustomClassName.gd"
+}, {
 "base": "GdUnitTestSuite",
 "class": "GeneratedPersonTest",
 "language": "GDScript",
@@ -968,6 +973,11 @@ _global_script_classes=[ {
 "class": "LocalTimeTest",
 "language": "GDScript",
 "path": "res://addons/gdUnit3/test/core/LocalTimeTest.gd"
+}, {
+"base": "Node",
+"class": "Munderwood_Pathing_World",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/test/mocker/resources/GD-256/world.gd"
 }, {
 "base": "GdUnitTestSuite",
 "class": "NetworkServerTest",
@@ -1326,6 +1336,7 @@ _global_script_class_icons={
 "GdUnitVector3Assert": "",
 "GdUnitVector3AssertImpl": "",
 "GdUnitVector3AssertImplTest": "",
+"GdUnit_Test_CustomClassName": "",
 "GeneratedPersonTest": "",
 "GodotClassNameFuzzer": "",
 "GodotGdErrorMonitor": "",
@@ -1337,6 +1348,7 @@ _global_script_class_icons={
 "JUnitXmlReportTest": "",
 "LocalTime": "",
 "LocalTimeTest": "",
+"Munderwood_Pathing_World": "",
 "NetworkServerTest": "",
 "OverridenGetClassTestClass": "",
 "PascalCaseWithClassName": "",
@@ -1391,6 +1403,11 @@ gdscript/warnings/return_value_discarded=false
 [editor_plugins]
 
 enabled=PoolStringArray( "res://addons/gdUnit3/plugin.cfg" )
+
+[gdunit3]
+
+report/assert/verbose_errors=false
+report/assert/verbose_warnings=false
 
 [network]
 

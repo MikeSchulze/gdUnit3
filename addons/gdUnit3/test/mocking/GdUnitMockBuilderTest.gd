@@ -213,3 +213,25 @@ func test_double_virtual_script_function_with_arg() -> void:
 		"		return ._input(event_)",
 		"	return null",
 		""])
+
+func test_mock_on_script_path_without_class_name() -> void:
+	var script := GdUnitMockBuilder.mock_on_script("res://addons/gdUnit3/test/mocker/resources/ClassWithoutNameA.gd", [], false);
+	assert_that(script.resource_name).is_equal("MockClassWithoutNameA.gd")
+	assert_that(script.get_instance_base_type()).is_equal("Resource")
+
+func test_mock_on_script_path_with_custom_class_name() -> void:
+	# the class contains a class_name definition
+	var script := GdUnitMockBuilder.mock_on_script("res://addons/gdUnit3/test/mocker/resources/ClassWithCustomClassName.gd", [], false);
+	assert_that(script.resource_name).is_equal("MockGdUnitTestCustomClassName.gd")
+	assert_that(script.get_instance_base_type()).is_equal("Resource")
+
+func test_mock_on_class_with_class_name() -> void:
+	var script := GdUnitMockBuilder.mock_on_script(ClassWithNameA, [], false);
+	assert_that(script.resource_name).is_equal("MockClassWithNameA.gd")
+	assert_that(script.get_instance_base_type()).is_equal("Resource")
+
+func test_mock_on_class_with_custom_class_name() -> void:
+	# the class contains a class_name definition
+	var script := GdUnitMockBuilder.mock_on_script(GdUnit_Test_CustomClassName, [], false);
+	assert_that(script.resource_name).is_equal("MockGdUnitTestCustomClassName.gd")
+	assert_that(script.get_instance_base_type()).is_equal("Resource")

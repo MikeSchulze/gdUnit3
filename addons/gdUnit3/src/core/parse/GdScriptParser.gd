@@ -528,7 +528,7 @@ func get_class_name(script :GDScript) -> String:
 		var input = clean_up_row(source_rows[index])
 		var token := next_token(input, 0)
 		if token == TOKEN_CLASS_NAME:
-			token = next_token(input, token._consumed)
+			token = tokenize_value(input, token._consumed, token)
 			return token.value()
 	# if no class_name found extract from file name
 	return GdObjects.to_pascal_case(script.resource_path.get_basename().get_file())

@@ -34,7 +34,7 @@ jobs:
 
       - name: Compile
         run: |
-          nuget restore
+          dotnet restore gdUnit3.csproj
           mkdir -p .mono/assemblies/Debug
           cp /usr/local/bin/GodotSharp/Api/Release/* .mono/assemblies/Debug
           dotnet build -verbosity:m

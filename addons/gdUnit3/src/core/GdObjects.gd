@@ -476,12 +476,13 @@ static func extract_class_name(clazz) -> Result:
 		# is instance a script instance?
 		var script := clazz.script as GDScript
 		if script != null:
-			var clazz_path := extract_class_path(script)
-			return Result.success(extract_class_name_from_class_path(clazz_path))
+			return extract_class_name(script)
 		return Result.success(clazz.get_class())
 
 	# extract name form full qualified class path
 	if clazz is String:
+		if ClassDB.class_exists(clazz):
+			return Result.success(clazz)
 		var source_sript :Script = load(clazz)
 		var clazz_name = load("res://addons/gdUnit3/src/core/parse/GdScriptParser.gd").new().get_class_name(source_sript)
 		return Result.success(to_pascal_case(clazz_name))
@@ -490,8 +491,10 @@ static func extract_class_name(clazz) -> Result:
 		return Result.error("Can't extract class name for an primitive '%s'" % type_as_string(typeof(clazz)))
 
 	if is_script(clazz):
-		var clazz_path := extract_class_path(clazz)
-		return Result.success(extract_class_name_from_class_path(clazz_path))
+		if clazz.resource_path.empty():
+			var class_path = extract_class_name_from_class_path(extract_class_path(clazz))
+			return Result.success(class_path);
+		return extract_class_name(clazz.resource_path)
 
 	# need to create an instance for a class typ the extract the class name
 	var instance = clazz.new()
