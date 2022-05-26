@@ -111,7 +111,6 @@ func test_mock_Node():
 	# verify the return value is overwritten
 	assert_that(mocked_node.get_child_count()).is_equal(24)
 
-
 func test_mock_source_with_class_name_by_resource_path() -> void:
 	var resource_path := 'res://addons/gdUnit3/test/mocker/resources/GD-256/world.gd'
 	var m = mock(resource_path)
