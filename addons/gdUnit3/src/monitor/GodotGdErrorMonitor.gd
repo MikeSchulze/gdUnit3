@@ -3,7 +3,7 @@ extends GdUnitMonitor
 
 var _godot_log_file :String
 var _file :File
-
+var _eof :int
 var _report_enabled := false
 
 func _init().("GodotGdErrorMonitor"):
@@ -15,6 +15,8 @@ func start():
 		_file = File.new()
 		_file.open(_godot_log_file, File.READ)
 		_file.seek_end(0)
+		_eof = _file.get_len()
+		_file.close()
 
 func stop():
 	pass
@@ -28,9 +30,12 @@ func is_reporting_enabled() -> bool:
 	return _is_report_script_errors() or _is_report_push_errors()
 
 func _collect_seek_log() -> String:
+	_file = File.new()
+	_file.open(_godot_log_file, File.READ)
+	_file.seek(_eof)
 	var current_log := ""
 	var line := _file.get_line()
-	while line != null and not line.empty():
+	while line != null and not _file.eof_reached():
 		current_log += line + "\n"
 		line = _file.get_line()
 	_file.close()
