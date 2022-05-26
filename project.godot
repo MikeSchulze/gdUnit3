@@ -1406,7 +1406,6 @@ enabled=PoolStringArray( "res://addons/gdUnit3/plugin.cfg" )
 
 [gdunit3]
 
-report/godot/push_error=true
 report/assert/verbose_errors=false
 report/assert/verbose_warnings=false
 
