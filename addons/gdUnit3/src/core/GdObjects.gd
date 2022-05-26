@@ -476,8 +476,7 @@ static func extract_class_name(clazz) -> Result:
 		# is instance a script instance?
 		var script := clazz.script as GDScript
 		if script != null:
-			var clazz_path := extract_class_path(script)
-			return Result.success(extract_class_name_from_class_path(clazz_path))
+			return extract_class_name(script)
 		return Result.success(clazz.get_class())
 
 	# extract name form full qualified class path

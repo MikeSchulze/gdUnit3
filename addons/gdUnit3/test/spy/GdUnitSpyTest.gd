@@ -40,6 +40,27 @@ func test_spy_on_Node():
 	verify(spy_node, 2).set_process(false)
 	verify(spy_node, 2).set_process(false)
 
+func test_spy_source_with_class_name_by_resource_path() -> void:
+	var instance = auto_free(load('res://addons/gdUnit3/test/mocker/resources/GD-256/world.gd').new())
+	var m = spy(instance)
+	var head :String = m.get_script().source_code.substr(0, 200)
+	assert_str(head)\
+		.contains("class_name DoubledMunderwoodPathingWorld")\
+		.contains("extends 'res://addons/gdUnit3/test/mocker/resources/GD-256/world.gd'")
+
+func test_spy_source_with_class_name_by_class() -> void:
+	var m = spy(auto_free(Munderwood_Pathing_World.new()))
+	var head :String = m.get_script().source_code.substr(0, 200)
+	assert_str(head)\
+		.contains("class_name DoubledMunderwoodPathingWorld")\
+		.contains("extends 'res://addons/gdUnit3/test/mocker/resources/GD-256/world.gd'")
+
+func test_spy_extends_godot_class() -> void:
+	var m = spy(auto_free(World.new()))
+	var head :String = m.get_script().source_code.substr(0, 200)
+	assert_str(head)\
+		.contains("class_name DoubledWorld")\
+		.contains("extends World")
 
 func test_spy_on_custom_class():
 	var instance :AdvancedTestClass = auto_free(AdvancedTestClass.new())
