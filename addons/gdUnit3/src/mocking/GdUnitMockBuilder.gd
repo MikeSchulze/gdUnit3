@@ -169,10 +169,11 @@ static func build(caller :Object, clazz, mock_mode :String, debug_write = false)
 	elif typeof(clazz) == TYPE_STRING and clazz.ends_with(".tscn"):
 		return mock_on_scene(caller, load(clazz), memory_pool, debug_write)
 	# mocking a script
-	var mock = mock_on_script(clazz, [], debug_write)
+	var mock = mock_on_script(clazz, ["set_script", "get_script"], debug_write)
 	if mock == null:
 		return null
 	var mock_instance = mock.new()
+	mock_instance.set_script(mock)
 	mock_instance.__set_singleton()
 	mock_instance.__set_mode(mock_mode)
 	mock_instance.__set_caller(caller)

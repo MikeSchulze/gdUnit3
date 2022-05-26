@@ -3,7 +3,7 @@ class_name GodotClassNameFuzzer
 extends Fuzzer
 
 var class_names := []
-const EXCLUDED_CLASSES = ["JavaClass", "_ClassDB", "MainLoop", "JNISingleton", "SceneTree", "WebRTC"]
+const EXCLUDED_CLASSES = ["JavaClass", "_ClassDB", "MainLoop", "JNISingleton", "SceneTree", "WebRTC", "WebRTCPeerConnection"]
 
 func _init(no_singleton :bool = false, only_instancialbe :bool = false) -> void:
 	#class_names = ClassDB.get_class_list()

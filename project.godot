@@ -974,6 +974,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/test/core/LocalTimeTest.gd"
 }, {
+"base": "Node",
+"class": "Munderwood_Pathing_World",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/test/mocker/resources/GD-256/world.gd"
+}, {
 "base": "GdUnitTestSuite",
 "class": "NetworkServerTest",
 "language": "GDScript",
@@ -1343,6 +1348,7 @@ _global_script_class_icons={
 "JUnitXmlReportTest": "",
 "LocalTime": "",
 "LocalTimeTest": "",
+"Munderwood_Pathing_World": "",
 "NetworkServerTest": "",
 "OverridenGetClassTestClass": "",
 "PascalCaseWithClassName": "",
@@ -1400,6 +1406,7 @@ enabled=PoolStringArray( "res://addons/gdUnit3/plugin.cfg" )
 
 [gdunit3]
 
+report/godot/push_error=true
 report/assert/verbose_errors=false
 report/assert/verbose_warnings=false
 

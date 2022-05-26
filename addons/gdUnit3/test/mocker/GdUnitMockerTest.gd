@@ -112,6 +112,23 @@ func test_mock_Node():
 	assert_that(mocked_node.get_child_count()).is_equal(24)
 
 
+func test_mock_source_with_class_name_by_resource_path() -> void:
+	var resource_path := 'res://addons/gdUnit3/test/mocker/resources/GD-256/world.gd'
+	var m = mock(resource_path)
+	var head :String = m.get_script().source_code.substr(0, 200)
+	assert_str(head)\
+		.contains("class_name DoubledMunderwoodPathingWorld")\
+		.contains("extends '%s'" % resource_path)
+
+func test_mock_source_with_class_name_by_class() -> void:
+	var resource_path := 'res://addons/gdUnit3/test/mocker/resources/GD-256/world.gd'
+	var m = mock(Munderwood_Pathing_World)
+	var head :String = m.get_script().source_code.substr(0, 200)
+	assert_str(head)\
+		.contains("class_name DoubledMunderwoodPathingWorld")\
+		.contains("extends '%s'" % resource_path)
+
+
 var _test_signal_is_emited := false
 func _emit_ready(a, b, c):
 	prints("_emit_ready", a, b, c)
