@@ -128,6 +128,12 @@ func test_mock_source_with_class_name_by_class() -> void:
 		.contains("class_name DoubledMunderwoodPathingWorld")\
 		.contains("extends '%s'" % resource_path)
 
+func test_mock_extends_godot_class() -> void:
+	var m = mock(World)
+	var head :String = m.get_script().source_code.substr(0, 200)
+	assert_str(head)\
+		.contains("class_name DoubledWorld")\
+		.contains("extends World")
 
 var _test_signal_is_emited := false
 func _emit_ready(a, b, c):
