@@ -20,6 +20,7 @@ namespace GdUnit3.Core.Tests
         [TestCase]
         public void ParseType()
         {
+            AssertObject(GdUnitTestSuiteBuilder.ParseType("addons/gdUnit3/test/core/resources/testsuites/mono/noSpace/TestSuiteWithoutNamespace.cs")).IsEqual(typeof(TestSuiteWithoutNamespace));
             AssertObject(GdUnitTestSuiteBuilder.ParseType("addons/gdUnit3/test/core/resources/testsuites/mono/spaceA/TestSuite.cs")).IsEqual(typeof(GdUnit3.Tests.SpaceA.TestSuite));
             AssertObject(GdUnitTestSuiteBuilder.ParseType("addons/gdUnit3/test/core/resources/testsuites/mono/spaceB/TestSuite.cs")).IsEqual(typeof(GdUnit3.Tests.SpaceB.TestSuite));
             // source file not exists
