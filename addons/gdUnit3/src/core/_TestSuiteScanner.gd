@@ -55,9 +55,6 @@ static func _file(dir :Directory, file_name :String) -> String:
 func _parse_is_test_suite(resource_path :String) -> Node:
 	if not _is_script_format_supported(resource_path):
 		return null
-	# exclude non test directories
-	if resource_path.find("/test") == -1:
-		return null
 	var script :Script = ResourceLoader.load(resource_path)
 	if not GdObjects.is_test_suite(script):
 		return null

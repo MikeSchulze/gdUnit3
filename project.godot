@@ -1095,6 +1095,11 @@ _global_script_classes=[ {
 "path": "res://addons/gdUnit3/test/fuzzers/TestExternalFuzzer.gd"
 }, {
 "base": "GdUnitTestSuite",
+"class": "TestSuiteScannerTest",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/test/core/TestSuiteScannerTest.gd"
+}, {
+"base": "GdUnitTestSuite",
 "class": "TestSuiteTemplateTest",
 "language": "GDScript",
 "path": "res://addons/gdUnit3/test/ui/templates/TestSuiteTemplateTest.gd"
@@ -1372,6 +1377,7 @@ _global_script_class_icons={
 "StringFuzzer": "",
 "StringFuzzerTest": "",
 "TestExternalFuzzer": "",
+"TestSuiteScannerTest": "",
 "TestSuiteTemplateTest": "",
 "TimeUnit": "",
 "Udo": "",
