@@ -98,3 +98,9 @@ assert_int(-13).is_not_negative()
   <a href="https://discord.gg/rdq36JwuaJ"><img src="https://discordapp.com/api/guilds/885149082119733269/widget.png?style=banner4" alt="Join GdUnit3 Server"/></a>
 </p>
 
+### Thank you for supporting my project!
+---
+## Sponsors:
+
+https://github.com/musicm122
+
