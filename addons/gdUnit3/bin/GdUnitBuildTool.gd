@@ -30,6 +30,7 @@ func _init():
 	for cmd in cmd_options:
 		if cmd.name() == '-scp':
 			_source_file = cmd.arguments()[0]
+			_source_file = ProjectSettings.localize_path(ProjectSettings.localize_path(_source_file))
 		if cmd.name() == '-scl':
 			_source_line = int(cmd.arguments()[0])
 	# verify required arguments
@@ -49,13 +50,16 @@ func _idle(_delta):
 		
 		var result := GdUnitTestSuiteBuilder.new().create(script, _source_line)
 		if result.is_error():
+			print_json_error(result.error_message())
 			exit(RETURN_ERROR, result.error_message())
+			return
 		
 		_console.prints_color("Added testcase: %s" % result.value(), Color.cornflower)
 		print_json_result(result.value())
 		exit(RETURN_SUCCESS)
 
 func exit(code :int, message :String = "") -> void:
+	_status = EXIT
 	if code == RETURN_ERROR:
 		if not message.empty():
 			_console.prints_error(message)
@@ -63,11 +67,15 @@ func exit(code :int, message :String = "") -> void:
 	else:
 		_console.prints_color("Exit code: %d" % RETURN_SUCCESS, Color.darksalmon)
 	quit(code)
-	_status = EXIT
 
 func print_json_result(result :Dictionary) -> void:
-	var json = 'JSON_RESULT:{"TestCases" : [{"line":%d, "path": "%s"}]}' % [result["line"], result["path"]]
+	# convert back to system path
+	var path = ProjectSettings.globalize_path(result["path"]);
+	var json = 'JSON_RESULT:{"TestCases" : [{"line":%d, "path": "%s"}]}' % [result["line"], path]
 	prints(json)
+
+func print_json_error(error :String) -> void:
+	prints('JSON_RESULT:{"Error" : "%s"}' % error)
 
 func show_options(show_advanced :bool = false) -> void:
 	_console.prints_color(" Usage:", Color.darksalmon)
