@@ -76,7 +76,10 @@ namespace GdUnit3.Core
         internal static Type? ParseType(String classPath)
         {
             if (String.IsNullOrEmpty(classPath) || !new FileInfo(classPath).Exists)
+            {
+                Console.Error.WriteLine($"Class `{classPath}` not exists .");
                 return null;
+            }
             try
             {
                 var root = CSharpSyntaxTree.ParseText(File.ReadAllText(classPath)).GetCompilationUnitRoot();
@@ -116,36 +119,36 @@ namespace GdUnit3.Core
 
         private static string FillFromTemplate(string template, Type type, string classPath) =>
             template
-                .Replace(TAG_TEST_SUITE_NAMESPACE, type.Namespace)
+                .Replace(TAG_TEST_SUITE_NAMESPACE, String.IsNullOrEmpty(type.Namespace) ? "GdUnitDefaultTestNamespace" : type.Namespace)
                 .Replace(TAG_TEST_SUITE_CLASS, type.Name + "Test")
                 .Replace(TAG_SOURCE_RESOURCE_PATH, classPath)
                 .Replace(TAG_SOURCE_CLASS_NAME, type.Name)
                 .Replace(TAG_SOURCE_CLASS_VARNAME, type.Name);
 
+        internal static ClassDeclarationSyntax ClassDeclaration(CompilationUnitSyntax root)
+        {
+            NamespaceDeclarationSyntax namespaceSyntax = root.Members.OfType<NamespaceDeclarationSyntax>().FirstOrDefault();
+            return namespaceSyntax == null
+                ? root.Members.OfType<ClassDeclarationSyntax>().First()
+                : namespaceSyntax.Members.OfType<ClassDeclarationSyntax>().First();
+        }
+
         internal static int TestCaseLineNumber(CompilationUnitSyntax root, string testCaseName)
         {
-            NamespaceDeclarationSyntax namespaceSyntax = root.Members.OfType<NamespaceDeclarationSyntax>().First();
-            ClassDeclarationSyntax? programClassSyntax = namespaceSyntax?.Members.OfType<ClassDeclarationSyntax>().First();
             // lookup on test cases
-            return programClassSyntax?.Members.OfType<MethodDeclarationSyntax>()
+            return ClassDeclaration(root).Members.OfType<MethodDeclarationSyntax>()
                 .FirstOrDefault(method => method.Identifier.Text.Equals(testCaseName))
                 .Body?.GetLocation().GetLineSpan().StartLinePosition.Line ?? -1;
         }
 
-        internal static bool TestCaseExists(CompilationUnitSyntax root, string testCaseName)
-        {
-            NamespaceDeclarationSyntax namespaceSyntax = root.Members.OfType<NamespaceDeclarationSyntax>().First();
-            ClassDeclarationSyntax? programClassSyntax = namespaceSyntax?.Members.OfType<ClassDeclarationSyntax>().First();
-            return programClassSyntax?.Members.OfType<MethodDeclarationSyntax>()
-                .Any(method => method.Identifier.Text.Equals(testCaseName)) ?? false;
-        }
+        internal static bool TestCaseExists(CompilationUnitSyntax root, string testCaseName) =>
+            ClassDeclaration(root).Members.OfType<MethodDeclarationSyntax>().Any(method => method.Identifier.Text.Equals(testCaseName));
 
         internal static CompilationUnitSyntax AddTestCase(SyntaxTree syntaxTree, string testCaseName)
         {
             var root = syntaxTree.GetCompilationUnitRoot();
-            NamespaceDeclarationSyntax? namespaceSyntax = root.Members.OfType<NamespaceDeclarationSyntax>().First();
-            ClassDeclarationSyntax? programClassSyntax = namespaceSyntax?.Members.OfType<ClassDeclarationSyntax>().First();
-            SyntaxNode insertAt = programClassSyntax?.ChildNodes().Last()!;
+            ClassDeclarationSyntax programClassSyntax = ClassDeclaration(root);
+            SyntaxNode insertAt = programClassSyntax.ChildNodes().Last()!;
 
             AttributeSyntax testCaseAttribute = SyntaxFactory.Attribute(SyntaxFactory.IdentifierName("TestCase"));
             AttributeListSyntax attributes = SyntaxFactory.AttributeList(SyntaxFactory.SingletonSeparatedList<AttributeSyntax>(testCaseAttribute));
@@ -171,22 +174,14 @@ namespace GdUnit3.Core
         internal static string? FindMethod(string sourcePath, int lineNumber)
         {
             SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(File.ReadAllText(sourcePath));
-            var root = syntaxTree.GetCompilationUnitRoot();
-            var spanToFind = syntaxTree.GetText().Lines[lineNumber - 1].Span;
-
-            NamespaceDeclarationSyntax? namespaceSyntax = root.Members.OfType<NamespaceDeclarationSyntax>().First();
-            if (namespaceSyntax == null)
-            {
-                Console.Error.WriteLine($"Can't parse method name from {sourcePath}:{lineNumber}. Error: no namespace found.");
-                return null;
-            }
-            ClassDeclarationSyntax? programClassSyntax = namespaceSyntax.Members.OfType<ClassDeclarationSyntax>().First();
+            ClassDeclarationSyntax programClassSyntax = ClassDeclaration(syntaxTree.GetCompilationUnitRoot());
             if (programClassSyntax == null)
             {
                 Console.Error.WriteLine($"Can't parse method name from {sourcePath}:{lineNumber}. Error: no class declararion found.");
                 return null;
             }
 
+            var spanToFind = syntaxTree.GetText().Lines[lineNumber - 1].Span;
             // lookup on properties
             foreach (PropertyDeclarationSyntax m in programClassSyntax.Members.OfType<PropertyDeclarationSyntax>())
             {

@@ -93,6 +93,34 @@ namespace GdUnit3.Core.Tests
         }
 
         [TestCase]
+        public void CreateTestSuite_NoNamespace()
+        {
+            var tmp = CreateTempDir("build-test-suite-test");
+            string sourceClass = Path.Combine(tmp, "TestPerson2.cs");
+            File.Copy(Path.GetFullPath(Godot.ProjectSettings.GlobalizePath("res://addons/gdUnit3/test/core/resources/sources/TestPerson2.cs")), sourceClass);
+
+            // use of a line number for which no method is defined in the source class
+            string testSuite = Path.Combine(tmp, "TestPerson2Test.cs");
+            Dictionary<string, object> dictionary = GdUnitTestSuiteBuilder.Build(sourceClass, 12, testSuite);
+            AssertThat(dictionary["path"]).IsEqual(testSuite);
+            AssertThat((int)dictionary["line"]).IsEqual(16);
+        }
+
+        [TestCase]
+        public void CreateTestSuite_WithNamespace()
+        {
+            var tmp = CreateTempDir("build-test-suite-test");
+            string sourceClass = Path.Combine(tmp, "TestPerson.cs");
+            File.Copy(Path.GetFullPath(Godot.ProjectSettings.GlobalizePath("res://addons/gdUnit3/test/core/resources/sources/TestPerson.cs")), sourceClass);
+
+            // use of a line number for which no method is defined in the source class
+            string testSuite = Path.Combine(tmp, "TestPersonTest.cs");
+            Dictionary<string, object> dictionary = GdUnitTestSuiteBuilder.Build(sourceClass, 14, testSuite);
+            AssertThat(dictionary["path"]).IsEqual(testSuite);
+            AssertThat((int)dictionary["line"]).IsEqual(16);
+        }
+
+        [TestCase]
         public void CreateTestSuite_TestCaseAlreadyExists()
         {
             var tmp = CreateTempDir("build-test-suite-test");
