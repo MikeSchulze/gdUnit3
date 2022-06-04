@@ -16,7 +16,7 @@ func before_test():
 	var result := GdUnitTools.copy_file("res://addons/gdUnit3/test/core/resources/sources/test_person.gd", temp)
 	assert_result(result).is_success()
 	_example_source_gd = result.value() as String
-	result = GdUnitTools.copy_file("res://addons/gdUnit3/test/core/resources/sources/TestPerson.cs", temp)
+	result = GdUnitTools.copy_file("res://addons/gdUnit3/mono/test/core/resources/sources/TestPerson.cs", temp)
 	assert_result(result).is_success()
 	_example_source_cs = result.value() as String
 	_test_suite_builder = GdUnitTestSuiteBuilder.new()

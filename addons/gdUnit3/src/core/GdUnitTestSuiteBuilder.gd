@@ -25,7 +25,7 @@ func create(source :Script, line_number :int) -> Result:
 	if GdObjects.is_cs_script(source):
 		if not GdUnitTools.is_mono_supported():
 			return  Result.error("Can't create test. No c# support found.")
-		var csTools = load("res://addons/gdUnit3/src/core/CsTools.cs").new()
+		var csTools = load("res://addons/gdUnit3/mono/src/core/CsTools.cs").new()
 		var result := csTools.CreateTestSuite(source.resource_path, line_number+1, test_suite_path) as Dictionary
 		if result.has("error"):
 			return Result.error(result.get("error"))

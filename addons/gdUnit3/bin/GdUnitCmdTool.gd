@@ -53,7 +53,7 @@ class CLIRunner extends Node:
 		_executor.fail_fast(true)
 		
 		if GdUnitTools.is_mono_supported():
-			_cs_executor = load("res://addons/gdUnit3/src/core/execution/Executor.cs").new()
+			_cs_executor = load("res://addons/gdUnit3/mono/src/core/execution/Executor.cs").new()
 			_cs_executor.AddGdTestEventListener(self)
 		
 		var err := _executor.connect("send_event", self, "_on_executor_event")
@@ -273,7 +273,9 @@ class CLIRunner extends Node:
 				var report_path := _report.write()
 				_report.delete_history(_report_max)
 				JUnitXmlReport.new(_report._report_path, _report.iteration(), _rtf).write(_report)
-				_console.prints_color("Total time %s" % LocalTime.elapsed(_report.duration()), Color.darksalmon)
+				_console.prints_color("Total test suites: %s" % _report.suite_count(), Color.darksalmon)
+				_console.prints_color("Total test cases:  %s" % _report.test_count(), Color.darksalmon)
+				_console.prints_color("Total time:        %s" % LocalTime.elapsed(_report.duration()), Color.darksalmon)
 				_console.prints_color("Open Report at: file://%s" % report_path, Color.cornflower)
 			
 			GdUnitEvent.TESTSUITE_BEFORE:
