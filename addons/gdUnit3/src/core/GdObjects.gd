@@ -356,7 +356,7 @@ static func is_cs_test_suite(instance :Node) -> bool:
 
 static func is_cs_testsuite(script :Script) -> bool:
 	if GdUnitTools.is_mono_supported():
-		var csTools = load("res://addons/gdUnit3/src/core/CsTools.cs").new()
+		var csTools = load("res://addons/gdUnit3/mono/src/core/CsTools.cs").new()
 		return not script.resource_path.empty() and csTools.IsTestSuite(script.resource_path)
 	return false;
 

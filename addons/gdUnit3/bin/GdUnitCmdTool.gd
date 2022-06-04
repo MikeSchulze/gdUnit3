@@ -53,7 +53,7 @@ class CLIRunner extends Node:
 		_executor.fail_fast(true)
 		
 		if GdUnitTools.is_mono_supported():
-			_cs_executor = load("res://addons/gdUnit3/src/core/execution/Executor.cs").new()
+			_cs_executor = load("res://addons/gdUnit3/mono/src/core/execution/Executor.cs").new()
 			_cs_executor.AddGdTestEventListener(self)
 		
 		var err := _executor.connect("send_event", self, "_on_executor_event")

@@ -16,7 +16,7 @@ namespace GdUnit3.Core.Tests
         {
             var tmp = CreateTempDir("build-test-suite-test");
             string sourceClass = Path.Combine(tmp, "TestPerson.cs");
-            File.Copy(Path.GetFullPath(Godot.ProjectSettings.GlobalizePath("res://addons/gdUnit3/test/core/resources/sources/TestPerson.cs")), sourceClass);
+            File.Copy(Path.GetFullPath(Godot.ProjectSettings.GlobalizePath("res://addons/gdUnit3/mono/test/core/resources/sources/TestPerson.cs")), sourceClass);
 
             // first time generates the test suite and adds the test case
             string path = Path.Combine(tmp, "TestPersonTest.cs");
