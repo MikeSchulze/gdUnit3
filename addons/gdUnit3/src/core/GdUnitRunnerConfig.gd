@@ -34,6 +34,7 @@ func server_port() -> int:
 
 func self_test() -> GdUnitRunnerConfig:
 	add_test_suite("res://addons/gdUnit3/test/")
+	add_test_suite("res://addons/gdUnit3/mono/test/")
 	return self
 
 func add_test_suite(resource_path :String) -> GdUnitRunnerConfig:

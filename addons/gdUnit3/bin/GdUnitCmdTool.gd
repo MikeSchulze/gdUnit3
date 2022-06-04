@@ -273,7 +273,9 @@ class CLIRunner extends Node:
 				var report_path := _report.write()
 				_report.delete_history(_report_max)
 				JUnitXmlReport.new(_report._report_path, _report.iteration(), _rtf).write(_report)
-				_console.prints_color("Total time %s" % LocalTime.elapsed(_report.duration()), Color.darksalmon)
+				_console.prints_color("Total test suites: %s" % _report.suite_count(), Color.darksalmon)
+				_console.prints_color("Total test cases:  %s" % _report.test_count(), Color.darksalmon)
+				_console.prints_color("Total time:        %s" % LocalTime.elapsed(_report.duration()), Color.darksalmon)
 				_console.prints_color("Open Report at: file://%s" % report_path, Color.cornflower)
 			
 			GdUnitEvent.TESTSUITE_BEFORE:
