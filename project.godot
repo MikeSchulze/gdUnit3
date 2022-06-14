@@ -295,6 +295,16 @@ _global_script_classes=[ {
 "path": "res://addons/gdUnit3/src/core/parse/GdScriptParser.gd"
 }, {
 "base": "Reference",
+"class": "GdUnit3MonoBridge",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/src/mono/GdUnit3MonoBridge.gd"
+}, {
+"base": "GdUnitTestSuite",
+"class": "GdUnit3MonoBridgeTest",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/test/mono/GdUnit3MonoBridgeTest.gd"
+}, {
+"base": "Reference",
 "class": "GdUnit3Version",
 "language": "GDScript",
 "path": "res://addons/gdUnit3/src/core/GdUnit3Version.gd"
@@ -1217,6 +1227,8 @@ _global_script_class_icons={
 "GdMarkDownReaderTest": "",
 "GdObjects": "",
 "GdScriptParser": "",
+"GdUnit3MonoBridge": "",
+"GdUnit3MonoBridgeTest": "",
 "GdUnit3Version": "",
 "GdUnit3VersionTest": "",
 "GdUnitArgumentMatcher": "",
