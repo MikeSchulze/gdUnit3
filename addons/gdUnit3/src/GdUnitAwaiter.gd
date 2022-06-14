@@ -10,11 +10,11 @@ extends Reference
 static func await_signal_on(test_suite :WeakRef, source :Object, signal_name :String, args :Array = [], timeout_millis :int = 2000) -> GDScriptFunctionState:
 	var line_number := GdUnitAssertImpl._get_line_number();
 	var awaiter = GdUnitSignalAwaiter.new(timeout_millis)
-	yield(awaiter.on_signal(source, signal_name, args), "completed")
+	var value = yield(awaiter.on_signal(source, signal_name, args), "completed")
 	if awaiter.is_interrupted():
 		var failure = "await_signal_on(%s, %s) timed out after %sms" % [signal_name, args, timeout_millis]
 		GdUnitAssertImpl.new(test_suite.get_ref(), signal_name).report_error(failure, line_number)
-	return
+	return value
 
 # Waits for a specified signal sent from the <source> between idle frames and aborts with an error after the specified timeout has elapsed
 # source: the object from which the signal is emitted
