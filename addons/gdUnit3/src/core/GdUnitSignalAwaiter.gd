@@ -50,11 +50,13 @@ func on_signal(source :Object, signal_name :String, expected_signal_args :Array)
 	sleep.connect("timeout", self, "_on_sleep_awakening")
 	sleep.start(sleep_time)
 	
+	# holds the emited value
+	var value
 	# wait for signal is emitted or a timeout is happen
 	while true:
 		if _wait_on_idle_frame:
 			yield(Engine.get_main_loop(), "idle_frame")
-		var value = yield(self, "signal_emitted")
+		value = yield(self, "signal_emitted")
 		if value is Reference and value == TIMER_INTERRUPTED:
 			_interrupted = true
 			break
@@ -73,3 +75,6 @@ func on_signal(source :Object, signal_name :String, expected_signal_args :Array)
 	sleep.stop()
 	Engine.get_main_loop().root.remove_child(sleep)
 	sleep.free()
+	if value is Array and value.size() == 1:
+		return value[0]
+	return value
