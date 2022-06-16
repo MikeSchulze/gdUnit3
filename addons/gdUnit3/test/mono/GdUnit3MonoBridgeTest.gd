@@ -10,7 +10,7 @@ var _example_source_cs :String
 
 func before_test():
 	var temp := create_temp_dir("examples")
-	var result := GdUnitTools.copy_file("res://addons/gdUnit3/mono/test/core/resources/sources/TestPerson.cs", temp)
+	var result := GdUnitTools.copy_file("res://addons/gdUnit3/test/resources/core/sources/TestPerson.cs", temp)
 	assert_result(result).is_success()
 	_example_source_cs = result.value() as String
 
