@@ -12,8 +12,8 @@ for /f "tokens=5 delims=. " %%i in ('%GODOT_BIN% --version') do set GODOT_TYPE=%
 IF "%GODOT_TYPE%" == "mono" (
 	ECHO "Godot mono detected"
 	ECHO Compiling c# classes ... Please Wait
-	%GODOT_BIN% --build-solutions --no-window -q --quiet
-	ECHO done
+	dotnet build --debug
+	ECHO done %errorlevel%
 )
 
 %GODOT_BIN% --no-window -s -d .\addons\gdUnit3\bin\GdUnitCmdTool.gd %*

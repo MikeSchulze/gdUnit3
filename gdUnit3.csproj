@@ -8,6 +8,6 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<!--Required for GdUnit3-->
-		<PackageReference Include="GdUnit3CSharpModule" Version="2.3.0-pre-*" />
+		<PackageReference Include="gdUnit3CSharpModule" Version="2.3.0-pre-202206152116" />
 	</ItemGroup>
 </Project>

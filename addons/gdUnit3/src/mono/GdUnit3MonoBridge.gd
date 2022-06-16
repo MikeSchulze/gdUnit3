@@ -7,8 +7,8 @@ static func instance() :
 	if not _instance.empty():
 		return _instance[0]
 	var instance =  load("res://addons/gdUnit3/src/mono/GdUnit3MonoBridge.cs").new()
-	_instance[0] = instance
-	return _instance
+	_instance.append(instance)
+	return _instance[0]
 
 static func create_test_suite(source_path :String, line_number :int, test_suite_path :String) -> Result:
 	if not GdUnitTools.is_mono_supported():
