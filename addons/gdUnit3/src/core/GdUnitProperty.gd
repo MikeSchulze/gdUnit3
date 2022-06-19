@@ -55,4 +55,4 @@ func help() -> String:
 	return _help
 
 func _to_string() -> String:
-	return "%-64s %-10s %-10s (%s) help:%s set:%s" % [name(), GdObjects.type_as_string(type()), value(), default(), help(), _value_set]
+	return "%-64s %-10s %-10s (%s) help:%s set:%s" % [name(), type(), value(), default(), help(), _value_set]

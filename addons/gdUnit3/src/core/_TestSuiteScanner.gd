@@ -73,8 +73,7 @@ static func _is_script_format_supported(resource_path :String) -> bool:
 	return false
 
 func _parse_cs_test_suite(script :Script) -> Node:
-	var csTools = load("res://addons/gdUnit3/mono/src/core/CsTools.cs").new()
-	return csTools.ParseTestSuite(script.resource_path)
+	return GdUnit3MonoBridge.parse_test_suite(script.resource_path)
 
 func _parse_test_suite(script :GDScript) -> GdUnitTestSuite:
 	var test_suite = script.new()

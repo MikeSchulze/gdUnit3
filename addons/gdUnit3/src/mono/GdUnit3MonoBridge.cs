@@ -1,22 +1,15 @@
+using Godot;
 using System;
+using GdUnit3.Core;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using GdUnit3.Core;
 
-namespace GdUnit3.Tools
+
+namespace GdUnit3
 {
-
-    public class CsTools : Godot.Reference
+    public class GdUnit3MonoBridge : Reference
     {
-        internal static string NormalisizePath(string path) =>
-            (path.StartsWith("res://") || path.StartsWith("user://")) ? Godot.ProjectSettings.GlobalizePath(path) : path;
-        public static bool IsTestSuite(String classPath)
-        {
-            var type = GdUnitTestSuiteBuilder.ParseType(NormalisizePath(classPath));
-            return type != null ? Attribute.IsDefined(type, typeof(TestSuiteAttribute)) : false;
-        }
-
         public static Godot.Collections.Dictionary CreateTestSuite(string sourcePath, int lineNumber, string testSuitePath)
         {
             var result = GdUnitTestSuiteBuilder.Build(NormalisizePath(sourcePath), lineNumber, NormalisizePath(testSuitePath));
@@ -26,7 +19,13 @@ namespace GdUnit3.Tools
             return new Godot.Collections.Dictionary(result);
         }
 
-        public static Godot.Node? ParseTestSuite(String classPath)
+        public static bool IsTestSuite(string classPath)
+        {
+            var type = GdUnitTestSuiteBuilder.ParseType(NormalisizePath(classPath));
+            return type != null ? Attribute.IsDefined(type, typeof(TestSuiteAttribute)) : false;
+        }
+
+        public static Godot.Node? ParseTestSuite(string classPath)
         {
             try
             {
@@ -59,8 +58,14 @@ namespace GdUnit3.Tools
             }
         }
 
-        private static IEnumerable<Executions.TestCase> LoadTestCases(Type type) => type.GetMethods()
+        public static GdUnit3.IExecutor Executor(Godot.Node listener) =>
+            new GdUnit3.Executions.Executor().AddGdTestEventListener(listener);
+
+        private static string NormalisizePath(string path) =>
+             (path.StartsWith("res://") || path.StartsWith("user://")) ? Godot.ProjectSettings.GlobalizePath(path) : path;
+
+        private static IEnumerable<GdUnit3.Executions.TestCase> LoadTestCases(Type type) => type.GetMethods()
             .Where(m => m.IsDefined(typeof(TestCaseAttribute)))
-            .Select(mi => new Executions.TestCase(mi));
+            .Select(mi => new GdUnit3.Executions.TestCase(mi));
     }
 }

@@ -1,15 +1,15 @@
 <Project Sdk="Godot.NET.Sdk/3.3.0">
-  <PropertyGroup>
-    <TargetFrameworks>netstandard2.1</TargetFrameworks>
-    <LangVersion>10.0</LangVersion>
-    <!--Force nullable warnings, you can disable if you want-->
-    <Nullable>enable</Nullable>
-    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-  </PropertyGroup>
-  <ItemGroup>
-
-    <!--Required for GdUnit3-->
-    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.2.0" />
-  </ItemGroup>
+	<PropertyGroup>
+		<TargetFrameworks>netstandard2.1</TargetFrameworks>
+		<LangVersion>10.0</LangVersion>
+		<!--Force nullable warnings, you can disable if you want-->
+		<Nullable>enable</Nullable>
+		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+		<!--Disable warning of invalid/incompatible GodotSharp version-->
+		<NoWarn>NU1701</NoWarn>
+	</PropertyGroup>
+	<ItemGroup>
+		<!--Required for GdUnit3-->
+		<PackageReference Include="gdUnit3CSharpModule" Version="2.3.0-beta.202206191008"/>
+	</ItemGroup>
 </Project>

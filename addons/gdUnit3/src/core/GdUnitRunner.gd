@@ -30,9 +30,7 @@ func _init():
 	_signal_handler = GdUnitSingleton.get_or_create_singleton(SignalHandler.SINGLETON_NAME, "res://addons/gdUnit3/src/core/event/SignalHandler.gd")
 	# store current runner instance to engine meta data to can be access in as a singleton
 	Engine.set_meta(GDUNIT_RUNNER, self)
-	if GdUnitTools.is_mono_supported():
-		_cs_executor = load("res://addons/gdUnit3/mono/src/core/execution/Executor.cs").new()
-		_cs_executor.AddGdTestEventListener(self)
+	_cs_executor = GdUnit3MonoBridge.create_executor(self)
 
 func _ready():
 	var config_result := _config.load()
