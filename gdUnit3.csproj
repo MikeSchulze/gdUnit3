@@ -5,9 +5,11 @@
 		<!--Force nullable warnings, you can disable if you want-->
 		<Nullable>enable</Nullable>
 		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+		<!--Disable warning of invalid/incompatible GodotSharp version-->
+		<NoWarn>NU1701</NoWarn>
 	</PropertyGroup>
 	<ItemGroup>
 		<!--Required for GdUnit3-->
-		<PackageReference Include="gdUnit3CSharpModule" Version="2.3.0-pre-202206152116" />
+		<PackageReference Include="gdUnit3CSharpModule" Version="2.3.0-beta.202206191008"/>
 	</ItemGroup>
 </Project>

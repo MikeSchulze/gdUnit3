@@ -22,13 +22,15 @@ static func is_test_suite(script :Script) -> bool:
 	if not GdUnitTools.is_mono_supported():
 		return false
 	if script.resource_path.empty():
-		push_error("Can't create test suite. Missing resource path at %s." % script)
+		if GdUnitSettings.is_report_push_errors():
+			push_error("Can't create test suite. Missing resource path at %s." % script)
 		return  false
 	return instance().IsTestSuite(script.resource_path)
 
 static func parse_test_suite(source_path :String) -> Node:
 	if not GdUnitTools.is_mono_supported():
-		push_error("Can't create test suite. No c# support found.")
+		if GdUnitSettings.is_report_push_errors():
+			push_error("Can't create test suite. No c# support found.")
 		return null
 	return instance().ParseTestSuite(source_path)
 
