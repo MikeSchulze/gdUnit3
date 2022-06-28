@@ -61,7 +61,7 @@ func _process(_delta):
 			_content.bbcode_text = content
 			_update_button.set_disabled(false)
 		else:
-			_content.bbcode_text = _h4_message("\n\n\nError on requst available releases!", Color.red)
+			_content.bbcode_text = _h4_message("\n\n\nError on request available releases!", Color.red)
 
 static func extract_latest_version(response :GdUnitUpdateClient.HttpResponse) -> GdUnit3Version:
 	var body :Array = response.response()
@@ -116,6 +116,12 @@ static func close_open_editor_scripts() -> void:
 	prints("Closing all currently opened scripts ..")
 	script_editor._menu_option(MENU_ACTION_FILE_CLOSE_ALL)
 	plugin.free()
+
+func delete_obsolete_files() -> void:
+	var dir := Directory.new()
+	for file_to_delete in ["res://gdUnit3.csproj", "res://gdUnit3.sln"]:
+		if dir.file_exists(file_to_delete):
+			dir.remove(file_to_delete)
 
 func _prepare_update() -> Dictionary:
 	_update_in_progress = true
@@ -182,6 +188,7 @@ func _on_update_pressed():
 	
 	update_progress("install new GdUnit3 version ..")
 	GdUnitTools.copy_directory(source_dir, "res://", true)
+	delete_obsolete_files()
 	
 	update_progress("refresh editor resources ..")
 	yield(rescan(true), "completed")
