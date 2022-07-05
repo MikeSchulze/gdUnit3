@@ -95,6 +95,25 @@ func test_spy_on_custom_class():
 	# verify if a not used argument not counted
 	verify(spy_instance, 0).get_area("test_no")
 
+func test_spy_copied_class_members():
+	var instance = auto_free(load("res://addons/gdUnit3/test/mocker/resources/TestPersion.gd").new("user-x", "street", 56616))
+	assert_that(instance._name).is_equal("user-x")
+	assert_that(instance._value).is_equal(1024)
+	assert_that(instance._address._street).is_equal("street")
+	assert_that(instance._address._code).is_equal(56616)
+	
+	# spy it
+	var spy_instance = spy(instance)
+	
+	# verify members are inital copied
+	assert_that(spy_instance._name).is_equal("user-x")
+	assert_that(spy_instance._value).is_equal(1024)
+	assert_that(spy_instance._address._street).is_equal("street")
+	assert_that(spy_instance._address._code).is_equal(56616)
+	
+	spy_instance._value = 2048
+	assert_that(instance._value).is_equal(1024)
+	assert_that(spy_instance._value).is_equal(2048)
 
 func test_spy_on_inner_class():
 	var instance :AdvancedTestClass.AtmosphereData = auto_free(AdvancedTestClass.AtmosphereData.new())

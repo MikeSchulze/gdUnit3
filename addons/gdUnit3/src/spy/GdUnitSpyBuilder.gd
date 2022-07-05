@@ -143,6 +143,7 @@ static func build(caller :Object, to_spy, push_errors :bool = true, debug_write 
 	if spy == null:
 		return null
 	var spy_instance = spy.new()
+	copy_properties(to_spy, spy_instance)
 	spy_instance.__set_singleton(to_spy)
 	spy_instance.__set_caller(caller)
 	return GdUnitTools.register_auto_free(spy_instance, memory_pool)
@@ -198,3 +199,10 @@ static func spy_on_scene(caller :Object, scene :Node, memory_pool, debug_write) 
 	scene.set_script(spy)
 	scene.__set_caller(caller)
 	return GdUnitTools.register_auto_free(scene, memory_pool)
+
+static func copy_properties(source :Object, dest :Object) -> void:
+	for property in source.get_property_list():
+		var property_name = property["name"]
+		if property_name == "script":
+			continue
+		dest.set(property_name, source.get(property_name))
