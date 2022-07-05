@@ -19,14 +19,13 @@ func test_spy_on_Node():
 	
 	# verify we have no interactions currently on this instance
 	verify_no_interactions(spy_node)
-
+	
 	assert_object(spy_node)\
 		.is_not_null()\
 		.is_instanceof(Node)\
 		.is_not_same(instance)
 	
-	
-	# call first time 
+	# call first time
 	spy_node.set_process(false)
 	
 	# verify is called one times
@@ -34,7 +33,7 @@ func test_spy_on_Node():
 	# just double check that verify has no affect to the counter
 	verify(spy_node).set_process(false)
 	
-	# call a scond time 
+	# call a scond time
 	spy_node.set_process(false)
 	# verify is called two times
 	verify(spy_node, 2).set_process(false)
@@ -73,7 +72,7 @@ func test_spy_on_custom_class():
 		.is_not_null()\
 		.is_instanceof(AdvancedTestClass)\
 		.is_not_same(instance)
-		
+	
 	spy_instance.setup_local_to_scene()
 	verify(spy_instance, 1).setup_local_to_scene()
 	
@@ -95,6 +94,37 @@ func test_spy_on_custom_class():
 	# verify if a not used argument not counted
 	verify(spy_instance, 0).get_area("test_no")
 
+func test_spy_copied_class_members():
+	var instance = auto_free(load("res://addons/gdUnit3/test/mocker/resources/TestPersion.gd").new("user-x", "street", 56616))
+	assert_that(instance._name).is_equal("user-x")
+	assert_that(instance._value).is_equal(1024)
+	assert_that(instance._address._street).is_equal("street")
+	assert_that(instance._address._code).is_equal(56616)
+	
+	# spy it
+	var spy_instance = spy(instance)
+	reset(spy_instance)
+	
+	# verify members are inital copied
+	assert_that(spy_instance._name).is_equal("user-x")
+	assert_that(spy_instance._value).is_equal(1024)
+	assert_that(spy_instance._address._street).is_equal("street")
+	assert_that(spy_instance._address._code).is_equal(56616)
+	
+	spy_instance._value = 2048
+	assert_that(instance._value).is_equal(1024)
+	assert_that(spy_instance._value).is_equal(2048)
+
+func test_spy_copied_class_members_on_node():
+	var node :Node = auto_free(Node.new())
+	# on a fresh node the name is empty and results into a error when copied at spy
+	# E 0:00:01.518   set_name: Condition "name == """ is true.
+	# C++ Source>  scene/main/node.cpp:934 @ set_name()
+	# we set a placeholder instead
+	assert_that(spy(node).name).is_equal("<empty>")
+	
+	node.set_name("foo")
+	assert_that(spy(node).name).is_equal("foo")
 
 func test_spy_on_inner_class():
 	var instance :AdvancedTestClass.AtmosphereData = auto_free(AdvancedTestClass.AtmosphereData.new())
@@ -107,7 +137,7 @@ func test_spy_on_inner_class():
 		.is_not_null()\
 		.is_instanceof(AdvancedTestClass.AtmosphereData)\
 		.is_not_same(instance)
-		
+	
 	spy_instance.set_data(AdvancedTestClass.AtmosphereData.SMOKY, 1.2)
 	spy_instance.set_data(AdvancedTestClass.AtmosphereData.SMOKY, 1.3)
 	verify(spy_instance, 1).set_data(AdvancedTestClass.AtmosphereData.SMOKY, 1.2)
@@ -125,11 +155,11 @@ func test_example_verify():
 	spy_node.set_process(true) # 1 times
 	spy_node.set_process(true) # 2 times
 	
-	# verify how often we called the function with different argument 
+	# verify how often we called the function with different argument
 	verify(spy_node, 2).set_process(true) # in sum two times with true
 	verify(spy_node, 1).set_process(false)# in sum one time with false
 	
-	# verify total sum by using an argument matcher 
+	# verify total sum by using an argument matcher
 	verify(spy_node, 3).set_process(any_bool())
 
 func test_verify_fail():
@@ -221,13 +251,13 @@ func test_verify_no_interactions_fails():
 	spy_node.set_process(false) # 1 times
 	spy_node.set_process(true) # 1 times
 	spy_node.set_process(true) # 2 times
-	
+
 	var expected_error ="""Expecting no more interacions!
 But found interactions on:
 	'set_process(False :bool)'	1 time's
 	'set_process(True :bool)'	2 time's"""
 	expected_error = GdScriptParser.to_unix_format(expected_error)
-	# it should fail because we have interactions 
+	# it should fail because we have interactions
 	verify_no_interactions(spy_node, GdUnitAssert.EXPECT_FAIL)\
 		.has_failure_message(expected_error)
 
@@ -288,7 +318,7 @@ class ClassWithStaticFunctions:
 	
 	static func bar():
 		pass
-	
+
 func test_create_spy_static_func_untyped():
 	var instance = spy(ClassWithStaticFunctions.new())
 	assert_object(instance).is_not_null()
@@ -383,7 +413,7 @@ func test_spy_verify_emit_signal():
 	verify(spy_instance, 1).emit_signal("test_signal_a", "aa")
 	verify(spy_instance, 0).emit_signal("test_signal_b", "bb", true)
 	reset(spy_instance)
-
+	
 	spy_instance.foo(1)
 	verify(spy_instance, 0).emit_signal("test_signal_a", "aa")
 	verify(spy_instance, 1).emit_signal("test_signal_b", "bb", true)
