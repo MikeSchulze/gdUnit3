@@ -502,6 +502,16 @@ func extract_source_code(script_path :PoolStringArray) -> PoolStringArray:
 		source_code += load_source_code(base_script, script_path)
 	return source_code
 
+func extract_func_signature(rows :PoolStringArray, index :int) -> String:
+	var signature = ""
+	for rowIndex in range(index, rows.size()):
+		var row :String = rows[rowIndex]
+		signature += row.trim_prefix("\t").trim_suffix("\t")
+		if is_func_end(row):
+			return clean_up_row(signature)
+	push_error("Can't fully extract function signature of '%s'" % rows[index])
+	return ""
+
 func load_source_code(script :GDScript, script_path :PoolStringArray) -> PoolStringArray:
 	var map := script.get_script_constant_map()
 	for key in map.keys():
@@ -543,14 +553,16 @@ func parse_func_name(row :String) -> String:
 
 func parse_functions(rows :PoolStringArray, clazz_name :String, clazz_path :PoolStringArray) -> Array:
 	var func_descriptors := Array()
-	for row in rows:
+	for rowIndex in rows.size():
+		var row = rows[rowIndex]
 		# step over inner class functions
 		if row.begins_with("\t"):
 			continue
 		var input = clean_up_row(row)
 		var token := next_token(input, 0)
 		if token == TOKEN_FUNCTION_STATIC_DECLARATION or token == TOKEN_FUNCTION_DECLARATION:
-			func_descriptors.append(parse_func_description(row, clazz_name, clazz_path))
+			var func_signature = extract_func_signature(rows, rowIndex)
+			func_descriptors.append(parse_func_description(func_signature, clazz_name, clazz_path))
 	return func_descriptors
 
 func parse_func_description(func_signature :String, clazz_name :String, clazz_path :PoolStringArray) -> GdFunctionDescriptor:

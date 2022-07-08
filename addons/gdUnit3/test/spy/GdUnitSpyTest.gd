@@ -94,6 +94,15 @@ func test_spy_on_custom_class():
 	# verify if a not used argument not counted
 	verify(spy_instance, 0).get_area("test_no")
 
+
+# GD-291 https://github.com/MikeSchulze/gdUnit3/issues/291
+func test_spy_class_with_custom_formattings() -> void:
+	var resource = load("res://addons/gdUnit3/test/mocker/resources/ClassWithCustomFormattings.gd")
+	var instance :Object = resource.new()
+	var spy = spy(instance)
+	spy.a1("set_name", "", true)
+	verify(spy, 1).a1("set_name", "", true)
+
 func test_spy_copied_class_members():
 	var instance = auto_free(load("res://addons/gdUnit3/test/mocker/resources/TestPersion.gd").new("user-x", "street", 56616))
 	assert_that(instance._name).is_equal("user-x")

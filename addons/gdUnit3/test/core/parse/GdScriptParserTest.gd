@@ -319,6 +319,20 @@ func test_extract_source_code_inner_class_Area4D():
 	var file_content := resource_as_array("res://addons/gdUnit3/test/core/resources/Area4D.txt")
 	assert_array(rows).contains_exactly(file_content)
 
+func test_extract_function_signature() -> void:
+	var path := GdObjects.extract_class_path("res://addons/gdUnit3/test/mocker/resources/ClassWithCustomFormattings.gd")
+	var rows = _parser.extract_source_code(path)
+	
+	assert_that(_parser.extract_func_signature(rows, 5))\
+		.is_equal("funca1(set_name:String,path:String=\"\",load_on_init:bool=false,set_auto_save:bool=false,set_network_sync:bool=false)->void:")
+	assert_that(_parser.extract_func_signature(rows, 10))\
+		.is_equal("funca2(set_name:String,path:String=\"\",load_on_init:bool=false,set_auto_save:bool=false,set_network_sync:bool=false)->void:")
+	assert_that(_parser.extract_func_signature(rows, 15))\
+		.is_equal("funca3(set_name:String,path:String=\"\",load_on_init:bool=false,set_auto_save:bool=false,set_network_sync:bool=false):")
+	assert_that(_parser.extract_func_signature(rows, 20))\
+		.is_equal("funca4(set_name:String,path:String=\"\",load_on_init:bool=false,set_auto_save:bool=false,set_network_sync:bool=false):")
+
+
 func test_strip_leading_spaces():
 	assert_str(GdScriptParser.TokenInnerClass._strip_leading_spaces("")).is_empty()
 	assert_str(GdScriptParser.TokenInnerClass._strip_leading_spaces(" ")).is_empty()
