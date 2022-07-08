@@ -102,7 +102,7 @@ func test_spy_class_with_custom_formattings() -> void:
 	verify(spy, 1).a1("set_name", "", true)
 	verify_no_more_interactions(spy)
 	verify_no_interactions(spy, GdUnitAssert.EXPECT_FAIL)
-	assert_int(GdAssertReports.get_last_error_line_number()).is_equal(105)
+	assert_int(GdAssertReports.get_last_error_line_number()).is_equal(104)
 
 func test_spy_copied_class_members():
 	var instance = auto_free(load("res://addons/gdUnit3/test/mocker/resources/TestPersion.gd").new("user-x", "street", 56616))
