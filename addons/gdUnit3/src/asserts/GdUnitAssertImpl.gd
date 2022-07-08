@@ -23,6 +23,7 @@ static func _get_line_number() -> int:
 		 or source.ends_with("AssertImpl.gd") \
 		 or source.ends_with("GdUnitTestSuite.gd") \
 		 or source.ends_with("GdUnitSceneRunnerImpl.gd") \
+		 or source.ends_with("GdUnitObjectInteractions.gd") \
 		 or source.ends_with("GdUnitAwaiter.gd"):
 			continue
 		return stack_info.get("line")
