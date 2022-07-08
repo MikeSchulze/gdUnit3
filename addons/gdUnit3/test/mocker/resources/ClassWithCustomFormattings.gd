@@ -1,7 +1,11 @@
 extends Object
 
-func message() -> String:
-	return "a message"
+var _message
+
+func _init(message:String, path:String="", load_on_init:bool=false, 
+	set_auto_save:bool=false, set_network_sync:bool=false
+) -> void:
+	_message = message
 
 func a1(set_name:String, path:String="", load_on_init:bool=false, 
 	set_auto_save:bool=false, set_network_sync:bool=false

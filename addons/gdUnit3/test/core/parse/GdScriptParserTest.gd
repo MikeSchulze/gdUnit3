@@ -323,13 +323,13 @@ func test_extract_function_signature() -> void:
 	var path := GdObjects.extract_class_path("res://addons/gdUnit3/test/mocker/resources/ClassWithCustomFormattings.gd")
 	var rows = _parser.extract_source_code(path)
 	
-	assert_that(_parser.extract_func_signature(rows, 5))\
+	assert_that(_parser.extract_func_signature(rows, 9))\
 		.is_equal("funca1(set_name:String,path:String=\"\",load_on_init:bool=false,set_auto_save:bool=false,set_network_sync:bool=false)->void:")
-	assert_that(_parser.extract_func_signature(rows, 10))\
+	assert_that(_parser.extract_func_signature(rows, 14))\
 		.is_equal("funca2(set_name:String,path:String=\"\",load_on_init:bool=false,set_auto_save:bool=false,set_network_sync:bool=false)->void:")
-	assert_that(_parser.extract_func_signature(rows, 15))\
+	assert_that(_parser.extract_func_signature(rows, 19))\
 		.is_equal("funca3(set_name:String,path:String=\"\",load_on_init:bool=false,set_auto_save:bool=false,set_network_sync:bool=false):")
-	assert_that(_parser.extract_func_signature(rows, 20))\
+	assert_that(_parser.extract_func_signature(rows, 24))\
 		.is_equal("funca4(set_name:String,path:String=\"\",load_on_init:bool=false,set_auto_save:bool=false,set_network_sync:bool=false):")
 
 
