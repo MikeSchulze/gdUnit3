@@ -14,6 +14,7 @@ func _ready():
 	var settings := plugin.get_editor_interface().get_editor_settings()
 	var font_size = settings.get_setting("interface/editor/main_font_size")
 	bar.rect_min_size.y = font_size + 4 * plugin.get_editor_interface().get_editor_scale()
+	plugin.free()
 
 func progress_init(max_value :int) -> void:
 	bar.value = 0
