@@ -47,7 +47,6 @@ jobs:
           test-includes: "res://addons/gdUnit3/test/"
 
       - name: "Unit Test Examples"
-        id: selft-test
         if: ${{ !cancelled() }}
         uses: ./.github/actions/unit-test
         with:
@@ -87,7 +86,6 @@ jobs:
           submodules: 'recursive'
 
       - name: "Unit Test"
-        id: selft-test
         if: ${{ !cancelled() }}
         uses: ./.github/actions/unit-test
         with:
