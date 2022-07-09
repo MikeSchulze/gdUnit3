@@ -10,7 +10,6 @@ runs:
   using: composite
   steps:
     - name: Install Godot ${{ inputs.godot-version }}
-      runs-on: ubuntu-latest
       continue-on-error: false
       container:
         image: barichello/godot-ci:${{ inputs.godot-version }}
