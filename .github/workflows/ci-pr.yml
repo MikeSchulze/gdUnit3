@@ -85,6 +85,17 @@ jobs:
           lfs: true
           submodules: 'recursive'
 
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 6.0.x
+
+      - name: Compile
+        run: |
+          dotnet restore gdUnit3.csproj
+          mkdir -p .mono/assemblies/Debug
+          cp /usr/local/bin/GodotSharp
+
       - name: "Unit Test"
         if: ${{ !cancelled() }}
         uses: ./.github/actions/unit-test
