@@ -65,7 +65,7 @@ jobs:
         with:
           report-name: ${{ matrix.godot-version }}
 
- mono-uint-test:
+  mono-uint-test:
     strategy:
       fail-fast: false
       matrix:
