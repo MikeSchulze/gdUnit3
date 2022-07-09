@@ -23,8 +23,13 @@ jobs:
       fail-fast: false
       matrix:
         godot-version: [3.4.1, 3.4.2, 3.4.4]
+
+    name: "CI Godot ${{ matrix.godot-version }}"
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    continue-on-error: false
+    container:
+      image: barichello/godot-ci:${{ matrix.godot-version }}
 
     steps:
       - name: "Checkout"
@@ -33,12 +38,6 @@ jobs:
         with:
           lfs: true
           submodules: 'recursive'
-
-      - name: "Install Godot Image"
-        if: ${{ !cancelled() }}
-        uses: ./.github/actions/install-godot
-        with:
-          godot-version: ${{ matrix.godot-version }}
 
       - name: "Unit Test"
         id: selft-test
