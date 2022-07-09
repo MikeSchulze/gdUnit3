@@ -30,15 +30,15 @@ jobs:
       - name: "Install Godot Image"
         if: ${{ !cancelled() }}
         uses: ./.github/actions/install-godot
-          with:
-            godot-version: ${{ matrix.godot-version }}
+        with:
+          godot-version: ${{ matrix.godot-version }}
 
       - name: "Checkout"
         if: ${{ !cancelled() }}
         uses: actions/checkout@v3
-          with:
-            lfs: true
-            submodules: 'recursive'
+        with:
+          lfs: true
+          submodules: 'recursive'
 
       - name: "Unit Test"
         id: selft-test
