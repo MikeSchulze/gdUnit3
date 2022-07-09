@@ -46,6 +46,53 @@ jobs:
         with:
           test-includes: "res://addons/gdUnit3/test/"
 
+      - name: "Unit Test Examples"
+        id: selft-test
+        if: ${{ !cancelled() }}
+        uses: ./.github/actions/unit-test
+        with:
+          test-includes: "res://gdUnit3-examples"
+
+      - name: "Publish Unit Test Reports"
+        if: ${{ !cancelled() }}
+        uses: ./.github/actions/publish-test-report
+        with:
+          report-name: ${{ matrix.godot-version }}
+
+      - name: "Upload Unit Test Reports"
+        if: ${{ !cancelled() }}
+        uses: ./.github/actions/upload-test-report
+        with:
+          report-name: ${{ matrix.godot-version }}
+
+ mono-uint-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        godot-version: [mono-3.3.3, mono-3.3.4, mono-3.4.1, mono-3.4.2, mono-3.4.4]
+
+    name: "CI Godot ${{ matrix.godot-version }}"
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    continue-on-error: false
+    container:
+      image: barichello/godot-ci:${{ matrix.godot-version }}
+
+    steps:
+      - name: "Checkout"
+        if: ${{ !cancelled() }}
+        uses: actions/checkout@v3
+        with:
+          lfs: true
+          submodules: 'recursive'
+
+      - name: "Unit Test"
+        id: selft-test
+        if: ${{ !cancelled() }}
+        uses: ./.github/actions/unit-test
+        with:
+          test-includes: "res://addons/gdUnit3/test/"
+
       - name: "Publish Unit Test Reports"
         if: ${{ !cancelled() }}
         uses: ./.github/actions/publish-test-report
