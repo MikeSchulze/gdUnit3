@@ -26,7 +26,7 @@ jobs:
 
     name: "CI Godot ${{ matrix.godot-version }}"
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     continue-on-error: false
     container:
       image: barichello/godot-ci:${{ matrix.godot-version }}
@@ -40,14 +40,15 @@ jobs:
           submodules: 'recursive'
 
       - name: "Unit Test"
-        id: selft-test
         if: ${{ !cancelled() }}
+        timeout-minutes: 10
         uses: ./.github/actions/unit-test
         with:
           test-includes: "res://addons/gdUnit3/test/"
 
       - name: "Unit Test Examples"
         if: ${{ !cancelled() }}
+        timeout-minutes: 5
         uses: ./.github/actions/unit-test
         with:
           test-includes: "res://gdUnit3-examples"
@@ -72,7 +73,7 @@ jobs:
 
     name: "CI Godot ${{ matrix.godot-version }}"
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     continue-on-error: false
     container:
       image: barichello/godot-ci:${{ matrix.godot-version }}
@@ -98,6 +99,7 @@ jobs:
 
       - name: "Unit Test"
         if: ${{ !cancelled() }}
+        timeout-minutes: 15
         uses: ./.github/actions/unit-test
         with:
           test-includes: "res://addons/gdUnit3/test/"
