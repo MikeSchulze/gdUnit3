@@ -74,6 +74,10 @@ jobs:
           report-name: ${{ matrix.godot-version }}
 
   compile-mono:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    continue-on-error: false
+
     steps:
       - name: "Checkout"
         if: ${{ !cancelled() }}
@@ -93,7 +97,6 @@ jobs:
           mkdir -p .mono/assemblies/Debug
           cp /usr/local/bin/GodotSharp/Api/Release/* .mono/assemblies/Debug
           dotnet build -verbosity:m
-
 
   mono-uint-test:
     needs: compile-mono
