@@ -46,7 +46,6 @@ jobs:
         if: ${{ !cancelled() }}
         timeout-minutes: 1
         run: |
-          ls -lsR .
           ${{ env.GODOT_BIN }} -e --path project.godot res://addons/gdUnit3/scan_project.tscn --no-window
 
       - name: "Unit Test"
@@ -75,35 +74,7 @@ jobs:
         with:
           report-name: ${{ matrix.godot-version }}
 
-  compile-mono:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    continue-on-error: false
-    container:
-      image: barichello/godot-ci:mono-3.4.4
-
-    steps:
-      - name: "Checkout"
-        if: ${{ !cancelled() }}
-        uses: actions/checkout@v3
-        with:
-          lfs: true
-          submodules: 'recursive'
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: 6.0.x
-
-      - name: Compile
-        run: |
-          dotnet restore gdUnit3.csproj
-          mkdir -p .mono/assemblies/Debug
-          cp /usr/local/bin/GodotSharp/Api/Release/* .mono/assemblies/Debug
-          dotnet build -verbosity:m
-
   mono-uint-test:
-    needs: compile-mono
     strategy:
       fail-fast: false
       matrix:
@@ -123,6 +94,18 @@ jobs:
         with:
           lfs: true
           submodules: 'recursive'
+
+      - name: "Setup .NET"
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 6.0.x
+
+      - name: "Compile"
+        run: |
+          dotnet restore gdUnit3.csproj
+          mkdir -p .mono/assemblies/Debug
+          cp /usr/local/bin/GodotSharp/Api/Release/* .mono/assemblies/Debug
+          dotnet build -verbosity:m
 
       - name: "Unit Test"
         if: ${{ !cancelled() }}
