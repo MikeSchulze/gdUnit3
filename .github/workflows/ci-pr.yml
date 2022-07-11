@@ -44,7 +44,9 @@ jobs:
 
       - name: "Update Project"
         if: ${{ !cancelled() }}
+        timeout-minutes: 1
         run: |
+          ls -lsR .
           ${{ env.GODOT_BIN }} -e --path project.godot res://addons/gdUnit3/scan_project.tscn --no-window
 
       - name: "Unit Test"
@@ -77,6 +79,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     continue-on-error: false
+    container:
+      image: barichello/godot-ci:mono-3.4.4
 
     steps:
       - name: "Checkout"
