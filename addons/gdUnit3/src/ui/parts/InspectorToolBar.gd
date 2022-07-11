@@ -5,7 +5,7 @@ signal run_pressed
 signal stop_pressed
 
 
-onready var debug_icon_image :StreamTexture = load("res://addons/gdUnit3/src/ui/assets/PlayDebug.svg")
+onready var debug_icon_image :Texture = load("res://addons/gdUnit3/src/ui/assets/PlayDebug.svg")
 onready var _version_label := $Tools/CenterContainer/version
 onready var _button_wiki := $Tools/help
 onready var _tool_button := $Tools/tool

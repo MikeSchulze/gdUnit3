@@ -15,3 +15,4 @@ runs:
         name: test_report_${{ inputs.report-name }}
         path: 'reports/**/results.xml'
         reporter: java-junit
+        fail-on-error: 'false'
