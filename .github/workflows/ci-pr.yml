@@ -13,6 +13,9 @@ on:
       - '**.md'
   workflow_dispatch:
 
+env:
+  GODOT_BIN: "/usr/local/bin/godot"
+
 concurrency:
   group: ci-pr-${{ github.event.number }}
   cancel-in-progress: true
@@ -38,6 +41,11 @@ jobs:
         with:
           lfs: true
           submodules: 'recursive'
+
+      - name: "Update Project"
+        if: ${{ !cancelled() }}
+        run: |
+          ${{ env.GODOT_BIN }} -e --path project.godot res://addons/gdUnit3/scan_project.tscn --no-window
 
       - name: "Unit Test"
         if: ${{ !cancelled() }}
@@ -65,7 +73,30 @@ jobs:
         with:
           report-name: ${{ matrix.godot-version }}
 
+  compile-mono:
+    steps:
+      - name: "Checkout"
+        if: ${{ !cancelled() }}
+        uses: actions/checkout@v3
+        with:
+          lfs: true
+          submodules: 'recursive'
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 6.0.x
+
+      - name: Compile
+        run: |
+          dotnet restore gdUnit3.csproj
+          mkdir -p .mono/assemblies/Debug
+          cp /usr/local/bin/GodotSharp/Api/Release/* .mono/assemblies/Debug
+          dotnet build -verbosity:m
+
+
   mono-uint-test:
+    needs: compile-mono
     strategy:
       fail-fast: false
       matrix:
@@ -85,17 +116,6 @@ jobs:
         with:
           lfs: true
           submodules: 'recursive'
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: 6.0.x
-
-      - name: Compile
-        run: |
-          dotnet restore gdUnit3.csproj
-          mkdir -p .mono/assemblies/Debug
-          cp /usr/local/bin/GodotSharp
 
       - name: "Unit Test"
         if: ${{ !cancelled() }}
