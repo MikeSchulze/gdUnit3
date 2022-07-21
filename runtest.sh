@@ -6,7 +6,9 @@ if [ -z "$GODOT_BIN" ]; then
     exit 1
 fi
 
-$GODOT_BIN --no-window -s -d ./addons/gdUnit3/bin/GdUnitCmdTool.gd $*
+# we not use no-window because of issue https://github.com/godotengine/godot/issues/55379
+#$GODOT_BIN --no-window -s -d ./addons/gdUnit3/bin/GdUnitCmdTool.gd $*
+$GODOT_BIN -s -d ./addons/gdUnit3/bin/GdUnitCmdTool.gd $*
 exit_code=$?
 $GODOT_BIN --no-window --quiet -s -d ./addons/gdUnit3/bin/GdUnitCopyLog.gd $* > /dev/null
 exit $exit_code
