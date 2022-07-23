@@ -46,7 +46,7 @@ jobs:
         if: ${{ !cancelled() }}
         timeout-minutes: 1
         run: |
-          ${{ env.GODOT_BIN }} -e --path . res://addons/gdUnit3/scan_project.tscn --no-window --check-only
+          ${{ env.GODOT_BIN }} -e --path . res://addons/gdUnit3/scan_project.tscn --no-window -d --quiet
 
       - name: "Unit Test"
         if: ${{ !cancelled() }}
