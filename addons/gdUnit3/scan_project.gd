@@ -1,8 +1,13 @@
 extends Control
 
-func _ready():
+
+var _counter = 0
+
+func _process(delta):
 	print("Scan for project changes ...")
-	yield(get_tree().create_timer(30), "timeout")
-	print("Scan for project changes end")
-	get_tree().quit(1)
-	prints(" Done")
+	yield(get_tree().create_timer(1), "timeout")
+	_counter += 1
+	if _counter == 120:
+		print("Scan for project changes done")
+		get_tree().quit(1)
+		
