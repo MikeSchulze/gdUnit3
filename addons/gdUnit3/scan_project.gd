@@ -1,13 +1,17 @@
+tool
 extends Control
 
 
 var _counter = 0
+var WAIT_TIME_IN_MS = 10.000
+
+func _ready():
+	print("Scan for project changes ...")
 
 func _process(delta):
-	print("Scan for project changes ...")
-	yield(get_tree().create_timer(1), "timeout")
-	_counter += 1
-	if _counter == 120:
+	_counter += delta
+	if _counter >= WAIT_TIME_IN_MS:
 		print("Scan for project changes done")
 		get_tree().quit(1)
+	prints("scanning", _counter)
 		
