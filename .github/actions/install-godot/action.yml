@@ -14,6 +14,6 @@ runs:
       shell: bash
       run:
         mkdir /usr/local/bin/godot
-        wget https://downloads.tuxfamily.org/godotengine/${inputs.godot-version}/Godot_v${{ inputs.godot-version }}-stable_osx.universal.zip -P /usr/local/bin/godot
+        wget https://downloads.tuxfamily.org/godotengine/${{ inputs.godot-version }}/Godot_v${{ inputs.godot-version }}-stable_osx.universal.zip -P /usr/local/bin/godot
         unzip /usr/local/bin/godot/Godot_v${{ inputs.godot-version }}-stable_osx.universal.zip
         rm /usr/local/bin/godot/Godot_v${{ inputs.godot-version }}-stable_osx.universal.zip
