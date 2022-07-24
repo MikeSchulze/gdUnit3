@@ -23,9 +23,6 @@ var _download_zip_url :String
 var _update_in_progress :bool = false
 
 func _ready():
-	if not Engine.has_meta("enable_update"):
-		prints("disable_update")
-		return
 	_update_button.disabled = true
 	_md_reader.set_http_client(_update_client)
 	request_releases()
