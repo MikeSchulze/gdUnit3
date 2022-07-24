@@ -25,5 +25,6 @@ func _idle(delta):
 	if _counter >= WAIT_TIME_IN_MS:
 		prints("Scan for project changes done")
 		_state = QUIT
-		yield(root.get_tree(), "idle_frame")
-		finish()
+		#Engine.get_main_loop().finish()
+		#finish()
+		quit(0)
