@@ -22,7 +22,7 @@ concurrency:
 
 jobs:
 
-  install_godot:
+  gd-uint-test:
     strategy:
       fail-fast: false
       matrix:
@@ -41,30 +41,17 @@ jobs:
       - name: checkout
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+          lfs: true
+          submodules: 'recursive'
 
       - name: "Install Godot image ${{ matrix.godot-version }}"
+        timeout-minutes: 3
         uses: ./.github/actions/install-godot
         with:
           godot-version: ${{ matrix.godot-version }}
 
-
-  gd-uint-test:
-    needs: install_godot
-    name: "CI Godot ${{ needs.install_godot.outputs.godot-version }}"
-    runs-on: ${{ needs.install_godot.outputs.system }}
-    timeout-minutes: 10
-    continue-on-error: false
-
-    steps:
-      - name: "Checkout"
-        if: ${{ !cancelled() }}
-        uses: actions/checkout@v3
-        with:
-          lfs: true
-          submodules: 'recursive'
-
       - name: "Update Project"
+        runs-on: ${{ matrix.system }}
         if: ${{ !cancelled() }}
         timeout-minutes: 3
         run: |
@@ -88,13 +75,13 @@ jobs:
         if: ${{ !cancelled() }}
         uses: ./.github/actions/publish-test-report
         with:
-          report-name: ${{ needs.install_godot.outputs.godot-version }}
+          report-name: ${{ matrix.godot-version }}
 
       - name: "Upload Unit Test Reports"
         if: ${{ !cancelled() }}
         uses: ./.github/actions/upload-test-report
         with:
-          report-name: ${{ needs.install_godot.outputs.godot-version }}
+          report-name: ${{ matrix.godot-version }}
 
   mono-uint-test:
     if: ${{ false }}  # disable for now
