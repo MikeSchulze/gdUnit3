@@ -35,6 +35,7 @@ jobs:
     continue-on-error: false
     outputs:
       godot-version: ${{ matrix.godot-version }}
+      godot-path: ${{ steps.install-godot.outputs.path }}
       system: ${{ matrix.system }}
 
     steps:
@@ -45,6 +46,7 @@ jobs:
           submodules: 'recursive'
 
       - name: "Install Godot image ${{ matrix.godot-version }}"
+        id: install-godot
         timeout-minutes: 3
         uses: ./.github/actions/install-godot
         with:
@@ -54,7 +56,7 @@ jobs:
         if: ${{ !cancelled() }}
         timeout-minutes: 3
         run: |
-          ${{ env.GODOT_BIN }} -e --path . -s res://addons/gdUnit3/scan_project.gd --no-window -v
+          ${{ outputs.godot-path }} -e --path . -s res://addons/gdUnit3/scan_project.gd --no-window -v
 
       - name: "Unit Test"
         if: ${{ !cancelled() }}

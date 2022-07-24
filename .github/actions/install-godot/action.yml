@@ -5,11 +5,16 @@ inputs:
   godot-version:
     description: "The Godot Engine version to run"
     required: true
+outputs:
+  path:
+    description: "The Godot executable path"
+    value: ${{ steps.install.path }}
 
 runs:
   using: composite
   steps:
     - name: Install Godot ${{ inputs.godot-version }}
+      id : install
       continue-on-error: false
       shell: bash
       run: |
@@ -17,3 +22,5 @@ runs:
         wget https://downloads.tuxfamily.org/godotengine/${{ inputs.godot-version }}/Godot_v${{ inputs.godot-version }}-stable_osx.universal.zip -P /usr/local/bin/godot
         unzip /usr/local/bin/godot/Godot_v${{ inputs.godot-version }}-stable_osx.universal.zip
         rm /usr/local/bin/godot/Godot_v${{ inputs.godot-version }}-stable_osx.universal.zip
+        chmod 770 /usr/local/bin/godot/Godot.app/Contents/MacOS/Godot
+        echo "::set-output name=path::'/usr/local/bin/godot/Godot.app/Contents/MacOS/Godot'"
