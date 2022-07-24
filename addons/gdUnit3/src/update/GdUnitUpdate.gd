@@ -48,7 +48,6 @@ func _h4_message(message :String, color :Color) -> String:
 
 func _process(_delta):
 	if _show_update:
-		prints("_process update")
 		var spinner := "res://addons/gdUnit3/src/ui/assets/spinner.tres"
 		_content.bbcode_text = _h4_message("\n\n\nRequest release infos ... [img=24x24]%s[/img]" % spinner, Color.snow)
 		popup_centered_ratio(.5)
