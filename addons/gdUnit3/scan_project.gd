@@ -27,5 +27,6 @@ func _idle(delta):
 		_state = QUIT
 		prints("Scan for project changes done")
 		yield(root.get_tree(), "idle_frame")
-		prints("kill", OS.kill(OS.get_process_id()))
+		finish()
+		#prints("kill", OS.kill(OS.get_process_id()))
 		yield(root.get_tree(), "idle_frame")
