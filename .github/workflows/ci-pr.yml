@@ -30,7 +30,7 @@ jobs:
         godot-version: [3.4.1, 3.4.2, 3.4.4]
 
     name: "CI Godot ${{ matrix.godot-version }}"
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.system }}
     timeout-minutes: 5
     continue-on-error: false
     outputs:
@@ -51,7 +51,6 @@ jobs:
           godot-version: ${{ matrix.godot-version }}
 
       - name: "Update Project"
-        runs-on: ${{ matrix.system }}
         if: ${{ !cancelled() }}
         timeout-minutes: 3
         run: |
