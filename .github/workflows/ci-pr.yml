@@ -30,7 +30,7 @@ jobs:
 
     name: "CI Godot ${{ matrix.godot-version }}"
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 15
     continue-on-error: false
     container:
       image: barichello/godot-ci:${{ matrix.godot-version }}
