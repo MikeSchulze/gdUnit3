@@ -35,18 +35,9 @@ func test_get_option():
 	# for not existsing command
 	assert_object(_cmd_options.get_option("-z")).is_null()
 
-func test_is_help():
-	assert_bool(_cmd_options.is_help(option_a)).is_false()
-	assert_bool(_cmd_options.is_help(option_b)).is_false()
-	assert_bool(_cmd_options.is_help(option_f)).is_false()
-	assert_bool(_cmd_options.is_help(option_x)).is_false()
-	assert_bool(_cmd_options.is_help(_cmd_options.OPTION_HELP)).is_true()
-	assert_bool(_cmd_options.is_help(_cmd_options.OPTION_ADVANCES_HELP)).is_true()
 
 func test_default_options():
 	assert_array(_cmd_options.default_options()).contains_exactly([
-		_cmd_options.OPTION_HELP,
-		_cmd_options.OPTION_ADVANCES_HELP,
 		option_a, 
 		option_f, 
 		option_b])
@@ -56,8 +47,6 @@ func test_advanced_options():
 
 func test_options():
 	assert_array(_cmd_options.options()).contains_exactly([
-		_cmd_options.OPTION_HELP,
-		_cmd_options.OPTION_ADVANCES_HELP,
 		option_a, 
 		option_f, 
 		option_b,
