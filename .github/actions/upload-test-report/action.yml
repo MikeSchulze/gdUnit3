@@ -13,4 +13,4 @@ runs:
       uses: actions/upload-artifact@v2
       with:
         name: test_report_${{ inputs.report-name }}
-        path: reports/**     
+        path: reports/**
