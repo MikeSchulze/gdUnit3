@@ -12,7 +12,7 @@ runs:
     - name: Install Godot ${{ inputs.godot-version }}
       continue-on-error: false
       shell: bash
-      run:
+      run: |
         mkdir /usr/local/bin/godot
         wget https://downloads.tuxfamily.org/godotengine/${{ inputs.godot-version }}/Godot_v${{ inputs.godot-version }}-stable_osx.universal.zip -P /usr/local/bin/godot
         unzip /usr/local/bin/godot/Godot_v${{ inputs.godot-version }}-stable_osx.universal.zip
