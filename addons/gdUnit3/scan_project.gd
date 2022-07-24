@@ -11,8 +11,9 @@ func _ready():
 
 func _process(delta):
 	_counter += delta
+	prints("scanning", _counter, prints(OS.get_time()))
+	yield(get_tree(), "idle_frame")
 	if _counter >= WAIT_TIME_IN_MS:
 		prints("Scan for project changes done")
-		get_tree().quit(1)
-	prints("scanning", _counter, prints(OS.get_time()))
-		
+		yield(get_tree(), "idle_frame")
+		get_tree().quit(0)
