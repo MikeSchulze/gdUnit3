@@ -38,6 +38,11 @@ jobs:
       system: ${{ matrix.system }}
 
     steps:
+      - name: checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
       - name: "Install Godot image ${{ matrix.godot-version }}"
         uses: ./.github/actions/install-godot
         with:
