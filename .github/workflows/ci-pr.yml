@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
 
 env:
-  GODOT_BIN: "/usr/local/bin/godot/Godot.app/Contents/MacOS/Godot"
+  GODOT_BIN: "/usr/local/bin/godot"
 
 concurrency:
   group: ci-pr-${{ github.event.number }}
@@ -26,16 +26,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        system: [windows-latest]
         godot-version: [3.4.1, 3.4.2, 3.4.4]
 
     name: "CI Godot ${{ matrix.godot-version }}"
-    runs-on: ${{ matrix.system }}
+    runs-on: ubuntu-latest
     timeout-minutes: 5
     continue-on-error: false
+    container:
+      image: barichello/godot-ci:${{ matrix.godot-version }}
     outputs:
       godot-version: ${{ matrix.godot-version }}
-      system: ${{ matrix.system }}
 
     steps:
       - name: checkout
@@ -44,16 +44,9 @@ jobs:
           lfs: true
           submodules: 'recursive'
 
-      - name: "Install Godot image ${{ matrix.godot-version }}"
-        id: install-godot
-        timeout-minutes: 3
-        uses: ./.github/actions/install-godot
-        with:
-          godot-version: ${{ matrix.godot-version }}
-
       - name: "Update Project"
         if: ${{ !cancelled() }}
-        timeout-minutes: 3
+        timeout-minutes: 1
         run: |
           ${{ env.GODOT_BIN }} -e --path . -s res://addons/gdUnit3/scan_project.gd --no-window -v
 
@@ -67,7 +60,7 @@ jobs:
 
       - name: "Unit Test Examples"
         if: ${{ !cancelled() }}
-        timeout-minutes: 5
+        timeout-minutes: 1
         uses: ./.github/actions/unit-test
         with:
           godot-bin: ${{ env.GODOT_BIN }}
