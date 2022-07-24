@@ -52,13 +52,13 @@ jobs:
           ${{ env.GODOT_BIN }} -e --path . -s res://addons/gdUnit3/scan_project.gd --no-window
 
       - name: "Setup .NET"
-        if: startsWith( ${{ matrix.godot-version }}, "mono" )
+        if: ${{ startsWith( matrix.godot-version, 'mono') }}
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 6.0.x
 
       - name: "Compile"
-        if: startsWith( ${{ matrix.godot-version }}, "mono" )
+        if: ${{ startsWith( matrix.godot-version, 'mono') }}
         run: |
           dotnet restore gdUnit3.csproj
           mkdir -p .mono/assemblies/Debug
