@@ -28,7 +28,7 @@ jobs:
         godot-version: [3.4.1, 3.4.2, 3.4.4]
 
     name: "CI Godot ${{ matrix.godot-version }}"
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     timeout-minutes: 20
     continue-on-error: false
     container:
