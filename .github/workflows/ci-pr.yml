@@ -92,6 +92,7 @@ jobs:
           report-name: ${{ needs.install_godot.outputs.godot-version }}
 
   mono-uint-test:
+    if: ${{ false }}  # disable for now
     strategy:
       fail-fast: false
       matrix:
@@ -106,7 +107,6 @@ jobs:
 
     steps:
       - name: "Checkout"
-        if: ${{ false }}  # disable for now
         if: ${{ !cancelled() }}
         uses: actions/checkout@v3
         with:
