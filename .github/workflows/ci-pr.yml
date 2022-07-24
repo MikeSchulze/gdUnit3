@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
 
 env:
-  GODOT_BIN: "/usr/local/bin/godot"
+  GODOT_BIN: "/usr/local/bin/godot/Godot.app/Contents/MacOS/Godot"
 
 concurrency:
   group: ci-pr-${{ github.event.number }}
