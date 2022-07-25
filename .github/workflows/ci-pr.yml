@@ -1,11 +1,6 @@
 name: ci-pr
 
 on:
-  pull_request_target:
-    paths-ignore:
-      - '**.jpg'
-      - '**.png'
-      - '**.md'
   pull_request:
     paths-ignore:
       - '**.jpg'
