@@ -34,17 +34,21 @@ func _enter_tree():
 	prints("Loading GdUnit3 Plugin success")
 
 func _exit_tree():
-	remove_control_from_docks(_gd_inspector)
-	remove_control_from_bottom_panel(_gd_console)
-	remove_child(_server_node)
+	if is_instance_valid(_gd_inspector):
+		remove_control_from_docks(_gd_inspector)
+		_gd_inspector.free()
+	if is_instance_valid(_gd_console):
+		remove_control_from_bottom_panel(_gd_console)
+		_gd_console.free()
+	if is_instance_valid(_server_node):
+		remove_child(_server_node)
+		_server_node.free()
 	
-	_gd_inspector.free()
-	_gd_console.free()
-	_server_node.free()
 	# Delete and release the update tool only when it is not in use, otherwise it will interrupt the execution of the update
 	if is_instance_valid(_update_tool) and not _update_tool.is_update_in_progress():
 		remove_control_from_container(EditorPlugin.CONTAINER_TOOLBAR, _update_tool)
 		_update_tool.free()
 	GdUnitSingleton.remove_singleton(SignalHandler.SINGLETON_NAME)
-	Engine.remove_meta("GdUnitEditorPlugin")
+	if Engine.has_meta("GdUnitEditorPlugin"):
+		Engine.remove_meta("GdUnitEditorPlugin")
 	prints("Unload GdUnit3 Plugin success")
