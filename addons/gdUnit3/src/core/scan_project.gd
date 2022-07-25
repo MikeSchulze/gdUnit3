@@ -14,7 +14,6 @@ var _state = INIT
 
 func _init():
 	set_auto_accept_quit(true)
-	fix_cache_bug()
 	print("Scan for project changes ...")
 	_state = SCAN
 
@@ -26,6 +25,7 @@ func _idle(delta):
 	if _counter >= WAIT_TIME_IN_MS:
 		prints("Scan for project changes done", root.get_tree())
 		_state = QUIT
+		fix_cache_bug()
 		exit()
 
 # see https://github.com/godotengine/godot/issues/62820 for more details

@@ -48,7 +48,7 @@ jobs:
         timeout-minutes: 1
         continue-on-error: true # we still ignore the timeout, the script is not quit and we run into a timeout
         run: |
-          ${{ env.GODOT_BIN }} -e --path . -s res://addons/gdUnit3/scan_project.gd --no-window
+          ${{ env.GODOT_BIN }} -e --path . -s res://addons/gdUnit3/src/core/scan_project.gd --no-window
 
       - name: "Setup .NET"
         if: ${{ startsWith( env.GODOT_VERSION, 'mono') }} # we only setup .Net for mono versions
