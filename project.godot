@@ -1424,10 +1424,6 @@ default_bus_layout=""
 gdscript/warnings/unused_signal=false
 gdscript/warnings/return_value_discarded=false
 
-[editor_plugins]
-
-enabled=PoolStringArray( "res://addons/gdUnit3/plugin.cfg" )
-
 [gdunit3]
 
 report/assert/verbose_errors=false

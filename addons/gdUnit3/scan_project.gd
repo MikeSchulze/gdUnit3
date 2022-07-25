@@ -9,43 +9,54 @@ enum {
 }
 
 var _counter = 0
-var WAIT_TIME_IN_MS = 5.000
+var WAIT_TIME_IN_MS = 1.000
 var _state = INIT
 
 func _init():
-	disable_gdUnit()
+	set_auto_accept_quit(true)
+	fix_cache_bug()
 	print("Scan for project changes ...")
 	_state = SCAN
 
 func _idle(delta):
+	yield(root.get_tree(), "idle_frame")
 	if _state != SCAN:
 		return
 	_counter += delta
-	#prints("scanning", _counter, OS.get_time(), OS.get_process_id())
-	yield(root.get_tree(), "idle_frame")
 	if _counter >= WAIT_TIME_IN_MS:
-		prints("Scan for project changes done")
+		prints("Scan for project changes done", root.get_tree())
 		_state = QUIT
-		#finish()
-		rescan()
-		#Engine.get_main_loop().finish()
-		OS.kill(OS.get_process_id())
+		exit()
 
-
-func rescan(update_scripts :bool = false) -> void:
+# see https://github.com/godotengine/godot/issues/62820 for more details
+func fix_cache_bug():
+	for node in root.get_children():
+		if node.name.begins_with("EditorNode"):
+			for child in node.get_children():
+				if child is EditorResourcePreview:
+					var prewview := child as EditorResourcePreview
+					prewview.check_for_invalidation("res://")
 	yield(root.get_tree(), "idle_frame")
-	var plugin := EditorPlugin.new()
-	var fs := plugin.get_editor_interface().get_resource_filesystem()
-	fs.scan_sources()
-	while fs.is_scanning():
-		yield(root.get_tree().create_timer(1), "timeout")
-	if update_scripts:
-		plugin.get_editor_interface().get_resource_filesystem().update_script_classes()
-	plugin.free()
 
+func exit():
+	prints("Exit")
+	key_pressed(KEY_Q, true)
+	key_pressed(KEY_ENTER)
 
-static func disable_gdUnit() -> void:
-	prints("disable_gdUnit")
-	var plugin := EditorPlugin.new()
-	plugin.get_editor_interface().set_plugin_enabled("gdUnit3", false)
-	plugin.free()
+func key_pressed(key_code :int, command := false):
+	key_press(key_code, command)
+	key_release(key_code, command)
+
+func key_press(key_code :int, command := false):
+	var action = InputEventKey.new()
+	action.pressed = true
+	action.scancode = key_code
+	action.command = command
+	input_event(action)
+
+func key_release(key_code :int,command := false):
+	var action = InputEventKey.new()
+	action.pressed = false
+	action.scancode = key_code
+	action.command = command
+	input_event(action)

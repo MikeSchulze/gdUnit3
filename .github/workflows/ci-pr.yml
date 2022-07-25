@@ -6,11 +6,6 @@ on:
       - '**.jpg'
       - '**.png'
       - '**.md'
-  pull_request_target:
-    paths-ignore:
-      - '**.jpg'
-      - '**.png'
-      - '**.md'
   workflow_dispatch:
 
 env:
@@ -28,7 +23,7 @@ jobs:
       matrix:
         godot-version: [3.4.1, 3.4.2, 3.4.4, mono-3.4.1, mono-3.4.2, mono-3.4.4]
 
-    name: "CI Godot ${{ matrix.godot-version }}"
+    name: "CI on Godot v${{ matrix.godot-version }}"
     runs-on: ubuntu-latest
     timeout-minutes: 15
     continue-on-error: false
