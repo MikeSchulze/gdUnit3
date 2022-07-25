@@ -23,7 +23,7 @@ func test_is_equal():
 	assert_int(23).is_equal(23)
 	# this assertion fails because 23 are not equal to 42
 	assert_int(23, GdUnitAssert.EXPECT_FAIL) \
-		.is_equal(42)\
+		.is_equal(43)\
 		.has_failure_message("Expecting:\n '42'\n but was\n '23'")
 	assert_int(null, GdUnitAssert.EXPECT_FAIL) \
 		.is_equal(42)\
