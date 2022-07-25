@@ -38,10 +38,6 @@ jobs:
       image: barichello/godot-ci:${{ matrix.godot-build }}${{ matrix.godot-version }}
 
     steps:
-      - name: "Set Env"
-        env:
-          GODOT_VERSION: "${{ matrix.godot-build }}${{ matrix.godot-version }}"
-
       - name: "Checkout Repository"
         uses: actions/checkout@v3
         with:
@@ -52,6 +48,8 @@ jobs:
         if: ${{ !cancelled() }}
         timeout-minutes: 1
         continue-on-error: true # we still ignore the timeout, the script is not quit and we run into a timeout
+        env:
+          GODOT_VERSION: "${{ matrix.godot-build }}${{ matrix.godot-version }}"
         run: |
           ${{ env.GODOT_BIN }} -e --path . -s res://addons/gdUnit3/src/core/scan_project.gd --no-window
 
