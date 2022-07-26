@@ -48,7 +48,7 @@ func test_is_null():
 	# should fail because the current is not null
 	assert_that(Color.red, GdUnitAssert.EXPECT_FAIL) \
 		.is_null()\
-		.starts_with_failure_message("Expecting: 'Null' but was '1,0,0,1'")
+		.starts_with_failure_message("Expecting: 'Null' but was '1,0,0,10'")
 
 func test_is_not_null():
 	assert_that(Color.red).is_not_null()
