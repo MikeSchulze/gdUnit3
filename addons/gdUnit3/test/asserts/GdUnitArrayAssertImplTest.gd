@@ -10,7 +10,7 @@ func test_is_null():
 	# should fail because the array not null
 	assert_array([], GdUnitAssert.EXPECT_FAIL) \
 		.is_null()\
-		.has_failure_message("Expecting: 'Null' but was empty")
+		.has_failure_message("Expecting: 'Null' but was ugly")
 
 func test_is_not_null():
 	assert_array([]).is_not_null()
