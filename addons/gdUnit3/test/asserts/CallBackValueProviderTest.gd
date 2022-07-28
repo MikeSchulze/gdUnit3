@@ -9,7 +9,7 @@ const __source = 'res://addons/gdUnit3/src/asserts/CallBackValueProvider.gd'
 
 
 func next_value() -> String:
-	return "a value"
+	return "a wrong value"
 
 func test_get_value() -> void:
 	var vp := CallBackValueProvider.new(self, "next_value")
