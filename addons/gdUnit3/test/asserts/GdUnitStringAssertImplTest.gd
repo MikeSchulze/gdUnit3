@@ -28,6 +28,9 @@ func test_is_equal():
 		.is_equal("This is a test Message") \
 		.has_failure_message("Expecting:\n 'This is a test Message'\n but was\n 'Null'")
 
+func test_is_equal_pipe_character() -> void:
+	assert_str("AAA|BBB|CCC", GdUnitAssert.EXPECT_FAIL).is_equal("AAA|BBB.CCC")
+
 func test_is_equal_ignoring_case():
 	assert_str("This is a test message").is_equal_ignoring_case("This is a test Message")
 	assert_str("This is a test message", GdUnitAssert.EXPECT_FAIL) \

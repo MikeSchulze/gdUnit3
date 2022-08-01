@@ -6,9 +6,6 @@ signal client_connected(client_id)
 signal client_disconnected(client_id)
 signal rpc_data(rpc_data)
 
-const DEFAULT_SERVER_START_RETRY_TIMES = 5
-const GD_TEST_SERVER_PORT :int = 31002
-
 var _server :TCP_Server
 
 class TcpConnection extends Node:
@@ -47,7 +44,7 @@ class TcpConnection extends Node:
 				return
 			else:
 				var data_package :PoolByteArray = data[1]
-				var json_array := data_package.get_string_from_ascii().split("|")
+				var json_array := data_package.get_string_from_ascii().split(GdUnitServerConstants.JSON_RESPONSE_DELIMITER)
 				for json in json_array:
 					# ignore empty jsons
 					if json.empty():
@@ -67,9 +64,9 @@ func _notification(what):
 		stop()
 
 func start() -> Result:
-	var server_port := GD_TEST_SERVER_PORT
+	var server_port := GdUnitServerConstants.GD_TEST_SERVER_PORT
 	var err := OK
-	for retry in DEFAULT_SERVER_START_RETRY_TIMES:
+	for retry in GdUnitServerConstants.DEFAULT_SERVER_START_RETRY_TIMES:
 		err = _server.listen(server_port, "127.0.0.1")
 		if err != OK:
 			prints("GdUnit3: Can't establish server on port %d, error code: %s" % [server_port, err])

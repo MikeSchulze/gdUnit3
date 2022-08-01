@@ -97,7 +97,7 @@ func process_rpc() -> void:
 
 func rpc_send(rpc :RPC) -> void:
 	if _stream != null:
-		var data := "|%s|" % rpc.serialize()
+		var data := GdUnitServerConstants.JSON_RESPONSE_DELIMITER + rpc.serialize() + GdUnitServerConstants.JSON_RESPONSE_DELIMITER
 		_stream.put_data(data.to_ascii())
 
 func rpc_receive() -> RPC:
