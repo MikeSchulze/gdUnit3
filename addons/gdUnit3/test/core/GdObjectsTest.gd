@@ -158,38 +158,6 @@ func test_is_array_type():
 	assert_bool(GdObjects.is_array_type(PoolVector3Array())).is_true()
 	assert_bool(GdObjects.is_array_type(false)).is_false()
 
-func test_string_diff_empty():
-	var diffs := GdObjects.string_diff("", "")
-	assert_array(diffs).has_size(2)
-	assert_array(diffs[0].to_ascii()).is_empty()
-	assert_array(diffs[1].to_ascii()).is_empty()
-
-func test_string_diff_equals():
-	var diffs := GdObjects.string_diff("Abc", "Abc")
-	var expected_l_diff = PoolByteArray([ord('A'), ord('b'), ord('c')])
-	var expected_r_diff = PoolByteArray([ord('A'), ord('b'), ord('c')])
-	
-	assert_array(diffs).has_size(2)
-	assert_array(diffs[0].to_ascii()).contains_exactly(expected_l_diff)
-	assert_array(diffs[1].to_ascii()).contains_exactly(expected_r_diff)
-
-
-func test_string_diff():
-	# tests the result of string diff function like assert_str("Abc").is_equal("abc")
-	var diffs := GdObjects.string_diff("Abc", "abc")
-	
-	var expected_l_diff = PoolByteArray([GdObjects.DIV_SUB, ord('A'), GdObjects.DIV_ADD, ord('a'), ord('b'), ord('c')])
-	var expected_r_diff = PoolByteArray([GdObjects.DIV_ADD, ord('A'), GdObjects.DIV_SUB, ord('a'), ord('b'), ord('c')])
-	
-	assert_array(diffs).has_size(2)
-	assert_array(diffs[0].to_ascii()).contains_exactly(expected_l_diff)
-	assert_array(diffs[1].to_ascii()).contains_exactly(expected_r_diff)
-
-func test_string_diff_large_value(fuzzer := Fuzzers.rand_str(1000, 4000), fuzzer_iterations = 10):
-	# test diff with large values not crashes the API GD-100
-	var value :String = fuzzer.next_value()
-	GdObjects.string_diff(value, value)
-
 class TestClassForIsType:
 	var x
 

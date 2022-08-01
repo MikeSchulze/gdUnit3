@@ -64,10 +64,11 @@ func is_equal(expected) -> GdUnitArrayAssert:
 	if current_ == null and expected_ != null:
 		return report_error(GdAssertMessages.error_equal(null, expected_))
 	if not GdObjects.equals(current_, expected_):
-		var c := GdObjects.array_to_string(current_, ", ")
-		var e := GdObjects.array_to_string(expected_, ", ")
-		var diff := GdObjects.string_diff(c, e)
-		return report_error(GdAssertMessages.error_equal(diff[1], diff[0]))
+		var diff := _array_equals_div(current_, expected_)
+		var expected_as_list := GdObjects.array_to_string(diff[0], ", ", 32)
+		var current_as_list := GdObjects.array_to_string(diff[1], ", ", 32)
+		var index_report = diff[2]
+		return report_error(GdAssertMessages.error_equal(expected_as_list, current_as_list, index_report))
 	return report_success()
 
 # Verifies that the current Array is equal to the given one, ignoring case considerations.
@@ -77,10 +78,11 @@ func is_equal_ignoring_case(expected) -> GdUnitArrayAssert:
 	if current_ == null and expected_ != null:
 		return report_error(GdAssertMessages.error_equal(null, expected_))
 	if not GdObjects.equals(current_, expected_, true):
-		var c := GdObjects.array_to_string(current_, ", ")
-		var e := GdObjects.array_to_string(expected_, ", ")
-		var diff := GdObjects.string_diff(c, e)
-		return report_error(GdAssertMessages.error_equal(diff[1], diff[0]))
+		var diff := _array_equals_div(current_, expected_, true)
+		var expected_as_list := GdObjects.array_to_string(diff[0], ", ", 32)
+		var current_as_list := GdObjects.array_to_string(diff[1], ", ", 32)
+		var index_report = diff[2]
+		return report_error(GdAssertMessages.error_equal(expected_as_list, current_as_list, index_report))
 	return report_success()
 
 func is_not_equal(expected) -> GdUnitArrayAssert:
@@ -131,6 +133,29 @@ func array_div(left :Array, right :Array, same_order := false) -> Array:
 				GdObjects.array_erase_value(not_found, c)
 				break
 	return [not_expect, not_found]
+
+func _array_equals_div(current :Array, expected :Array, case_sensitive :bool = false) -> Array:
+	var current_ := current.duplicate(true)
+	var expected_ := expected.duplicate(true)
+	var index_report_ := Array()
+	for index in current.size():
+		var c = current[index]
+		if index < expected_.size():
+			var e = expected_[index]
+			if not GdObjects.equals(c, e, case_sensitive):
+				var lenght := GdUnitTools.max_length(c, e)
+				current_[index] = GdDiffTool.as_invalid(GdUnitTools.expand_value(c, lenght))
+				expected_[index] = GdUnitTools.expand_value(e, lenght)
+				index_report_.push_back({"index" : index, "current" :c, "expected": e})
+		else:
+			current_[index] = GdDiffTool.as_invalid(GdUnitTools.expand_value(c, str(c).length()))
+			index_report_.push_back({"index" : index, "current" :c, "expected": "<N/A>"})
+	
+	for index in range(current.size(), expected.size()):
+		var value = expected_[index]
+		expected_[index] = GdDiffTool.as_invalid(GdUnitTools.expand_value(value, str(value).length()))
+		index_report_.push_back({"index" : index, "current" : "<N/A>", "expected": value})
+	return [current_, expected_, index_report_]
 
 # Verifies that the current Array contains the given values, in any order.
 func contains(expected) -> GdUnitArrayAssert:

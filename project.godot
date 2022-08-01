@@ -255,6 +255,16 @@ _global_script_classes=[ {
 "path": "res://addons/gdUnit3/src/core/parse/GdClassDescriptor.gd"
 }, {
 "base": "Reference",
+"class": "GdDiffTool",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/src/core/GdDiffTool.gd"
+}, {
+"base": "GdUnitTestSuite",
+"class": "GdDiffToolTest",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/test/core/GdDiffToolTest.gd"
+}, {
+"base": "Reference",
 "class": "GdFunctionArgument",
 "language": "GDScript",
 "path": "res://addons/gdUnit3/src/core/parse/GdFunctionArgument.gd"
@@ -1229,6 +1239,8 @@ _global_script_class_icons={
 "GdAssertMessages": "",
 "GdAssertReports": "",
 "GdClassDescriptor": "",
+"GdDiffTool": "",
+"GdDiffToolTest": "",
 "GdFunctionArgument": "",
 "GdFunctionDescriptor": "",
 "GdFunctionDescriptorTest": "",
