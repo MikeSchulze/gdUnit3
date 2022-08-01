@@ -65,16 +65,18 @@ size_flags_vertical = 11
 custom_styles/panel = SubResource( 3 )
 
 [node name="report_template" type="RichTextLabel" parent="report"]
-visible = false
 use_parent_material = true
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_right = -200.0
+margin_top = 2.0
+margin_right = 100.0
+margin_bottom = 92.0
+rect_min_size = Vector2( 48, 19 )
+focus_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 11
 custom_constants/line_separation = 2
 bbcode_enabled = true
 fit_content_height = true
+selection_enabled = true
 script = ExtResource( 6 )
 __meta__ = {
 "_edit_use_anchors_": false

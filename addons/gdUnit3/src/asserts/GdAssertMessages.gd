@@ -51,6 +51,18 @@ static func _expected(value, delimiter ="\n") -> String:
 				return "[color=%s]%s[/color]" % [VALUE_COLOR, GdObjects.array_to_string(value, delimiter)]
 			return "'[color=%s]%s[/color]'" % [VALUE_COLOR, value]
 
+static func _index_report_as_table(index_reports :Array) -> String:
+	var table := "[table=3]$cells[/table]"
+	var header := "[cell][right][b]$text[/b][/right]\t[/cell]"
+	var cell := "[cell][right]$text[/right]\t[/cell]"
+	var cells := header.replace("$text", "Index") + header.replace("$text", "Current") + header.replace("$text", "Expected")
+	for report in index_reports:
+		var index = report["index"]
+		var current = report["current"]
+		var expected = report["expected"]
+		cells += cell.replace("$text", index) + cell.replace("$text", current) + cell.replace("$text", expected)
+	return table.replace("$cells", cells)
+
 static func orphan_detected_on_suite_setup(count :int):
 	return "%s\n Detected <%d> orphan nodes during test suite setup stage! [b]Check before() and after()![/b]" % [
 		_warning("WARNING:"), count]
@@ -79,8 +91,11 @@ static func error_is_null(current) -> String:
 static func error_is_not_null() -> String:
 	return "%s %s" % [_error("Expecting: not to be"), _current(null)]
 
-static func error_equal(current, expected) -> String:
-	return "%s\n %s\n but was\n %s" % [_error("Expecting:"), _expected(expected), _current(current)]
+static func error_equal(current, expected, index_reports = null) -> String:
+	var report = "%s\n %s\n but was\n %s" % [_error("Expecting:"), _expected(expected), _current(current)]
+	if index_reports:
+		report += "\n\n%s\n%s" % [_error("Differences found:"), _index_report_as_table(index_reports)]
+	return report
 
 static func error_not_equal(current, expected) -> String:
 	return "%s\n %s\n not equal to\n %s" % [_error("Expecting:"), _expected(expected), _current(current)]
@@ -362,10 +377,10 @@ static func colorDiff(value :String) -> String:
 	while index < characters.size():
 		var character = characters[index]
 		match character:
-			GdObjects.DIV_ADD:
+			GdDiffTool.DIV_ADD:
 				index += 1
 				additional_chars.append(characters[index])
-			GdObjects.DIV_SUB:
+			GdDiffTool.DIV_SUB:
 				index += 1
 				missing_chars.append(characters[index])
 			_:

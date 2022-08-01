@@ -564,18 +564,20 @@ static func default_value_by_type(type :int):
 	assert(type >= 0)
 	return DEFAULT_VALUES_BY_TYPE[type]
 
-static func array_to_string(elements, delimiter := "\n") -> String:
+static func array_to_string(elements :Array, delimiter := "\n", max_elements := -1) -> String:
 	if elements == null:
 		return "Null"
 	if elements.empty():
 		return "empty"
 	var formatted := ""
+	var index := 0
 	for element in elements:
+		if max_elements != -1 and index > max_elements:
+			return formatted + delimiter + "..."
 		if formatted.length() > 0 :
 			formatted += delimiter
 		formatted += str(element)
-		#if formatted.length() > 64:
-		#	return formatted + delimiter + "..."
+		index += 1
 	return formatted
 
 # Filters an array by given value
@@ -591,78 +593,6 @@ static func array_erase_value(array :Array, value) -> void:
 	for element in array:
 		if equals(element, value):
 			array.erase(element)
-
-# lookup[i][j] stores the length of LCS of substring X[0..i-1], Y[0..j-1]
-static func _createLookUp(lb: PoolByteArray, rb: PoolByteArray) -> Array:
-	var lookup:Array = Array()
-	lookup.resize(lb.size() + 1)
-	for i in lookup.size():
-		var x = []
-		x.resize(rb.size() + 1)
-		lookup[i] = x
-	return lookup
-
-static func _buildLookup(lb: PoolByteArray, rb: PoolByteArray) -> Array:
-	var lookup := _createLookUp(lb, rb)
-	# first column of the lookup table will be all 0
-	for i in lookup.size():
-		lookup[i][0] = 0
-	# first row of the lookup table will be all 0
-	for j in lookup[0].size():
-		lookup[0][j] = 0
-
-	# fill the lookup table in bottom-up manner
-	for i in range(1, lookup.size()):
-		for j in range(1, lookup[0].size()):
-			# if current character of left and right matches
-			if lb[i - 1] == rb[j - 1]:
-				lookup[i][j] = lookup[i - 1][j - 1] + 1;
-			# else if current character of left and right don't match
-			else:
-				lookup[i][j] = max(lookup[i - 1][j], lookup[i][j - 1]);
-	return lookup
-
-const DIV_ADD = 243
-const DIV_SUB = 245
-
-static func _diff(lb: PoolByteArray, rb: PoolByteArray, lookup: Array, ldiff: Array, rdiff: Array):
-	var loffset = lb.size()
-	var roffset = rb.size()
-
-	while true:
-		#if last character of X and Y matches
-		if loffset > 0 && roffset > 0 && lb[loffset - 1] == rb[roffset - 1]:
-			loffset -= 1
-			roffset -= 1
-			ldiff.push_front(lb[loffset])
-			rdiff.push_front(rb[roffset])
-			continue
-		#current character of Y is not present in X
-		else: if (roffset > 0 && (loffset == 0 || lookup[loffset][roffset - 1] >= lookup[loffset - 1][roffset])):
-			roffset -= 1
-			ldiff.push_front(rb[roffset])
-			ldiff.push_front(DIV_ADD)
-			rdiff.push_front(rb[roffset])
-			rdiff.push_front(DIV_SUB)
-			continue
-		#current character of X is not present in Y
-		else: if (loffset > 0 && (roffset == 0 || lookup[loffset][roffset - 1] < lookup[loffset - 1][roffset])):
-			loffset -= 1
-			ldiff.push_front(lb[loffset])
-			ldiff.push_front(DIV_SUB)
-			rdiff.push_front(lb[loffset])
-			rdiff.push_front(DIV_ADD)
-			continue
-		break
-
-static func string_diff(left, right) -> Array:
-	var lb := PoolByteArray() if left == null else str(left).to_ascii()
-	var rb := PoolByteArray() if right == null else str(right).to_ascii()
-	var ldiff := Array()
-	var rdiff := Array()
-	var lookup =  _buildLookup(lb, rb);
-	_diff(lb, rb, lookup, ldiff, rdiff)
-	return [PoolByteArray(ldiff).get_string_from_ascii(), PoolByteArray(rdiff).get_string_from_ascii()]
 
 static func find_nodes_by_class(root: Node, cls: String, recursive: bool = false) -> Array:
 	if not recursive:
@@ -687,78 +617,3 @@ static func _find_nodes_by_class(root: Node, cls: String) -> Array:
 		for ch in node.get_children():
 			stack.push_back(ch)
 	return result
-
-
-static func longestCommonSubsequence(text1 :String, text2 :String) -> PoolStringArray:
-	var text1Words := text1.split(" ")
-	var text2Words := text2.split(" ")
-	var text1WordCount := text1Words.size()
-	var text2WordCount := text2Words.size()
-	var solutionMatrix := Array()
-	for i in text1WordCount+1:
-		var ar := Array()
-		for n in text2WordCount+1:
-			ar.append(0)
-		solutionMatrix.append(ar)
-
-	for i in range(text1WordCount-1, 0, -1):
-		for j in range(text2WordCount-1, 0, -1):
-			if text1Words[i] == text2Words[j]:
-				solutionMatrix[i][j] = solutionMatrix[i + 1][j + 1] + 1;
-			else:
-				solutionMatrix[i][j] = max(solutionMatrix[i + 1][j], solutionMatrix[i][j + 1]);
-
-	var i = 0
-	var j = 0
-	var lcsResultList := PoolStringArray();
-	while (i < text1WordCount && j < text2WordCount):
-		if text1Words[i] == text2Words[j]:
-			lcsResultList.append(text2Words[j])
-			i += 1
-			j += 1
-		else: if (solutionMatrix[i + 1][j] >= solutionMatrix[i][j + 1]):
-			i += 1
-		else:
-			j += 1
-	return lcsResultList
-
-static func markTextDifferences(text1 :String, text2 :String, lcsList :PoolStringArray, insertColor :Color, deleteColor:Color) -> String:
-	var stringBuffer = ""
-	if text1 == null and lcsList == null:
-		return stringBuffer
-
-	var text1Words := text1.split(" ")
-	var text2Words := text2.split(" ")
-	var i = 0
-	var j = 0
-	var word1LastIndex = 0
-	var word2LastIndex = 0
-	for k in lcsList.size():
-		while i < text1Words.size() and j < text2Words.size():
-			if text1Words[i] == lcsList[k] and text2Words[j] == lcsList[k]:
-				stringBuffer += "<SPAN>" + lcsList[k] + " </SPAN>"
-				word1LastIndex = i + 1
-				word2LastIndex = j + 1
-				i = text1Words.size()
-				j = text2Words.size()
-
-			else: if text1Words[i] != lcsList[k]:
-				while i < text1Words.size() and text1Words[i] != lcsList[k]:
-					stringBuffer += "<SPAN style='BACKGROUND-COLOR:" + deleteColor.to_html() + "'>" + text1Words[i] + " </SPAN>"
-					i += 1
-			else: if text2Words[j] != lcsList[k]:
-				while j < text2Words.size() and text2Words[j] != lcsList[k]:
-					stringBuffer += "<SPAN style='BACKGROUND-COLOR:" + insertColor.to_html() + "'>" + text2Words[j] + " </SPAN>"
-					j += 1
-			i = word1LastIndex
-			j = word2LastIndex
-
-
-			while word1LastIndex < text1Words.size():
-				stringBuffer += "<SPAN style='BACKGROUND-COLOR:" + deleteColor.to_html() + "'>" + text1Words[word1LastIndex] + " </SPAN>"
-				word1LastIndex += 1
-			while word2LastIndex < text2Words.size():
-				stringBuffer += "<SPAN style='BACKGROUND-COLOR:" + insertColor.to_html() + "'>" + text2Words[word2LastIndex] + " </SPAN>"
-				word2LastIndex += 1
-
-	return stringBuffer

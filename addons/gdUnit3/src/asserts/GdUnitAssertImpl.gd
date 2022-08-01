@@ -80,7 +80,7 @@ func has_failure_message(expected :String):
 	var current_error := _normalize_bbcode(_current_error_message)
 	if current_error != expected:
 		_expect_fail = false
-		var diffs := GdObjects.string_diff(current_error, expected)
+		var diffs := GdDiffTool.string_diff(current_error, expected)
 		var current := GdAssertMessages.colorDiff(diffs[1])
 		report_error(GdAssertMessages.error_not_same_error(current, expected))
 	return self
@@ -89,7 +89,7 @@ func starts_with_failure_message(expected :String):
 	var current_error := _normalize_bbcode(_current_error_message)
 	if current_error.find(expected) != 0:
 		_expect_fail = false
-		var diffs := GdObjects.string_diff(current_error, expected)
+		var diffs := GdDiffTool.string_diff(current_error, expected)
 		var current := GdAssertMessages.colorDiff(diffs[1])
 		report_error(GdAssertMessages.error_not_same_error(current, expected))
 	return self

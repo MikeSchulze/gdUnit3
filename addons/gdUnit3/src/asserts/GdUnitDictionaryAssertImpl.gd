@@ -62,7 +62,7 @@ func is_equal(expected) -> GdUnitDictionaryAssert:
 	if not GdObjects.equals(current, expected):
 		var c = var2str(current)
 		var e = var2str(expected)
-		var diff := GdObjects.string_diff(c, e)
+		var diff := GdDiffTool.string_diff(c, e)
 		return report_error(GdAssertMessages.error_equal(diff[1], diff[0]))
 	return report_success()
 
@@ -73,7 +73,7 @@ func is_not_equal(expected) -> GdUnitDictionaryAssert:
 	if GdObjects.equals(current, expected):
 		var c = var2str(current)
 		var e = var2str(expected)
-		var diff := GdObjects.string_diff(c, e)
+		var diff := GdDiffTool.string_diff(c, e)
 		return report_error(GdAssertMessages.error_equal(diff[1], diff[0]))
 	return report_success()
 

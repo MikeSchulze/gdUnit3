@@ -24,12 +24,54 @@ func test_is_equal():
 	# should fail because the array not contains same elements and has diff size
 	assert_array([1, 2, 4, 5], GdUnitAssert.EXPECT_FAIL) \
 		.is_equal([1, 2, 3, 4, 2, 5])
+	assert_array([1, 2, 3, 4, 5], GdUnitAssert.EXPECT_FAIL) \
+		.is_equal([1, 2, 3, 4])
+	# current array is bigger than expected
+	assert_array([1, 2222, 3, 4, 5, 6], GdUnitAssert.EXPECT_FAIL).is_equal([1, 2, 3, 4])\
+		.has_failure_message("""Expecting:
+ '1,    2, 3, 4'
+ but was
+ '1, 2222, 3, 4, 5, 6'
+
+Differences found:
+Index	Current	Expected	1	2222	2	4	5	<N/A>	5	6	<N/A>	""")
+	
+	# expected array is bigger than current
+	assert_array([1, 222, 3, 4], GdUnitAssert.EXPECT_FAIL).is_equal([1, 2, 3, 4, 5, 6])\
+	.has_failure_message("""Expecting:
+ '1,   2, 3, 4, 5, 6'
+ but was
+ '1, 222, 3, 4'
+
+Differences found:
+Index	Current	Expected	1	222	2	4	<N/A>	5	5	<N/A>	6	""")
+	
 	assert_array(null, GdUnitAssert.EXPECT_FAIL) \
 		.is_equal([1, 2, 3])\
 		.has_failure_message("Expecting:\n"
 			+ " 1\n2\n3\n"
 			+ " but was\n"
 			+ " 'Null'")
+
+func test_is_equal_big_arrays():
+	var expeted := Array()
+	expeted.resize(1000)
+	for i in 1000:
+		expeted[i] = i
+	var current := expeted.duplicate()
+	current[10] = "invalid"
+	current[40] = "invalid"
+	current[100] = "invalid"
+	current[888] = "invalid"
+	
+	assert_array(current, GdUnitAssert.EXPECT_FAIL).is_equal(expeted)\
+		.has_failure_message("""Expecting:
+ '0, 1, 2, 3, 4, 5, 6, 7, 8, 9,      10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, ...'
+ but was
+ '0, 1, 2, 3, 4, 5, 6, 7, 8, 9, invalid, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, ...'
+
+Differences found:
+Index	Current	Expected	10	invalid	10	40	invalid	40	100	invalid	100	888	invalid	888	""")
 
 func test_is_equal_ignoring_case():
 	assert_array(["this", "is", "a", "message"]).is_equal_ignoring_case(["This", "is", "a", "Message"])
