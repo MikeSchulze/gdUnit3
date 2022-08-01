@@ -700,6 +700,11 @@ _global_script_classes=[ {
 "path": "res://addons/gdUnit3/test/GdUnitScriptTypeTest.gd"
 }, {
 "base": "Reference",
+"class": "GdUnitServerConstants",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/src/network/GdUnitServerConstants.gd"
+}, {
+"base": "Reference",
 "class": "GdUnitSettings",
 "language": "GDScript",
 "path": "res://addons/gdUnit3/src/core/GdUnitSettings.gd"
@@ -1298,6 +1303,7 @@ _global_script_class_icons={
 "GdUnitSceneRunnerTest": "",
 "GdUnitScriptType": "",
 "GdUnitScriptTypeTest": "",
+"GdUnitServerConstants": "",
 "GdUnitSettings": "",
 "GdUnitSettingsTest": "",
 "GdUnitSignalAssert": "",
