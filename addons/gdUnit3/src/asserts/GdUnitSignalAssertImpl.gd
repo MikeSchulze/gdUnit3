@@ -48,7 +48,7 @@ func has_failure_message(expected: String) -> GdUnitSignalAssert:
 	var current_error := _extract_plain_message(_current_error_message)
 	if current_error != expected:
 		_expect_fail = false
-		var diffs := GdObjects.string_diff(current_error, expected)
+		var diffs := GdDiffTool.string_diff(current_error, expected)
 		var current := GdAssertMessages.colorDiff(diffs[1])
 		_custom_failure_message = null
 		report_error(GdAssertMessages.error_not_same_error(current, expected))
@@ -58,7 +58,7 @@ func starts_with_failure_message(expected: String) -> GdUnitSignalAssert:
 	var current_error := _extract_plain_message(_current_error_message)
 	if not current_error.begins_with(expected):
 		_expect_fail = false
-		var diffs := GdObjects.string_diff(current_error, expected)
+		var diffs := GdDiffTool.string_diff(current_error, expected)
 		var current := GdAssertMessages.colorDiff(diffs[1])
 		_custom_failure_message = null
 		report_error(GdAssertMessages.error_not_same_error(current, expected))
