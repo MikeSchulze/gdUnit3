@@ -344,6 +344,10 @@ static func is_vs_script(script :Script) -> bool:
 static func is_gd_script(script :Script) -> bool:
 	return script is GDScript
 
+static func is_cs_script(script :Script) -> bool:
+	# we need to check by stringify name because on non mono Godot the class CSharpScript is not available
+	return str(script).find("CSharpScript") != -1
+
 static func is_native_script(script :Script) -> bool:
 	return script is NativeScript
 
