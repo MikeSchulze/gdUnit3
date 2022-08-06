@@ -16,6 +16,6 @@ static func type_of(script :Script) -> String:
 		return VS
 	if GdObjects.is_native_script(script):
 		return NATIVE
-	if GdObjects.is_cs_script(script):
+	if GdUnit3MonoBridge.is_csharp_file(script.resource_path):
 		return CS
 	return UNKNOWN
