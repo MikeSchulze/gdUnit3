@@ -22,7 +22,7 @@ func create(source :Script, line_number :int) -> Result:
 	var test_suite_path := _TestSuiteScanner.resolve_test_suite_path(source.resource_path, GdUnitSettings.test_root_folder())
 	_save_and_close_script(test_suite_path)
 	
-	if GdObjects.is_cs_script(source):
+	if GdUnit3MonoBridge.is_csharp_file(source.resource_path):
 		return GdUnit3MonoBridge.create_test_suite(source.resource_path, line_number+1, test_suite_path)
 	
 	var parser := GdScriptParser.new()

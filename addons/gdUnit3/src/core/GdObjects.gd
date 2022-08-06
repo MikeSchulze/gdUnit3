@@ -327,7 +327,7 @@ static func is_script(value) -> bool:
 	return is_object(value) and value is Script
 
 static func is_test_suite(script :Script) -> bool:
-	return is_gd_testsuite(script) or is_cs_testsuite(script)
+	return is_gd_testsuite(script) or GdUnit3MonoBridge.is_test_suite(script.resource_path)
 
 static func is_native_class(value) -> bool:
 	return is_object(value) and value.to_string() != null and value.to_string().find("GDScriptNativeClass") != -1
@@ -337,10 +337,6 @@ static func is_scene(value) -> bool:
 
 static func is_scene_resource_path(value) -> bool:
 	return value is String and value.ends_with(".tscn")
-
-static func is_cs_script(script :Script) -> bool:
-	# we need to check by stringify name because on non mono Godot the class CSharpScript is not available
-	return str(script).find("CSharpScript") != -1
 
 static func is_vs_script(script :Script) -> bool:
 	return script is VisualScript
@@ -353,9 +349,6 @@ static func is_native_script(script :Script) -> bool:
 
 static func is_cs_test_suite(instance :Node) -> bool:
 	return instance.has_meta("CS_TESTSUITE")
-
-static func is_cs_testsuite(script :Script) -> bool:
-	return GdUnit3MonoBridge.is_test_suite(script)
 
 static func is_gd_testsuite(script :Script) -> bool:
 	if is_gd_script(script):

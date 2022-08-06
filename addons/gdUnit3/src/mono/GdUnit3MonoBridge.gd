@@ -18,14 +18,14 @@ static func create_test_suite(source_path :String, line_number :int, test_suite_
 		return Result.error(result.get("error"))
 	return  Result.success(result)
 
-static func is_test_suite(script :Script) -> bool:
-	if not GdUnitTools.is_mono_supported():
+static func is_test_suite(resource_path :String) -> bool:
+	if not is_csharp_file(resource_path) or not GdUnitTools.is_mono_supported():
 		return false
-	if script.resource_path.empty():
+	if resource_path.empty():
 		if GdUnitSettings.is_report_push_errors():
-			push_error("Can't create test suite. Missing resource path at %s." % script)
+			push_error("Can't create test suite. Missing resource path.")
 		return  false
-	return instance().IsTestSuite(script.resource_path)
+	return instance().IsTestSuite(resource_path)
 
 static func parse_test_suite(source_path :String) -> Node:
 	if not GdUnitTools.is_mono_supported():
@@ -38,3 +38,7 @@ static func create_executor(listener :Node) -> Node:
 	if not GdUnitTools.is_mono_supported():
 		return null
 	return instance().Executor(listener)
+
+static func is_csharp_file(resource_path :String) -> bool:
+	var ext := resource_path.get_extension()
+	return ext == "cs" and GdUnitTools.is_mono_supported()
