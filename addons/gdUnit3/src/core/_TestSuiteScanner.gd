@@ -55,25 +55,20 @@ static func _file(dir :Directory, file_name :String) -> String:
 func _parse_is_test_suite(resource_path :String) -> Node:
 	if not _is_script_format_supported(resource_path):
 		return null
+	if GdUnit3MonoBridge.is_test_suite(resource_path):
+		return GdUnit3MonoBridge.parse_test_suite(resource_path)
 	var script :Script = ResourceLoader.load(resource_path)
 	if not GdObjects.is_test_suite(script):
 		return null
 	if GdObjects.is_gd_script(script):
 		return _parse_test_suite(script)
-	if GdObjects.is_cs_testsuite(script):
-		return _parse_cs_test_suite(script)
 	return null
 
 static func _is_script_format_supported(resource_path :String) -> bool:
 	var ext := resource_path.get_extension()
 	if ext == "gd":
 		return true
-	if ext == "cs" and GdUnitTools.is_mono_supported():
-		return true
-	return false
-
-func _parse_cs_test_suite(script :Script) -> Node:
-	return GdUnit3MonoBridge.parse_test_suite(script.resource_path)
+	return GdUnit3MonoBridge.is_csharp_file(resource_path)
 
 func _parse_test_suite(script :GDScript) -> GdUnitTestSuite:
 	var test_suite = script.new()
