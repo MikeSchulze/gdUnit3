@@ -1,11 +1,11 @@
 # GdUnit generated TestSuite
 #warning-ignore-all:unused_argument
 #warning-ignore-all:return_value_discarded
-class_name GdUnit3MonoBridgeTest
+class_name GdUnit3MonoAPITest
 extends GdUnitTestSuite
 
 # TestSuite generated from
-const __source = 'res://addons/gdUnit3/src/mono/GdUnit3MonoBridge.gd'
+const __source = 'res://addons/gdUnit3/src/mono/GdUnit3MonoAPI.gd'
 var _example_source_cs :String
 
 func before_test():
@@ -20,8 +20,8 @@ func test_create_test_suite() -> void:
 		return
 	var source := load(_example_source_cs)
 	var test_suite_path := _TestSuiteScanner.resolve_test_suite_path(source.resource_path, "test")
-	var result := GdUnit3MonoBridge.create_test_suite(source.resource_path, 18, test_suite_path)
-	
+	var result := GdUnit3MonoAPI.create_test_suite(source.resource_path, 18, test_suite_path)
+
 	assert_result(result).is_success()
 	var info := result.value() as Dictionary
 	assert_str(info.get("path")).is_equal("user://tmp/test/examples/TestPersonTest.cs")

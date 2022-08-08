@@ -327,7 +327,7 @@ static func is_script(value) -> bool:
 	return is_object(value) and value is Script
 
 static func is_test_suite(script :Script) -> bool:
-	return is_gd_testsuite(script) or GdUnit3MonoBridge.is_test_suite(script.resource_path)
+	return is_gd_testsuite(script) or GdUnit3MonoAPI.is_test_suite(script.resource_path)
 
 static func is_native_class(value) -> bool:
 	return is_object(value) and value.to_string() != null and value.to_string().find("GDScriptNativeClass") != -1

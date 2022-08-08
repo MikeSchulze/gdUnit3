@@ -1,12 +1,12 @@
 extends Reference
-class_name GdUnit3MonoBridge
+class_name GdUnit3MonoAPI
 
 const _instance : = []
 
 static func instance() :
 	if not _instance.empty():
 		return _instance[0]
-	var instance =  load("res://addons/gdUnit3/src/mono/GdUnit3MonoBridge.cs").new()
+	var instance =  load("res://addons/gdUnit3/src/mono/GdUnit3MonoAPI.cs").new()
 	_instance.append(instance)
 	return _instance[0]
 
