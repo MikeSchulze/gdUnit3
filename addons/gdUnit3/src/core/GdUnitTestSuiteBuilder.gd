@@ -23,7 +23,7 @@ func create(source :Script, line_number :int) -> Result:
 	_save_and_close_script(test_suite_path)
 	
 	if GdObjects.is_cs_script(source):
-		return GdUnit3MonoBridge.create_test_suite(source.resource_path, line_number+1, test_suite_path)
+		return GdUnit3MonoAPI.create_test_suite(source.resource_path, line_number+1, test_suite_path)
 	
 	var parser := GdScriptParser.new()
 	var lines := source.source_code.split("\n")
