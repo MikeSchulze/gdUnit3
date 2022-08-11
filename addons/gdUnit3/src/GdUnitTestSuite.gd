@@ -374,3 +374,7 @@ func assert_not_yet_implemented():
 
 func fail(message :String):
 	GdUnitAssertImpl.new(self, null).report_error(message)
+
+# --- internal stuff do not override!!!
+func ResourcePath() -> String:
+	return get_script().resource_path

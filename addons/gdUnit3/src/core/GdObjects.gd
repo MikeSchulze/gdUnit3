@@ -352,7 +352,7 @@ static func is_native_script(script :Script) -> bool:
 	return script is NativeScript
 
 static func is_cs_test_suite(instance :Node) -> bool:
-	return instance.has_meta("CS_TESTSUITE")
+	return instance.get("IsCsTestSuite")
 
 static func is_gd_testsuite(script :Script) -> bool:
 	if is_gd_script(script):
