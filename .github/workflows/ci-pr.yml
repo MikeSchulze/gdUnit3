@@ -37,6 +37,7 @@ jobs:
         with:
           lfs: true
           submodules: 'recursive'
+          token: ${{ secrets.ACCESS_TOKEN }}
 
       - name: "Update Project"
         if: ${{ !cancelled() }}
