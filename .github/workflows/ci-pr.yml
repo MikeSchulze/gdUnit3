@@ -33,11 +33,10 @@ jobs:
 
     steps:
       - name: "Checkout Repository"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.0.2
         with:
           lfs: true
           submodules: 'recursive'
-          token: ${{ secrets.ACCESS_TOKEN }}
 
       - name: "Update Project"
         if: ${{ !cancelled() }}
