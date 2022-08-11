@@ -8,6 +8,8 @@
   <img src="https://img.shields.io/badge/Godot-v3.4.1-%23478cbf?logo=godot-engine&logoColor=cyian&color=brightgreen">
   <img src="https://img.shields.io/badge/Godot-v3.4.2-%23478cbf?logo=godot-engine&logoColor=cyian&color=brightgreen">
   <img src="https://img.shields.io/badge/Godot-v3.4.4-%23478cbf?logo=godot-engine&logoColor=cyian&color=brightgreen">
+  <img src="https://img.shields.io/badge/Godot-v3.4.5-%23478cbf?logo=godot-engine&logoColor=cyian&color=brightgreen">
+  <img src="https://img.shields.io/badge/Godot-v3.5-%23478cbf?logo=godot-engine&logoColor=cyian&color=brightgreen">
   <img src="https://img.shields.io/badge/Godot-v4.x.x-%23478cbf?logo=godot-engine&logoColor=cyian&color=red">
 </p>
 
@@ -18,6 +20,7 @@
   <img alt="GitHub branch checks state" src="https://img.shields.io/github/checks-status/MikeSchulze/gdunit3/master"></br>
   <img src="https://github.com/MikeSchulze/gdUnit3/actions/workflows/selftest-3.3.x.yml/badge.svg?branch=master"></br>
   <img src="https://github.com/MikeSchulze/gdUnit3/actions/workflows/selftest-3.4.x.yml/badge.svg?branch=master"></br>
+  <img src="https://github.com/MikeSchulze/gdUnit3/actions/workflows/selftest-3.5.x.yml/badge.svg?branch=master"></br>
   <img src="https://github.com/MikeSchulze/gdUnit3/actions/workflows/selftest-3.3.x-mono.yml/badge.svg?branch=master"></br>
 </p>
 

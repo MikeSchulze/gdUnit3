@@ -114,6 +114,9 @@ func fuzzers() -> PoolStringArray:
 func script_path() -> String:
 	return _script_path
 	
+func ResourcePath() -> String:
+	return _script_path
+
 func generate_seed() -> void:
 	if _seed != -1:
 		seed(_seed)

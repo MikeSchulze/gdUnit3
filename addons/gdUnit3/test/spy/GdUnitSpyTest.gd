@@ -97,7 +97,7 @@ func test_spy_on_custom_class():
 # GD-291 https://github.com/MikeSchulze/gdUnit3/issues/291
 func test_spy_class_with_custom_formattings() -> void:
 	var resource = load("res://addons/gdUnit3/test/mocker/resources/ClassWithCustomFormattings.gd")
-	var spy = spy(resource.new("test"))
+	var spy = spy(auto_free(resource.new("test")))
 	spy.a1("set_name", "", true)
 	verify(spy, 1).a1("set_name", "", true)
 	verify_no_more_interactions(spy)
