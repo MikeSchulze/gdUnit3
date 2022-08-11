@@ -15,6 +15,10 @@ func _init(no_singleton :bool = false, only_instancialbe :bool = false) -> void:
 		# exclude special classes
 		if EXCLUDED_CLASSES.has(clazz_name):
 			continue
+		# exlude Godot 3.5 *Tweener classes where produces and error 
+		# `ERROR: Can't create empty IntervalTweener. Use get_tree().tween_property() or tween_property() instead.`
+		if clazz_name.find("Tweener") != -1:
+			continue
 		class_names.push_back(clazz_name)
 
 func next_value():
