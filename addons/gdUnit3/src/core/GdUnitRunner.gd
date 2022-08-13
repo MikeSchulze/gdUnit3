@@ -69,7 +69,7 @@ func _process(delta):
 			else:
 				# process next test suite
 				set_process(false)
-				var test_suite = _test_suites_to_process.pop_front()
+				var test_suite :Node = _test_suites_to_process.pop_front()
 				add_child(test_suite)
 				var executor = _cs_executor if GdObjects.is_cs_test_suite(test_suite) else _executor
 				executor.Execute(test_suite)

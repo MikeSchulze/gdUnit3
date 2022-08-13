@@ -8,7 +8,7 @@ func serialize(test_case) -> Dictionary:
 	if test_case.has_method("line_number"):
 		serialized["line_number"] = test_case.line_number()
 	else:
-		serialized["line_number"] = test_case.get_meta("LineNumber")
+		serialized["line_number"] = test_case.get("LineNumber")
 	return serialized
 
 func deserialize(data :Dictionary) -> GdUnitResourceDto:
