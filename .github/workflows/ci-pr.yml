@@ -56,15 +56,15 @@ jobs:
         run: |
           ${{ env.GODOT_BIN }} -e --path . -s res://addons/gdUnit3/src/core/scan_project.gd --no-window
 
-      - name: "Run mono Test"
-        timeout-minutes: 1
-        uses: ./.github/actions/unit-test
-        with:
-          godot-bin: ${{ env.GODOT_BIN }}
-          test-includes: "res://addons/gdUnit3/test/mono"
+      #- name: "Run example mono Test"
+      #  timeout-minutes: 1
+      #  uses: ./.github/actions/unit-test
+      #  with:
+      #    godot-bin: ${{ env.GODOT_BIN }}
+      #    test-includes: "res://addons/gdUnit3/test/mono"
 
       - name: "Run Unit Test"
-        if: false # ${{ !cancelled() }}
+        if: ${{ !cancelled() }}
         timeout-minutes: 10
         uses: ./.github/actions/unit-test
         with:
@@ -72,7 +72,7 @@ jobs:
           test-includes: "res://addons/gdUnit3/test/"
 
       - name: "Run Unit Test Examples"
-        if: false #${{ !cancelled() }}
+        if: #${{ !cancelled() }}
         timeout-minutes: 1
         uses: ./.github/actions/unit-test
         with:
