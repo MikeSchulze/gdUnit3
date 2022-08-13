@@ -9,7 +9,12 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Publish Test Results 
+
+    - name: 'Fixing the dubious git 128 error'
+      run: |
+        git config --global --add safe.directory '*'
+
+    - name: 'Publish Test Results'
       uses: dorny/test-reporter@v1.5.0
       with:
         name: test_report_${{ inputs.report-name }}
