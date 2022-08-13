@@ -64,7 +64,6 @@ jobs:
 
 
       - name: "Run mono Test"
-        if: false # ${{ !cancelled() }}
         timeout-minutes: 1
         uses: ./.github/actions/unit-test
         with:
