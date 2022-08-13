@@ -11,6 +11,7 @@ runs:
   steps:
 
     - name: 'Fixing the dubious git 128 error'
+      shell: bash
       run: |
         git config --global --add safe.directory '*'
 
