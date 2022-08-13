@@ -54,6 +54,7 @@ jobs:
       - name: "Compile C#"
         if: ${{ startsWith( matrix.godot-build, 'mono') }} # we only compile .Net for mono versions
         run: |
+          dotnet restore
           ${{ env.GODOT_BIN }} project.godot --build-solutions --quit
           dotnet build -verbosity:m
 
