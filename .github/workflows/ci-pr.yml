@@ -38,13 +38,6 @@ jobs:
           lfs: true
           submodules: 'recursive'
 
-      - name: "Update Project"
-        if: ${{ !cancelled() }}
-        timeout-minutes: 1
-        continue-on-error: true # we still ignore the timeout, the script is not quit and we run into a timeout
-        run: |
-          ${{ env.GODOT_BIN }} -e --path . -s res://addons/gdUnit3/src/core/scan_project.gd --no-window
-
       - name: "Setup .NET"
         if: ${{ startsWith( matrix.godot-build, 'mono') }} # we only setup .Net for mono versions
         uses: actions/setup-dotnet@v1
@@ -55,11 +48,31 @@ jobs:
         if: ${{ startsWith( matrix.godot-build, 'mono') }} # we only compile .Net for mono versions
         run: |
           ${{ env.GODOT_BIN }} project.godot --build-solutions --quit --no-window
+          echo "-------"
           pwd
+          echo "-------"
+          ls .
+          echo "-------"
           ls -lsR .mono
 
-      - name: "Run Unit Test"
+      - name: "Update Project"
         if: ${{ !cancelled() }}
+        timeout-minutes: 1
+        continue-on-error: true # we still ignore the timeout, the script is not quit and we run into a timeout
+        run: |
+          ${{ env.GODOT_BIN }} -e --path . -s res://addons/gdUnit3/src/core/scan_project.gd --no-window
+
+
+      - name: "Run mono Test"
+        if: false # ${{ !cancelled() }}
+        timeout-minutes: 1
+        uses: ./.github/actions/unit-test
+        with:
+          godot-bin: ${{ env.GODOT_BIN }}
+          test-includes: "res://addons/gdUnit3/test/mono"
+
+      - name: "Run Unit Test"
+        if: false # ${{ !cancelled() }}
         timeout-minutes: 10
         uses: ./.github/actions/unit-test
         with:
@@ -67,7 +80,7 @@ jobs:
           test-includes: "res://addons/gdUnit3/test/"
 
       - name: "Run Unit Test Examples"
-        if: ${{ !cancelled() }}
+        if: false #${{ !cancelled() }}
         timeout-minutes: 1
         uses: ./.github/actions/unit-test
         with:
