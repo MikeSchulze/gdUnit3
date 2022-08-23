@@ -118,7 +118,7 @@ class CLIRunner extends Node:
 	
 	func show_options(show_advanced :bool = false) -> void:
 		_console.prints_color(" Usage:", Color.darksalmon)
-		_console.prints_color("	runtest -a <directory|path of testsiute>", Color.darksalmon)
+		_console.prints_color("	runtest -a <directory|path of testsuite>", Color.darksalmon)
 		_console.prints_color("	runtest -a <directory> -i <path of testsuite|testsuite_name|testsuite_name:test_name>", Color.darksalmon).new_line()
 		_console.prints_color("-- Options ---------------------------------------------------------------------------------------", Color.darksalmon).new_line()
 		for option in _cmd_options.default_options():
