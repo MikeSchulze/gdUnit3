@@ -52,6 +52,9 @@ GdUnit3 is a framework for testing Gd-Scrips/C# and Scenes within the Godot edit
   * generates HTML report
   * generates JUnit report 
 * With v2.0.0 C# testing support (beta)
+  * [GdUni3Mono](https://github.com/MikeSchulze/gdUnit3Mono)
+* Visual Studio Code extension
+  * [GdUnit3 Explorer](https://github.com/MikeSchulze/vscode-extension-gdunit3)
 
  
 ## Short Example
