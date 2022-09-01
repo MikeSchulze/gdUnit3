@@ -71,7 +71,7 @@ static func _normalize_bbcode(message :String) -> String:
 	var rtl := RichTextLabelExt.new()
 	rtl._ready()
 	rtl.bbcode_enabled = true
-	rtl.parse_bbcode(message)
+	rtl.parse_bbcode(message if message else "")
 	var normalized = rtl.get_text()
 	rtl.free()
 	return normalized

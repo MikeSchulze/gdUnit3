@@ -24,14 +24,18 @@ class TestEmitter extends Node:
 			emit_signal("test_signal_counted", _count)
 		if _count == 20:
 			emit_signal("test_signal")
-		yield(get_tree(), "idle_frame")
 		_count += 1
 
 var signal_emitter :TestEmitter
 
 func before_test():
-	signal_emitter = TestEmitter.new()
+	signal_emitter = auto_free(TestEmitter.new())
 	add_child(signal_emitter)
+
+func after():
+	assert_bool(GdUnitSignalAssertImpl.SignalCollector.instance()._collected_signals.empty())\
+		.override_failure_message("Expecting the signal collector must be empty")\
+		.is_true()
 
 func test_invalid_arg() -> void:
 	yield(assert_signal(null, GdUnitAssert.EXPECT_FAIL).wait_until(50).is_emitted("test_signal_counted"), "completed")\
@@ -75,3 +79,19 @@ func test_override_failure_message() -> void:
 		.wait_until(100)\
 		.is_emitted("test_signal_unused"), "completed")\
 		.has_failure_message("Custom failure message")
+
+func test_node_changed_emitting_signals():
+	var node :Node2D = auto_free(Node2D.new())
+	add_child(node)
+	
+	yield(assert_signal(node).wait_until(200).is_emitted("visibility_changed"), "completed")
+	
+	node.visible = false;
+	yield(assert_signal(node).wait_until(200).is_emitted("visibility_changed"), "completed")
+	
+	# expecting to fail, we not changed the visibility
+	#node.visible = true;
+	yield(assert_signal(node, GdUnitAssert.EXPECT_FAIL).wait_until(200).is_emitted("visibility_changed"), "completed")
+	
+	node.show()
+	yield(assert_signal(node).wait_until(200).is_emitted("draw"), "completed")
