@@ -104,8 +104,6 @@ func test_is_signal_exists() -> void:
 		.is_signal_exists("visibility_changed")\
 		.is_signal_exists("tree_entered")\
 		.is_signal_exists("tree_exiting")\
-		.is_signal_exists("child_entered_tree")\
-		.is_signal_exists("child_exiting_tree")\
 		.is_signal_exists("tree_exited")
 	
 	assert_signal(node, GdUnitAssert.EXPECT_FAIL).is_signal_exists("not_existing_signal")\
