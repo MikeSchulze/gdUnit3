@@ -41,14 +41,15 @@ class SignalCollector:
 	
 	# connect to all possible signals defined by the emitter
 	# prepares the signal collection to store received signals and arguments
-	func connect_signals(emitter :Object):
+	func register_emitter(emitter :Object):
 		if is_instance_valid(emitter):
-			# add new emitter to signal collection
-			if not _collected_signals.has(emitter):
-				_collected_signals[emitter] = Dictionary()
+			# check emitter is already registerd
+			if _collected_signals.has(emitter):
+				return
+			_collected_signals[emitter] = Dictionary()
 			# connect to 'tree_exiting' of the emitter to finally release all acquired resources/connections.
-			if !emitter.is_connected("tree_exiting", self, "unregister"):
-				emitter.connect("tree_exiting", self, "unregister", [self, emitter])
+			if !emitter.is_connected("tree_exiting", self, "unregister_emitter"):
+				emitter.connect("tree_exiting", self, "unregister_emitter", [self, emitter])
 			# connect to all signals of the emitter we want to collect
 			for signal_def in emitter.get_signal_list():
 				var signal_name = signal_def["name"]
@@ -62,7 +63,7 @@ class SignalCollector:
 	
 	# unregister all acquired resources/connections, otherwise it ends up in orphans
 	# is called when the emitter is removed from the parent
-	func unregister(receiver :SignalCollector, emitter :Object):
+	func unregister_emitter(receiver :SignalCollector, emitter :Object):
 		if is_instance_valid(receiver):
 			#prints("disconnect_signals", receiver)
 			for connection in receiver.get_incoming_connections():
@@ -74,8 +75,10 @@ class SignalCollector:
 		if is_instance_valid(emitter):
 			_collected_signals.erase(emitter)
 	
-	func _on_signal_emmited( arg0=NO_ARG, arg1=NO_ARG, arg2=NO_ARG, arg3=NO_ARG, arg4=NO_ARG, arg5=NO_ARG, arg6=NO_ARG, arg7=NO_ARG, arg8=NO_ARG, arg9=NO_ARG):
-		var signal_args = GdObjects.array_filter_value([arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9], NO_ARG)
+	# receives the signal from the emitter with all emitted signal arguments and additional the emitter and signal_name as last two arguements
+	func _on_signal_emmited( arg0=NO_ARG, arg1=NO_ARG, arg2=NO_ARG, arg3=NO_ARG, arg4=NO_ARG, arg5=NO_ARG, arg6=NO_ARG, arg7=NO_ARG, arg8=NO_ARG, arg9=NO_ARG, arg10=NO_ARG, arg11=NO_ARG):
+		var signal_args = GdObjects.array_filter_value([arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11], NO_ARG)
+		# extract the emitter and signal_name from the last two arguments (see line 61 where is added)
 		var signal_name :String = signal_args.pop_back()
 		var emitter :Object = signal_args.pop_back()
 		#prints("_on_signal_emmited:", emitter, signal_name, signal_args)
@@ -117,7 +120,6 @@ func _init(caller :WeakRef, emitter :Object, expect_result := EXPECT_SUCCESS):
 	GdAssertReports.reset_last_error_line_number()
 	# set report consumer to be use to report the final result
 	_report_consumer = caller.get_ref().get_meta(GdUnitReportConsumer.META_PARAM)
-	_signal_collector.connect_signals(emitter)
 	# we expect the test will fail
 	if expect_result == EXPECT_FAIL:
 		_expect_fail = true
@@ -175,6 +177,12 @@ func wait_until(timeout := 2000) -> GdUnitSignalAssert:
 		_timeout = timeout
 	return self
 
+# Verifies the signal exists on the emitter
+func is_signal_exists(signal_name :String) -> GdUnitSignalAssert:
+	if not _emitter.has_signal(signal_name):
+		report_error("The signal '%s' not exists on object '%s'." % [signal_name, _emitter.get_class()])
+	return self
+
 # Verifies that given signal is emitted until waiting time
 func is_emitted(name :String, args := []) -> GdUnitSignalAssert:
 	_line_number = GdUnitAssertImpl._get_line_number()
@@ -195,6 +203,7 @@ func _wail_until_signal(signal_name :String, expected_args :Array, expect_not_em
 		report_error("Can't wait for non-existion signal '%s' on object '%s'." % [signal_name,_emitter.get_class()])
 		yield(Engine.get_main_loop(), "idle_frame")
 		return self
+	_signal_collector.register_emitter(_emitter)
 	var caller = _caller.get_ref()
 	var time_scale = Engine.get_time_scale()
 	var timeout = Timer.new()
@@ -202,14 +211,12 @@ func _wail_until_signal(signal_name :String, expected_args :Array, expect_not_em
 	timeout.set_one_shot(true)
 	timeout.connect("timeout", self, "_on_timeout")
 	timeout.start((_timeout/1000.0)*time_scale)
-	
-	while not _interrupted:
+	var is_signal_emitted = false
+	while not _interrupted and not is_signal_emitted:
 		yield(Engine.get_main_loop(), "idle_frame")
-		var is_signal_emitted = _signal_collector.match(_emitter, signal_name, expected_args)
-		if is_signal_emitted:
-			if expect_not_emitted:
-				report_error(GdAssertMessages.error_signal_emitted(signal_name, expected_args, LocalTime.elapsed(_timeout-timeout.time_left*1000)))
-			break
+		is_signal_emitted = _signal_collector.match(_emitter, signal_name, expected_args)
+		if is_signal_emitted and expect_not_emitted:
+			report_error(GdAssertMessages.error_signal_emitted(signal_name, expected_args, LocalTime.elapsed(_timeout-timeout.time_left*1000)))
 	
 	if _interrupted and not expect_not_emitted:
 		report_error(GdAssertMessages.error_wait_signal(signal_name, expected_args, LocalTime.elapsed(_timeout)))

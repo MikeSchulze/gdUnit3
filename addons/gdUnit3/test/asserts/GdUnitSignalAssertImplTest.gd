@@ -95,3 +95,18 @@ func test_node_changed_emitting_signals():
 	
 	node.show()
 	yield(assert_signal(node).wait_until(200).is_emitted("draw"), "completed")
+
+func test_is_signal_exists() -> void:
+	var node :Node2D = auto_free(Node2D.new())
+	
+	assert_signal(node).is_signal_exists("visibility_changed")\
+		.is_signal_exists("draw")\
+		.is_signal_exists("visibility_changed")\
+		.is_signal_exists("tree_entered")\
+		.is_signal_exists("tree_exiting")\
+		.is_signal_exists("child_entered_tree")\
+		.is_signal_exists("child_exiting_tree")\
+		.is_signal_exists("tree_exited")
+	
+	assert_signal(node, GdUnitAssert.EXPECT_FAIL).is_signal_exists("not_existing_signal")\
+		.has_failure_message("The signal 'not_existing_signal' not exists on object 'Node2D'.")
