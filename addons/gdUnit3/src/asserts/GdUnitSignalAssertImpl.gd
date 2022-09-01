@@ -82,7 +82,8 @@ class SignalCollector:
 		var signal_name :String = signal_args.pop_back()
 		var emitter :Object = signal_args.pop_back()
 		#prints("_on_signal_emmited:", emitter, signal_name, signal_args)
-		_collected_signals[emitter][signal_name].append(signal_args)
+		if is_signal_collecting(emitter, signal_name):
+			_collected_signals[emitter][signal_name].append(signal_args)
 	
 	func reset_received_signals(emitter :Object):
 		#debug_signal_list("before claer");
