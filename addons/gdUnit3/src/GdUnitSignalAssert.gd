@@ -10,6 +10,10 @@ func is_emitted(name :String, args := []) -> GdUnitSignalAssert:
 func is_not_emitted(name :String, args := []) -> GdUnitSignalAssert:
 	return self
 
+# Verifies the signal exists on the emitter
+func is_signal_exists(name :String) -> GdUnitSignalAssert:
+	return self
+
 # Verifies the failure message is equal to expected one.
 func has_failure_message(expected: String) -> GdUnitSignalAssert:
 	return self

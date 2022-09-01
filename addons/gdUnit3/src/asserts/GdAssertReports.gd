@@ -13,6 +13,10 @@ static func report_success(gd_assert :GdUnitAssert) -> GdUnitAssert:
 	gd_assert.send_report(GdUnitReport.new().create(GdUnitReport.SUCCESS, gd_assert._get_line_number(), error_msg))
 	return gd_assert
 
+static func report_warning(gd_assert :GdUnitAssert, message :String, line_number :int) -> GdUnitAssert:
+	gd_assert.send_report(GdUnitReport.new().create(GdUnitReport.WARN, line_number, message))
+	return gd_assert
+
 static func report_error(message:String, gd_assert :GdUnitAssert, line_number :int) -> GdUnitAssert:
 	if gd_assert != null:
 		gd_assert._is_failed = true
