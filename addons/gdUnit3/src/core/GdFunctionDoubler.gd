@@ -56,7 +56,7 @@ static func extract_constructor_args(args :Array) -> PoolStringArray:
 	return constructor_args
 
 static func get_default(arg :GdFunctionArgument):
-	if arg.default():
+	if arg.default() != GdFunctionArgument.UNDEFINED:
 		return arg.default()
 	else:
 		var arg_type := GdObjects.string_to_type(arg._type)

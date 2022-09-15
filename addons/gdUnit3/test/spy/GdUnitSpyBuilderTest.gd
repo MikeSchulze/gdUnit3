@@ -133,7 +133,7 @@ func test_double_void_function_without_args_and_varargs() -> void:
 func test_double_static_script_function_no_args() -> void:
 	var doubler := GdUnitSpyBuilder.SpyFunctionDoubler.new()
 	
-	var fd := GdFunctionDescriptor.new( "foo", false, true, false, TYPE_NIL, "", [])
+	var fd := GdFunctionDescriptor.new( "foo", 23, false, true, false, TYPE_NIL, "", [])
 	assert_array(doubler.double(fd)).contains_exactly([
 		"static func foo():",
 		"	var args :Array = [\"foo\"] + []",
@@ -150,8 +150,8 @@ func test_double_static_script_function_no_args() -> void:
 func test_double_static_script_function_with_args() -> void:
 	var doubler := GdUnitSpyBuilder.SpyFunctionDoubler.new()
 	
-	var fd := GdFunctionDescriptor.new( "foo", false, true, false, TYPE_NIL, "", [
-		GdFunctionArgument.new("arg1", "bool", ""),
+	var fd := GdFunctionDescriptor.new( "foo", 23, false, true, false, TYPE_NIL, "", [
+		GdFunctionArgument.new("arg1", "bool"),
 		GdFunctionArgument.new("arg2", "String", "\"default\"")
 	])
 	assert_array(doubler.double(fd)).contains_exactly([
@@ -170,7 +170,7 @@ func test_double_static_script_function_with_args() -> void:
 func test_double_script_function_no_args() -> void:
 	var doubler := GdUnitSpyBuilder.SpyFunctionDoubler.new()
 	
-	var fd := GdFunctionDescriptor.new( "foo", false, false, false, TYPE_NIL, "", [])
+	var fd := GdFunctionDescriptor.new( "foo", 23, false, false, false, TYPE_NIL, "", [])
 	assert_array(doubler.double(fd)).contains_exactly([
 		"func foo():",
 		"	var args :Array = [\"foo\"] + []",
@@ -187,8 +187,8 @@ func test_double_script_function_no_args() -> void:
 func test_double_script_function_with_args() -> void:
 	var doubler := GdUnitSpyBuilder.SpyFunctionDoubler.new()
 	
-	var fd := GdFunctionDescriptor.new( "foo", false, false, false, TYPE_NIL, "", [
-		GdFunctionArgument.new("arg1", "bool", ""),
+	var fd := GdFunctionDescriptor.new( "foo", 23, false, false, false, TYPE_NIL, "", [
+		GdFunctionArgument.new("arg1", "bool"),
 		GdFunctionArgument.new("arg2", "String", "\"default\"")
 	])
 	assert_array(doubler.double(fd)).contains_exactly([

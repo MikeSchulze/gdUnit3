@@ -82,7 +82,9 @@ func _parse_test_suite(script :GDScript) -> GdUnitTestSuite:
 	if not test_case_names.empty():
 		var base_script :GDScript = test_suite.get_script().get_base_script()
 		while base_script is GDScript:
-			_parse_and_add_test_cases(test_suite, base_script, test_case_names)
+			# do not parse testsuite itself
+			if base_script.resource_path.find("GdUnitTestSuite") == -1:
+				_parse_and_add_test_cases(test_suite, base_script, test_case_names)
 			base_script = base_script.get_base_script()
 	return test_suite
 
@@ -101,52 +103,26 @@ static func parse_test_suite_name(script :Script) -> String:
 
 func _parse_and_add_test_cases(test_suite, script :GDScript, test_case_names :PoolStringArray):
 	var test_cases_to_find = Array(test_case_names)
-	var file := File.new()
-	file.open(script.resource_path, File.READ)
-	var line_number:int = 0
-	file.seek(0)
-	
-	while not file.eof_reached():
-		var row := GdScriptParser.clean_up_row(file.get_line())
-		line_number += 1
-		
-		# ignore comments and empty lines and not test functions
-		if row.begins_with("#") || row.length() == 0 || row.find("functest") == -1:
-			continue
-		
-		# extract current test case name from the row
-		var func_name := _script_parser.parse_func_name(row)
-		if test_cases_to_find.has(func_name):
-			test_cases_to_find.erase(func_name)
+	var source := _script_parser.load_source_code(script, [script.resource_path])
+	var functions = _script_parser.parse_functions(source, "", [script.resource_path], test_case_names)
+	for function in functions:
+		var fd :GdFunctionDescriptor = function
+		if test_cases_to_find.has(fd.name()):
 			var timeout := _TestCase.DEFAULT_TIMEOUT
 			var iterations := Fuzzer.ITERATION_DEFAULT_COUNT
 			var seed_value := -1
 			var fuzzers := PoolStringArray()
-			while (not file.eof_reached()):
-				# grap test arguments
-				var parsed_timeout = _script_parser.parse_argument(row, _TestCase.ARGUMENT_TIMEOUT, null)
-				if parsed_timeout != null:
-					timeout = parsed_timeout
-				
-				var parsed_iterations = _script_parser.parse_argument(row, Fuzzer.ARGUMENT_ITERATIONS, null)
-				if parsed_iterations != null:
-					iterations = parsed_iterations
-				
-				var parsed_seed_value = _script_parser.parse_argument(row, Fuzzer.ARGUMENT_SEED, null)
-				if parsed_seed_value != null:
-					seed_value = parsed_seed_value
-				
-				fuzzers.append_array( _script_parser.parse_fuzzers(row))
-				
-				# if function end reached?
-				if _script_parser.is_func_end(row):
-					break
-				row = GdScriptParser.clean_up_row(file.get_line())
-				line_number += 1
-				
-			test_suite.add_child(_TestCase.new().configure(func_name, line_number, script.resource_path, timeout, fuzzers, iterations, seed_value))
-	
-	file.close()
+			for arg in fd.args():
+				var fa := arg as GdFunctionArgument
+				if fa.name() == _TestCase.ARGUMENT_TIMEOUT and fa.default() != null:
+					timeout = int(fa.default())
+				if fa.name() == Fuzzer.ARGUMENT_ITERATIONS and fa.default() != null:
+					iterations = int(fa.default())
+				if fa.name() == Fuzzer.ARGUMENT_SEED and fa.default() != null:
+					seed_value = int(fa.default())
+				if fa.type() == "Fuzzer":
+					fuzzers.append(fa.name() + ":=" + fa.default())
+			test_suite.add_child(_TestCase.new().configure(fd.name(), fd.line_number(), script.resource_path, timeout, fuzzers, iterations, seed_value))
 
 # converts given file name by configured naming convention
 static func _to_naming_convention(file_name :String) -> String:

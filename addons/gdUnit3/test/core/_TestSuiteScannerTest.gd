@@ -8,7 +8,6 @@ const __source = 'res://addons/gdUnit3/src/core/_TestSuiteScanner.gd'
 func before_test():
 	ProjectSettings.set_setting(GdUnitSettings.TEST_SITE_NAMING_CONVENTION, GdUnitSettings.NAMING_CONVENTIONS.AUTO_DETECT)
 	GdUnitTools.clear_tmp()
-	
 
 func after():
 	GdUnitTools.clear_tmp()
@@ -214,6 +213,13 @@ func test_parse_and_add_test_cases() -> void:
 	var test_suite :GdUnitTestSuite = auto_free(GdUnitTestSuite.new())
 	var script := GDScript.new()
 	script.resource_path = "res://addons/gdUnit3/test/core/resources/test_script_with_arguments.gd"
+	var file := File.new()
+	file.open(script.resource_path, File.READ)
+	var line_number:int = 0
+	file.seek(0)
+	script.source_code = file.get_as_text()
+	file.close()
+	
 	test_suite.set_script(script)
 	var test_case_names := PoolStringArray([
 		"test_no_args",
@@ -267,7 +273,7 @@ func test_scan_by_inheritance_class_path() -> void:
 		ts.free()
 
 func test_get_test_case_line_number() -> void:
-	assert_int(_TestSuiteScanner.get_test_case_line_number("res://addons/gdUnit3/test/core/_TestSuiteScannerTest.gd", "get_test_case_line_number")).is_equal(269)
+	assert_int(_TestSuiteScanner.get_test_case_line_number("res://addons/gdUnit3/test/core/_TestSuiteScannerTest.gd", "get_test_case_line_number")).is_equal(275)
 	assert_int(_TestSuiteScanner.get_test_case_line_number("res://addons/gdUnit3/test/core/_TestSuiteScannerTest.gd", "unknown")).is_equal(-1)
 
 func test__to_naming_convention() -> void:
@@ -295,3 +301,15 @@ func test_is_script_format_supported() -> void:
 	assert_bool(_TestSuiteScanner._is_script_format_supported("res://exampe.gdns")).is_false()
 	assert_bool(_TestSuiteScanner._is_script_format_supported("res://exampe.vs")).is_false()
 	assert_bool(_TestSuiteScanner._is_script_format_supported("res://exampe.tres")).is_false()
+
+func test_load_parameterized_test_suite():
+	var scanner :_TestSuiteScanner = auto_free(_TestSuiteScanner.new())
+	var test_suites := scanner.scan("res://addons/gdUnit3/test/core/resources/testsuites/ParameterizedTestSuite.gd")
+	
+	assert_array(test_suites).extractv(extr("get_name"), extr("get_script.get_path"), extr("get_children.get_name"))\
+		.contains_exactly_in_any_order([
+			tuple("ParameterizedTestSuite", "res://addons/gdUnit3/test/core/resources/testsuites/ParameterizedTestSuite.gd", ["test_no_parameters", "test_parameterized"])
+		])
+	# finally free all scaned test suites
+	for ts in test_suites:
+		ts.free()

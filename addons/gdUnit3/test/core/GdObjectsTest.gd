@@ -492,12 +492,12 @@ func test_extract_class_functions() -> void:
 	var functions := GdObjects.extract_class_functions("Resource", [""])
 	for f in functions:
 		if f["name"] == "get_path":
-			assert_str(GdFunctionDescriptor.extract_from(f)._to_string()).is_equal("func get_path() -> String:")
+			assert_str(GdFunctionDescriptor.extract_from(f)._to_string()).is_equal("[Line:-1] func get_path() -> String:")
 	
 	functions = GdObjects.extract_class_functions("CustomResourceTestClass", ["res://addons/gdUnit3/test/mocker/resources/CustomResourceTestClass.gd"])
 	for f in functions:
 		if f["name"] == "get_path":
-			assert_str(GdFunctionDescriptor.extract_from(f)._to_string()).is_equal("func get_path() -> String:")
+			assert_str(GdFunctionDescriptor.extract_from(f)._to_string()).is_equal("[Line:-1] func get_path() -> String:")
 
 func test_all_types() -> void:
 	assert_array(GdObjects.all_types()).contains_exactly([
@@ -530,6 +530,7 @@ func test_all_types() -> void:
 		TYPE_COLOR_ARRAY,
 		GdObjects.TYPE_VOID,
 		GdObjects.TYPE_VARARG,
+		GdObjects.TYPE_FUNC,
 	])
 
 func test_to_camel_case() -> void:

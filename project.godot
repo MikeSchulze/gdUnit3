@@ -1019,6 +1019,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/test/mocker/resources/OverridenGetClassTestClass.gd"
 }, {
+"base": "GdUnitTestSuite",
+"class": "ParameterizedTestSuite",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/test/core/resources/testsuites/ParameterizedTestSuite.gd"
+}, {
 "base": "Resource",
 "class": "PascalCaseWithClassName",
 "language": "GDScript",
@@ -1392,6 +1397,7 @@ _global_script_class_icons={
 "Munderwood_Pathing_World": "",
 "NetworkServerTest": "",
 "OverridenGetClassTestClass": "",
+"ParameterizedTestSuite": "",
 "PascalCaseWithClassName": "",
 "Person": "",
 "RPC": "",

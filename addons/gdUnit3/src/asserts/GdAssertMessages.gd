@@ -30,6 +30,8 @@ static func _current(value, delimiter ="\n") -> String:
 		TYPE_REAL:
 			return "'[color=%s]%f[/color]'" % [VALUE_COLOR, value]
 		TYPE_OBJECT:
+			#if value.has_method("_to_string"):
+			#	return "[color=%s]<%s>[/color]" % [VALUE_COLOR, value._to_string()]
 			return "[color=%s]<%s>[/color]" % [VALUE_COLOR, value.get_class()]
 		_:
 			if GdObjects.is_array_type(value):
@@ -45,6 +47,8 @@ static func _expected(value, delimiter ="\n") -> String:
 		TYPE_REAL:
 			return "'[color=%s]%f[/color]'" % [VALUE_COLOR, value]
 		TYPE_OBJECT:
+			#if value.has_method("_to_string"):
+			#	return "[color=%s]<%s>[/color]" % [VALUE_COLOR, value._to_string()]
 			return "[color=%s]<%s>[/color]" % [VALUE_COLOR, value.get_class()]
 		_:
 			if GdObjects.is_array_type(value):

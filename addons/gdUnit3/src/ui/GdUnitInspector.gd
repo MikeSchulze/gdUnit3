@@ -90,7 +90,8 @@ func _process(_delta):
 # is checking if the user has press the editor stop scene 
 func _check_test_run_stopped_manually():
 	if _is_test_running_but_stop_pressed():
-		push_warning("Test Runner scene was stopped manually, force stopping the current test run!")
+		if GdUnitSettings.is_verbose_assert_warnings():
+			push_warning("Test Runner scene was stopped manually, force stopping the current test run!")
 		_gdUnit_stop(_client_id)
 
 func _is_test_running_but_stop_pressed():
