@@ -185,19 +185,19 @@ static func create_test_suite(test_suite_path :String, source_path :String) -> R
 
 static func get_test_case_line_number(resource_path :String, func_name :String) -> int:
 	var file := File.new()
-	file.open(resource_path, File.READ)
-	var script_parser := GdScriptParser.new()
-	var line_number = 0
-	while not file.eof_reached():
-		var row := GdScriptParser.clean_up_row(file.get_line())
-		line_number += 1
-		# ignore comments and empty lines and not test functions
-		if row.begins_with("#") || row.length() == 0 || row.find("functest") == -1:
-			continue
-		# abort if test case name found
-		if script_parser.parse_func_name(row) == "test_" + func_name:
-			file.close()
-			return line_number
+	if file.open(resource_path, File.READ) == OK:
+		var script_parser := GdScriptParser.new()
+		var line_number = 0
+		while not file.eof_reached():
+			var row := GdScriptParser.clean_up_row(file.get_line())
+			line_number += 1
+			# ignore comments and empty lines and not test functions
+			if row.begins_with("#") || row.length() == 0 || row.find("functest") == -1:
+				continue
+			# abort if test case name found
+			if script_parser.parse_func_name(row) == "test_" + func_name:
+				file.close()
+				return line_number
 	file.close()
 	return -1
 

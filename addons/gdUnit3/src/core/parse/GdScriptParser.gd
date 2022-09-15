@@ -91,7 +91,7 @@ class Token extends Reference:
 		_is_operator = is_operator
 		_consumed = token.length()
 		_regex = regex
-
+	
 	func match(input: String, pos: int) -> bool:
 		if _regex:
 			var result := _regex.search(input, pos)
@@ -100,19 +100,19 @@ class Token extends Reference:
 			_consumed = result.get_end() - result.get_start()
 			return pos == result.get_start()
 		return input.findn(_token, pos) == pos
-
+	
 	func is_operator() -> bool:
 		return _is_operator
-
+	
 	func is_inner_class() -> bool:
 		return _token == "class"
-
+	
 	func is_variable() -> bool:
 		return false
-
+	
 	func is_token(token_name :String) -> bool:
 		return _token == token_name
-
+	
 	func _to_string():
 		return "{" + _token + "}"
 
@@ -544,7 +544,7 @@ func load_source_code(script :GDScript, script_path :PoolStringArray) -> PoolStr
 func get_class_name(script :GDScript) -> String:
 	var source_code := to_unix_format(script.source_code)
 	var source_rows := source_code.split("\n")
-
+	
 	for index in min(10, source_rows.size()):
 		var input = clean_up_row(source_rows[index])
 		var token := next_token(input, 0)
@@ -570,7 +570,7 @@ func parse_functions(rows :PoolStringArray, clazz_name :String, clazz_path :Pool
 		if row.begins_with("\t"):
 			continue
 		var input = clean_up_row(row)
-		# parse only include functions
+		# skip comments and empty lines
 		if input.begins_with("#") or input.length() == 0:
 			continue
 		var token := next_token(input, 0)

@@ -62,7 +62,7 @@ func _process(delta):
 				var time = LocalTime.now()
 				prints("Scan for test suites.")
 				_test_suites_to_process = load_test_suits()
-				prints("Scanend %d test suites in" % _test_suites_to_process.size(), time.elapsed_since())
+				prints("Scanning of %d test suites took" % _test_suites_to_process.size(), time.elapsed_since())
 				gdUnitInit()
 				_state = RUN
 		RUN:
