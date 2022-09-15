@@ -6,6 +6,7 @@ var _type: String
 var _default_value
 
 const UNDEFINED = "<-NO_ARG->"
+const ARG_PARAMETERIZED_TEST = "test_parameters"
 
 func _init(name :String, type :String ="", default_value = UNDEFINED):
 	_name = name
@@ -20,6 +21,16 @@ func default():
 
 func type() -> String:
 	return _type
+
+func is_parameter_set() -> bool:
+	return _name == ARG_PARAMETERIZED_TEST
+
+static func get_parameter_set(parameters :Array) -> GdFunctionArgument:
+	for current in parameters:
+		var arg :GdFunctionArgument = current
+		if arg != null and arg.is_parameter_set():
+			return arg
+	return null
 
 func _to_string() -> String:
 	var s = _name

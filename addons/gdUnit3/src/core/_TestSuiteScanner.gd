@@ -120,9 +120,15 @@ func _parse_and_add_test_cases(test_suite, script :GDScript, test_case_names :Po
 					iterations = int(fa.default())
 				if fa.name() == Fuzzer.ARGUMENT_SEED and fa.default() != null:
 					seed_value = int(fa.default())
+				# is test using fuzzers?
 				if fa.type() == "Fuzzer":
 					fuzzers.append(fa.name() + ":=" + fa.default())
-			test_suite.add_child(_TestCase.new().configure(fd.name(), fd.line_number(), script.resource_path, timeout, fuzzers, iterations, seed_value))
+			# create new test
+			var test = _TestCase.new().configure(fd.name(), fd.line_number(), script.resource_path, timeout, fuzzers, iterations, seed_value)
+			# is parameterized test?
+			if fd.is_parameterized():
+				test.set_test_parameters(fd.args())
+			test_suite.add_child(test)
 
 # converts given file name by configured naming convention
 static func _to_naming_convention(file_name :String) -> String:

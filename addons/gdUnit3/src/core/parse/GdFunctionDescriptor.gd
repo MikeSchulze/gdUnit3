@@ -56,6 +56,13 @@ func is_engine() -> bool:
 func is_vararg() -> bool:
 	return not _varargs.empty()
 
+func is_parameterized() -> bool:
+	for current in _args:
+		var arg :GdFunctionArgument = current
+		if arg.name() == GdFunctionArgument.ARG_PARAMETERIZED_TEST:
+			return true
+	return false
+
 func return_type() -> int:
 	return _return_type
 	

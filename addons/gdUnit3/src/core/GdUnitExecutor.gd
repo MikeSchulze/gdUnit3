@@ -64,7 +64,7 @@ func fire_test_skipped(test_suite :GdUnitTestSuite, test_case :_TestCase):
 		GdUnitEvent.SKIPPED: true,
 		GdUnitEvent.SKIPPED_COUNT: 1,
 	}
-	var report := GdUnitReport.new().create(GdUnitReport.WARN, test_case.line_number(), "Test skipped")
+	var report := GdUnitReport.new().create(GdUnitReport.WARN, test_case.line_number(), "Test skipped %s" % test_case.error())
 	fire_event(GdUnitEvent.new()\
 		.test_after(test_suite.get_script().resource_path, test_suite.get_name(), test_case.get_name(), statistics, [report]))
 
@@ -265,6 +265,19 @@ func execute_test_case_iterative(test_suite :GdUnitTestSuite, test_case :_TestCa
 			break
 	return _test_run_state
 
+func execute_test_case_parameterizied(test_suite :GdUnitTestSuite, test_case :_TestCase) -> GDScriptFunctionState:
+	var fs = test_before(test_suite, test_case)
+	if GdUnitTools.is_yielded(fs):
+		yield(fs, "completed")
+	
+	# TODO - implement iterate over test paramater set
+	
+	
+	fs = test_after(test_suite, test_case)
+	if GdUnitTools.is_yielded(fs):
+		yield(fs, "completed")
+	return fs
+
 func execute(test_suite :GdUnitTestSuite) -> GDScriptFunctionState:
 	return Execute(test_suite)
 
@@ -299,7 +312,9 @@ func Execute(test_suite :GdUnitTestSuite) -> GDScriptFunctionState:
 			if test_case.is_skipped():
 				fire_test_skipped(test_suite, test_case)
 			else:
-				if test_case.has_fuzzer():
+				if test_case.is_parameterized():
+					fs = execute_test_case_parameterizied(test_suite, test_case)
+				elif test_case.has_fuzzer():
 					fs = execute_test_case_iterative(test_suite, test_case)
 				else:
 					fs = execute_test_case_single(test_suite, test_case)

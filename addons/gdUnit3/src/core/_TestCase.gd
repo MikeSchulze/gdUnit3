@@ -8,9 +8,11 @@ const ARGUMENT_TIMEOUT := "timeout"
 var _iterations: int = 1
 var _seed: int
 var _fuzzers: PoolStringArray = PoolStringArray()
+var _parameter_set := Array()
 var _line_number: int = -1
 var _script_path: String
 var _skipped := false
+var _error := ""
 var _expect_to_interupt := false
 
 var _timer : Timer
@@ -84,14 +86,20 @@ func stop_timer() :
 		_timer.stop()
 		_timer.call_deferred("free")
 
-func is_interupted() -> bool:
-	return _interupted
-
 func expect_to_interupt() -> void:
 	_expect_to_interupt = true
 
+func is_interupted() -> bool:
+	return _interupted
+
 func is_expect_interupted() -> bool:
 	 return _expect_to_interupt
+
+func is_parameterized() -> bool:
+	return _parameter_set.size() != 0
+
+func is_skipped() -> bool:
+	return _skipped
 
 func line_number() -> int:
 	return _line_number
@@ -124,8 +132,15 @@ func generate_seed() -> void:
 func skip(skipped :bool) -> void:
 	_skipped = skipped
 
-func is_skipped() -> bool:
-	return _skipped
+func set_test_parameters(parameter_set :Array) -> void:
+	_error = GdTestParameterSetValidator.validate(parameter_set)
+	if not _error.empty():
+		skip(true)
+		return
+	_parameter_set = parameter_set
+
+func error() -> String:
+	return _error
 
 func _to_string():
 	return "%s :%d (%dms)" % [get_name(), _line_number, _timeout]

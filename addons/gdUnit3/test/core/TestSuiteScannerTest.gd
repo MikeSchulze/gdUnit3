@@ -328,7 +328,14 @@ func test_load_parameterized_test_suite():
 	
 	assert_array(test_suites).extractv(extr("get_name"), extr("get_script.get_path"), extr("get_children.get_name"))\
 		.contains_exactly_in_any_order([
-			tuple("ParameterizedTestSuite", "res://addons/gdUnit3/test/core/resources/testsuites/ParameterizedTestSuite.gd", ["test_no_parameters", "test_parameterized"])
+			tuple("ParameterizedTestSuite", "res://addons/gdUnit3/test/core/resources/testsuites/ParameterizedTestSuite.gd",
+				["test_no_parameters",
+				"test_parameterized",
+				"test_parameterized_to_less_args",
+				"test_parameterized_to_many_args",
+				"test_parameterized_to_less_args_at_index_1",
+				"test_parameterized_invalid_struct",
+				"test_parameterized_invalid_args"])
 		])
 	# finally free all scaned test suites
 	for ts in test_suites:

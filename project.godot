@@ -305,6 +305,11 @@ _global_script_classes=[ {
 "path": "res://addons/gdUnit3/src/core/parse/GdScriptParser.gd"
 }, {
 "base": "Reference",
+"class": "GdTestParameterSetValidator",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/src/core/parse/GdTestParameterSetValidator.gd"
+}, {
+"base": "Reference",
 "class": "GdUnit3MonoAPI",
 "language": "GDScript",
 "path": "res://addons/gdUnit3/src/mono/GdUnit3MonoAPI.gd"
@@ -1249,6 +1254,7 @@ _global_script_class_icons={
 "GdMarkDownReaderTest": "",
 "GdObjects": "",
 "GdScriptParser": "",
+"GdTestParameterSetValidator": "",
 "GdUnit3MonoAPI": "",
 "GdUnit3MonoAPITest": "",
 "GdUnit3Version": "",
