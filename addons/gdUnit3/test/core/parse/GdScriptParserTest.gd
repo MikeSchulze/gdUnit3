@@ -80,6 +80,14 @@ func test_parse_arguments():
 			GdFunctionArgument.new("a", "int"),
 			GdFunctionArgument.new("b", "int"),
 			GdFunctionArgument.new("parameters", "Array", "[[1,2],[3,4],[5,6]]")])
+	
+	assert_array(_parser.parse_arguments("func test_values(a:Vector2, b:Vector2, expected:Vector2, test_parameters:=[[Vector2.ONE,Vector2.ONE,Vector2(1,1)]]):"))\
+		.contains_exactly([
+			GdFunctionArgument.new("a", "Vector2"),
+			GdFunctionArgument.new("b", "Vector2"),
+			GdFunctionArgument.new("expected", "Vector2"),
+			GdFunctionArgument.new("test_parameters", "Array", "[[Vector2.ONE,Vector2.ONE,Vector2(1,1)]]"),
+		])
 
 func test_parse_arguments_with_super_constructor():
 	assert_array(_parser.parse_arguments('func foo().foo("abc"):')).is_empty()

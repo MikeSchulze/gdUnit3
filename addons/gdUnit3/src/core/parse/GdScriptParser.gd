@@ -364,8 +364,10 @@ func parse_arguments(row: String) -> Array:
 			in_function = true
 			bracket += 1
 			continue
-		# if function has no args or all args has parsed?
-		if token == TOKEN_BRACKET_CLOSE or (in_function and bracket == 0):
+		if token == TOKEN_BRACKET_CLOSE:
+			bracket -= 1
+		# if function end?
+		if in_function and bracket == 0:
 			return args
 		# is function
 		if token == TOKEN_FUNCTION_DECLARATION:
@@ -373,13 +375,13 @@ func parse_arguments(row: String) -> Array:
 			current_index += token._consumed
 			continue
 		# is fuzzer argument
-		if bracket == 1 and token is FuzzerToken:
+		if token is FuzzerToken:
 			var arg_value = _parse_end_function(input.substr(current_index), true)
 			current_index += arg_value.length()
 			args.append(GdFunctionArgument.new(token.name(), token.type(), arg_value))
 			continue
 		# is value argument
-		if bracket == 1 and token.is_variable():
+		if in_function and token.is_variable():
 			var arg_name = token.plain_value()
 			var arg_type = ""
 			var arg_value = GdFunctionArgument.UNDEFINED
@@ -425,6 +427,10 @@ func parse_arguments(row: String) -> Array:
 					value_type = TYPE_VECTOR3
 				elif arg_value.begins_with("AABB("):
 					value_type = TYPE_AABB
+				elif arg_value.begins_with("["):
+					value_type = TYPE_ARRAY
+				elif arg_value.begins_with("{"):
+					value_type = TYPE_DICTIONARY
 				else:
 					value_type = typeof(str2var(arg_value))
 					if value_type == TYPE_STRING and arg_value.find_last(")") == arg_value.length()-1:
@@ -475,7 +481,7 @@ func _parse_end_function(input: String, remove_trailing_char := false) -> String
 			"(": bracket_count += 1
 			")":
 				bracket_count -= 1
-				if bracket_count <= 0:
+				if bracket_count <= 0 and in_array <= 0:
 					end_of_func = true
 			",":
 				if bracket_count == 0 and in_array == 0:

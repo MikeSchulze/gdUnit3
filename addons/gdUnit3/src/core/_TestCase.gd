@@ -8,7 +8,7 @@ const ARGUMENT_TIMEOUT := "timeout"
 var _iterations: int = 1
 var _seed: int
 var _fuzzers: PoolStringArray = PoolStringArray()
-var _parameter_set := Array()
+var _input_value_set := Array()
 var _line_number: int = -1
 var _script_path: String
 var _skipped := false
@@ -39,13 +39,13 @@ func configure(name: String, line_number: int, script_path: String, timeout :int
 		_timeout = timeout
 	return self
 
-func execute(fuzzers := Array(), iteration := 0):
+func execute(input_values := Array(), iteration := 0):
 	if iteration == 0:
 		set_timeout()
 	_monitor.start()
-	if not fuzzers.empty():
-		update_fuzzers(fuzzers, iteration)
-		_fs = get_parent().callv(name, fuzzers)
+	if not input_values.empty():
+		update_fuzzers(input_values, iteration)
+		_fs = get_parent().callv(name, input_values)
 	else:
 		_fs = get_parent().call(name)
 	if GdUnitTools.is_yielded(_fs):
@@ -58,9 +58,10 @@ func execute(fuzzers := Array(), iteration := 0):
 		stop_timer()
 	return _fs
 
-func update_fuzzers(fuzzers :Array, iteration :int):
-	for fuzzer in fuzzers:
-		fuzzer._iteration_index = iteration + 1
+func update_fuzzers(input_values :Array, iteration :int):
+	for fuzzer in input_values:
+		if fuzzer is Fuzzer:
+			fuzzer._iteration_index = iteration + 1
 
 func set_timeout():
 	var time :float = _timeout * 0.001
@@ -73,7 +74,7 @@ func set_timeout():
 	_timer.start()
 
 func _test_case_timeout():
-	prints("interrupted by timeout",  self,  _timer,  _timer.time_left)
+	#prints("interrupted by timeout",  self,  _timer,  _timer.time_left)
 	_interupted = true
 	if _fs is GDScriptFunctionState:
 		_fs.emit_signal("completed")
@@ -96,7 +97,7 @@ func is_expect_interupted() -> bool:
 	 return _expect_to_interupt
 
 func is_parameterized() -> bool:
-	return _parameter_set.size() != 0
+	return _input_value_set.size() != 0
 
 func is_skipped() -> bool:
 	return _skipped
@@ -133,11 +134,14 @@ func skip(skipped :bool) -> void:
 	_skipped = skipped
 
 func set_test_parameters(parameter_set :Array) -> void:
-	_error = GdTestParameterSetValidator.validate(parameter_set)
+	_error = GdTestParameterSet.validate(parameter_set)
 	if not _error.empty():
 		skip(true)
 		return
-	_parameter_set = parameter_set
+	_input_value_set = GdTestParameterSet.get_input_values(parameter_set)
+
+func input_value_set() -> Array:
+	return _input_value_set
 
 func error() -> String:
 	return _error

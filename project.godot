@@ -305,9 +305,14 @@ _global_script_classes=[ {
 "path": "res://addons/gdUnit3/src/core/parse/GdScriptParser.gd"
 }, {
 "base": "Reference",
-"class": "GdTestParameterSetValidator",
+"class": "GdTestParameterSet",
 "language": "GDScript",
-"path": "res://addons/gdUnit3/src/core/parse/GdTestParameterSetValidator.gd"
+"path": "res://addons/gdUnit3/src/core/parse/GdTestParameterSet.gd"
+}, {
+"base": "GdUnitTestSuite",
+"class": "GdTestParameterSetTest",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/test/core/parse/GdTestParameterSetTest.gd"
 }, {
 "base": "Reference",
 "class": "GdUnit3MonoAPI",
@@ -1025,9 +1030,9 @@ _global_script_classes=[ {
 "path": "res://addons/gdUnit3/test/mocker/resources/OverridenGetClassTestClass.gd"
 }, {
 "base": "GdUnitTestSuite",
-"class": "ParameterizedTestSuite",
+"class": "ParameterizedTestCaseTest",
 "language": "GDScript",
-"path": "res://addons/gdUnit3/test/core/resources/testsuites/ParameterizedTestSuite.gd"
+"path": "res://addons/gdUnit3/test/core/ParameterizedTestCaseTest.gd"
 }, {
 "base": "Resource",
 "class": "PascalCaseWithClassName",
@@ -1254,7 +1259,8 @@ _global_script_class_icons={
 "GdMarkDownReaderTest": "",
 "GdObjects": "",
 "GdScriptParser": "",
-"GdTestParameterSetValidator": "",
+"GdTestParameterSet": "",
+"GdTestParameterSetTest": "",
 "GdUnit3MonoAPI": "",
 "GdUnit3MonoAPITest": "",
 "GdUnit3Version": "",
@@ -1398,7 +1404,7 @@ _global_script_class_icons={
 "Munderwood_Pathing_World": "",
 "NetworkServerTest": "",
 "OverridenGetClassTestClass": "",
-"ParameterizedTestSuite": "",
+"ParameterizedTestCaseTest": "",
 "PascalCaseWithClassName": "",
 "Person": "",
 "RPC": "",
@@ -1438,6 +1444,7 @@ _global_script_class_icons={
 
 config/name="gdUnit3"
 config/icon="res://icon.png"
+config/windows_native_icon=""
 
 [audio]
 
@@ -1448,10 +1455,29 @@ default_bus_layout=""
 gdscript/warnings/unused_signal=false
 gdscript/warnings/return_value_discarded=false
 
+[display]
+
+window/size/width=1024
+window/size/height=600
+
+[editor_plugins]
+
+enabled=PoolStringArray( "res://addons/gdUnit3/plugin.cfg" )
+
 [gdunit3]
 
 report/assert/verbose_errors=false
 report/assert/verbose_warnings=false
+templates/testsuite/GDScript="# GdUnit generated TestSuite
+#warning-ignore-all:unused_argument
+#warning-ignore-all:return_value_discarded
+class_name ${suite_class_name}
+extends GdUnitTestSuite
+
+# TestSuite generated from
+const __source = '${source_resource_path}'
+"
+settings/test/test_suite_naming_convention=0
 
 [network]
 
