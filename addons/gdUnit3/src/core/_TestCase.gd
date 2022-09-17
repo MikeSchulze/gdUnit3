@@ -8,7 +8,7 @@ const ARGUMENT_TIMEOUT := "timeout"
 var _iterations: int = 1
 var _seed: int
 var _fuzzers: PoolStringArray = PoolStringArray()
-var _input_value_set := Array()
+var _test_parameters := Array()
 var _line_number: int = -1
 var _script_path: String
 var _skipped := false
@@ -39,13 +39,13 @@ func configure(name: String, line_number: int, script_path: String, timeout :int
 		_timeout = timeout
 	return self
 
-func execute(input_values := Array(), iteration := 0):
+func execute(test_parameter := Array(), iteration := 0):
 	if iteration == 0:
 		set_timeout()
 	_monitor.start()
-	if not input_values.empty():
-		update_fuzzers(input_values, iteration)
-		_fs = get_parent().callv(name, input_values)
+	if not test_parameter.empty():
+		update_fuzzers(test_parameter, iteration)
+		_fs = get_parent().callv(name, test_parameter)
 	else:
 		_fs = get_parent().call(name)
 	if GdUnitTools.is_yielded(_fs):
@@ -97,10 +97,13 @@ func is_expect_interupted() -> bool:
 	 return _expect_to_interupt
 
 func is_parameterized() -> bool:
-	return _input_value_set.size() != 0
+	return _test_parameters.size() != 0
 
 func is_skipped() -> bool:
 	return _skipped
+
+func error() -> String:
+	return _error
 
 func line_number() -> int:
 	return _line_number
@@ -130,24 +133,15 @@ func generate_seed() -> void:
 	if _seed != -1:
 		seed(_seed)
 
-func skip(skipped :bool) -> void:
+func skip(skipped :bool, error :String = "") -> void:
 	_skipped = skipped
+	_error = error
 
-func set_test_parameters(parameter_set :Array) -> void:
-	_error = GdTestParameterSet.validate(parameter_set)
-	if not _error.empty():
-		skip(true)
-		return
-	
-	#use func call like we dit with fuzzer generation here
-	
-	_input_value_set = GdTestParameterSet.get_input_values(parameter_set)
+func set_test_parameters(test_parameters :Array) -> void:
+	_test_parameters = test_parameters
 
-func input_value_set() -> Array:
-	return _input_value_set
-
-func error() -> String:
-	return _error
+func test_parameters() -> Array:
+	return _test_parameters
 
 func _to_string():
 	return "%s :%d (%dms)" % [get_name(), _line_number, _timeout]

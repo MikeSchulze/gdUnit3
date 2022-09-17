@@ -275,16 +275,16 @@ func execute_test_case_parameterizied(test_suite :GdUnitTestSuite, test_case :_T
 	var current_error_count = _total_test_errors
 	var current_failed_count = _total_test_failed
 	var current_warning_count =_total_test_warnings
-	for input_values in test_case.input_value_set():
-		var fs = test_before(test_suite, test_case, input_values)
+	for test_parameter in test_case.test_parameters():
+		var fs = test_before(test_suite, test_case, test_parameter)
 		if GdUnitTools.is_yielded(fs):
 			yield(fs, "completed")
 		set_stage(STAGE_TEST_CASE_EXECUTE)
 		_memory_pool.set_pool(test_suite, GdUnitMemoryPool.TEST_EXECUTE, true)
-		fs = test_case.execute(input_values)
+		fs = test_case.execute(test_parameter)
 		if GdUnitTools.is_yielded(fs):
 			yield(_test_run_state, "completed")
-		fs = test_after(test_suite, test_case, input_values)
+		fs = test_after(test_suite, test_case, test_parameter)
 		if GdUnitTools.is_yielded(fs):
 			yield(fs, "completed")
 		if test_case.is_interupted():
@@ -338,6 +338,7 @@ func Execute(test_suite :GdUnitTestSuite) -> GDScriptFunctionState:
 			test_suite.set_active_test_case(test_case.get_name())
 			if test_case.is_skipped():
 				fire_test_skipped(test_suite, test_case)
+				yield(get_tree(), "idle_frame")
 			else:
 				if test_case.is_parameterized():
 					fs = execute_test_case_parameterizied(test_suite, test_case)

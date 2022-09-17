@@ -7,38 +7,56 @@ extends GdUnitTestSuite
 # TestSuite generated from
 const __source = 'res://addons/gdUnit3/src/core/parse/GdTestParameterSet.gd'
 
-func vec2_as_string(v :Vector2) -> String:
-	return "Vector2" + str(v)
+func test_example_a(a :int, b :int, test_parameters =[[1,2], [3,4]] ) -> void:
+	pass
 
-func vec3_as_string(v :Vector3) -> String:
-	return "Vector3" + str(v)
+func test_example_b(a :Vector2, b :Vector2, test_parameters =[
+	[Vector2.ZERO, Vector2.ONE], [Vector2(1.1, 3.2), Vector2.DOWN]] ) -> void:
+	pass
 
-func test_constants():
-	assert_that(GdTestParameterSet.Vector2_ZERO).is_equal(vec2_as_string(Vector2.ZERO))
-	assert_that(GdTestParameterSet.Vector2_ONE).is_equal(vec2_as_string(Vector2.ONE))
-	assert_that(GdTestParameterSet.Vector2_RIGHT).is_equal(vec2_as_string(Vector2.RIGHT))
-	assert_that(GdTestParameterSet.Vector2_LEFT).is_equal(vec2_as_string(Vector2.LEFT))
-	assert_that(GdTestParameterSet.Vector2_DOWN).is_equal(vec2_as_string(Vector2.DOWN))
-	assert_that(GdTestParameterSet.Vector2_UP).is_equal(vec2_as_string(Vector2.UP))
-	assert_that(GdTestParameterSet.Vector2_INF).is_equal(vec2_as_string(Vector2.INF))
+func test_example_c(a :Object, b :Object, test_parameters =[
+	[Resource.new(), Resource.new()],
+	[Resource.new(), null]
+	] ) -> void:
+	pass
+
+func build_param(value :float) -> Vector3:
+	return Vector3(value, value, value)
+
+func test_example_d(a :Vector3, b :Vector3, test_parameters =[
+	[build_param(1), build_param(3)],
+	[Vector3.BACK, Vector3.UP]
+	] ) -> void:
+	pass
+
+class TestObj extends Reference:
+	var _value :String
 	
-	assert_that(GdTestParameterSet.Vector3_DOWN).is_equal(vec3_as_string(Vector3.DOWN))
-	assert_that(GdTestParameterSet.Vector3_ZERO).is_equal(vec3_as_string(Vector3.ZERO))
-	assert_that(GdTestParameterSet.Vector3_ONE).is_equal(vec3_as_string(Vector3.ONE))
-	assert_that(GdTestParameterSet.Vector3_RIGHT).is_equal(vec3_as_string(Vector3.RIGHT))
-	assert_that(GdTestParameterSet.Vector3_LEFT).is_equal(vec3_as_string(Vector3.LEFT))
-	assert_that(GdTestParameterSet.Vector3_DOWN).is_equal(vec3_as_string(Vector3.DOWN))
-	assert_that(GdTestParameterSet.Vector3_UP).is_equal(vec3_as_string(Vector3.UP))
-	assert_that(GdTestParameterSet.Vector3_FORWARD).is_equal(vec3_as_string(Vector3.FORWARD))
-	assert_that(GdTestParameterSet.Vector3_BACK).is_equal(vec3_as_string(Vector3.BACK))
-	assert_that(GdTestParameterSet.Vector3_INF).is_equal(vec3_as_string(Vector3.INF))
+	func _init(value :String):
+		_value = value
+	
+	func _to_string() -> String:
+		return _value
 
-func test_convert_vector2_constants() -> void:
-	var vectors = "[Vector2.ZERO, Vector2.ONE, Vector2.LEFT, Vector2.RIGHT, Vector2.UP, Vector2.DOWN, Vector2.INF, Vector2(3.2, 4.2)]"
-	assert_that(GdTestParameterSet._convert_vector2_constants(vectors))\
-		.is_equal("[Vector2(0, 0), Vector2(1, 1), Vector2(-1, 0), Vector2(1, 0), Vector2(0, -1), Vector2(0, 1), Vector2(1.#INF, 1.#INF), Vector2(3.2, 4.2)]")
+func test_example_e(a: Object, b :Object, expected :String, test_parameters := [
+	[TestObj.new("abc"), TestObj.new("def"), "abcdef"]]):
+	pass
 
-func test_convert_vector3_constants() -> void:
-	var vectors = "[Vector3.ZERO, Vector3.ONE, Vector3.LEFT, Vector3.RIGHT, Vector3.UP, Vector3.DOWN, Vector3.FORWARD, Vector3.BACK, Vector3.INF, Vector3(3.2, 4.2, 1.2)]"
-	assert_that(GdTestParameterSet._convert_vector3_constants(vectors))\
-		.is_equal("[Vector3(0, 0, 0), Vector3(1, 1, 1), Vector3(-1, 0, 0), Vector3(1, 0, 0), Vector3(0, 1, 0), Vector3(0, -1, 0), Vector3(0, 0, -1), Vector3(0, 0, 1), Vector3(1.#INF, 1.#INF, 1.#INF), Vector3(3.2, 4.2, 1.2)]")
+# verify the used 'test_parameters' is completly resolved
+func test_extract_parameters() -> void:
+	var script :GDScript = load("res://addons/gdUnit3/test/core/parse/GdTestParameterSetTest.gd")
+	var parser := GdScriptParser.new()
+	var source := parser.load_source_code(script, [script.resource_path])
+	var functions := parser.parse_functions(source, "", [script.resource_path], ["test_example_a", "test_example_b", "test_example_c", "test_example_d", "test_example_e"])
+	assert_array(functions).extract("name").contains_exactly(["test_example_a", "test_example_b", "test_example_c", "test_example_d", "test_example_e"])
+	
+	assert_array(GdTestParameterSet.extract_test_parameters(script, functions[0]))\
+		.is_equal([[1,2], [3,4]])
+	assert_array(GdTestParameterSet.extract_test_parameters(script, functions[1]))\
+		.is_equal([[Vector2.ZERO, Vector2.ONE], [Vector2(1.1, 3.2), Vector2.DOWN]])
+	assert_array(GdTestParameterSet.extract_test_parameters(script, functions[2]))\
+		.is_equal([[Resource.new(), Resource.new()], [Resource.new(), null]])
+	assert_array(GdTestParameterSet.extract_test_parameters(script, functions[3]))\
+		.is_equal([[Vector3(1,1,1), Vector3(3,3,3)], [Vector3.BACK, Vector3.UP]])
+	assert_array(GdTestParameterSet.extract_test_parameters(script, functions[4]))\
+		.is_equal([[TestObj.new("abc"), TestObj.new("def"), "abcdef"]])

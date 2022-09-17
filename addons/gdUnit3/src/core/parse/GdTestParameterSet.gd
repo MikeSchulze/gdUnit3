@@ -1,65 +1,16 @@
 class_name GdTestParameterSet
 extends Reference
 
-const Vector2_ZERO  = "Vector2" + str(Vector2.ZERO)
-const Vector2_ONE   = "Vector2" + str(Vector2.ONE)
-const Vector2_RIGHT = "Vector2" + str(Vector2.RIGHT)
-const Vector2_LEFT  = "Vector2" + str(Vector2.LEFT)
-const Vector2_DOWN  = "Vector2" + str(Vector2.DOWN)
-const Vector2_UP    = "Vector2" + str(Vector2.UP)
-const Vector2_INF   = "Vector2" + str(Vector2.INF)
-
-const Vector3_ZERO    = "Vector3" + str(Vector3.ZERO)
-const Vector3_ONE     = "Vector3" + str(Vector3.ONE)
-const Vector3_RIGHT   = "Vector3" + str(Vector3.RIGHT)
-const Vector3_LEFT    = "Vector3" + str(Vector3.LEFT)
-const Vector3_UP      = "Vector3" + str(Vector3.UP)
-const Vector3_DOWN    = "Vector3" + str(Vector3.DOWN)
-const Vector3_BACK    = "Vector3" + str(Vector3.BACK)
-const Vector3_FORWARD = "Vector3" + str(Vector3.FORWARD)
-const Vector3_INF     = "Vector3" + str(Vector3.INF)
-
-# extraxts the input value set from given arguments
-static func get_input_values(input_arguments :Array) -> Array:
-	var input_values_arg :GdFunctionArgument = GdFunctionArgument.get_parameter_set(input_arguments)
-	if input_values_arg == null:
-		return []
-	# we need to replace constants with stringified values otherwise 'str2var' fails
-	var value = _convert_vector2_constants(input_values_arg.default())
-	value = _convert_vector3_constants(value)
-	return str2var(value) as Array
-
-static func _convert_vector2_constants(value :String) -> String:
-	if value.find("Vector2") == -1:
-		return value
-	return value\
-		.replace("Vector2.ZERO", Vector2_ZERO)\
-		.replace("Vector2.ONE", Vector2_ONE)\
-		.replace("Vector2.LEFT", Vector2_LEFT)\
-		.replace("Vector2.RIGHT", Vector2_RIGHT)\
-		.replace("Vector2.UP", Vector2_UP)\
-		.replace("Vector2.DOWN", Vector2_DOWN)\
-		.replace("Vector2.INF", Vector2_INF)\
-
-static func _convert_vector3_constants(value :String) -> String:
-	if value.find("Vector3") == -1:
-		return value
-	return value\
-		.replace("Vector3.ZERO", Vector3_ZERO)\
-		.replace("Vector3.ONE", Vector3_ONE)\
-		.replace("Vector3.LEFT", Vector3_LEFT)\
-		.replace("Vector3.RIGHT", Vector3_RIGHT)\
-		.replace("Vector3.UP", Vector3_UP)\
-		.replace("Vector3.DOWN", Vector3_DOWN)\
-		.replace("Vector3.FORWARD", Vector3_FORWARD)\
-		.replace("Vector3.BACK", Vector3_BACK)\
-		.replace("Vector3.INF", Vector3_INF)\
+const CLASS_TEMPLATE = """
+class_name _ParamaterExtractor extends '${clazz_path}'
+	
+func get_test_parameters() -> Array:
+	return ${test_params}
+	
+"""
 
 # validates the given arguments are complete and matches to required input fields of the test function
-static func validate(input_arguments :Array) -> String:
-	var input_value_set := get_input_values(input_arguments)
-	if input_value_set == null:
-		return "No argument '%s' found for parameterized test." % GdFunctionArgument.ARG_PARAMETERIZED_TEST
+static func validate(input_arguments :Array, input_value_set :Array) -> String:
 	# check given parameter set with test case arguments
 	var expected_arg_count = input_arguments.size() - 1
 	for input_values in input_value_set:
@@ -84,6 +35,30 @@ static func validate_parameter_types(input_arguments :Array, input_values :Array
 		var input_param_type := GdObjects.string_as_typeof(input_param.type())
 		var input_value = input_values[i]
 		var input_value_type := typeof(input_value)
+		# allow only equal types and object == null
+		if input_param_type == TYPE_OBJECT and input_value_type == TYPE_NIL:
+			continue
 		if input_param_type != input_value_type:
 			return "\n	The parameter set at index [%d] does not match the expected input parameters!\n	The value '%s' does not match the required input parameter <%s>." % [parameter_set_index, input_value, input_param]
 	return ""
+
+# extracts the arguments from the given test case, using kind of reflection solution
+# to restore the parameters from a string representation to real instance type
+static func extract_test_parameters(source :GDScript, fd :GdFunctionDescriptor) -> Array:
+	var parameter_arg := GdFunctionArgument.get_parameter_set(fd.args())
+	var source_code = CLASS_TEMPLATE\
+		.replace("${clazz_path}", source.resource_path)\
+		.replace("${test_params}", parameter_arg.default())
+	var script = GDScript.new()
+	script.source_code =  source_code
+	# enable this lines only for debuging
+	#script.resource_path = GdUnitTools.create_temp_dir("parameter_extract") + "/%s__.gd" % fd.name()
+	#Directory.new().remove(script.resource_path)
+	#ResourceSaver.save(script.resource_path, script)
+	var result = script.reload()
+	if result != OK:
+		push_error("Extracting test parameters failed! Script loading error: %s" % result)
+		return []
+	var instance = script.new()
+	instance.queue_free()
+	return instance.call("get_test_parameters")

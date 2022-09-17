@@ -19,7 +19,8 @@ static func load_test_suite(resource_path :String, script_type = GD_SUITE) -> No
 static func load_test_suite_gd(resource_path :String) -> Node:
 	var script := GDScript.new()
 	script.source_code = GdUnitTools.resource_as_string(resource_path)
-	script.resource_path = resource_path
+	# use different resource path to prevent already loade conflicts
+	script.resource_path = resource_path.replace(".gd", "__.gd")
 	script.reload()
 	var test_suite :GdUnitTestSuite = GdUnitTestSuite.new()
 	test_suite.set_script(script)

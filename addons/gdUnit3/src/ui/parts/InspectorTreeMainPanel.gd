@@ -421,7 +421,7 @@ func add_test(parent :TreeItem, test_case :GdUnitTestCaseDto) -> void:
 	item.set_meta(META_LINE_NUMBER, test_case.line_number())
 	add_tree_item_to_cache(parent.get_meta(META_RESOURCE_PATH), test_name, item)
 	
-	var value_set = test_case.input_value_set()
+	var value_set = test_case.test_parameters()
 	if not value_set.empty():
 		item.set_meta(META_GDUNIT_TOTAL_TESTS, value_set.size())
 		item.set_meta(META_GDUNIT_SUCCESS_TESTS, 0)

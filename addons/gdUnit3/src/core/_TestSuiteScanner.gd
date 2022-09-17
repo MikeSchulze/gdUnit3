@@ -124,11 +124,15 @@ func _parse_and_add_test_cases(test_suite, script :GDScript, test_case_names :Po
 				if fa.type() == "Fuzzer":
 					fuzzers.append(fa.name() + ":=" + fa.default())
 			# create new test
-			var test = _TestCase.new().configure(fd.name(), fd.line_number(), script.resource_path, timeout, fuzzers, iterations, seed_value)
+			var test := _TestCase.new().configure(fd.name(), fd.line_number(), script.resource_path, timeout, fuzzers, iterations, seed_value)
+			test_suite.add_child(test)
 			# is parameterized test?
 			if fd.is_parameterized():
-				test.set_test_parameters(fd.args())
-			test_suite.add_child(test)
+				var test_paramaters := GdTestParameterSet.extract_test_parameters(test_suite.get_script(), fd)
+				var error := GdTestParameterSet.validate(fd.args(), test_paramaters)
+				if not error.empty():
+					test.skip(true, error)
+				test.set_test_parameters(test_paramaters)
 
 # converts given file name by configured naming convention
 static func _to_naming_convention(file_name :String) -> String:
