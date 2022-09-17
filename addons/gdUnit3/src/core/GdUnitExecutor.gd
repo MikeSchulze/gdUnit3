@@ -267,7 +267,7 @@ func execute_test_case_iterative(test_suite :GdUnitTestSuite, test_case :_TestCa
 			break
 	return _test_run_state
 
-func execute_test_case_parameterizied(test_suite :GdUnitTestSuite, test_case :_TestCase):
+func execute_test_case_parameterized(test_suite :GdUnitTestSuite, test_case :_TestCase):
 	var testcase_timer = LocalTime.now()
 	fire_event(GdUnitEvent.new()\
 		.test_before(test_suite.get_script().resource_path, test_suite.get_name(), test_case.get_name()))
@@ -341,7 +341,7 @@ func Execute(test_suite :GdUnitTestSuite) -> GDScriptFunctionState:
 				yield(get_tree(), "idle_frame")
 			else:
 				if test_case.is_parameterized():
-					fs = execute_test_case_parameterizied(test_suite, test_case)
+					fs = execute_test_case_parameterized(test_suite, test_case)
 				elif test_case.has_fuzzer():
 					fs = execute_test_case_iterative(test_suite, test_case)
 				else:

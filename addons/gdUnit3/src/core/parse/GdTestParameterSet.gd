@@ -2,9 +2,9 @@ class_name GdTestParameterSet
 extends Reference
 
 const CLASS_TEMPLATE = """
-class_name _ParamaterExtractor extends '${clazz_path}'
+class_name _ParameterExtractor extends '${clazz_path}'
 	
-func get_test_parameters() -> Array:
+func __extract_test_parameters() -> Array:
 	return ${test_params}
 	
 """
@@ -61,4 +61,4 @@ static func extract_test_parameters(source :GDScript, fd :GdFunctionDescriptor) 
 		return []
 	var instance = script.new()
 	instance.queue_free()
-	return instance.call("get_test_parameters")
+	return instance.call("__extract_test_parameters")
