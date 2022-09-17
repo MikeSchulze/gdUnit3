@@ -8,9 +8,11 @@ const ARGUMENT_TIMEOUT := "timeout"
 var _iterations: int = 1
 var _seed: int
 var _fuzzers: PoolStringArray = PoolStringArray()
+var _test_parameters := Array()
 var _line_number: int = -1
 var _script_path: String
 var _skipped := false
+var _error := ""
 var _expect_to_interupt := false
 
 var _timer : Timer
@@ -37,13 +39,13 @@ func configure(name: String, line_number: int, script_path: String, timeout :int
 		_timeout = timeout
 	return self
 
-func execute(fuzzers := Array(), iteration := 0):
+func execute(test_parameter := Array(), iteration := 0):
 	if iteration == 0:
 		set_timeout()
 	_monitor.start()
-	if not fuzzers.empty():
-		update_fuzzers(fuzzers, iteration)
-		_fs = get_parent().callv(name, fuzzers)
+	if not test_parameter.empty():
+		update_fuzzers(test_parameter, iteration)
+		_fs = get_parent().callv(name, test_parameter)
 	else:
 		_fs = get_parent().call(name)
 	if GdUnitTools.is_yielded(_fs):
@@ -56,9 +58,10 @@ func execute(fuzzers := Array(), iteration := 0):
 		stop_timer()
 	return _fs
 
-func update_fuzzers(fuzzers :Array, iteration :int):
-	for fuzzer in fuzzers:
-		fuzzer._iteration_index = iteration + 1
+func update_fuzzers(input_values :Array, iteration :int):
+	for fuzzer in input_values:
+		if fuzzer is Fuzzer:
+			fuzzer._iteration_index = iteration + 1
 
 func set_timeout():
 	var time :float = _timeout * 0.001
@@ -71,7 +74,7 @@ func set_timeout():
 	_timer.start()
 
 func _test_case_timeout():
-	prints("interrupted by timeout",  self,  _timer,  _timer.time_left)
+	#prints("interrupted by timeout",  self,  _timer,  _timer.time_left)
 	_interupted = true
 	if _fs is GDScriptFunctionState:
 		_fs.emit_signal("completed")
@@ -84,14 +87,23 @@ func stop_timer() :
 		_timer.stop()
 		_timer.call_deferred("free")
 
-func is_interupted() -> bool:
-	return _interupted
-
 func expect_to_interupt() -> void:
 	_expect_to_interupt = true
 
+func is_interupted() -> bool:
+	return _interupted
+
 func is_expect_interupted() -> bool:
 	 return _expect_to_interupt
+
+func is_parameterized() -> bool:
+	return _test_parameters.size() != 0
+
+func is_skipped() -> bool:
+	return _skipped
+
+func error() -> String:
+	return _error
 
 func line_number() -> int:
 	return _line_number
@@ -121,11 +133,15 @@ func generate_seed() -> void:
 	if _seed != -1:
 		seed(_seed)
 
-func skip(skipped :bool) -> void:
+func skip(skipped :bool, error :String = "") -> void:
 	_skipped = skipped
+	_error = error
 
-func is_skipped() -> bool:
-	return _skipped
+func set_test_parameters(test_parameters :Array) -> void:
+	_test_parameters = test_parameters
+
+func test_parameters() -> Array:
+	return _test_parameters
 
 func _to_string():
 	return "%s :%d (%dms)" % [get_name(), _line_number, _timeout]

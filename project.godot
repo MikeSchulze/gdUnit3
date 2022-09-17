@@ -305,6 +305,16 @@ _global_script_classes=[ {
 "path": "res://addons/gdUnit3/src/core/parse/GdScriptParser.gd"
 }, {
 "base": "Reference",
+"class": "GdTestParameterSet",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/src/core/parse/GdTestParameterSet.gd"
+}, {
+"base": "GdUnitTestSuite",
+"class": "GdTestParameterSetTest",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/test/core/parse/GdTestParameterSetTest.gd"
+}, {
+"base": "Reference",
 "class": "GdUnit3MonoAPI",
 "language": "GDScript",
 "path": "res://addons/gdUnit3/src/mono/GdUnit3MonoAPI.gd"
@@ -1019,6 +1029,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/test/mocker/resources/OverridenGetClassTestClass.gd"
 }, {
+"base": "GdUnitTestSuite",
+"class": "ParameterizedTestCaseTest",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/test/core/ParameterizedTestCaseTest.gd"
+}, {
 "base": "Resource",
 "class": "PascalCaseWithClassName",
 "language": "GDScript",
@@ -1179,11 +1194,6 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/src/core/_TestSuiteScanner.gd"
 }, {
-"base": "GdUnitTestSuite",
-"class": "_TestSuiteScannerTest",
-"language": "GDScript",
-"path": "res://addons/gdUnit3/test/core/_TestSuiteScannerTest.gd"
-}, {
 "base": "Reference",
 "class": "snake_case_class_name",
 "language": "GDScript",
@@ -1249,6 +1259,8 @@ _global_script_class_icons={
 "GdMarkDownReaderTest": "",
 "GdObjects": "",
 "GdScriptParser": "",
+"GdTestParameterSet": "",
+"GdTestParameterSetTest": "",
 "GdUnit3MonoAPI": "",
 "GdUnit3MonoAPITest": "",
 "GdUnit3Version": "",
@@ -1392,6 +1404,7 @@ _global_script_class_icons={
 "Munderwood_Pathing_World": "",
 "NetworkServerTest": "",
 "OverridenGetClassTestClass": "",
+"ParameterizedTestCaseTest": "",
 "PascalCaseWithClassName": "",
 "Person": "",
 "RPC": "",
@@ -1424,7 +1437,6 @@ _global_script_class_icons={
 "XmlElementTest": "",
 "_TestCase": "",
 "_TestSuiteScanner": "",
-"_TestSuiteScannerTest": "",
 "snake_case_class_name": ""
 }
 

@@ -59,7 +59,10 @@ func _process(delta):
 		INIT:
 			# wait until client is connected to the GdUnitServer
 			if _client.is_client_connected():
+				var time = LocalTime.now()
+				prints("Scan for test suites.")
 				_test_suites_to_process = load_test_suits()
+				prints("Scanning of %d test suites took" % _test_suites_to_process.size(), time.elapsed_since())
 				gdUnitInit()
 				_state = RUN
 		RUN:

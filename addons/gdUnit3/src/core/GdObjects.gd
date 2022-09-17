@@ -2,8 +2,9 @@
 class_name GdObjects
 extends Object
 
-const TYPE_VOID = TYPE_MAX + 1000
-const TYPE_VARARG = TYPE_MAX + 1001
+const TYPE_VOID 	= TYPE_MAX + 1000
+const TYPE_VARARG 	= TYPE_MAX + 1001
+const TYPE_FUNC 	= TYPE_MAX + 1002
 
 # used as default value for varargs
 const TYPE_VARARG_PLACEHOLDER_VALUE = "__null__"
@@ -38,6 +39,7 @@ const TYPE_AS_STRING_MAPPINGS := {
 	TYPE_COLOR_ARRAY: "PoolColorArray",
 	TYPE_VOID: "void",
 	TYPE_VARARG: "VarArg",
+	TYPE_FUNC: "Func"
 }
 
 # holds flipped copy of TYPE_AS_STRING_MAPPINGS initalisized by func 'string_as_typeof'

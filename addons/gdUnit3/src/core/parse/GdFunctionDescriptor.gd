@@ -8,13 +8,15 @@ var _is_virtual :bool
 var _is_static :bool
 var _is_engine :bool
 var _name :String
+var _line_number :int
 var _return_type :int
 var _return_class :String
 var _args : Array
 var _varargs :Array
 
-func _init(name :String, is_virtual :bool, is_static :bool, is_engine :bool, return_type :int, return_class :String, args : Array, varargs :Array = []):
+func _init(name :String, line_number :int, is_virtual :bool, is_static :bool, is_engine :bool, return_type :int, return_class :String, args : Array, varargs :Array = []):
 	_name = name
+	_line_number = line_number
 	_return_type = return_type
 	_return_class = return_class
 	_is_virtual = is_virtual
@@ -23,9 +25,10 @@ func _init(name :String, is_virtual :bool, is_static :bool, is_engine :bool, ret
 	_args = args
 	_varargs = varargs
 
-static func of(name :String, is_virtual :bool, is_static :bool, is_engine :bool, return_type :int, return_class :String, args :Array, varargs :Array) -> GdFunctionDescriptor:
+static func of(name :String, line_number :int, is_virtual :bool, is_static :bool, is_engine :bool, return_type :int, return_class :String, args :Array, varargs :Array) -> GdFunctionDescriptor:
 	return load("res://addons/gdUnit3/src/core/parse/GdFunctionDescriptor.gd").new(
 		name,
+		line_number,
 		is_virtual,
 		is_static,
 		is_engine,
@@ -38,6 +41,9 @@ static func of(name :String, is_virtual :bool, is_static :bool, is_engine :bool,
 func name() -> String:
 	return _name
 
+func line_number() -> int:
+	return _line_number
+
 func is_virtual() -> bool:
 	return _is_virtual
 
@@ -49,6 +55,13 @@ func is_engine() -> bool:
 
 func is_vararg() -> bool:
 	return not _varargs.empty()
+
+func is_parameterized() -> bool:
+	for current in _args:
+		var arg :GdFunctionArgument = current
+		if arg.name() == GdFunctionArgument.ARG_PARAMETERIZED_TEST:
+			return true
+	return false
 
 func return_type() -> int:
 	return _return_type
@@ -75,7 +88,7 @@ func typeless() -> String:
 func typeless_args() -> String:
 	var collect := PoolStringArray()
 	for arg in args():
-		if not arg.default().empty():
+		if arg.default() != GdFunctionArgument.UNDEFINED:
 			collect.push_back(arg.name() + "=" + arg.default())
 		else:
 			collect.push_back(arg.name())
@@ -94,11 +107,11 @@ func typed_args() -> String:
 func _to_string() -> String:
 	var fsignature := "virtual " if is_virtual() else ""
 	if _return_type == TYPE_NIL:
-		return fsignature + "func %s(%s):" % [name(), typed_args()]
-	var func_template := fsignature + "func %s(%s) -> %s:"
+		return fsignature + "[Line:%s] func %s(%s):" % [line_number(), name(), typed_args()]
+	var func_template := fsignature + "[Line:%s] func %s(%s) -> %s:"
 	if is_static():
-		func_template= "static func %s(%s) -> %s:"
-	return func_template % [name(), typed_args(), return_type_as_string()]
+		func_template= "[Line:%s] static func %s(%s) -> %s:"
+	return func_template % [line_number(), name(), typed_args(), return_type_as_string()]
 
 # extract function description given by Object.get_method_list()
 static func extract_from(method_descriptor :Dictionary) -> GdFunctionDescriptor:
@@ -106,6 +119,7 @@ static func extract_from(method_descriptor :Dictionary) -> GdFunctionDescriptor:
 	var is_vararg :bool = method_descriptor["flags"] & METHOD_FLAG_VARARG
 	return of(
 		method_descriptor["name"],
+		-1,
 		is_virtual,
 		false,
 		true,
@@ -124,7 +138,7 @@ static func _extract_args(method_descriptor :Dictionary) -> Array:
 		var arg :Dictionary = arguments.pop_back()
 		var arg_name := _argument_name(arg)
 		var arg_type := _argument_type_as_string(arg)
-		var arg_default :String = ""
+		var arg_default := GdFunctionArgument.UNDEFINED
 		if not defaults.empty():
 			arg_default = _argument_default_value(arg, defaults.pop_back())
 		args.push_front(GdFunctionArgument.new(arg_name, arg_type, arg_default))
