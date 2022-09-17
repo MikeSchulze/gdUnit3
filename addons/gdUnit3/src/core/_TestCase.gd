@@ -138,6 +138,9 @@ func set_test_parameters(parameter_set :Array) -> void:
 	if not _error.empty():
 		skip(true)
 		return
+	
+	#use func call like we dit with fuzzer generation here
+	
 	_input_value_set = GdTestParameterSet.get_input_values(parameter_set)
 
 func input_value_set() -> Array:

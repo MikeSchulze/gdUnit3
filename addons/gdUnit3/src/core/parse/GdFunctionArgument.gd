@@ -27,9 +27,8 @@ func is_parameter_set() -> bool:
 
 static func get_parameter_set(parameters :Array) -> GdFunctionArgument:
 	for current in parameters:
-		var arg :GdFunctionArgument = current
-		if arg != null and arg.is_parameter_set():
-			return arg
+		if current != null and current.is_parameter_set():
+			return current
 	return null
 
 func _to_string() -> String:

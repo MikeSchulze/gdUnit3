@@ -1444,7 +1444,6 @@ _global_script_class_icons={
 
 config/name="gdUnit3"
 config/icon="res://icon.png"
-config/windows_native_icon=""
 
 [audio]
 
@@ -1455,29 +1454,10 @@ default_bus_layout=""
 gdscript/warnings/unused_signal=false
 gdscript/warnings/return_value_discarded=false
 
-[display]
-
-window/size/width=1024
-window/size/height=600
-
-[editor_plugins]
-
-enabled=PoolStringArray( "res://addons/gdUnit3/plugin.cfg" )
-
 [gdunit3]
 
 report/assert/verbose_errors=false
 report/assert/verbose_warnings=false
-templates/testsuite/GDScript="# GdUnit generated TestSuite
-#warning-ignore-all:unused_argument
-#warning-ignore-all:return_value_discarded
-class_name ${suite_class_name}
-extends GdUnitTestSuite
-
-# TestSuite generated from
-const __source = '${source_resource_path}'
-"
-settings/test/test_suite_naming_convention=0
 
 [network]
 

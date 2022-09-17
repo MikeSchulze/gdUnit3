@@ -8,10 +8,10 @@ extends GdUnitTestSuite
 const __source = 'res://addons/gdUnit3/src/core/parse/GdTestParameterSet.gd'
 
 func vec2_as_string(v :Vector2) -> String:
-	return "Vector2" + str(v).replace(" ", "")
+	return "Vector2" + str(v)
 
 func vec3_as_string(v :Vector3) -> String:
-	return "Vector3" + str(v).replace(" ", "")
+	return "Vector3" + str(v)
 
 func test_constants():
 	assert_that(GdTestParameterSet.Vector2_ZERO).is_equal(vec2_as_string(Vector2.ZERO))
@@ -36,9 +36,9 @@ func test_constants():
 func test_convert_vector2_constants() -> void:
 	var vectors = "[Vector2.ZERO, Vector2.ONE, Vector2.LEFT, Vector2.RIGHT, Vector2.UP, Vector2.DOWN, Vector2.INF, Vector2(3.2, 4.2)]"
 	assert_that(GdTestParameterSet._convert_vector2_constants(vectors))\
-		.is_equal("[Vector2(0,0), Vector2(1,1), Vector2(-1,0), Vector2(1,0), Vector2(0,-1), Vector2(0,1), Vector2(1.#INF,1.#INF), Vector2(3.2, 4.2)]")
+		.is_equal("[Vector2(0, 0), Vector2(1, 1), Vector2(-1, 0), Vector2(1, 0), Vector2(0, -1), Vector2(0, 1), Vector2(1.#INF, 1.#INF), Vector2(3.2, 4.2)]")
 
 func test_convert_vector3_constants() -> void:
 	var vectors = "[Vector3.ZERO, Vector3.ONE, Vector3.LEFT, Vector3.RIGHT, Vector3.UP, Vector3.DOWN, Vector3.FORWARD, Vector3.BACK, Vector3.INF, Vector3(3.2, 4.2, 1.2)]"
 	assert_that(GdTestParameterSet._convert_vector3_constants(vectors))\
-		.is_equal("[Vector3(0,0,0), Vector3(1,1,1), Vector3(-1,0,0), Vector3(1,0,0), Vector3(0,1,0), Vector3(0,-1,0), Vector3(0,0,-1), Vector3(0,0,1), Vector3(1.#INF,1.#INF,1.#INF), Vector3(3.2, 4.2, 1.2)]")
+		.is_equal("[Vector3(0, 0, 0), Vector3(1, 1, 1), Vector3(-1, 0, 0), Vector3(1, 0, 0), Vector3(0, 1, 0), Vector3(0, -1, 0), Vector3(0, 0, -1), Vector3(0, 0, 1), Vector3(1.#INF, 1.#INF, 1.#INF), Vector3(3.2, 4.2, 1.2)]")

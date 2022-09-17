@@ -1,23 +1,23 @@
 class_name GdTestParameterSet
 extends Reference
 
-const Vector2_ZERO 		= "Vector2(0,0)"
-const Vector2_ONE 		= "Vector2(1,1)"
-const Vector2_RIGHT 	= "Vector2(1,0)"
-const Vector2_LEFT 		= "Vector2(-1,0)"
-const Vector2_DOWN 		= "Vector2(0,1)"
-const Vector2_UP 		= "Vector2(0,-1)"
-const Vector2_INF 		= "Vector2(1.#INF,1.#INF)"
+const Vector2_ZERO  = "Vector2" + str(Vector2.ZERO)
+const Vector2_ONE   = "Vector2" + str(Vector2.ONE)
+const Vector2_RIGHT = "Vector2" + str(Vector2.RIGHT)
+const Vector2_LEFT  = "Vector2" + str(Vector2.LEFT)
+const Vector2_DOWN  = "Vector2" + str(Vector2.DOWN)
+const Vector2_UP    = "Vector2" + str(Vector2.UP)
+const Vector2_INF   = "Vector2" + str(Vector2.INF)
 
-const Vector3_ZERO 		= "Vector3(0,0,0)"
-const Vector3_ONE 		= "Vector3(1,1,1)"
-const Vector3_RIGHT 	= "Vector3(1,0,0)"
-const Vector3_LEFT 		= "Vector3(-1,0,0)"
-const Vector3_UP 		= "Vector3(0,1,0)"
-const Vector3_DOWN 		= "Vector3(0,-1,0)"
-const Vector3_BACK 		= "Vector3(0,0,1)"
-const Vector3_FORWARD 	= "Vector3(0,0,-1)"
-const Vector3_INF 		= "Vector3(1.#INF,1.#INF,1.#INF)"
+const Vector3_ZERO    = "Vector3" + str(Vector3.ZERO)
+const Vector3_ONE     = "Vector3" + str(Vector3.ONE)
+const Vector3_RIGHT   = "Vector3" + str(Vector3.RIGHT)
+const Vector3_LEFT    = "Vector3" + str(Vector3.LEFT)
+const Vector3_UP      = "Vector3" + str(Vector3.UP)
+const Vector3_DOWN    = "Vector3" + str(Vector3.DOWN)
+const Vector3_BACK    = "Vector3" + str(Vector3.BACK)
+const Vector3_FORWARD = "Vector3" + str(Vector3.FORWARD)
+const Vector3_INF     = "Vector3" + str(Vector3.INF)
 
 # extraxts the input value set from given arguments
 static func get_input_values(input_arguments :Array) -> Array:
