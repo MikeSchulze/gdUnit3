@@ -71,7 +71,9 @@ func test_add_text() -> void:
 		.text("This is a message")
 	var expected = \
 """<testsuites>
+<![CDATA[
 This is a message
+]]>
 </testsuites>
 """.replace("\r", "")
 	assert_str(element.to_xml()).is_equal(expected)
@@ -126,8 +128,10 @@ func test_complex_example() -> void:
 		</testcase>
 		<testcase id="2" name="test_case_2">
 			<failure message="test_case.gd:12" type="FAILURE">
+<![CDATA[
 This is a failure
 Expecting true but was false
+]]>
 			</failure>
 		</testcase>
 		<testcase id="3" name="test_case_3">
