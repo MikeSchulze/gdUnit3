@@ -52,4 +52,7 @@ func to_xml() -> String:
 			"attributes": attributes, 
 			"childs": childs, 
 			"_indentation": _indentation(),
-			"text": _text})
+			"text": cdata(_text)})
+
+func cdata(text :String) -> String:
+	return "" if text.empty() else "<![CDATA[\n{text}]]>\n".format({"text" : text})
