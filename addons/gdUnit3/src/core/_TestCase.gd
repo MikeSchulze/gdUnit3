@@ -143,5 +143,12 @@ func set_test_parameters(test_parameters :Array) -> void:
 func test_parameters() -> Array:
 	return _test_parameters
 
+func test_case_names() -> PoolStringArray:
+	var test_case_names :=  PoolStringArray()
+	var test_name = get_name()
+	for input_values in _test_parameters:
+		test_case_names.append("%s %s" % [test_name, str(input_values)])
+	return test_case_names
+
 func _to_string():
 	return "%s :%d (%dms)" % [get_name(), _line_number, _timeout]

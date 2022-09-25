@@ -421,26 +421,25 @@ func add_test(parent :TreeItem, test_case :GdUnitTestCaseDto) -> void:
 	item.set_meta(META_LINE_NUMBER, test_case.line_number())
 	add_tree_item_to_cache(parent.get_meta(META_RESOURCE_PATH), test_name, item)
 	
-	var value_set = test_case.test_parameters()
-	if not value_set.empty():
-		item.set_meta(META_GDUNIT_TOTAL_TESTS, value_set.size())
+	var test_case_names := test_case.test_case_names()
+	if not test_case_names.empty():
+		item.set_meta(META_GDUNIT_TOTAL_TESTS, test_case_names.size())
 		item.set_meta(META_GDUNIT_SUCCESS_TESTS, 0)
 		_update_item_counter(item)
-		add_test_cases(item, test_name, value_set)
+		add_test_cases(item, test_case_names)
 
-func add_test_cases(parent :TreeItem, test_name :String, value_set :Array) -> void:
-	for index in value_set.size():
-		var input_values :Array = value_set[index]
+func add_test_cases(parent :TreeItem, test_case_names :Array) -> void:
+	for index in test_case_names.size():
+		var test_case_name = test_case_names[index]
 		var item := _tree.create_item(parent)
-		var name = "%s %s" % [test_name, str(input_values)]
-		item.set_text(0, name)
+		item.set_text(0, test_case_name)
 		item.set_icon(0, ICON_TEST_DEFAULT)
 		item.set_meta(META_GDUNIT_STATE, STATE.INITIAL)
-		item.set_meta(META_GDUNIT_NAME, name)
+		item.set_meta(META_GDUNIT_NAME, test_case_name)
 		item.set_meta(META_GDUNIT_TYPE, GdUnitType.TEST_CASE)
 		item.set_meta(META_RESOURCE_PATH, parent.get_meta(META_RESOURCE_PATH))
 		item.set_meta(META_LINE_NUMBER, parent.get_meta(META_LINE_NUMBER))
-		add_tree_item_to_cache(parent.get_meta(META_RESOURCE_PATH), name, item)
+		add_tree_item_to_cache(parent.get_meta(META_RESOURCE_PATH), test_case_name, item)
 
 ################################################################################
 # Tree signal receiver

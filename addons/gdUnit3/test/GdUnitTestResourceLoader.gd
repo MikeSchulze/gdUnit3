@@ -16,15 +16,20 @@ static func load_test_suite(resource_path :String, script_type = GD_SUITE) -> No
 	assert("type '%s' is not impleented" % script_type)
 	return null
 
+# loads a test suite as resource and stores is temporary under 'res://addons/gdUnit3/.tmp' to be reload as gdScript
+# we need to store it under 'res://' as *.gd otherwise the class is not correct loaded and 'inst2dict' will be fail
 static func load_test_suite_gd(resource_path :String) -> Node:
-	var script := GDScript.new()
-	script.source_code = GdUnitTools.resource_as_string(resource_path)
-	# use different resource path to prevent already loade conflicts
-	script.resource_path = resource_path.replace(".gd", "__.gd")
-	script.reload()
-	var test_suite :GdUnitTestSuite = GdUnitTestSuite.new()
-	test_suite.set_script(script)
-	test_suite.set_name(resource_path.get_file().replace(".resource", ""))
+	var resource_script := load_gd_script(resource_path)
+	var ext_resource_path =  resource_path.replace(".resource", ".gd")
+	var temp_dir = resource_path.get_base_dir().replace("res://addons/gdUnit3", "res://addons/gdUnit3/.tmp")
+	Directory.new().make_dir_recursive(temp_dir)
+	var new_resource_path = "%s/%s" % [temp_dir, ext_resource_path.get_file()]
+	var err := ResourceSaver.save(new_resource_path, resource_script, ResourceSaver.FLAG_BUNDLE_RESOURCES|ResourceSaver.FLAG_REPLACE_SUBRESOURCE_PATHS)
+	var script :GDScript = ResourceLoader.load(new_resource_path, "GDScript", true);
+	var test_suite :GdUnitTestSuite = script.new()
+	test_suite.set_name(new_resource_path.get_file().replace(".gd", ""))
+	test_suite.get_script().resource_path = resource_path
+	GdUnitTools.delete_directory("res://addons/gdUnit3/.tmp")
 	# complete test suite wiht parsed test cases
 	var suite_parser := _TestSuiteScanner.new()
 	var test_case_names := suite_parser._extract_test_case_names(script)
@@ -32,7 +37,6 @@ static func load_test_suite_gd(resource_path :String) -> Node:
 	suite_parser._parse_and_add_test_cases(test_suite, script, test_case_names)
 	suite_parser.free()
 	return test_suite
-
 
 static func load_test_suite_cs(resource_path :String) -> Node:
 	if not GdUnitTools.is_mono_supported():

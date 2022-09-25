@@ -844,6 +844,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/test/GdUnitTestResourceLoader.gd"
 }, {
+"base": "GdUnitTestSuite",
+"class": "GdUnitTestResourceLoaderTest",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/test/GdUnitTestResourceLoaderTest.gd"
+}, {
 "base": "Node",
 "class": "GdUnitTestSuite",
 "language": "GDScript",
@@ -1367,6 +1372,7 @@ _global_script_class_icons={
 "GdUnitTestCaseDto": "",
 "GdUnitTestCaseReport": "",
 "GdUnitTestResourceLoader": "",
+"GdUnitTestResourceLoaderTest": "",
 "GdUnitTestSuite": "",
 "GdUnitTestSuiteBuilder": "",
 "GdUnitTestSuiteBuilderTest": "",
