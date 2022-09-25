@@ -18,7 +18,7 @@ var _font_size :int
 
 func _ready():
 	GdUnit3Version.init_version_label(_version_label)
-	_font_size = Fonts.init_fonts(_version_label)
+	_font_size = GdUnitFonts.init_fonts(_version_label)
 	setup_common_properties(_properties_common, GdUnitSettings.COMMON_SETTINGS)
 	setup_common_properties(_properties_report, GdUnitSettings.REPORT_SETTINGS)
 	yield(get_tree(), "idle_frame")

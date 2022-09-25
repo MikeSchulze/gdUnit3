@@ -219,11 +219,6 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/test/core/resources/scan_testsuite_inheritance/by_class_name/ExtendedTest.gd"
 }, {
-"base": "Reference",
-"class": "Fonts",
-"language": "GDScript",
-"path": "res://addons/gdUnit3/src/ui/Fonts.gd"
-}, {
 "base": "Resource",
 "class": "Fuzzer",
 "language": "GDScript",
@@ -488,6 +483,11 @@ _global_script_classes=[ {
 "class": "GdUnitFloatAssertImplTest",
 "language": "GDScript",
 "path": "res://addons/gdUnit3/test/asserts/GdUnitFloatAssertImplTest.gd"
+}, {
+"base": "Reference",
+"class": "GdUnitFonts",
+"language": "GDScript",
+"path": "res://addons/gdUnit3/src/ui/GdUnitFonts.gd"
 }, {
 "base": "GdUnitAssert",
 "class": "GdUnitFuncAssert",
@@ -1247,7 +1247,6 @@ _global_script_class_icons={
 "DefaultValueProvider": "",
 "EqualsArgumentMatcher": "",
 "ExtendedTest": "",
-"Fonts": "",
 "Fuzzer": "",
 "FuzzerTool": "",
 "Fuzzers": "",
@@ -1301,6 +1300,7 @@ _global_script_class_icons={
 "GdUnitFloatAssert": "",
 "GdUnitFloatAssertImpl": "",
 "GdUnitFloatAssertImplTest": "",
+"GdUnitFonts": "",
 "GdUnitFuncAssert": "",
 "GdUnitFuncAssertImpl": "",
 "GdUnitFuncAssertImplTest": "",
