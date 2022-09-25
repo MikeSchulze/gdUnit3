@@ -1,4 +1,4 @@
-class_name Fonts
+class_name GdUnitFonts
 extends Reference
 
 const FONT_MONO             = "res://addons/gdUnit3/src/update/assets/fonts/static/RobotoMono-Regular.ttf"

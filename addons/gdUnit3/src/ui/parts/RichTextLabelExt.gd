@@ -25,7 +25,7 @@ func _notification(what):
 			_effect._notification(what)
 
 func _update_ui_settings():
-	Fonts.init_fonts(self)
+	GdUnitFonts.init_fonts(self)
 	updateMinSize()
 
 func set_bbcode(code) -> void:

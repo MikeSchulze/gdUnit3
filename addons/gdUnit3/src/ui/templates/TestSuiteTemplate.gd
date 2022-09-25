@@ -53,8 +53,8 @@ func setup_editor_colors() -> void:
 
 func setup_fonts() -> void:
 	if _template_editor:
-		Fonts.init_fonts(_template_editor)
-		var font_size = Fonts.init_fonts(_tags_editor)
+		GdUnitFonts.init_fonts(_template_editor)
+		var font_size = GdUnitFonts.init_fonts(_tags_editor)
 		_title_bar.rect_size.y = font_size + 16
 		_title_bar.rect_min_size.y = font_size + 16
 		_tag_container.rect_position.y = 400-font_size*2
