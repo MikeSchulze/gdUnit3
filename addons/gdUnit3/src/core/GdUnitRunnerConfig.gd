@@ -92,7 +92,7 @@ func save(path :String = CONFIG_FILE) -> Result:
 	if err != OK:
 		return Result.error("Can't write test runner configuration '%s'! %s" % [path, GdUnitTools.error_as_string(err)])
 	_config[VERSION] = CONFIG_VERSION
-	file.store_var(_config)
+	file.store_string(to_json(_config))
 	file.close()
 	return Result.success(path)
 
