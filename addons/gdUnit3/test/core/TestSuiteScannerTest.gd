@@ -323,16 +323,17 @@ func test_is_script_format_supported() -> void:
 	assert_bool(_TestSuiteScanner._is_script_format_supported("res://exampe.tres")).is_false()
 
 func test_load_parameterized_test_suite():
-	var test_suite :GdUnitTestSuite = auto_free(GdUnitTestResourceLoader.load_test_suite("res://addons/gdUnit3/test/core/resources/testsuites/ParameterizedTestSuite.resource"))
+	var test_suite :GdUnitTestSuite = auto_free(GdUnitTestResourceLoader.load_test_suite("res://addons/gdUnit3/test/core/resources/testsuites/TestSuiteInvalidParameterizedTests.resource"))
 	
-	assert_that(test_suite.name).is_equal("ParameterizedTestSuite")
-	assert_that(test_suite.get_script().get_path()).is_equal("res://addons/gdUnit3/test/core/resources/testsuites/ParameterizedTestSuite.resource")
-	assert_that(test_suite.get_children()).extract("get_name")\
-		.contains_exactly_in_any_order(["test_no_parameters",
-				"test_parameterized_success",
-				"test_parameterized_failed",
-				"test_parameterized_to_less_args",
-				"test_parameterized_to_many_args",
-				"test_parameterized_to_less_args_at_index_1",
-				"test_parameterized_invalid_struct",
-				"test_parameterized_invalid_args"])
+	assert_that(test_suite.name).is_equal("TestSuiteInvalidParameterizedTests")
+	assert_that(test_suite.get_script().get_path()).is_equal("res://addons/gdUnit3/test/core/resources/testsuites/TestSuiteInvalidParameterizedTests.resource")
+	assert_that(test_suite.get_children()).extractv(extr("get_name"), extr("is_skipped"))\
+		.contains_exactly_in_any_order([
+			tuple("test_no_parameters", false),
+			tuple("test_parameterized_success", false),
+			tuple("test_parameterized_failed", false),
+			tuple("test_parameterized_to_less_args", true),
+			tuple("test_parameterized_to_many_args", true),
+			tuple("test_parameterized_to_less_args_at_index_1", true),
+			tuple("test_parameterized_invalid_struct", true),
+			tuple("test_parameterized_invalid_args", true)])

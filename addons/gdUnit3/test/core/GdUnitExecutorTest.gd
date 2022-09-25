@@ -303,7 +303,7 @@ func test_execute_failure_on_stage_test_case1() -> void:
 		[], 
 		[])
 
-func test_execute_failure_on_muliple_stages() -> void:
+func test_execute_failure_on_multiple_stages() -> void:
 	# this is a more complex failure state, we expect to find multipe failures on different stages
 	var test_suite := resource("res://addons/gdUnit3/test/core/resources/testsuites/TestSuiteFailOnMultipeStages.resource")
 	# verify all test cases loaded
@@ -552,3 +552,56 @@ func test_fuzzer_before_before(fuzzer := Fuzzers.rangei(0, 1000), fuzzer_iterati
 	# verify the used stack is cleaned by 'before_test'
 	assert_array(_stack).is_empty()
 	_stack.push_back(1)
+
+func test_execute_parameterizied_tests() -> void:
+	# this is a more complex failure state, we expect to find multipe failures on different stages
+	var test_suite := resource("res://addons/gdUnit3/test/core/resources/testsuites/TestSuiteParameterizedTests.resource")
+	# verify all test cases loaded
+	var expected_test_cases = [
+		"test_parameterized_bool_value",
+		"test_parameterized_int_values",
+		"test_parameterized_int_values_fail",
+		"test_parameterized_float_values",
+		"test_parameterized_string_values",
+		"test_parameterized_Vector2_values",
+		"test_parameterized_Vector3_values",
+		"test_parameterized_obj_values"]
+	assert_array(test_suite.get_children()).extract("get_name").contains_exactly(expected_test_cases)
+	# simulate test suite execution
+	var events = yield(execute(test_suite), "completed" )
+	var suite_name = "TestSuiteParameterizedTests"
+	# verify all events are send
+	var expected_events := Array()
+	expected_events.append(tuple(GdUnitEvent.TESTSUITE_BEFORE, suite_name, "before", expected_test_cases.size()))
+	expected_events.append(tuple(GdUnitEvent.TESTSUITE_AFTER, suite_name, "after", 0))
+	expected_events.append_array(add_expected_test_case_events(suite_name, "test_parameterized_bool_value",
+		[[0, false],[1, true]]))
+	expected_events.append_array(add_expected_test_case_events(suite_name, "test_parameterized_int_values",
+		[[1, 2, 3, 6],
+		[3, 4, 5, 12],
+		[6, 7, 8, 21]]))
+	assert_array(events).extractv(
+		extr("type"), extr("suite_name"), extr("test_name"), extr("total_count"))\
+		.contains(expected_events)
+	
+	# verify all three testcases of 'test_parameterized_int_values_fail' are correct executed and it reports the failures
+	assert_array(events).extractv(
+		extr("type"), extr("suite_name"), extr("test_name"), extr("is_error"), extr("is_failed"), extr("orphan_nodes"))\
+		.contains([
+			tuple(GdUnitEvent.TESTCASE_AFTER, suite_name, "test_parameterized_int_values_fail", false, true, 0),
+			tuple(GdUnitEvent.TESTCASE_AFTER, suite_name, buld_test_case_name("test_parameterized_int_values_fail", [1, 2, 3, 6]), false, false, 0),
+			tuple(GdUnitEvent.TESTCASE_AFTER, suite_name, buld_test_case_name("test_parameterized_int_values_fail", [3, 4, 5, 11]), false, true, 0),
+			tuple(GdUnitEvent.TESTCASE_AFTER, suite_name, buld_test_case_name("test_parameterized_int_values_fail", [6, 7, 8, 22]), false, true, 0)])
+
+func add_expected_test_case_events(suite_name :String, test_name :String, parameters :Array = []) -> Array:
+	var expected_events := Array()
+	expected_events.append(tuple(GdUnitEvent.TESTCASE_BEFORE, suite_name, test_name, 0))
+	for param in parameters:
+		var test_case_name := buld_test_case_name(test_name, param)
+		expected_events.append(tuple(GdUnitEvent.TESTCASE_BEFORE, suite_name, test_case_name, 0))
+		expected_events.append(tuple(GdUnitEvent.TESTCASE_AFTER, suite_name, test_case_name, 0))
+	expected_events.append(tuple(GdUnitEvent.TESTCASE_AFTER, suite_name, test_name, 0))
+	return expected_events
+
+func buld_test_case_name(test_name :String, parameter :Array) -> String:
+	return "%s %s" % [test_name, str(parameter)]

@@ -1,4 +1,4 @@
-class_name ParameterizedTestSuite
+class_name TestSuiteInvalidParameterizedTests
 extends GdUnitTestSuite
 
 func test_no_parameters():
@@ -8,14 +8,14 @@ func test_parameterized_success(a: int, b :int, c :int, expected :int, test_para
 	[1, 2, 3, 6],
 	[3, 4, 5, 12],
 	[6, 7, 8, 21] ]):
-	
+
 	assert_that(a+b+c).is_equal(expected)
 
 func test_parameterized_failed(a: int, b :int, c :int, expected :int, test_parameters := [
 	[1, 2, 3, 6],
 	[3, 4, 5, 11],
 	[6, 7, 8, 21] ]):
-	
+
 	assert_that(a+b+c).is_equal(expected)
 
 func test_parameterized_to_less_args(a: int, b :int, expected :int, test_parameters := [
