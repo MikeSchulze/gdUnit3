@@ -39,6 +39,7 @@ GdUnit3 is a framework for testing Gd-Scrips/C# and Scenes within the Godot edit
 * Argument matchers to verify the behavior of a function call by a specified argument type.
 * Fluent syntax support
 * Test Fuzzing support
+* Parameterized Tests (Test Cases)
 * Mocking a class to simulate the implementation in which you define the output of the certain function
 * Spy on an instance to verify that a function has been called with certain parameters.
 * Mock or Spy on a Scene 
@@ -51,7 +52,7 @@ GdUnit3 is a framework for testing Gd-Scrips/C# and Scenes within the Godot edit
 * CI - Continuous Integration support
   * generates HTML report
   * generates JUnit report 
-* With v2.0.0 C# testing support (beta)
+* With v2.3.0 full C# testing support
 * Visual Studio Code extension
 ---
 
