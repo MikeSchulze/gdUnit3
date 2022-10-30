@@ -114,3 +114,10 @@ func test_timeout_fuzzer(fuzzer := Fuzzers.rangei(-23, 22), timeout=2000):
 	assert_int(fuzzer.iteration_index())\
 		.override_failure_message("The test must be interupted after around 10 iterations")\
 		.is_less_equal(10)
+
+# GD-131 https://github.com/MikeSchulze/gdUnit3/issues/331
+func test_timeout(timeout=1500):
+	var node := Node.new()
+	node.filename = ""
+	add_child(node)
+	yield(get_tree().create_timer(60), "timeout")
