@@ -28,7 +28,11 @@
 
 ## What is GdUnit3
 GdUnit3 is a framework for testing Gd-Scrips/C# and Scenes within the Godot editor. GdUnit3 is very useful for test-driven development and will help you get your code bug-free.
- 
+
+
+# GdUnit4 alpha is released!
+https://github.com/MikeSchulze/gdUnit4 
+
  
 ## Features
 * Fully embedded in the Godot editor
