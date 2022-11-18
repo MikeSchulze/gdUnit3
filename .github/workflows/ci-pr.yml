@@ -22,7 +22,7 @@ jobs:
       fail-fast: false
       matrix:
         godot-build: ['', 'mono-']
-        godot-version: [3.3.3, 3.3.4, 3.4.1, 3.4.2, 3.4.4, 3.4.5, 3.5] # 3.4.3 is missing on barichello/godot-ci
+        godot-version: [3.3.3, 3.3.4, 3.4.1, 3.4.2, 3.4.4, 3.4.5, 3.5, 3.5.1] # 3.4.3 is missing on barichello/godot-ci
 
     name: "CI on Godot ${{ matrix.godot-build }}v${{ matrix.godot-version }}"
     runs-on: ubuntu-latest
