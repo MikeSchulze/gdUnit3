@@ -1,4 +1,4 @@
-name: CI GdUnit3 on Godot 3.5.x
+name: ci-dev
 
 on:
   push:
@@ -15,7 +15,7 @@ jobs:
   testing:
     strategy:
       matrix:
-        godot: [3.5]
+        godot: [3.5.1]
 
     name: CI Godot ${{ matrix.godot }}
     runs-on: ubuntu-latest
