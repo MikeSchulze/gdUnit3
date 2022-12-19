@@ -47,10 +47,13 @@ func add_test_suites(resource_paths :PoolStringArray) -> GdUnitRunnerConfig:
 		add_test_suite(resource_path)
 	return self
 
-func add_test_case(resource_path :String, test_name :String) -> GdUnitRunnerConfig:
+func add_test_case(resource_path :String, test_name :String, test_param_index :int = -1) -> GdUnitRunnerConfig:
 	var to_execute := to_execute()
 	var test_cases :Array = to_execute.get(resource_path, Array())
-	test_cases.append(test_name)
+	if test_param_index != -1:
+		test_cases.append("%s:%d" % [test_name, test_param_index])
+	else:
+		test_cases.append(test_name)
 	to_execute[resource_path] = test_cases
 	return self
 

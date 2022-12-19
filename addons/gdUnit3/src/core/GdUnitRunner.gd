@@ -111,14 +111,27 @@ func gdUnitInit() -> void:
 	for test_suite in _test_suites_to_process:
 		send_test_suite(test_suite)
 
-func _filter_test_case(test_suites :Array, includes_tests :Array) -> void:
-	if includes_tests.empty():
+func _filter_test_case(test_suites :Array, included_tests :Array) -> void:
+	if included_tests.empty():
 		return
 	for test_suite in test_suites:
 		for test_case in test_suite.get_children():
-			if not includes_tests.has(test_case.get_name()):
-				test_suite.remove_child(test_case)
-				test_case.free()
+			_do_filter_test_case(test_suite, test_case, included_tests)
+
+func _do_filter_test_case(test_suite :Node, test_case :Node, included_tests :Array) -> void:
+	for included_test in included_tests:
+		var test_meta :PoolStringArray = included_test.split(":")
+		var test_name := test_meta[0]
+		if test_case.get_name() == test_name:
+			# we have a paremeterized test selection
+			if test_meta.size() > 1:
+				var test_param_index := test_meta[1]
+				test_case.set_test_parameter_index(test_param_index.to_int())
+			return
+	# the test is filtered out
+	test_suite.remove_child(test_case)
+	test_case.free()
+
 
 func _collect_test_case_count(testSuites :Array) -> int:
 	var total :int = 0
