@@ -522,10 +522,9 @@ func extract_source_code(script_path :PoolStringArray) -> PoolStringArray:
 func extract_func_signature(rows :PoolStringArray, index :int) -> String:
 	var signature = ""
 	for rowIndex in range(index, rows.size()):
-		var row :String = rows[rowIndex]
-		signature += row.trim_prefix("\t").trim_suffix("\t")
+		signature += rows[rowIndex].strip_edges()
 		if is_func_end(signature):
-			return clean_up_row(signature).replace("\n", "")
+			return clean_up_row(signature)
 	push_error("Can't fully extract function signature of '%s'" % rows[index])
 	return ""
 
@@ -644,9 +643,7 @@ func is_inner_class(clazz_path :PoolStringArray) -> bool:
 
 
 func is_func_end(row :String) -> bool:
-	if row.strip_edges(false, true).ends_with(":"):
-		return true
-	return false
+	return row.strip_edges(false, true).ends_with(":")
 
 
 func _patch_inner_class_names(value :String, clazz_name :String) -> String:
