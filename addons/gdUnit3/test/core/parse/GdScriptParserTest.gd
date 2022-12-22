@@ -269,6 +269,9 @@ func test_parse_function_return_type():
 	assert_that(_parser.parse_func_return_type("func foo() -> PoolVector2Array:")).is_equal(TYPE_VECTOR2_ARRAY)
 	assert_that(_parser.parse_func_return_type("func foo() -> PoolVector3Array:")).is_equal(TYPE_VECTOR3_ARRAY)
 	assert_that(_parser.parse_func_return_type("func foo() -> PoolColorArray:")).is_equal(TYPE_COLOR_ARRAY)
+	# test with complex function signature
+	var signature := 'functest_parameterized_dict_values(data:Dictionary,expected:String,test_parameters:=[[{"key_a":"value_a"},"key_a:value_a"],[{"key_b":"value_b"},"key_b:value_b"]]):'
+	assert_that(_parser.parse_func_return_type(signature)).is_equal(TYPE_NIL)
 
 func test_parse_func_name():
 	assert_str(_parser.parse_func_name("func foo():")).is_equal("foo")
