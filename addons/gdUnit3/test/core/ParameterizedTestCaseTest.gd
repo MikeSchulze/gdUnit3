@@ -35,6 +35,10 @@ var _expected_tests = {
 	],
 	"test_parameterized_obj_values" : [
 		[TestObj.new("abc"), TestObj.new("def"), "abcdef"]
+	],
+	"test_parameterized_dict_values" : [
+		[{"key_a":"value_a"}, "{key_a:value_a}"], 
+		[{"key_b":"value_b"}, "{key_b:value_b}"]
 	]
 }
 
@@ -116,3 +120,11 @@ func test_parameterized_obj_values(a: Object, b :Object, expected :String, test_
 	collect_test_call("test_parameterized_obj_values", [a, b, expected])
 	assert_that(a.to_string()+b.to_string()).is_equal(expected)
 
+
+func test_parameterized_dict_values(data: Dictionary, expected :String, test_parameters := [
+	[{"key_a" : "value_a"}, "{key_a:value_a}"],
+	[{"key_b" : "value_b"}, "{key_b:value_b}"]
+	]):
+	
+	collect_test_call("test_parameterized_dict_values", [data, expected])
+	assert_that(str(data)).is_equal(expected)
