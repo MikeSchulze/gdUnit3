@@ -522,10 +522,9 @@ func extract_source_code(script_path :PoolStringArray) -> PoolStringArray:
 func extract_func_signature(rows :PoolStringArray, index :int) -> String:
 	var signature = ""
 	for rowIndex in range(index, rows.size()):
-		var row :String = rows[rowIndex]
-		signature += row.trim_prefix("\t").trim_suffix("\t")
+		signature += rows[rowIndex].strip_edges()
 		if is_func_end(signature):
-			return clean_up_row(signature).replace("\n", "")
+			return clean_up_row(signature)
 	push_error("Can't fully extract function signature of '%s'" % rows[index])
 	return ""
 
@@ -642,22 +641,10 @@ func is_static_func(func_signature :String) -> bool:
 func is_inner_class(clazz_path :PoolStringArray) -> bool:
 	return clazz_path.size() > 1
 
+
 func is_func_end(row :String) -> bool:
-	var input := clean_up_row(row)
-	var current_index = 0
-	var token :Token = null
-	while current_index < len(input):
-		# function ends without return type definition
-		if TOKEN_FUNCTION_END.match(input, current_index):
-			return true
-		# function ends with return type definition
-		if TOKEN_FUNCTION_RETURN_TYPE.match(input, current_index):
-			return true
-		token = next_token(input, current_index) as Token
-		if token == TOKEN_NOT_MATCH:
-			return false
-		current_index += token._consumed
-	return false
+	return row.strip_edges(false, true).ends_with(":")
+
 
 func _patch_inner_class_names(value :String, clazz_name :String) -> String:
 	var patch := value
