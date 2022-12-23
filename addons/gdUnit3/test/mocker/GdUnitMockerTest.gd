@@ -941,3 +941,15 @@ class Foo extends Base:
 func test_mock_with_inheritance_method() -> void:
 	var foo := mock(Foo) as Foo
 	assert_object(foo).is_not_null()
+
+
+func test_change_scene() -> void:
+	var scnene_changer = mock('res://addons/gdUnit3/test/mocker/resources/SceneChanger.gd', CALL_REAL_FUNC)
+	var scene_tree = mock(SceneTree)
+	
+	do_return(scene_tree).on(scnene_changer)._get_tree()
+	
+	scnene_changer._on_ChangeScene_pressed()
+	verify(scene_tree).change_scene("res://some_scene.tscn")
+	
+	scene_tree.free()
