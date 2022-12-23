@@ -344,7 +344,7 @@ static func register_auto_free(obj, pool :int):
 		return obj
 	if obj is MainLoop:
 		push_error("avoid to add mainloop to auto_free queue  %s" % obj)
-		return
+		return obj
 	# only register pure objects
 	if obj is GdUnitSceneRunner:
 		_objects_to_delete[pool].push_front(obj)
