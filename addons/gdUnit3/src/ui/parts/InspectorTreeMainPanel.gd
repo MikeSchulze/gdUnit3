@@ -180,7 +180,7 @@ func set_state_succeded(item :TreeItem) -> void:
 	item.set_meta(META_GDUNIT_STATE, STATE.SUCCESS)
 	item.set_custom_color(0, Color.green)
 	item.set_icon(0, ICON_TEST_SUCCESS)
-	item.collapsed = true
+	item.collapsed = GdUnitSettings.is_inspector_node_collapse()
 
 func set_state_skipped(item :TreeItem) -> void:
 	item.set_meta(META_GDUNIT_STATE, STATE.SKIPPED)
