@@ -15,6 +15,11 @@ const TEST_TIMEOUT = GROUP_TEST + "/test_timeout_seconds"
 const TEST_ROOT_FOLDER = GROUP_TEST + "/test_root_folder"
 const TEST_SITE_NAMING_CONVENTION = GROUP_TEST + "/test_suite_naming_convention"
 
+# UI Setiings
+const GROUP_UI = COMMON_SETTINGS + "/ui"
+const INSPECTOR_NODE_COLLAPSE = GROUP_UI + "/inspector_node_collapse"
+
+
 # Report Setiings
 const REPORT_SETTINGS = MAIN_CATEGORY + "/report"
 const GROUP_GODOT = REPORT_SETTINGS + "/godot"
@@ -24,6 +29,8 @@ const REPORT_ORPHANS  = REPORT_SETTINGS + "/verbose_orphans"
 const GROUP_ASSERT = REPORT_SETTINGS + "/assert"
 const REPORT_ASSERT_WARNINGS = GROUP_ASSERT + "/verbose_warnings"
 const REPORT_ASSERT_ERRORS   = GROUP_ASSERT + "/verbose_errors"
+
+
 
 # Godot stdout/logging settings
 const CATEGORY_LOGGING := "logging/file_logging/"
@@ -62,6 +69,7 @@ static func setup():
 	create_property_if_need(REPORT_ORPHANS, true, "Enables/Disables orphan reporting.")
 	create_property_if_need(REPORT_ASSERT_ERRORS, true, "Enables/Disables error reporting on asserts.")
 	create_property_if_need(REPORT_ASSERT_WARNINGS, true, "Enables/Disables warning reporting on asserts")
+	create_property_if_need(INSPECTOR_NODE_COLLAPSE, true, "Enables/disables that the testsuite node is closed after a successful test run.")
 	create_property_if_need(TEMPLATE_TS_GD, GdUnitTestSuiteDefaultTemplate.DEFAULT_TEMP_TS_GD, "Defines the test suite template")
 
 static func create_property_if_need(name :String, default, help :="", value_set := PoolStringArray()) -> void:
@@ -127,6 +135,9 @@ static func is_report_push_errors() -> bool:
 
 static func is_report_script_errors() -> bool:
 	return get_setting(REPORT_SCRIPT_ERRORS, true)
+
+static func is_inspector_node_collapse() -> bool:
+	return get_setting(INSPECTOR_NODE_COLLAPSE, true)
 
 static func is_log_enabled() -> bool:
 	return ProjectSettings.get_setting(STDOUT_ENABLE_TO_FILE)
