@@ -156,11 +156,20 @@ static func equals_sorted(obj_a :Array, obj_b :Array, case_sensitive :bool = fal
 	b.sort()
 	return equals(a, b, case_sensitive)
 
+
+static func is_type_equivalent(type_a, type_b) -> bool:
+	if GdUnitSettings.is_strict_number_type_compare():
+		return type_a == type_b
+	return (
+		(type_a == TYPE_REAL and type_b == TYPE_INT)
+		or (type_a == TYPE_INT and type_b == TYPE_REAL)
+		or type_a == type_b)
+
 static func equals(obj_a, obj_b, case_sensitive :bool = false, deep_check :bool = true ) -> bool:
 	var type_a = typeof(obj_a)
 	var type_b = typeof(obj_b)
-	# is different types
-	if type_a != type_b:
+	# test for type equality if configured
+	if not is_type_equivalent(type_a, type_b):
 		return false
 	# is same instance
 	if obj_a == obj_b:

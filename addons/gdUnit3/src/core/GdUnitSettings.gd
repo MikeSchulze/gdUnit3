@@ -29,8 +29,7 @@ const REPORT_ORPHANS  = REPORT_SETTINGS + "/verbose_orphans"
 const GROUP_ASSERT = REPORT_SETTINGS + "/assert"
 const REPORT_ASSERT_WARNINGS = GROUP_ASSERT + "/verbose_warnings"
 const REPORT_ASSERT_ERRORS   = GROUP_ASSERT + "/verbose_errors"
-
-
+const REPORT_ASSERT_STRICT_NUMBER_TYPE_COMPARE = GROUP_ASSERT + "/strict_number_type_compare"
 
 # Godot stdout/logging settings
 const CATEGORY_LOGGING := "logging/file_logging/"
@@ -69,6 +68,7 @@ static func setup():
 	create_property_if_need(REPORT_ORPHANS, true, "Enables/Disables orphan reporting.")
 	create_property_if_need(REPORT_ASSERT_ERRORS, true, "Enables/Disables error reporting on asserts.")
 	create_property_if_need(REPORT_ASSERT_WARNINGS, true, "Enables/Disables warning reporting on asserts")
+	create_property_if_need(REPORT_ASSERT_STRICT_NUMBER_TYPE_COMPARE, true, "Enabled/disabled number values will be compared strictly by type. (real vs int)")
 	create_property_if_need(INSPECTOR_NODE_COLLAPSE, true, "Enables/disables that the testsuite node is closed after a successful test run.")
 	create_property_if_need(TEMPLATE_TS_GD, GdUnitTestSuiteDefaultTemplate.DEFAULT_TEMP_TS_GD, "Defines the test suite template")
 
@@ -129,6 +129,9 @@ static func is_verbose_assert_errors() -> bool:
 
 static func is_verbose_orphans() -> bool:
 	return get_setting(REPORT_ORPHANS, true)
+
+static func is_strict_number_type_compare() -> bool:
+	return get_setting(REPORT_ASSERT_STRICT_NUMBER_TYPE_COMPARE, true)
 
 static func is_report_push_errors() -> bool:
 	return get_setting(REPORT_PUSH_ERRORS, false)
