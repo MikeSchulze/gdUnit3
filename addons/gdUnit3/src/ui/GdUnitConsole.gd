@@ -83,14 +83,14 @@ func _on_event_test_suite(event :GdUnitEvent):
 			else:
 				output.push_color(Color.firebrick.to_html())
 				output.append_bbcode("[shake rate=5 level=10][b]FAILED[/b][/shake]")
-			output.pop()
+			output.pop_indent(1)
 			output.append_bbcode(" %+12s" % LocalTime.elapsed(event.elapsed_time()))
 			output.newline()
 			output.push_color(_text_color.to_html())
 			output.push_indent(1)
 			output.append_bbcode("| %d total | %d error | %d failed | %d skipped | %d orphans |\n" % [_statistics["total_count"], _statistics["error_count"], _statistics["failed_count"], _statistics["skipped_count"], _statistics["orphan_nodes"]])
 			output.pop_indent(1)
-			output.pop()
+			output.pop_indent(1)
 			output.newline()
 		GdUnitEvent.TESTCASE_BEFORE:
 			var spaces = "-%d" % (80 - event._suite_name.length())
@@ -104,7 +104,7 @@ func _on_event_test_suite(event :GdUnitEvent):
 				if event.is_success():
 					output.push_color(Color.lightgreen.to_html())
 					output.append_bbcode("PASSED")
-					output.pop()
+					output.pop_indent(1)
 					output.append_bbcode(" %+12s" % LocalTime.elapsed(event.elapsed_time()))
 				else:
 					if event.is_skipped():
@@ -113,7 +113,7 @@ func _on_event_test_suite(event :GdUnitEvent):
 					if event.is_error() or event.is_failed():
 						output.push_color(Color.firebrick.to_html())
 						output.append_bbcode("FAILED")
-					output.pop()
+					output.pop_indent(1)
 					output.append_bbcode(" %+12s" % LocalTime.elapsed(event.elapsed_time()))
 					output.newline()
 					output.push_color(_text_color.to_html())
@@ -122,7 +122,7 @@ func _on_event_test_suite(event :GdUnitEvent):
 						output.push_indent(2)
 						output.append_bbcode("line %d %s" % [report._line_number, report._message])
 						output.pop_indent(2)
-					output.pop()
+					output.pop_indent(1)
 				output.newline()
 
 func _on_client_connected(client_id :int) -> void:
