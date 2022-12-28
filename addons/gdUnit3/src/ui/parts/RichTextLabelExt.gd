@@ -47,10 +47,11 @@ func push_indent(indent :int) -> void:
 		_max_indent = _indent
 
 func pop_indent(indent :int) -> void:
-	.pop()
-	if _effect:
-		_indent -= indent
-		_effect.pop_indent(get_line_count(), _indent)
+	if _indent-indent >= 0:
+		.pop()
+		if _effect:
+			_indent -= indent
+			_effect.pop_indent(get_line_count(), _indent)
 
 # updates the label minmum size by the longest line content
 # to fit the full text to on line, to avoid line wrapping
