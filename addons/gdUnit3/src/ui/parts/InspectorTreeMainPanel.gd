@@ -112,9 +112,10 @@ static func is_state_error(item :TreeItem) -> bool:
 	return item.has_meta(META_GDUNIT_STATE) and (item.get_meta(META_GDUNIT_STATE) == STATE.ERROR or item.get_meta(META_GDUNIT_STATE) == STATE.ABORDED)
 
 static func is_item_state_orphan(item :TreeItem) -> bool:
-	if item.has_meta(META_GDUNIT_ORPHAN):
-		return item.get_meta(META_GDUNIT_ORPHAN) as bool
-	return false
+	return item.has_meta(META_GDUNIT_ORPHAN)
+
+static func is_test_suite(item :TreeItem) -> bool:
+	return item.has_meta(META_GDUNIT_TYPE) and item.get_meta(META_GDUNIT_TYPE) == GdUnitType.TEST_SUITE
 
 func _ready():
 	init_tree()
@@ -144,21 +145,18 @@ func cleanup_tree() -> void:
 	clear_tree_item_cache()
 	if not _tree_root:
 		return
-	var parent := _tree_root.get_children()
-	while parent != null:
-		var item :=  parent.get_children()
-		while item != null:
-			var next_item = item.get_next()
-			item.free()
-			item = next_item
-		var next_parent = parent.get_next()
-		parent.free()
-		parent = next_parent
+	_free_recursive(_tree_root.get_children())
 	_tree_root.free()
 	_tree.clear()
 	# clear old reports
 	for child in _report_list.get_children():
 		_report_list.remove_child(child)
+
+func _free_recursive(item :TreeItem) -> void:
+	while item != null:
+		_free_recursive(item.get_children())
+		item.call_deferred("free")
+		item = item.get_next()
 
 func select_item(item :TreeItem) -> void:
 	if not item.is_selected(0):
@@ -258,17 +256,12 @@ func add_report(item :TreeItem, report: GdUnitReport) -> void:
 	reports.append(report)
 	item.set_meta(META_GDUNIT_REPORT, reports)
 
-func abort_running() -> void:
-	var parent := _tree_root.get_children()
-	while parent != null:
-		if is_state_running(parent):
-			set_state_aborted(parent)
-			var item :=  parent.get_children()
-			while item != null:
-				if is_state_running(item):
-					set_state_aborted(item)
-				item = item.get_next()
-		parent = parent.get_next()
+func abort_running(item := _tree_root.get_children()) -> void:
+	while item != null:
+		abort_running(item.get_children())
+		if is_state_running(item):
+			set_state_aborted(item)
+		item = item.get_next()
 
 func select_first_failure() -> void:
 	if not _current_failures.empty():
@@ -281,22 +274,12 @@ func select_last_failure() -> void:
 func clear_failures() -> void:
 	_current_failures.clear()
 
-func collect_failures_and_errors() -> Array:
-	clear_failures()
-	var parent := _tree_root.get_children()
-	while parent != null:
-		if is_state_failed(parent) or is_state_error(parent):
-			_current_failures.append(parent)
-			var item :=  parent.get_children()
-			while item != null:
-				if is_state_failed(item) or is_state_error(item):
-					_current_failures.append(item)
-					# we remove the test_suite to enforce test case select
-					var index = _current_failures.find(parent)
-					if index != -1:
-						_current_failures.remove(index)
-				item = item.get_next()
-		parent = parent.get_next()
+func collect_failures_and_errors(item := _tree_root.get_children()) -> Array:
+	while item != null:
+		if not is_test_suite(item) and (is_state_failed(item) or is_state_error(item)):
+			_current_failures.append(item)
+		collect_failures_and_errors(item.get_children())
+		item = item.get_next()
 	return _current_failures
 
 func select_next_failure() -> void:
@@ -508,6 +491,7 @@ func _on_GdUnit_gdunit_runner_stop(client_id :int):
 	_context_menu_run.disabled = false
 	_context_menu_debug.disabled = false
 	abort_running()
+	clear_failures()
 	collect_failures_and_errors()
 	select_first_failure()
 
