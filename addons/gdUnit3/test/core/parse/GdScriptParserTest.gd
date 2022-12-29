@@ -79,7 +79,7 @@ func test_parse_arguments():
 		.contains_exactly([
 			GdFunctionArgument.new("a", "int"),
 			GdFunctionArgument.new("b", "int"),
-			GdFunctionArgument.new("parameters", "Array", "[[1,2],[3,4],[5,6]]")])
+			GdFunctionArgument.new("parameters", "Array", "[[1, 2], [3, 4], [5, 6]]")])
 	
 	assert_array(_parser.parse_arguments("func test_values(a:Vector2, b:Vector2, expected:Vector2, test_parameters:=[[Vector2.ONE,Vector2.ONE,Vector2(1,1)]]):"))\
 		.contains_exactly([
@@ -156,12 +156,12 @@ func test_parse_arguments_default_build_in_type_Array():
 	assert_array(_parser.parse_arguments("func foo(arg1 :String, arg2 :Array=[1, 2, 3]):")) \
 		.contains_exactly([
 			GdFunctionArgument.new("arg1", "String"),
-			GdFunctionArgument.new("arg2", "Array", "[1,2,3]")])
+			GdFunctionArgument.new("arg2", "Array", "[1, 2, 3]")])
 	
 	assert_array(_parser.parse_arguments("func foo(arg1 :String, arg2 :=[1, 2, 3]):")) \
 		.contains_exactly([
 			GdFunctionArgument.new("arg1", "String"),
-			GdFunctionArgument.new("arg2", "Array", "[1,2,3]")])
+			GdFunctionArgument.new("arg2", "Array", "[1, 2, 3]")])
 	
 	assert_array(_parser.parse_arguments("func foo(arg1 :String, arg2=[]):")) \
 		.contains_exactly([
@@ -171,7 +171,7 @@ func test_parse_arguments_default_build_in_type_Array():
 	assert_array(_parser.parse_arguments("func foo(arg1 :String, arg2 :Array=[1, 2, 3], arg3 := false):")) \
 		.contains_exactly([
 			GdFunctionArgument.new("arg1", "String"),
-			GdFunctionArgument.new("arg2", "Array", "[1,2,3]"),
+			GdFunctionArgument.new("arg2", "Array", "[1, 2, 3]"),
 			GdFunctionArgument.new("arg3", "bool", "false")])
 
 func test_parse_arguments_default_build_in_type_Color():
@@ -313,14 +313,15 @@ func test_extract_function_signature() -> void:
 	var rows = _parser.extract_source_code(path)
 	
 	assert_that(_parser.extract_func_signature(rows, 9))\
-		.is_equal("funca1(set_name:String,path:String=\"\",load_on_init:bool=false,set_auto_save:bool=false,set_network_sync:bool=false)->void:")
+		.is_equal('func a1(set_name:String, path:String="", load_on_init:bool=false,set_auto_save:bool=false, set_network_sync:bool=false) -> void:')
 	assert_that(_parser.extract_func_signature(rows, 14))\
-		.is_equal("funca2(set_name:String,path:String=\"\",load_on_init:bool=false,set_auto_save:bool=false,set_network_sync:bool=false)->void:")
+		.is_equal('func a2(set_name:String, path:String="", load_on_init:bool=false,set_auto_save:bool=false, set_network_sync:bool=false) -> void:')
 	assert_that(_parser.extract_func_signature(rows, 19))\
-		.is_equal("funca3(set_name:String,path:String=\"\",load_on_init:bool=false,set_auto_save:bool=false,set_network_sync:bool=false):")
+		.is_equal('func a3(set_name:String, path:String="", load_on_init:bool=false,set_auto_save:bool=false, set_network_sync:bool=false) :')
 	assert_that(_parser.extract_func_signature(rows, 24))\
-		.is_equal("funca4(set_name:String,path:String=\"\",load_on_init:bool=false,set_auto_save:bool=false,set_network_sync:bool=false):")
-
+		.is_equal('func a4(set_name:String,path:String="",load_on_init:bool=false,set_auto_save:bool=false,set_network_sync:bool=false):')
+	assert_that(_parser.extract_func_signature(rows, 32))\
+		.is_equal('func a5(value : Array,expected : String,test_parameters : Array = [[ ["a"], "a" ],[ ["a", "very", "long", "argument"], "a very long argument" ],]):')
 
 func test_strip_leading_spaces():
 	assert_str(GdScriptParser.TokenInnerClass._strip_leading_spaces("")).is_empty()
@@ -455,7 +456,7 @@ func test_extract_func_signature_multiline() -> void:
 	]
 	var fs = _parser.extract_func_signature(source_code, 0)
 	
-	assert_that(fs).is_equal("functest_parameterized(a:int,b:int,c:int,expected:int,parameters=[[1,2,3,6],[3,4,5,11],[6,7,8,21]]):")
+	assert_that(fs).is_equal("func test_parameterized(a: int, b :int, c :int, expected :int, parameters = [[1, 2, 3, 6],[3, 4, 5, 11],[6, 7, 8, 21] ]):")
 
 func test_parse_func_description_paramized_test():
 	var fd = _parser.parse_func_description("functest_parameterized(a:int,b:int,c:int,expected:int,parameters=[[1,2,3,6],[3,4,5,11],[6,7,8,21]]):", "class", ["path"], 22)
@@ -469,11 +470,13 @@ func test_parse_func_description_paramized_test():
 	]))
 
 func test_parse_func_descriptor_with_fuzzers():
-	var source_code = ["func test_foo(fuzzer_a = fuzz_a(), fuzzer_b := fuzz_b(),\n",
-		"fuzzer_c :Fuzzer = fuzz_c(),\n",
-		"fuzzer = Fuzzers.random_rangei(-23, 22),\n",
-		"fuzzer_iterations = 234,\n",
-		"fuzzer_seed = 100):\n"]
+	var source_code := """
+	func test_foo(fuzzer_a = fuzz_a(), fuzzer_b := fuzz_b(),
+		fuzzer_c :Fuzzer = fuzz_c(),
+		fuzzer = Fuzzers.random_rangei(-23, 22),
+		fuzzer_iterations = 234,
+		fuzzer_seed = 100):
+	""".split("\n")
 	var fs = _parser.extract_func_signature(source_code, 0)
 	var fd = _parser.parse_func_description(fs, "class", ["path"], 22)
 	
@@ -481,7 +484,7 @@ func test_parse_func_descriptor_with_fuzzers():
 		GdFunctionArgument.new("fuzzer_a", "Fuzzer", "fuzz_a()"),
 		GdFunctionArgument.new("fuzzer_b", "Fuzzer", "fuzz_b()"),
 		GdFunctionArgument.new("fuzzer_c", "Fuzzer", "fuzz_c()"),
-		GdFunctionArgument.new("fuzzer", "Fuzzer", "Fuzzers.random_rangei(-23,22)"),
+		GdFunctionArgument.new("fuzzer", "Fuzzer", "Fuzzers.random_rangei(-23, 22)"),
 		GdFunctionArgument.new("fuzzer_iterations", "int", "234"),
 		GdFunctionArgument.new("fuzzer_seed", "int", "100")
 	]))

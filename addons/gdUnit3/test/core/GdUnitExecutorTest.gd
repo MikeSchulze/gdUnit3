@@ -569,6 +569,7 @@ func test_execute_parameterizied_tests() -> void:
 		"test_dictionary_div_number_types"]
 	assert_array(test_suite.get_children()).extract("get_name").contains_exactly(expected_test_cases)
 	# simulate test suite execution
+	ProjectSettings.set_setting(GdUnitSettings.REPORT_ASSERT_STRICT_NUMBER_TYPE_COMPARE, true)
 	var events = yield(execute(test_suite), "completed" )
 	var suite_name = "TestSuiteParameterizedTests"
 	
@@ -595,6 +596,7 @@ func test_execute_parameterizied_tests() -> void:
 	# simulate test suite execution
 	test_suite = resource("res://addons/gdUnit3/test/core/resources/testsuites/TestSuiteParameterizedTests.resource")
 	events = yield(execute(test_suite), "completed" )
+	ProjectSettings.set_setting(GdUnitSettings.REPORT_ASSERT_STRICT_NUMBER_TYPE_COMPARE, true)
 	
 	# the test should now be successful
 	assert_array(events).extractv(

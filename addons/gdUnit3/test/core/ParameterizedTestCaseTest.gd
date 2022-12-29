@@ -143,3 +143,17 @@ func test_dictionary_div_number_types(
 	# allow to compare type unsave
 	ProjectSettings.set_setting(GdUnitSettings.REPORT_ASSERT_STRICT_NUMBER_TYPE_COMPARE, false)
 	assert_that(value).is_equal(expected)
+	ProjectSettings.set_setting(GdUnitSettings.REPORT_ASSERT_STRICT_NUMBER_TYPE_COMPARE, true)
+
+
+func test_with_string_paramset(
+	values : Array,
+	expected : String,
+	test_parameters : Array = [
+		[ ["a"], "a" ],
+		[ ["a", "very", "long", "argument"], "a very long argument" ],
+	]
+):
+	# do join via 'PoolStringArray' to be compatible with Godot 3.4.x
+	var current := PoolStringArray(values).join(" ")
+	assert_that(current.strip_edges()).is_equal(expected)
