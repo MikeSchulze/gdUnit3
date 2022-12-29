@@ -256,12 +256,12 @@ func test_parse_and_add_test_cases() -> void:
 		.contains_exactly([
 			tuple("test_no_args", default_time, PoolStringArray(), 1),
 			tuple("test_with_timeout", 2000, PoolStringArray(), 1),
-			tuple("test_with_fuzzer", default_time, PoolStringArray(["fuzzer:=Fuzzers.rangei(-10,22)"]), Fuzzer.ITERATION_DEFAULT_COUNT),
-			tuple("test_with_fuzzer_iterations", default_time, PoolStringArray(["fuzzer:=Fuzzers.rangei(-10,22)"]), 10),
-			tuple("test_with_multible_fuzzers", default_time, PoolStringArray(["fuzzer_a:=Fuzzers.rangei(-10,22)", "fuzzer_b:=Fuzzers.rangei(23,42)"]), 10),
-			tuple("test_multiline_arguments_a", default_time, PoolStringArray(["fuzzer_a:=Fuzzers.rangei(-10,22)", "fuzzer_b:=Fuzzers.rangei(23,42)"]), 42),
-			tuple("test_multiline_arguments_b", default_time, PoolStringArray(["fuzzer_a:=Fuzzers.rangei(-10,22)", "fuzzer_b:=Fuzzers.rangei(23,42)"]), 23),
-			tuple("test_multiline_arguments_c", 2000, PoolStringArray(["fuzzer_a:=Fuzzers.rangei(-10,22)", "fuzzer_b:=Fuzzers.rangei(23,42)"]), 33),
+			tuple("test_with_fuzzer", default_time, PoolStringArray(["fuzzer:=Fuzzers.rangei(-10, 22)"]), Fuzzer.ITERATION_DEFAULT_COUNT),
+			tuple("test_with_fuzzer_iterations", default_time, PoolStringArray(["fuzzer:=Fuzzers.rangei(-10, 22)"]), 10),
+			tuple("test_with_multible_fuzzers", default_time, PoolStringArray(["fuzzer_a:=Fuzzers.rangei(-10, 22)", "fuzzer_b:=Fuzzers.rangei(23, 42)"]), 10),
+			tuple("test_multiline_arguments_a", default_time, PoolStringArray(["fuzzer_a:=Fuzzers.rangei(-10, 22)", "fuzzer_b:=Fuzzers.rangei(23, 42)"]), 42),
+			tuple("test_multiline_arguments_b", default_time, PoolStringArray(["fuzzer_a:=Fuzzers.rangei(-10, 22)", "fuzzer_b:=Fuzzers.rangei(23, 42)"]), 23),
+			tuple("test_multiline_arguments_c", 2000, PoolStringArray(["fuzzer_a:=Fuzzers.rangei(-10, 22)", "fuzzer_b:=Fuzzers.rangei(23, 42)"]), 33),
 		])
 
 func test_scan_by_inheritance_class_name() -> void:
