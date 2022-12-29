@@ -147,11 +147,13 @@ func test_dictionary_div_number_types(
 
 
 func test_with_string_paramset(
-	value : Array,
+	values : Array,
 	expected : String,
 	test_parameters : Array = [
 		[ ["a"], "a" ],
 		[ ["a", "very", "long", "argument"], "a very long argument" ],
 	]
 ):
-	assert_that(" ".join(value)).is_equal(expected)
+	# do join via 'PoolStringArray' to be compatible with Godot 3.4.x
+	var current := PoolStringArray(values).join(" ")
+	assert_that(current.strip_edges()).is_equal(expected)
