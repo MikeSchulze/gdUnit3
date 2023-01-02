@@ -106,7 +106,7 @@ assert_int(-13).is_not_negative()
 ### Thank you for supporting my project!
 ---
 ## Sponsors:
-[<img src="https://github.com/musicm122.png" alt="musicm122" width="125"/>](https://github.com/musicm122)
-
+* musicm122 - [<img src="https://github.com/musicm122.png" alt="musicm122" width="125"/>](https://github.com/musicm122)
+* Curt King - 
 
 
