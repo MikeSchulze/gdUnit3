@@ -81,7 +81,6 @@ class SpyFunctionDoubler extends GdFunctionDoubler:
 		var func_name := func_descriptor.name()
 		var args := func_descriptor.args()
 		var varargs := func_descriptor.varargs()
-		var default_return_value = return_value(func_descriptor.return_type())
 		var arg_names := extract_arg_names(args)
 		var vararg_names := extract_arg_names(varargs)
 		
@@ -92,15 +91,14 @@ class SpyFunctionDoubler extends GdFunctionDoubler:
 			return PoolStringArray([constructor])
 		
 		var double := func_signature + "\n"
-		var func_template := get_template(default_return_value, is_vararg, not arg_names.empty())
+		var func_template := get_template(func_descriptor.return_type(), is_vararg, not arg_names.empty())
 		# fix to  unix format, this is need when the template is edited under windows than the template is stored with \r\n
 		func_template = GdScriptParser.to_unix_format(func_template)
 		double += func_template\
 			.replace("$(args)", str(arg_names))\
 			.replace("$(varargs)", str(vararg_names)) \
 			.replace("$(func_name)", func_name )\
-			.replace("$(func_arg)", arg_names.join(", ")) \
-			.replace("${default_return_value}", default_return_value)
+			.replace("$(func_arg)", arg_names.join(", "))
 		
 		if is_static:
 			double = double.replace("", "__self[0].__instance_delegator" if is_engine else "")\
@@ -110,12 +108,12 @@ class SpyFunctionDoubler extends GdFunctionDoubler:
 				.replace("$(instance)", "")
 		return double.split("\n")
 		
-	func get_template(return_type, is_vararg :bool, has_args :bool) -> String:
+	func get_template(return_type :int, is_vararg :bool, has_args :bool) -> String:
 		if is_vararg and has_args:
 			return SPY_VOID_TEMPLATE_VARARG
 		if is_vararg and not has_args:
 			return SPY_VOID_TEMPLATE_VARARG_ONLY
-		if return_type == "void":
+		if return_type == TYPE_NIL or return_type == GdObjects.TYPE_VOID:
 			return SPY_VOID_TEMPLATE
 		return SPY_TEMPLATE
 

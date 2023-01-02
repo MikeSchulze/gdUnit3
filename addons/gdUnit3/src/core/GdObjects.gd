@@ -229,10 +229,6 @@ static func equals(obj_a, obj_b, case_sensitive :bool = false, deep_check :bool 
 					return false
 				if obj_a.get_class() != obj_b.get_class():
 					return false
-				# verify is different instance id, we exclude explicit the InputEvent to allow deep comapare on it
-				if not (obj_a is InputEvent or obj_b is InputEvent):
-					if obj_a.get_instance_id() != obj_b.get_instance_id():
-						return false
 				var a = inst2dict(obj_a) if is_instance_valid(obj_a) and obj_a.get_script() != null else var2str(obj_a)
 				var b = inst2dict(obj_b) if is_instance_valid(obj_b) and obj_b.get_script() != null else var2str(obj_b)
 				return str(a) == str(b)

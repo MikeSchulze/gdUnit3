@@ -30,6 +30,8 @@ static func _current(value, delimiter ="\n") -> String:
 		TYPE_REAL:
 			return "'[color=%s]%f[/color]'" % [VALUE_COLOR, value]
 		TYPE_OBJECT:
+			if value == null:
+				return "'[color=%s]<null>[/color]'" % [VALUE_COLOR]
 			if value is InputEvent:
 				return "[color=%s]<%s>[/color]" % [VALUE_COLOR, value.as_text()]
 			#if value.has_method("_to_string"):
@@ -49,6 +51,8 @@ static func _expected(value, delimiter ="\n") -> String:
 		TYPE_REAL:
 			return "'[color=%s]%f[/color]'" % [VALUE_COLOR, value]
 		TYPE_OBJECT:
+			if value == null:
+				return "'[color=%s]<null>[/color]'" % [VALUE_COLOR]
 			if value is InputEvent:
 				return "[color=%s]<%s>[/color]" % [VALUE_COLOR, value.as_text()]
 			#if value.has_method("_to_string"):

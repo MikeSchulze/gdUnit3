@@ -55,10 +55,11 @@ func test_double_return_undef_function_with_args() -> void:
 		"	var args :Array = [\"disconnect\"] + [signal_, target_, method_]",
 		"	",
 		"	if __is_verify_interactions():",
-		"		return __verify_interactions(args)",
+		"		__verify_interactions(args)",
+		"		return",
 		"	else:",
 		"		__save_function_interaction(args)",
-		"	return .disconnect(signal_, target_, method_)",
+		"	.disconnect(signal_, target_, method_)",
 		""])
 
 func test_double_void_function_with_args_and_varargs() -> void:
@@ -131,13 +132,14 @@ func test_double_static_script_function_no_args() -> void:
 		"	var args :Array = [\"foo\"] + []",
 		"	",
 		"	if __self[0].__is_verify_interactions():",
-		"		return __self[0].__verify_interactions(args)",
+		"		__self[0].__verify_interactions(args)",
+		"		return",
 		"	else:",
 		"		__self[0].__save_function_interaction(args)",
-		"	return .foo()",
+		"	.foo()",
 		""])
 
-func test_double_static_script_function_with_args() -> void:
+func test_double_static_script_function_with_args_return_void() -> void:
 	var doubler := GdUnitSpyBuilder.SpyFunctionDoubler.new()
 	
 	var fd := GdFunctionDescriptor.new( "foo", 23, false, true, false, TYPE_NIL, "", [
@@ -149,18 +151,53 @@ func test_double_static_script_function_with_args() -> void:
 		"	var args :Array = [\"foo\"] + [arg1, arg2]",
 		"	",
 		"	if __self[0].__is_verify_interactions():",
+		"		__self[0].__verify_interactions(args)",
+		"		return",
+		"	else:",
+		"		__self[0].__save_function_interaction(args)",
+		"	.foo(arg1, arg2)",
+		""])
+
+func test_double_static_script_function_with_args_return_bool() -> void:
+	var doubler := GdUnitSpyBuilder.SpyFunctionDoubler.new()
+	
+	var fd := GdFunctionDescriptor.new( "foo", 23, false, true, false, TYPE_BOOL, "", [
+		GdFunctionArgument.new("arg1", "bool"),
+		GdFunctionArgument.new("arg2", "String", "\"default\"")
+	])
+	assert_array(doubler.double(fd)).contains_exactly([
+		"static func foo(arg1, arg2=\"default\") -> bool:",
+		"	var args :Array = [\"foo\"] + [arg1, arg2]",
+		"	",
+		"	if __self[0].__is_verify_interactions():",
 		"		return __self[0].__verify_interactions(args)",
 		"	else:",
 		"		__self[0].__save_function_interaction(args)",
 		"	return .foo(arg1, arg2)",
 		""])
 
-func test_double_script_function_no_args() -> void:
+func test_double_script_function_no_args_return_void() -> void:
 	var doubler := GdUnitSpyBuilder.SpyFunctionDoubler.new()
 	
 	var fd := GdFunctionDescriptor.new( "foo", 23, false, false, false, TYPE_NIL, "", [])
 	assert_array(doubler.double(fd)).contains_exactly([
 		"func foo():",
+		"	var args :Array = [\"foo\"] + []",
+		"	",
+		"	if __is_verify_interactions():",
+		"		__verify_interactions(args)",
+		"		return",
+		"	else:",
+		"		__save_function_interaction(args)",
+		"	.foo()",
+		""])
+
+func test_double_script_function_no_args_return_bool() -> void:
+	var doubler := GdUnitSpyBuilder.SpyFunctionDoubler.new()
+	
+	var fd := GdFunctionDescriptor.new( "foo", 23, false, false, false, TYPE_BOOL, "", [])
+	assert_array(doubler.double(fd)).contains_exactly([
+		"func foo() -> bool:",
 		"	var args :Array = [\"foo\"] + []",
 		"	",
 		"	if __is_verify_interactions():",
@@ -170,7 +207,7 @@ func test_double_script_function_no_args() -> void:
 		"	return .foo()",
 		""])
 
-func test_double_script_function_with_args() -> void:
+func test_double_script_function_with_args_return_void() -> void:
 	var doubler := GdUnitSpyBuilder.SpyFunctionDoubler.new()
 	
 	var fd := GdFunctionDescriptor.new( "foo", 23, false, false, false, TYPE_NIL, "", [
@@ -179,6 +216,25 @@ func test_double_script_function_with_args() -> void:
 	])
 	assert_array(doubler.double(fd)).contains_exactly([
 		"func foo(arg1, arg2=\"default\"):",
+		"	var args :Array = [\"foo\"] + [arg1, arg2]",
+		"	",
+		"	if __is_verify_interactions():",
+		"		__verify_interactions(args)",
+		"		return",
+		"	else:",
+		"		__save_function_interaction(args)",
+		"	.foo(arg1, arg2)",
+		""])
+
+func test_double_script_function_with_args_return_bool() -> void:
+	var doubler := GdUnitSpyBuilder.SpyFunctionDoubler.new()
+	
+	var fd := GdFunctionDescriptor.new( "foo", 23, false, false, false, TYPE_BOOL, "", [
+		GdFunctionArgument.new("arg1", "bool"),
+		GdFunctionArgument.new("arg2", "String", "\"default\"")
+	])
+	assert_array(doubler.double(fd)).contains_exactly([
+		"func foo(arg1, arg2=\"default\") -> bool:",
 		"	var args :Array = [\"foo\"] + [arg1, arg2]",
 		"	",
 		"	if __is_verify_interactions():",
@@ -198,10 +254,11 @@ func test_double_virtual_script_function_with_arg() -> void:
 		"	var args :Array = [\"_input\"] + [event_]",
 		"	",
 		"	if __is_verify_interactions():",
-		"		return __verify_interactions(args)",
+		"		__verify_interactions(args)",
+		"		return",
 		"	else:",
 		"		__save_function_interaction(args)",
-		"	return ._input(event_)",
+		"	._input(event_)",
 		""])
 
 func test_double_virtual_script_function_without_arg() -> void:
@@ -214,10 +271,11 @@ func test_double_virtual_script_function_without_arg() -> void:
 		"	var args :Array = [\"_ready\"] + []",
 		"	",
 		"	if __is_verify_interactions():",
-		"		return __verify_interactions(args)",
+		"		__verify_interactions(args)",
+		"		return",
 		"	else:",
 		"		__save_function_interaction(args)",
-		"	return ._ready()",
+		"	._ready()",
 		""])
 
 class NodeWithOutVirtualFunc extends Node:
