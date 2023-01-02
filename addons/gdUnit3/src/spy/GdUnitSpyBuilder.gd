@@ -8,9 +8,7 @@ const SPY_TEMPLATE = \
 		return $(instance)__verify_interactions(args)
 	else:
 		$(instance)__save_function_interaction(args)
-	if $(is_virtual) == false:
-		return .$(func_name)($(func_arg))
-	return ${default_return_value}
+	return .$(func_name)($(func_arg))
 """
 
 const SPY_VOID_TEMPLATE = \
@@ -21,8 +19,7 @@ const SPY_VOID_TEMPLATE = \
 		return
 	else:
 		$(instance)__save_function_interaction(args)
-	if $(is_virtual) == false:
-		.$(func_name)($(func_arg))
+	.$(func_name)($(func_arg))
 """
 
 const SPY_VOID_TEMPLATE_VARARG =\
@@ -35,19 +32,18 @@ const SPY_VOID_TEMPLATE_VARARG =\
 	else:
 		$(instance)__save_function_interaction(args)
 	
-	if $(is_virtual) == false:
-		match varargs.size():
-			0: .$(func_name)($(func_arg))
-			1: .$(func_name)($(func_arg), varargs[0])
-			2: .$(func_name)($(func_arg), varargs[0], varargs[1])
-			3: .$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2])
-			4: .$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3])
-			5: .$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4])
-			6: .$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5])
-			7: .$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6])
-			8: .$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7])
-			9: .$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7], varargs[8])
-			10: .$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7], varargs[8], varargs[9])
+	match varargs.size():
+		0: .$(func_name)($(func_arg))
+		1: .$(func_name)($(func_arg), varargs[0])
+		2: .$(func_name)($(func_arg), varargs[0], varargs[1])
+		3: .$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2])
+		4: .$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3])
+		5: .$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4])
+		6: .$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5])
+		7: .$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6])
+		8: .$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7])
+		9: .$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7], varargs[8])
+		10: .$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7], varargs[8], varargs[9])
 """
 
 const SPY_VOID_TEMPLATE_VARARG_ONLY =\
@@ -60,19 +56,18 @@ const SPY_VOID_TEMPLATE_VARARG_ONLY =\
 	else:
 		$(instance)__save_function_interaction(args)
 	
-	if $(is_virtual) == false:
-		match varargs.size():
-			0: .$(func_name)()
-			1: .$(func_name)(varargs[0])
-			2: .$(func_name)(varargs[0], varargs[1])
-			3: .$(func_name)(varargs[0], varargs[1], varargs[2])
-			4: .$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3])
-			5: .$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4])
-			6: .$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5])
-			7: .$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6])
-			8: .$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7])
-			9: .$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7], varargs[8])
-			10: .$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7], varargs[8], varargs[9])
+	match varargs.size():
+		0: .$(func_name)()
+		1: .$(func_name)(varargs[0])
+		2: .$(func_name)(varargs[0], varargs[1])
+		3: .$(func_name)(varargs[0], varargs[1], varargs[2])
+		4: .$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3])
+		5: .$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4])
+		6: .$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5])
+		7: .$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6])
+		8: .$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7])
+		9: .$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7], varargs[8])
+		10: .$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7], varargs[8], varargs[9])
 """
 
 class SpyFunctionDoubler extends GdFunctionDoubler:
@@ -80,7 +75,6 @@ class SpyFunctionDoubler extends GdFunctionDoubler:
 	
 	func double(func_descriptor :GdFunctionDescriptor) -> PoolStringArray:
 		var func_signature := func_descriptor.typeless()
-		var is_virtual := func_descriptor.is_virtual()
 		var is_static := func_descriptor.is_static()
 		var is_engine := func_descriptor.is_engine()
 		var is_vararg := func_descriptor.is_vararg()
@@ -104,7 +98,6 @@ class SpyFunctionDoubler extends GdFunctionDoubler:
 		double += func_template\
 			.replace("$(args)", str(arg_names))\
 			.replace("$(varargs)", str(vararg_names)) \
-			.replace("$(is_virtual)", str(is_virtual).to_lower()) \
 			.replace("$(func_name)", func_name )\
 			.replace("$(func_arg)", arg_names.join(", ")) \
 			.replace("${default_return_value}", default_return_value)
@@ -168,7 +161,7 @@ static func spy_on_script(instance, function_excludes :PoolStringArray, debug_wr
 	
 	var clazz_path := GdObjects.extract_class_path(instance)
 	var lines := load_template(GdUnitSpyImpl, extends_clazz, clazz_path)
-	lines += double_functions(extends_clazz, clazz_path, SpyFunctionDoubler.new(), function_excludes)
+	lines += double_functions(instance, extends_clazz, clazz_path, SpyFunctionDoubler.new(), function_excludes)
 	
 	var spy := GDScript.new()
 	spy.source_code = lines.join("\n")

@@ -210,7 +210,7 @@ static func mock_on_script(clazz, function_excludes :PoolStringArray, debug_writ
 	var push_errors := is_push_error_enabled()
 	var function_doubler := MockFunctionDoubler.new(push_errors)
 	var lines := load_template(GdUnitMockImpl, clazz_name, clazz_path)
-	lines += double_functions(clazz_name, clazz_path, function_doubler, function_excludes)
+	lines += double_functions(null, clazz_name, clazz_path, function_doubler, function_excludes)
 	
 	var mock := GDScript.new()
 	mock.source_code = lines.join("\n")

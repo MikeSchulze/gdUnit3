@@ -30,6 +30,8 @@ static func _current(value, delimiter ="\n") -> String:
 		TYPE_REAL:
 			return "'[color=%s]%f[/color]'" % [VALUE_COLOR, value]
 		TYPE_OBJECT:
+			if value is InputEvent:
+				return "[color=%s]<%s>[/color]" % [VALUE_COLOR, value.as_text()]
 			#if value.has_method("_to_string"):
 			#	return "[color=%s]<%s>[/color]" % [VALUE_COLOR, value._to_string()]
 			return "[color=%s]<%s>[/color]" % [VALUE_COLOR, value.get_class()]
@@ -47,6 +49,8 @@ static func _expected(value, delimiter ="\n") -> String:
 		TYPE_REAL:
 			return "'[color=%s]%f[/color]'" % [VALUE_COLOR, value]
 		TYPE_OBJECT:
+			if value is InputEvent:
+				return "[color=%s]<%s>[/color]" % [VALUE_COLOR, value.as_text()]
 			#if value.has_method("_to_string"):
 			#	return "[color=%s]<%s>[/color]" % [VALUE_COLOR, value._to_string()]
 			return "[color=%s]<%s>[/color]" % [VALUE_COLOR, value.get_class()]
@@ -331,7 +335,7 @@ static func error_no_more_interactions(summary :Dictionary) -> String:
 	for args in summary.keys():
 		var times :int = summary[args]
 		interactions.append(_format_arguments(args, times))
-	return "%s\n%s\n%s" % [_error("Expecting no more interacions!"), _error("But found interactions on:"), interactions.join("\n")] 
+	return "%s\n%s\n%s" % [_error("Expecting no more interactions!"), _error("But found interactions on:"), interactions.join("\n")]
 
 static func error_validate_interactions(current_interactions :Dictionary, expected_interactions :Dictionary) -> String:
 	var interactions := PoolStringArray()
@@ -339,7 +343,7 @@ static func error_validate_interactions(current_interactions :Dictionary, expect
 		var times :int = current_interactions[args]
 		interactions.append(_format_arguments(args, times))
 	var expected_interaction := _format_arguments(expected_interactions.keys()[0], expected_interactions.values()[0])
-	return "%s\n%s\n%s\n%s" % [_error("Expecting interacion on:"), expected_interaction, _error("But found interactions on:"), interactions.join("\n")]
+	return "%s\n%s\n%s\n%s" % [_error("Expecting interaction on:"), expected_interaction, _error("But found interactions on:"), interactions.join("\n")]
 
 static func _format_arguments(args :Array, times :int) -> String:
 	var fname :String = args[0]
@@ -348,10 +352,15 @@ static func _format_arguments(args :Array, times :int) -> String:
 	var fsignature := _current("%s(%s)" % [fname, typed_args.join(", ")])
 	return "	%s	%d time's" % [fsignature, times]
 
+static func _format_arg(arg) -> String:
+	if arg is InputEvent:
+		return arg.as_text()
+	return str(arg)
+
 static func _to_typed_args(args :Array) -> PoolStringArray:
 	var typed := PoolStringArray()
 	for arg in args:
-		typed.append( str(arg) + " :" + GdObjects.type_as_string(typeof(arg)))
+		typed.append(_format_arg(arg) + " :" + GdObjects.type_as_string(typeof(arg)))
 	return typed
 
 static func _find_first_diff( left :Array, right :Array) -> String:
