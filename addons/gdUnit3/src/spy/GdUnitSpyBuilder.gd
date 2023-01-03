@@ -70,6 +70,18 @@ const SPY_VOID_TEMPLATE_VARARG_ONLY =\
 		10: .$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7], varargs[8], varargs[9])
 """
 
+
+const READY_TEMPLATE = """
+	func _ready() -> void:
+		if __is_verify_interactions():
+			__verify_interactions(["_ready"])
+			return
+		else:
+			__save_function_interaction(["_ready"])
+		# we do not call the original here, because `add_child` does it already
+		# .$(func_name)($(func_arg))
+"""
+
 class SpyFunctionDoubler extends GdFunctionDoubler:
 	
 	
@@ -89,6 +101,11 @@ class SpyFunctionDoubler extends GdFunctionDoubler:
 			var constructor_args := extract_constructor_args(args).join(",")
 			var constructor := "func _init(%s).(%s):\n	pass\n" % [constructor_args, arg_names.join(",")]
 			return PoolStringArray([constructor])
+		# we need to double the `_ready()` func separatly because of the way how this function is called
+		# when adding to a scene tree
+		if func_name == "_ready":
+			var function := READY_TEMPLATE.dedent().trim_prefix("\n")
+			return PoolStringArray([function])
 		
 		var double := func_signature + "\n"
 		var func_template := get_template(func_descriptor.return_type(), is_vararg, not arg_names.empty())

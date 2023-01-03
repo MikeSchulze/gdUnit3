@@ -515,15 +515,14 @@ func test_spy_scene_by_path_fail_has_no_script_attached():
 	assert_object(spy_scene).is_null()
 
 func test_spy_scene_initalize():
-	var resource := load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
-	var instance :Control = auto_free(resource.instance())
-	var spy_scene = spy(instance)
+	var spy_scene = spy("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
 	assert_object(spy_scene).is_not_null()
 	
 	# Add as child to a scene tree to trigger _ready to initalize all variables
 	add_child(spy_scene)
-	# ensure _ready is called after adding to scene tree
-	verify(spy_scene)._ready()
+	# ensure _ready is recoreded and onyl once called
+	verify(spy_scene, 1)._ready()
+	verify(spy_scene, 1).only_one_time_call()
 	assert_object(spy_scene._box1).is_not_null()
 	assert_object(spy_scene._box2).is_not_null()
 	assert_object(spy_scene._box3).is_not_null()

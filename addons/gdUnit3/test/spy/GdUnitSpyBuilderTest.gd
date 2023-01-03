@@ -266,17 +266,18 @@ func test_double_virtual_script_function_without_arg() -> void:
 	
 	# void _ready() virtual
 	var fd := get_function_description("Node", "_ready")
-	assert_array(doubler.double(fd)).contains_exactly([
-		"func _ready():",
-		"	var args :Array = [\"_ready\"] + []",
-		"	",
-		"	if __is_verify_interactions():",
-		"		__verify_interactions(args)",
-		"		return",
-		"	else:",
-		"		__save_function_interaction(args)",
-		"	._ready()",
-		""])
+	assert_that(doubler.double(fd).join("\n")).is_equal(
+		"""
+		func _ready() -> void:
+			if __is_verify_interactions():
+				__verify_interactions(["_ready"])
+				return
+			else:
+				__save_function_interaction(["_ready"])
+			# we do not call the original here, because `add_child` does it already
+			# .$(func_name)($(func_arg))
+		""".dedent().trim_prefix("\n"))
+
 
 class NodeWithOutVirtualFunc extends Node:
 	func _ready():

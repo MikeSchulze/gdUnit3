@@ -7,7 +7,7 @@ var __verified_interactions := Array()
 var __caller :Object
 
 func __save_function_interaction(args :Array) -> void:
-	var matcher := GdUnitArgumentMatchers.to_matcher(args)
+	var matcher := GdUnitArgumentMatchers.to_matcher(args, true)
 	for key in __saved_interactions.keys():
 		if matcher.is_match(key):
 			__saved_interactions[key] += 1
@@ -25,7 +25,7 @@ func __do_verify_interactions(times :int = 1, expect_result :int = GdUnitAssert.
 func __verify_interactions(args :Array):
 	var summary := Dictionary()
 	var total_interactions := 0
-	var matcher := GdUnitArgumentMatchers.to_matcher(args)
+	var matcher := GdUnitArgumentMatchers.to_matcher(args, true)
 	for key in __saved_interactions.keys():
 		if matcher.is_match(key):
 			var interactions :int = __saved_interactions.get(key, 0)

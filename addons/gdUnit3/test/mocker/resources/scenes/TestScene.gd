@@ -11,8 +11,13 @@ onready var _box3 = $VBoxContainer/PanelContainer/HBoxContainer/Panel3
 export var _initial_color := Color.red
 
 func _ready():
-	#OS.window_maximized = true
 	connect("panel_color_change", self, "_on_panel_color_changed")
+	# we call this function to verify the _ready is only once called
+	# this is need to verify `add_child` is calling the original implementation only once
+	only_one_time_call()
+
+func only_one_time_call() -> void:
+	pass
 
 #func _notification(what):
 #	prints("TestScene", GdObjects.notification_as_string(what))
