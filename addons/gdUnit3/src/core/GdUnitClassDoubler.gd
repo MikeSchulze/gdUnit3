@@ -5,7 +5,7 @@ extends Reference
 const EXCLUDE_VIRTUAL_FUNCTIONS = [
 	# we have to exclude notifications because NOTIFICATION_PREDELETE is try
 	# to delete already freed spy/mock resources and will result in a conflict
-	"_notification", 
+	"_notification",
 	]
 
 # define functions to be exclude when spy or mock on a scene
@@ -52,7 +52,7 @@ static func get_extends_clazz(clazz_name :String, clazz_path :PoolStringArray) -
 	return clazz_name
 
 # double all functions of given instance
-static func double_functions(clazz_name :String, clazz_path :PoolStringArray, func_doubler: GdFunctionDoubler, exclude_functions :Array) -> PoolStringArray:
+static func double_functions(instance :Object, clazz_name :String, clazz_path :PoolStringArray, func_doubler: GdFunctionDoubler, exclude_functions :Array) -> PoolStringArray:
 	var doubled_source := PoolStringArray()
 	var parser := GdScriptParser.new()
 	var exclude_override_functions := EXCLUDE_VIRTUAL_FUNCTIONS + EXCLUDE_FUNCTIONS + exclude_functions
@@ -77,6 +77,9 @@ static func double_functions(clazz_name :String, clazz_path :PoolStringArray, fu
 	for method in clazz_functions:
 		var func_descriptor := GdFunctionDescriptor.extract_from(method)
 		if functions.has(func_descriptor.name()) or exclude_override_functions.has(func_descriptor.name()):
+			continue
+		# do not double on not implemented virtual functions
+		if instance != null and not instance.has_method(func_descriptor.name()):
 			continue
 		functions.append(func_descriptor.name())
 		doubled_source += func_doubler.double(func_descriptor)

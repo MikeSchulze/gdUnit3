@@ -2,11 +2,15 @@ class_name GdUnitSpyTest
 extends GdUnitTestSuite
 
 # small helper to verify last assert error
-func assert_last_error(expected :String):
+func assert_last_error(expected :String, expected_line_number :int = -1):
+	var last_failure_line_number := GdAssertReports.get_last_error_line_number()
 	var gd_assert := GdUnitAssertImpl.new(self, "")
 	if Engine.has_meta(GdAssertReports.LAST_ERROR):
 		gd_assert._current_error_message = Engine.get_meta(GdAssertReports.LAST_ERROR)
-	gd_assert.has_failure_message(expected)
+	gd_assert.has_failure_message(expected.dedent().trim_prefix("\n"))
+	if expected_line_number != -1:
+		assert_int(last_failure_line_number).is_equal(expected_line_number)
+
 
 func test_cant_spy_is_not_a_instance():
 	# returns null because spy needs an 'real' instance to by spy on
@@ -102,7 +106,7 @@ func test_spy_class_with_custom_formattings() -> void:
 	verify(spy, 1).a1("set_name", "", true)
 	verify_no_more_interactions(spy)
 	verify_no_interactions(spy, GdUnitAssert.EXPECT_FAIL)
-	assert_int(GdAssertReports.get_last_error_line_number()).is_equal(104)
+	assert_int(GdAssertReports.get_last_error_line_number()).is_equal(108)
 
 func test_spy_copied_class_members():
 	var instance = auto_free(load("res://addons/gdUnit3/test/mocker/resources/TestPersion.gd").new("user-x", "street", 56616))
@@ -185,12 +189,12 @@ func test_verify_fail():
 	
 	# verify should fail because we interacts two times and not one
 	verify(spy_node, 1, GdUnitAssert.EXPECT_FAIL).set_process(true)
-	var expected_error := """Expecting interacion on:
-	'set_process(True :bool)'	1 time's
-But found interactions on:
-	'set_process(True :bool)'	2 time's"""
-	expected_error = GdScriptParser.to_unix_format(expected_error)
-	assert_last_error(expected_error)
+	var expected_error := """
+		Expecting interaction on:
+			'set_process(True :bool)'	1 time's
+		But found interactions on:
+			'set_process(True :bool)'	2 time's"""
+	assert_last_error(expected_error, 191)
 
 func test_verify_func_interaction_wiht_PoolStringArray():
 	var spy_instance :ClassWithPoolStringArrayFunc = spy(ClassWithPoolStringArrayFunc.new())
@@ -207,12 +211,12 @@ func test_verify_func_interaction_wiht_PoolStringArray_fail():
 	
 	# try to verify with default array type instead of PoolStringArray type
 	verify(spy_instance, 1, GdUnitAssert.EXPECT_FAIL).set_values([])
-	var expected_error := """Expecting interacion on:
-	'set_values([] :Array)'	1 time's
-But found interactions on:
-	'set_values([] :PoolStringArray)'	1 time's"""
-	expected_error = GdScriptParser.to_unix_format(expected_error)
-	assert_last_error(expected_error)
+	var expected_error := """
+		Expecting interaction on:
+			'set_values([] :Array)'	1 time's
+		But found interactions on:
+			'set_values([] :PoolStringArray)'	1 time's"""
+	assert_last_error(expected_error, 213)
 	
 	reset(spy_instance)
 	# try again with called two times and different args
@@ -220,14 +224,14 @@ But found interactions on:
 	spy_instance.set_values(PoolStringArray(["a", "b"]))
 	spy_instance.set_values([1, 2])
 	verify(spy_instance, 1, GdUnitAssert.EXPECT_FAIL).set_values([])
-	expected_error = """Expecting interacion on:
-	'set_values([] :Array)'	1 time's
-But found interactions on:
-	'set_values([] :PoolStringArray)'	1 time's
-	'set_values([a, b] :PoolStringArray)'	1 time's
-	'set_values([1, 2] :Array)'	1 time's"""
-	expected_error = GdScriptParser.to_unix_format(expected_error)
-	assert_last_error(expected_error)
+	expected_error = """
+		Expecting interaction on:
+			'set_values([] :Array)'	1 time's
+		But found interactions on:
+			'set_values([] :PoolStringArray)'	1 time's
+			'set_values([a, b] :PoolStringArray)'	1 time's
+			'set_values([1, 2] :Array)'	1 time's"""
+	assert_last_error(expected_error, 226)
 
 func test_reset():
 	var instance :Node = auto_free(Node.new())
@@ -262,11 +266,11 @@ func test_verify_no_interactions_fails():
 	spy_node.set_process(true) # 1 times
 	spy_node.set_process(true) # 2 times
 
-	var expected_error ="""Expecting no more interacions!
-But found interactions on:
-	'set_process(False :bool)'	1 time's
-	'set_process(True :bool)'	2 time's"""
-	expected_error = GdScriptParser.to_unix_format(expected_error)
+	var expected_error ="""
+		Expecting no more interactions!
+		But found interactions on:
+			'set_process(False :bool)'	1 time's
+			'set_process(True :bool)'	2 time's""".dedent().trim_prefix("\n")
 	# it should fail because we have interactions
 	verify_no_interactions(spy_node, GdUnitAssert.EXPECT_FAIL)\
 		.has_failure_message(expected_error)
@@ -312,12 +316,12 @@ func test_verify_no_more_interactions_but_has():
 	
 	# now use 'verify_no_more_interactions' to check we have no more interactions on this mock
 	# but should fail with a collecion of all not validated interactions
-	var expected_error ="""Expecting no more interacions!
-But found interactions on:
-	'is_inside_tree()'	2 time's
-	'find_node(mask :String, True :bool, True :bool)'	1 time's
-	'find_node(mask :String, False :bool, False :bool)'	1 time's"""
-	expected_error = GdScriptParser.to_unix_format(expected_error)
+	var expected_error ="""
+		Expecting no more interactions!
+		But found interactions on:
+			'is_inside_tree()'	2 time's
+			'find_node(mask :String, True :bool, True :bool)'	1 time's
+			'find_node(mask :String, False :bool, False :bool)'	1 time's""".dedent().trim_prefix("\n")
 	verify_no_more_interactions(spy_node, GdUnitAssert.EXPECT_FAIL)\
 		.has_failure_message(expected_error)
 
@@ -511,13 +515,14 @@ func test_spy_scene_by_path_fail_has_no_script_attached():
 	assert_object(spy_scene).is_null()
 
 func test_spy_scene_initalize():
-	var resource := load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
-	var instance :Control = auto_free(resource.instance())
-	var spy_scene = spy(instance)
+	var spy_scene = spy("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
 	assert_object(spy_scene).is_not_null()
 	
 	# Add as child to a scene tree to trigger _ready to initalize all variables
 	add_child(spy_scene)
+	# ensure _ready is recoreded and onyl once called
+	verify(spy_scene, 1)._ready()
+	verify(spy_scene, 1).only_one_time_call()
 	assert_object(spy_scene._box1).is_not_null()
 	assert_object(spy_scene._box2).is_not_null()
 	assert_object(spy_scene._box3).is_not_null()

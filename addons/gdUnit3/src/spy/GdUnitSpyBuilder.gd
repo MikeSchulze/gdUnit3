@@ -8,9 +8,7 @@ const SPY_TEMPLATE = \
 		return $(instance)__verify_interactions(args)
 	else:
 		$(instance)__save_function_interaction(args)
-	if $(is_virtual) == false:
-		return .$(func_name)($(func_arg))
-	return ${default_return_value}
+	return .$(func_name)($(func_arg))
 """
 
 const SPY_VOID_TEMPLATE = \
@@ -21,8 +19,7 @@ const SPY_VOID_TEMPLATE = \
 		return
 	else:
 		$(instance)__save_function_interaction(args)
-	if $(is_virtual) == false:
-		.$(func_name)($(func_arg))
+	.$(func_name)($(func_arg))
 """
 
 const SPY_VOID_TEMPLATE_VARARG =\
@@ -35,19 +32,18 @@ const SPY_VOID_TEMPLATE_VARARG =\
 	else:
 		$(instance)__save_function_interaction(args)
 	
-	if $(is_virtual) == false:
-		match varargs.size():
-			0: .$(func_name)($(func_arg))
-			1: .$(func_name)($(func_arg), varargs[0])
-			2: .$(func_name)($(func_arg), varargs[0], varargs[1])
-			3: .$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2])
-			4: .$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3])
-			5: .$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4])
-			6: .$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5])
-			7: .$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6])
-			8: .$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7])
-			9: .$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7], varargs[8])
-			10: .$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7], varargs[8], varargs[9])
+	match varargs.size():
+		0: .$(func_name)($(func_arg))
+		1: .$(func_name)($(func_arg), varargs[0])
+		2: .$(func_name)($(func_arg), varargs[0], varargs[1])
+		3: .$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2])
+		4: .$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3])
+		5: .$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4])
+		6: .$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5])
+		7: .$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6])
+		8: .$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7])
+		9: .$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7], varargs[8])
+		10: .$(func_name)($(func_arg), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7], varargs[8], varargs[9])
 """
 
 const SPY_VOID_TEMPLATE_VARARG_ONLY =\
@@ -60,19 +56,18 @@ const SPY_VOID_TEMPLATE_VARARG_ONLY =\
 	else:
 		$(instance)__save_function_interaction(args)
 	
-	if $(is_virtual) == false:
-		match varargs.size():
-			0: .$(func_name)()
-			1: .$(func_name)(varargs[0])
-			2: .$(func_name)(varargs[0], varargs[1])
-			3: .$(func_name)(varargs[0], varargs[1], varargs[2])
-			4: .$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3])
-			5: .$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4])
-			6: .$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5])
-			7: .$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6])
-			8: .$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7])
-			9: .$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7], varargs[8])
-			10: .$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7], varargs[8], varargs[9])
+	match varargs.size():
+		0: .$(func_name)()
+		1: .$(func_name)(varargs[0])
+		2: .$(func_name)(varargs[0], varargs[1])
+		3: .$(func_name)(varargs[0], varargs[1], varargs[2])
+		4: .$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3])
+		5: .$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4])
+		6: .$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5])
+		7: .$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6])
+		8: .$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7])
+		9: .$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7], varargs[8])
+		10: .$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7], varargs[8], varargs[9])
 """
 
 class SpyFunctionDoubler extends GdFunctionDoubler:
@@ -80,14 +75,12 @@ class SpyFunctionDoubler extends GdFunctionDoubler:
 	
 	func double(func_descriptor :GdFunctionDescriptor) -> PoolStringArray:
 		var func_signature := func_descriptor.typeless()
-		var is_virtual := func_descriptor.is_virtual()
 		var is_static := func_descriptor.is_static()
 		var is_engine := func_descriptor.is_engine()
 		var is_vararg := func_descriptor.is_vararg()
 		var func_name := func_descriptor.name()
 		var args := func_descriptor.args()
 		var varargs := func_descriptor.varargs()
-		var default_return_value = return_value(func_descriptor.return_type())
 		var arg_names := extract_arg_names(args)
 		var vararg_names := extract_arg_names(varargs)
 		
@@ -98,16 +91,14 @@ class SpyFunctionDoubler extends GdFunctionDoubler:
 			return PoolStringArray([constructor])
 		
 		var double := func_signature + "\n"
-		var func_template := get_template(default_return_value, is_vararg, not arg_names.empty())
+		var func_template := get_template(func_descriptor.return_type(), is_vararg, not arg_names.empty())
 		# fix to  unix format, this is need when the template is edited under windows than the template is stored with \r\n
 		func_template = GdScriptParser.to_unix_format(func_template)
 		double += func_template\
 			.replace("$(args)", str(arg_names))\
 			.replace("$(varargs)", str(vararg_names)) \
-			.replace("$(is_virtual)", str(is_virtual).to_lower()) \
 			.replace("$(func_name)", func_name )\
-			.replace("$(func_arg)", arg_names.join(", ")) \
-			.replace("${default_return_value}", default_return_value)
+			.replace("$(func_arg)", arg_names.join(", "))
 		
 		if is_static:
 			double = double.replace("", "__self[0].__instance_delegator" if is_engine else "")\
@@ -115,14 +106,19 @@ class SpyFunctionDoubler extends GdFunctionDoubler:
 		else:
 			double = double.replace("", "__instance_delegator" if is_engine else "")\
 				.replace("$(instance)", "")
-		return double.split("\n")
+		var source_code := double.split("\n")
+		# we do not call the original implementation for _ready and all input function, this is actualy done by the engine
+		if func_name in ["_ready", "_input", "_gui_input", "_input_event", "_unhandled_input"]:
+			source_code.remove(source_code.size()-1)
+			source_code.remove(source_code.size()-1)
+		return source_code
 		
-	func get_template(return_type, is_vararg :bool, has_args :bool) -> String:
+	func get_template(return_type :int, is_vararg :bool, has_args :bool) -> String:
 		if is_vararg and has_args:
 			return SPY_VOID_TEMPLATE_VARARG
 		if is_vararg and not has_args:
 			return SPY_VOID_TEMPLATE_VARARG_ONLY
-		if return_type == "void":
+		if return_type == TYPE_NIL or return_type == GdObjects.TYPE_VOID:
 			return SPY_VOID_TEMPLATE
 		return SPY_TEMPLATE
 
@@ -168,7 +164,7 @@ static func spy_on_script(instance, function_excludes :PoolStringArray, debug_wr
 	
 	var clazz_path := GdObjects.extract_class_path(instance)
 	var lines := load_template(GdUnitSpyImpl, extends_clazz, clazz_path)
-	lines += double_functions(extends_clazz, clazz_path, SpyFunctionDoubler.new(), function_excludes)
+	lines += double_functions(instance, extends_clazz, clazz_path, SpyFunctionDoubler.new(), function_excludes)
 	
 	var spy := GDScript.new()
 	spy.source_code = lines.join("\n")

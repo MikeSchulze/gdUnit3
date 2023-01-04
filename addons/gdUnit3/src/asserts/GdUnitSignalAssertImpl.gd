@@ -97,6 +97,8 @@ class SignalCollector:
 	
 	func match(emitter :Object, signal_name :String, args :Array) -> bool:
 		#prints("match", signal_name,  _collected_signals[emitter][signal_name]);
+		if _collected_signals.empty():
+			return false
 		for received_args in _collected_signals[emitter][signal_name]:
 			#prints("testing", signal_name, received_args, "vs", args)
 			if GdObjects.equals(received_args, args):
