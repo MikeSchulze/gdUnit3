@@ -43,7 +43,10 @@ func simulate_key_release(key_code :int, shift :bool = false, control := false) 
 # Simulates a mouse moved to relative position by given speed
 # relative: The mouse position relative to the previous position (position at the last frame).
 # speed : The mouse speed in pixels per second.‚
-func simulate_mouse_move(relative :Vector2, speed :Vector2 = Vector2.ONE) -> GdUnitSceneRunner:
+func simulate_mouse_move(pos :Vector2) -> GdUnitSceneRunner:
+	return self
+
+func simulate_mouse_move_relative(relative :Vector2, speed :Vector2 = Vector2.ONE) -> GdUnitSceneRunner:
 	return self
 
 # Simulates a mouse button pressed

@@ -88,6 +88,30 @@ func test_run_scene_colorcycle(timeout=2000) -> void:
 	yield(runner.await_signal("panel_color_change", [box1, Color.green]), "completed")
 	assert_object(box1.color).is_equal(Color.green)
 
+
+func test_simulate_many_keys_press(timeout=2000) -> void:
+	var runner := scene_runner(load_test_scene())
+	
+	# press and hold keys W and Z
+	runner.simulate_key_press(KEY_W)
+	runner.simulate_key_press(KEY_Z)
+	yield(await_idle_frame(), "completed")
+	
+	assert_that(Input.is_key_pressed(KEY_W)).is_true()
+	assert_that(Input.is_physical_key_pressed(KEY_W)).is_true()
+	assert_that(Input.is_key_pressed(KEY_Z)).is_true()
+	assert_that(Input.is_physical_key_pressed(KEY_Z)).is_true()
+	
+	#now release key w
+	runner.simulate_key_release(KEY_W)
+	yield(await_idle_frame(), "completed")
+	
+	assert_that(Input.is_key_pressed(KEY_W)).is_false()
+	assert_that(Input.is_physical_key_pressed(KEY_W)).is_false()
+	assert_that(Input.is_key_pressed(KEY_Z)).is_true()
+	assert_that(Input.is_physical_key_pressed(KEY_Z)).is_true()
+
+
 func test_simulate_key_pressed(timeout=2000) -> void:
 	var runner := scene_runner(load_test_scene())
 	
@@ -123,9 +147,95 @@ func test_simulate_key_pressed_in_combination_with_spy():
 	
 	# simulate a key event to fire a spell
 	runner.simulate_key_pressed(KEY_ENTER)
+	yield(await_idle_frame(), "completed")
 	verify(mocked_scene).create_spell()
 	verify(mocked_scene).add_child(spell_spy)
 	verify(spell_spy).connect("spell_explode", mocked_scene, "_destroy_spell")
+
+func test_reset_to_inital_state_on_release():
+	var runner := scene_runner("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
+	
+	# simulate mouse buttons and key press but we never released it
+	runner.simulate_mouse_button_press(BUTTON_LEFT)
+	runner.simulate_mouse_button_press(BUTTON_RIGHT)
+	runner.simulate_mouse_button_press(BUTTON_MIDDLE)
+	runner.simulate_key_press(KEY_0)
+	runner.simulate_key_press(KEY_X)
+	yield(await_idle_frame(), "completed")
+	assert_that(Input.is_mouse_button_pressed(BUTTON_LEFT)).is_true()
+	assert_that(Input.is_mouse_button_pressed(BUTTON_RIGHT)).is_true()
+	assert_that(Input.is_mouse_button_pressed(BUTTON_MIDDLE)).is_true()
+	assert_that(Input.is_key_pressed(KEY_0)).is_true()
+	assert_that(Input.is_key_pressed(KEY_X)).is_true()
+	
+	# free the scene runner to enforce restet global Input state
+	runner.free()
+	yield(await_idle_frame(), "completed")
+
+	# create new runner and verify the global Input state is successfully reseted to default
+	runner = scene_runner("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
+	assert_that(Input.is_mouse_button_pressed(BUTTON_LEFT)).is_false()
+	assert_that(Input.is_mouse_button_pressed(BUTTON_RIGHT)).is_false()
+	assert_that(Input.is_mouse_button_pressed(BUTTON_MIDDLE)).is_false()
+	assert_that(Input.is_key_pressed(KEY_0)).is_false()
+	assert_that(Input.is_key_pressed(KEY_X)).is_false()
+
+func test_simulate_set_mouse_pos():
+	var spy = spy("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
+	var runner = scene_runner(spy)
+	
+	# set mouse to pos 100, 100
+	runner.set_mouse_pos(Vector2(100, 100))
+	yield(await_idle_frame(), "completed")
+	var event := InputEventMouseMotion.new()
+	event.position = Vector2(100, 100)
+	event.global_position = get_tree().root.get_mouse_position()
+	verify(spy, 1)._input(event)
+	
+	# set mouse to pos 800, 400
+	runner.set_mouse_pos(Vector2(800, 400))
+	yield(await_idle_frame(), "completed")
+	event = InputEventMouseMotion.new()
+	event.position = Vector2(800, 400)
+	event.global_position = get_tree().root.get_mouse_position()
+	verify(spy, 1)._input(event)
+	
+	# and again back to 100,100
+	runner.set_mouse_pos(Vector2(100, 100))
+	yield(await_idle_frame(), "completed")
+	event = InputEventMouseMotion.new()
+	event.position = Vector2(100, 100)
+	event.global_position = get_tree().root.get_mouse_position()
+	verify(spy, 2)._input(event)
+
+func test_simulate_set_mouse_pos_and_press():
+	var spy = spy("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
+	var runner := scene_runner(spy)
+	assert_that(Input.is_mouse_button_pressed(BUTTON_LEFT)).is_false()
+	
+	# set mouse to pos 10, 10 and press left mouse button
+	runner.set_mouse_pos(Vector2(10, 10))
+	runner.simulate_mouse_button_press(BUTTON_LEFT)
+	yield(await_idle_frame(), "completed")
+	
+	var event := InputEventMouseButton.new()
+	event.position = Vector2(10, 10)
+	event.pressed = true
+	event.button_index = BUTTON_LEFT
+	event.button_mask = BUTTON_LEFT
+	verify(spy, 1)._input(event)
+	assert_that(Input.is_mouse_button_pressed(BUTTON_LEFT)).is_true()
+
+func _test_simulate_mouse_move_relative():
+	var spyed_scene = spy("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
+	var runner := scene_runner(spyed_scene, true)
+	runner.maximize_view()
+	runner.set_mouse_pos(Vector2(10, 10))
+	runner.simulate_mouse_move_relative(Vector2(400, 100))
+	while not Engine.get_main_loop().is_input_handled():
+		yield(runner.simulate_frames(1), "completed")
+	assert_that(get_viewport().get_mouse_position()).is_equal(Vector2(410, 110))
+
 
 func test_simulate_mouse_events():
 	var spyed_scene = spy("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
@@ -133,8 +243,8 @@ func test_simulate_mouse_events():
 	
 	# test button 1 interaction
 	runner.set_mouse_pos(Vector2(60, 20))
-	yield(await_millis(1000), "completed")
 	runner.simulate_mouse_button_pressed(BUTTON_LEFT)
+	yield(await_idle_frame(), "completed")
 	verify(spyed_scene)._on_panel_color_changed(spyed_scene._box1, Color.red)
 	verify(spyed_scene)._on_panel_color_changed(spyed_scene._box1, Color.gray)
 	verify(spyed_scene, 0)._on_panel_color_changed(spyed_scene._box2, any_color())
@@ -144,6 +254,7 @@ func test_simulate_mouse_events():
 	reset(spyed_scene)
 	runner.set_mouse_pos(Vector2(160, 20))
 	runner.simulate_mouse_button_pressed(BUTTON_LEFT)
+	yield(await_idle_frame(), "completed")
 	verify(spyed_scene, 0)._on_panel_color_changed(spyed_scene._box1, any_color())
 	verify(spyed_scene)._on_panel_color_changed(spyed_scene._box2, Color.red)
 	verify(spyed_scene)._on_panel_color_changed(spyed_scene._box2, Color.gray)
@@ -153,6 +264,7 @@ func test_simulate_mouse_events():
 	reset(spyed_scene)
 	runner.set_mouse_pos(Vector2(260, 20))
 	runner.simulate_mouse_button_pressed(BUTTON_LEFT)
+	yield(await_idle_frame(), "completed")
 	verify(spyed_scene, 0)._on_panel_color_changed(spyed_scene._box1, any_color())
 	verify(spyed_scene, 0)._on_panel_color_changed(spyed_scene._box2, any_color())
 	# is changed to red
@@ -191,7 +303,7 @@ func test_await_signal_without_time_factor() -> void:
 	# should be interrupted is will never change to Color.khaki
 	GdAssertReports.expect_fail()
 	yield(runner.await_signal( "panel_color_change", [box1, Color.khaki], 300), "completed")
-	if assert_failed_at(193, "await_signal_on(panel_color_change, [%s, %s]) timed out after 300ms" % [str(box1), str(Color.khaki)]):
+	if assert_failed_at(305, "await_signal_on(panel_color_change, [%s, %s]) timed out after 300ms" % [str(box1), str(Color.khaki)]):
 		return
 	fail("test should failed after 300ms on 'await_signal'")
 
@@ -209,7 +321,7 @@ func test_await_signal_with_time_factor() -> void:
 	# should be interrupted is will never change to Color.khaki
 	GdAssertReports.expect_fail()
 	yield(runner.await_signal("panel_color_change", [box1, Color.khaki], 30), "completed")
-	if assert_failed_at(211, "await_signal_on(panel_color_change, [%s, %s]) timed out after 30ms" % [str(box1), str(Color.khaki)]):
+	if assert_failed_at(323, "await_signal_on(panel_color_change, [%s, %s]) timed out after 30ms" % [str(box1), str(Color.khaki)]):
 		return
 	fail("test should failed after 30ms on 'await_signal'")
 
@@ -285,6 +397,37 @@ func test_runner_by_scene_instance() -> void:
 	# verify runner and scene is freed
 	assert_bool(is_instance_valid(runner)).is_false()
 	assert_bool(is_instance_valid(scene)).is_false()
+
+func test_mouse_drag_and_drop() -> void:
+	var spy_scene = spy("res://addons/gdUnit3/test/core/resources/scenes/drag_and_drop/DragAndDropTestScene.tscn")
+	var runner := scene_runner(spy_scene)
+	#OS.window_minimized = false
+	
+	var slot_left :TextureRect = $"/root/DragAndDropScene/left/TextureRect"
+	var slot_right :TextureRect = $"/root/DragAndDropScene/right/TextureRect"
+	
+	# set inital mouse pos over the left slot
+	var mouse_pos := slot_left.rect_global_position + Vector2(10, 10)
+	runner.set_mouse_pos(mouse_pos)
+	yield(await_idle_frame(), "completed")
+	var event := InputEventMouseMotion.new()
+	event.position = mouse_pos
+	event.global_position = get_tree().root.get_mouse_position()
+	verify(spy_scene, 1)._gui_input(event)
+	
+	runner.simulate_mouse_button_press(BUTTON_LEFT)
+	yield(await_idle_frame(), "completed")
+	assert_bool(Input.is_mouse_button_pressed(BUTTON_LEFT)).is_true()
+	
+	# start drag&drop to left pannel
+	for i in 20:
+		runner.simulate_mouse_move(mouse_pos + Vector2(i*.5*i, 0))
+		yield(await_millis(40), "completed")
+	
+	runner.simulate_mouse_button_release(BUTTON_LEFT)
+	yield(await_idle_frame(), "completed")
+	assert_that(slot_right.texture).is_equal(slot_left.texture)
+
 
 # we override the scene runner function for test purposes to hide push_error notifications
 func scene_runner(scene, verbose := false) -> GdUnitSceneRunner:
