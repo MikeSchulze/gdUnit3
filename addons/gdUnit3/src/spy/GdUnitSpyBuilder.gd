@@ -70,18 +70,6 @@ const SPY_VOID_TEMPLATE_VARARG_ONLY =\
 		10: .$(func_name)(varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7], varargs[8], varargs[9])
 """
 
-
-const READY_TEMPLATE = """
-	func _ready() -> void:
-		if __is_verify_interactions():
-			__verify_interactions(["_ready"])
-			return
-		else:
-			__save_function_interaction(["_ready"])
-		# we do not call the original here, because `add_child` does it already
-		# .$(func_name)($(func_arg))
-"""
-
 class SpyFunctionDoubler extends GdFunctionDoubler:
 	
 	
@@ -101,11 +89,6 @@ class SpyFunctionDoubler extends GdFunctionDoubler:
 			var constructor_args := extract_constructor_args(args).join(",")
 			var constructor := "func _init(%s).(%s):\n	pass\n" % [constructor_args, arg_names.join(",")]
 			return PoolStringArray([constructor])
-		# we need to double the `_ready()` func separatly because of the way how this function is called
-		# when adding to a scene tree
-		if func_name == "_ready":
-			var function := READY_TEMPLATE.dedent().trim_prefix("\n")
-			return PoolStringArray([function])
 		
 		var double := func_signature + "\n"
 		var func_template := get_template(func_descriptor.return_type(), is_vararg, not arg_names.empty())
@@ -123,7 +106,12 @@ class SpyFunctionDoubler extends GdFunctionDoubler:
 		else:
 			double = double.replace("", "__instance_delegator" if is_engine else "")\
 				.replace("$(instance)", "")
-		return double.split("\n")
+		var source_code := double.split("\n")
+		# we do not call the original implementation for _ready and all input function, this is actualy done by the engine
+		if func_name in ["_ready", "_input", "_gui_input", "_input_event", "_unhandled_input"]:
+			source_code.remove(source_code.size()-1)
+			source_code.remove(source_code.size()-1)
+		return source_code
 		
 	func get_template(return_type :int, is_vararg :bool, has_args :bool) -> String:
 		if is_vararg and has_args:

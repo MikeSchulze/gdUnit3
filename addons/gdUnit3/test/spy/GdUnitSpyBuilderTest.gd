@@ -244,7 +244,7 @@ func test_double_script_function_with_args_return_bool() -> void:
 		"	return .foo(arg1, arg2)",
 		""])
 
-func test_double_virtual_script_function_with_arg() -> void:
+func test_double_input_function_do_not_call_super() -> void:
 	var doubler := GdUnitSpyBuilder.SpyFunctionDoubler.new()
 	
 	# void _input(event: InputEvent) virtual
@@ -257,27 +257,22 @@ func test_double_virtual_script_function_with_arg() -> void:
 		"		__verify_interactions(args)",
 		"		return",
 		"	else:",
-		"		__save_function_interaction(args)",
-		"	._input(event_)",
-		""])
+		"		__save_function_interaction(args)"])
 
-func test_double_virtual_script_function_without_arg() -> void:
+func test_double_ready_function_do_not_call_super() -> void:
 	var doubler := GdUnitSpyBuilder.SpyFunctionDoubler.new()
 	
 	# void _ready() virtual
 	var fd := get_function_description("Node", "_ready")
-	assert_that(doubler.double(fd).join("\n")).is_equal(
-		"""
-		func _ready() -> void:
-			if __is_verify_interactions():
-				__verify_interactions(["_ready"])
-				return
-			else:
-				__save_function_interaction(["_ready"])
-			# we do not call the original here, because `add_child` does it already
-			# .$(func_name)($(func_arg))
-		""".dedent().trim_prefix("\n"))
-
+	assert_that(doubler.double(fd)).is_equal([
+		"func _ready():",
+		"	var args :Array = [\"_ready\"] + []",
+		"	",
+		"	if __is_verify_interactions():",
+		"		__verify_interactions(args)",
+		"		return",
+		"	else:",
+		"		__save_function_interaction(args)"])
 
 class NodeWithOutVirtualFunc extends Node:
 	func _ready():
