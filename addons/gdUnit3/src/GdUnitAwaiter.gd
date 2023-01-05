@@ -9,6 +9,11 @@ extends Reference
 # timeout: the timeout in ms, default is set to 2000ms
 static func await_signal_on(test_suite :WeakRef, source :Object, signal_name :String, args :Array = [], timeout_millis :int = 2000) -> GDScriptFunctionState:
 	var line_number := GdUnitAssertImpl._get_line_number()
+	# fail fast if the given source instance invalid
+	if not is_instance_valid(source):
+		GdUnitAssertImpl.new(test_suite.get_ref(), signal_name)\
+			.report_error(GdAssertMessages.error_await_signal_on_invalid_instance(source, signal_name, args), line_number)
+		return await_idle_frame()
 	var awaiter = GdUnitSignalAwaiter.new(timeout_millis)
 	var value = yield(awaiter.on_signal(source, signal_name, args), "completed")
 	if awaiter.is_interrupted():
@@ -25,9 +30,9 @@ static func await_signal_idle_frames(test_suite :WeakRef, source :Object, signal
 	var line_number := GdUnitAssertImpl._get_line_number()
 	# fail fast if the given source instance invalid
 	if not is_instance_valid(source):
-		var failure = "await_signal_on(%s, %s, %s) failed the source is invalid" % [source, signal_name, args]
-		GdUnitAssertImpl.new(test_suite.get_ref(), signal_name).report_error(failure, line_number)
-		return yield(Engine.get_main_loop(), "idle_frame")
+		GdUnitAssertImpl.new(test_suite.get_ref(), signal_name)\
+			.report_error(GdAssertMessages.error_await_signal_on_invalid_instance(source, signal_name, args), line_number)
+		return await_idle_frame()
 	var awaiter = GdUnitSignalAwaiter.new(timeout_millis, true)
 	yield(awaiter.on_signal(source, signal_name, args), "completed")
 	if awaiter.is_interrupted():

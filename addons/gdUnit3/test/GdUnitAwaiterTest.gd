@@ -76,7 +76,7 @@ func test_await_signal_on_invalid_source_timedout() -> void:
 	GdAssertReports.expect_fail()
 	# we  wait for a signal on a already freed instance
 	yield(await_signal_on(invalid_node(), "tree_entered", [], 300), "completed")
-	if assert_failed_at(78, "await_signal_on(Null, tree_entered, []) failed the source is invalid"):
+	if assert_failed_at(78, GdAssertMessages.error_await_signal_on_invalid_instance(null, "tree_entered", [])):
 		return
 	fail("test should failed after 400ms on 'await_signal_on'")
 

@@ -315,6 +315,8 @@ static func error_signal_emitted(signal_name :String, args :Array, elapsed :Stri
 		return "%s %s but is emitted after %s" % [_error("Expecting do not emit signal:"), _current(signal_name + "()"), elapsed]
 	return "%s %s but is emitted after %s" % [_error("Expecting do not emit signal:"), _current(signal_name + "(" + str(args) + ")"), elapsed]
 
+static func error_await_signal_on_invalid_instance(source, signal_name :String, args :Array) -> String:
+	return "%s\n await_signal_on(%s, %s, %s)" % [_error("Invalid source! Can't await on signal:"), _current(source), signal_name, args]
 
 static func result_type(type :int) -> String:
 	match type:
