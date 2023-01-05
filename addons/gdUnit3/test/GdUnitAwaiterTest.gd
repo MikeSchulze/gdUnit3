@@ -70,3 +70,17 @@ func test_await_signal_on_never_emitted_timedout() -> void:
 	if assert_failed_at(68, "await_signal_on(test_signal_c, [yyy]) timed out after 400ms"):
 		return
 	fail("test should failed after 400ms on 'await_signal_on'")
+
+func test_await_signal_on_invalid_source_timedout() -> void:
+	# we expect 'await_signal_on' will fail, do not report as failure
+	GdAssertReports.expect_fail()
+	# we  wait for a signal on a already freed instance
+	yield(await_signal_on(invalid_node(), "tree_entered", [], 300), "completed")
+	if assert_failed_at(78, "await_signal_on(Null, tree_entered, []) failed the source is invalid"):
+		return
+	fail("test should failed after 400ms on 'await_signal_on'")
+
+func invalid_node() -> Node:
+	var node = Node.new()
+	node.free()
+	return node

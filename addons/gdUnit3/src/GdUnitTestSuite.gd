@@ -115,6 +115,11 @@ func clear_push_errors() -> void:
 # args: the expected signal arguments as an array
 # timeout: the timeout in ms, default is set to 2000ms
 func await_signal_on(source :Object, signal_name :String, args :Array = [], timeout :int = 2000) -> GDScriptFunctionState:
+	# fail fast if the given source instance invalid
+	if not is_instance_valid(source):
+		var failure = "await_signal_on(%s, %s, %s) failed the source is invalid" % [source, signal_name, args]
+		GdUnitAssertImpl.new(self, signal_name).report_error(failure, GdUnitAssertImpl._get_line_number())
+		return yield(GdUnitAwaiter.await_idle_frame(), "completed")
 	return yield(GdUnitAwaiter.await_signal_on(weakref(self), source, signal_name, args, timeout), "completed")
 
 # Waits until the next idle frame
