@@ -216,6 +216,9 @@ func _handle_input_event(event :InputEvent):
 		event.position = _last_input_event.position
 	Input.set_use_accumulated_input(true)
 	Input.parse_input_event(event)
+	# do explicit flush input events: https://github.com/godotengine/godot/issues/63969
+	Input.flush_buffered_events()
+	
 	if is_instance_valid(_current_scene):
 		__print("	process event %s (%s) <- %s" % [_current_scene, _scene_name(), event.as_text()])
 		if event is InputEventMouse:
