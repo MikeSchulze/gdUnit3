@@ -75,8 +75,10 @@ func simulate_key_press(key_code :int, shift :bool = false, control := false) ->
 	event.pressed = true
 	event.scancode = key_code
 	event.physical_scancode = key_code
-	event.shift = shift
-	event.control = control
+	event.alt = key_code == KEY_ALT
+	event.shift = shift or key_code == KEY_SHIFT
+	event.control = control or key_code == KEY_CONTROL
+	_apply_input_modifiers(event)
 	_key_on_press.append(key_code)
 	return _handle_input_event(event)
 
@@ -86,26 +88,32 @@ func simulate_key_release(key_code :int, shift :bool = false, control := false) 
 	event.pressed = false
 	event.scancode = key_code
 	event.physical_scancode = key_code
-	event.shift = shift
-	event.control = control
+	event.alt = key_code == KEY_ALT
+	event.shift = shift or key_code == KEY_SHIFT
+	event.control = control or key_code == KEY_CONTROL
+	_apply_input_modifiers(event)
 	_key_on_press.erase(key_code)
 	return _handle_input_event(event)
 
 func set_mouse_pos(pos :Vector2) -> GdUnitSceneRunner:
 	var event := InputEventMouseMotion.new()
+	_apply_input_modifiers(event)
 	event.position = pos
 	event.global_position = _scene_tree.root.get_mouse_position()
 	return _handle_input_event(event)
 
 func simulate_mouse_move(pos :Vector2) -> GdUnitSceneRunner:
 	var event := InputEventMouseMotion.new()
+	_apply_input_modifiers(event)
 	event.position = pos
-	event.relative = _scene_tree.root.get_mouse_position() - pos
-	event.button_mask = BUTTON_LEFT
+	event.relative = pos - _scene_tree.root.get_mouse_position()
+	event.global_position = _scene_tree.root.get_mouse_position()
+	_apply_input_mouse_mask(event)
 	return _handle_input_event(event)
 
 func simulate_mouse_move_relative(relative :Vector2, speed :Vector2 = Vector2.ONE) -> GdUnitSceneRunner:
 	var event := _last_input_event.duplicate() if _last_input_event != null else InputEventMouseMotion.new()
+	_apply_input_modifiers(event)
 	event.position = _scene_tree.root.get_mouse_position() + relative
 	event.relative = relative
 	event.global_position += relative
@@ -119,6 +127,8 @@ func simulate_mouse_button_pressed(buttonIndex :int) -> GdUnitSceneRunner:
 
 func simulate_mouse_button_press(buttonIndex :int) -> GdUnitSceneRunner:
 	var event := InputEventMouseButton.new()
+	_apply_input_modifiers(event)
+	_apply_input_mouse_position(event)
 	event.button_index = buttonIndex
 	event.button_mask = buttonIndex
 	event.pressed = true
@@ -127,6 +137,8 @@ func simulate_mouse_button_press(buttonIndex :int) -> GdUnitSceneRunner:
 
 func simulate_mouse_button_release(buttonIndex :int) -> GdUnitSceneRunner:
 	var event := InputEventMouseButton.new()
+	_apply_input_modifiers(event)
+	_apply_input_mouse_position(event)
 	event.button_index = buttonIndex
 	event.button_mask = 0
 	event.pressed = false
@@ -209,20 +221,39 @@ func __deactivate_time_factor() -> void:
 	Engine.set_time_scale(1)
 	Engine.set_iterations_per_second(_saved_iterations_per_second)
 
-# for handling read https://docs.godotengine.org/en/3.5/tutorials/inputs/inputevent.html
-func _handle_input_event(event :InputEvent):
-	# copy over last mouse position if need
+# copy over current active modifiers
+func _apply_input_modifiers(event :InputEvent) -> void:
+	if _last_input_event is InputEventWithModifiers and event is InputEventWithModifiers:
+		event.alt = event.alt or _last_input_event.alt
+		event.shift = event.shift or _last_input_event.shift
+		event.control = event.control or _last_input_event.control
+		event.meta = event.meta or _last_input_event.meta
+		event.command = event.command or _last_input_event.command
+
+# copy over current active mouse mask
+func _apply_input_mouse_mask(event :InputEvent) -> void:
+	if _last_input_event is InputEventMouse and event is InputEventMouse:
+		event.button_mask = _last_input_event.button_mask
+
+# copy over last mouse position if need
+func _apply_input_mouse_position(event :InputEvent) -> void:
 	if _last_input_event is InputEventMouse and event is InputEventMouseButton:
 		event.position = _last_input_event.position
-	Input.set_use_accumulated_input(true)
+
+# for handling read https://docs.godotengine.org/en/3.5/tutorials/inputs/inputevent.html
+func _handle_input_event(event :InputEvent):
+	if event is InputEventMouse:
+		Input.warp_mouse_position(event.position)
+		
+	#Input.set_use_accumulated_input(true)
 	Input.parse_input_event(event)
 	# do explicit flush input events: https://github.com/godotengine/godot/issues/63969
-	Input.flush_buffered_events()
+	if Input.use_accumulated_input:
+		Input.flush_buffered_events()
 	
 	if is_instance_valid(_current_scene):
 		__print("	process event %s (%s) <- %s" % [_current_scene, _scene_name(), event.as_text()])
-		if event is InputEventMouse:
-			Input.warp_mouse_position(event.position)
+
 		if(_current_scene.has_method("_gui_input")):
 			_current_scene._gui_input(event)
 		if(_current_scene.has_method("_unhandled_input")):

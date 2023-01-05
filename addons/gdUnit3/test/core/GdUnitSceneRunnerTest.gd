@@ -88,9 +88,53 @@ func test_run_scene_colorcycle(timeout=2000) -> void:
 	yield(runner.await_signal("panel_color_change", [box1, Color.green]), "completed")
 	assert_object(box1.color).is_equal(Color.green)
 
+func test_simulate_key_press() -> void:
+	var spy = spy("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
+	var runner := scene_runner(spy)
+	# iterate over some example keys
+	for key in [KEY_A, KEY_D, KEY_X, KEY_0]:
+		runner.simulate_key_press(key)
+		yield(await_idle_frame(), "completed")
+		
+		var event := InputEventKey.new()
+		event.scancode = key
+		event.physical_scancode = key
+		event.pressed = true
+		verify(spy, 1)._input(event)
+		assert_that(Input.is_key_pressed(key)).is_true()
+	# verify all this keys are still handled as pressed
+	assert_that(Input.is_key_pressed(KEY_A)).is_true()
+	assert_that(Input.is_key_pressed(KEY_D)).is_true()
+	assert_that(Input.is_key_pressed(KEY_X)).is_true()
+	assert_that(Input.is_key_pressed(KEY_0)).is_true()
+	# other keys are not pressed
+	assert_that(Input.is_key_pressed(KEY_B)).is_false()
+	assert_that(Input.is_key_pressed(KEY_G)).is_false()
+	assert_that(Input.is_key_pressed(KEY_Z)).is_false()
+	assert_that(Input.is_key_pressed(KEY_1)).is_false()
 
-func test_simulate_many_keys_press(timeout=2000) -> void:
-	var runner := scene_runner(load_test_scene())
+func test_simulate_key_press_with_modifiers() -> void:
+	var spy = spy("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
+	var runner := scene_runner(spy)
+	
+	# press shift key + A
+	runner.simulate_key_press(KEY_SHIFT)
+	runner.simulate_key_press(KEY_A)
+	yield(await_idle_frame(), "completed")
+	
+	var event := InputEventKey.new()
+	event.scancode = KEY_A
+	event.physical_scancode = KEY_A
+	event.pressed = true
+	event.shift = true
+	verify(spy, 1)._input(event)
+	assert_that(Input.is_key_pressed(KEY_SHIFT)).is_true()
+	assert_that(Input.is_key_pressed(KEY_A)).is_true()
+
+
+func test_simulate_many_keys_press() -> void:
+	var spy = spy("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
+	var runner := scene_runner(spy)
 	
 	# press and hold keys W and Z
 	runner.simulate_key_press(KEY_W)
@@ -111,8 +155,7 @@ func test_simulate_many_keys_press(timeout=2000) -> void:
 	assert_that(Input.is_key_pressed(KEY_Z)).is_true()
 	assert_that(Input.is_physical_key_pressed(KEY_Z)).is_true()
 
-
-func test_simulate_key_pressed(timeout=2000) -> void:
+func test_simulate_scene_intearction_by_press_enter(timeout=2000) -> void:
 	var runner := scene_runner(load_test_scene())
 	
 	# inital no spell is fired
@@ -205,27 +248,133 @@ func test_simulate_set_mouse_pos():
 	event.global_position = get_tree().root.get_mouse_position()
 	verify(spy, 2)._input(event)
 
-func test_simulate_set_mouse_pos_and_press():
+func test_simulate_mouse_button_press():
+	var spy = spy("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
+	var runner := scene_runner(spy)
+	
+	for mouse_button in [BUTTON_LEFT, BUTTON_MIDDLE, BUTTON_RIGHT]:
+		# simulate mouse button press and hold
+		runner.simulate_mouse_button_press(mouse_button)
+		yield(await_idle_frame(), "completed")
+		
+		var event := InputEventMouseButton.new()
+		event.position = Vector2.ZERO
+		event.pressed = true
+		event.button_index = mouse_button
+		event.button_mask = mouse_button
+		verify(spy, 1)._input(event)
+		assert_that(Input.is_mouse_button_pressed(mouse_button)).is_true()
+
+func test_simulate_mouse_button_pressed():
+	var spy = spy("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
+	var runner := scene_runner(spy)
+	
+	for mouse_button in [BUTTON_LEFT, BUTTON_MIDDLE, BUTTON_RIGHT]:
+		# simulate mouse button press and release
+		runner.simulate_mouse_button_pressed(mouse_button)
+		yield(await_idle_frame(), "completed")
+		
+		var event := InputEventMouseButton.new()
+		event.position = Vector2.ZERO
+		event.pressed = true
+		event.button_index = mouse_button
+		event.button_mask = mouse_button
+		verify(spy, 1)._input(event)
+		assert_that(Input.is_mouse_button_pressed(mouse_button)).is_false()
+
+func test_simulate_mouse_button_press_and_release():
+	var spy = spy("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
+	var runner := scene_runner(spy)
+	
+	for mouse_button in [BUTTON_LEFT, BUTTON_MIDDLE, BUTTON_RIGHT]:
+		# simulate mouse button press and release
+		runner.simulate_mouse_button_press(mouse_button)
+		yield(await_idle_frame(), "completed")
+		
+		var event := InputEventMouseButton.new()
+		event.position = Vector2.ZERO
+		event.pressed = true
+		event.button_index = mouse_button
+		event.button_mask = mouse_button
+		verify(spy, 1)._input(event)
+		assert_that(Input.is_mouse_button_pressed(mouse_button)).is_true()
+		
+		# now simulate mouse button release
+		runner.simulate_mouse_button_release(mouse_button)
+		yield(await_idle_frame(), "completed")
+		
+		event = InputEventMouseButton.new()
+		event.position = Vector2.ZERO
+		event.pressed = true
+		event.button_index = mouse_button
+		event.button_mask = mouse_button
+		verify(spy, 1)._input(event)
+		assert_that(Input.is_mouse_button_pressed(mouse_button)).is_false()
+
+func test_simulate_set_mouse_pos_with_modifiers():
 	var spy = spy("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
 	var runner := scene_runner(spy)
 	assert_that(Input.is_mouse_button_pressed(BUTTON_LEFT)).is_false()
 	
-	# set mouse to pos 10, 10 and press left mouse button
+	var is_alt := false
+	var is_control := false
+	var is_shift := false
+	
+	for modifier in [KEY_SHIFT, KEY_CONTROL, KEY_ALT]:
+		is_alt = is_alt or KEY_ALT == modifier
+		is_control = is_control or KEY_CONTROL == modifier
+		is_shift = is_shift or KEY_SHIFT == modifier
+		
+		for mouse_button in [BUTTON_LEFT, BUTTON_MIDDLE, BUTTON_RIGHT]:
+			# simulate press shift, set mouse pos and final press mouse button
+			runner.simulate_key_press(modifier)
+			runner.set_mouse_pos(Vector2(10, 10))
+			runner.simulate_mouse_button_press(mouse_button)
+			yield(await_idle_frame(), "completed")
+			
+			var event := InputEventMouseButton.new()
+			event.position = Vector2(10, 10)
+			event.alt = is_alt
+			event.control = is_control
+			event.shift = is_shift
+			event.pressed = true
+			event.button_index = mouse_button
+			event.button_mask = mouse_button
+			verify(spy, 1)._input(event)
+			assert_that(Input.is_mouse_button_pressed(mouse_button)).is_true()
+
+func test_simulate_mouse_move():
+	var spyed_scene = spy("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
+	var runner := scene_runner(spyed_scene)
+	runner.maximize_view()
+	
+	# save inital global mouse pos
+	var global_mouse_pos := get_tree().root.get_mouse_position()
+	
 	runner.set_mouse_pos(Vector2(10, 10))
-	runner.simulate_mouse_button_press(BUTTON_LEFT)
+	runner.simulate_mouse_move(Vector2(400, 100))
 	yield(await_idle_frame(), "completed")
 	
-	var event := InputEventMouseButton.new()
-	event.position = Vector2(10, 10)
-	event.pressed = true
-	event.button_index = BUTTON_LEFT
-	event.button_mask = BUTTON_LEFT
-	verify(spy, 1)._input(event)
-	assert_that(Input.is_mouse_button_pressed(BUTTON_LEFT)).is_true()
+	var event = InputEventMouseMotion.new()
+	event.position = Vector2(400, 100)
+	event.global_position = global_mouse_pos
+	event.relative = event.position - global_mouse_pos
+	verify(spyed_scene, 1)._input(event)
+	
+	# move mouse to next pos
+	global_mouse_pos = get_tree().root.get_mouse_position()
+	runner.simulate_mouse_move(Vector2(55, 42))
+	yield(await_idle_frame(), "completed")
+	
+	event = InputEventMouseMotion.new()
+	event.position = Vector2(55, 42)
+	event.global_position = global_mouse_pos
+	event.relative = event.position - global_mouse_pos
+	verify(spyed_scene, 1)._input(event)
 
 func _test_simulate_mouse_move_relative():
 	var spyed_scene = spy("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
-	var runner := scene_runner(spyed_scene, true)
+	var runner := scene_runner(spyed_scene)
 	runner.maximize_view()
 	runner.set_mouse_pos(Vector2(10, 10))
 	runner.simulate_mouse_move_relative(Vector2(400, 100))
@@ -300,7 +449,7 @@ func test_await_signal_without_time_factor() -> void:
 	# should be interrupted is will never change to Color.khaki
 	GdAssertReports.expect_fail()
 	yield(runner.await_signal( "panel_color_change", [box1, Color.khaki], 300), "completed")
-	if assert_failed_at(302, "await_signal_on(panel_color_change, [%s, %s]) timed out after 300ms" % [str(box1), str(Color.khaki)]):
+	if assert_failed_at(451, "await_signal_on(panel_color_change, [%s, %s]) timed out after 300ms" % [str(box1), str(Color.khaki)]):
 		return
 	fail("test should failed after 300ms on 'await_signal'")
 
@@ -318,7 +467,7 @@ func test_await_signal_with_time_factor() -> void:
 	# should be interrupted is will never change to Color.khaki
 	GdAssertReports.expect_fail()
 	yield(runner.await_signal("panel_color_change", [box1, Color.khaki], 30), "completed")
-	if assert_failed_at(320, "await_signal_on(panel_color_change, [%s, %s]) timed out after 30ms" % [str(box1), str(Color.khaki)]):
+	if assert_failed_at(469, "await_signal_on(panel_color_change, [%s, %s]) timed out after 30ms" % [str(box1), str(Color.khaki)]):
 		return
 	fail("test should failed after 30ms on 'await_signal'")
 
@@ -398,18 +547,19 @@ func test_runner_by_scene_instance() -> void:
 func test_mouse_drag_and_drop() -> void:
 	var spy_scene = spy("res://addons/gdUnit3/test/core/resources/scenes/drag_and_drop/DragAndDropTestScene.tscn")
 	var runner := scene_runner(spy_scene)
-	#OS.window_minimized = false
+	OS.window_minimized = false
 	
 	var slot_left :TextureRect = $"/root/DragAndDropScene/left/TextureRect"
 	var slot_right :TextureRect = $"/root/DragAndDropScene/right/TextureRect"
 	
+	var save_mouse_pos := get_tree().root.get_mouse_position()
 	# set inital mouse pos over the left slot
 	var mouse_pos := slot_left.rect_global_position + Vector2(10, 10)
 	runner.set_mouse_pos(mouse_pos)
 	yield(await_idle_frame(), "completed")
 	var event := InputEventMouseMotion.new()
 	event.position = mouse_pos
-	event.global_position = get_tree().root.get_mouse_position()
+	event.global_position = save_mouse_pos
 	verify(spy_scene, 1)._gui_input(event)
 	
 	runner.simulate_mouse_button_press(BUTTON_LEFT)
