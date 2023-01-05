@@ -171,9 +171,6 @@ func test_reset_to_inital_state_on_release():
 	# free the scene runner to enforce restet global Input state
 	runner.free()
 	yield(await_idle_frame(), "completed")
-
-	# create new runner and verify the global Input state is successfully reseted to default
-	runner = scene_runner("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
 	assert_that(Input.is_mouse_button_pressed(BUTTON_LEFT)).is_false()
 	assert_that(Input.is_mouse_button_pressed(BUTTON_RIGHT)).is_false()
 	assert_that(Input.is_mouse_button_pressed(BUTTON_MIDDLE)).is_false()
@@ -303,7 +300,7 @@ func test_await_signal_without_time_factor() -> void:
 	# should be interrupted is will never change to Color.khaki
 	GdAssertReports.expect_fail()
 	yield(runner.await_signal( "panel_color_change", [box1, Color.khaki], 300), "completed")
-	if assert_failed_at(305, "await_signal_on(panel_color_change, [%s, %s]) timed out after 300ms" % [str(box1), str(Color.khaki)]):
+	if assert_failed_at(302, "await_signal_on(panel_color_change, [%s, %s]) timed out after 300ms" % [str(box1), str(Color.khaki)]):
 		return
 	fail("test should failed after 300ms on 'await_signal'")
 
@@ -321,7 +318,7 @@ func test_await_signal_with_time_factor() -> void:
 	# should be interrupted is will never change to Color.khaki
 	GdAssertReports.expect_fail()
 	yield(runner.await_signal("panel_color_change", [box1, Color.khaki], 30), "completed")
-	if assert_failed_at(323, "await_signal_on(panel_color_change, [%s, %s]) timed out after 30ms" % [str(box1), str(Color.khaki)]):
+	if assert_failed_at(320, "await_signal_on(panel_color_change, [%s, %s]) timed out after 30ms" % [str(box1), str(Color.khaki)]):
 		return
 	fail("test should failed after 30ms on 'await_signal'")
 
