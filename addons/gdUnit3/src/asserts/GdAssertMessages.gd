@@ -12,6 +12,8 @@ static func input_event_as_text(event :InputEvent) -> String:
 		text += "InputEventKey : key='%s', pressed=%s, scancode=%d, physical_scancode=%s" % [event.as_text(), event.pressed, event.scancode, event.physical_scancode]
 	else:
 		text += event.as_text()
+	if event is InputEventMouse:
+		text += ", global_position %s" % event.global_position
 	if event is InputEventWithModifiers:
 		text += ", shift=%s, alt=%s, control=%s, meta=%s, command=%s" % [event.shift, event.alt, event.control, event.meta, event.command]
 	return text
