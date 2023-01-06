@@ -284,8 +284,8 @@ func _handle_input_event(event :InputEvent):
 		Input.set_use_accumulated_input(true)
 	Input.parse_input_event(event)
 	# do explicit flush input events: https://github.com/godotengine/godot/issues/63969
-	if Engine.get_version_info().hex >= 0x030500 and Input.use_accumulated_input:
-		Input.flush_buffered_events()
+	#if Engine.get_version_info().hex >= 0x030500 and Input.use_accumulated_input:
+	Input.flush_buffered_events()
 	
 	if is_instance_valid(_current_scene):
 		__print("	process event %s (%s) <- %s" % [_current_scene, _scene_name(), event.as_text()])
