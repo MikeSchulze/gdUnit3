@@ -80,21 +80,23 @@ static func _normalize_bbcode(message :String) -> String:
 	return normalized
 
 func has_failure_message(expected :String):
+	var _expected := expected.replace("\r", "")
 	var current_error := _normalize_bbcode(_current_error_message)
-	if current_error != expected:
+	if current_error != _expected:
 		_expect_fail = false
-		var diffs := GdDiffTool.string_diff(current_error, expected)
+		var diffs := GdDiffTool.string_diff(current_error, _expected)
 		var current := GdAssertMessages.colorDiff(diffs[1])
-		report_error(GdAssertMessages.error_not_same_error(current, expected))
+		report_error(GdAssertMessages.error_not_same_error(current, _expected))
 	return self
 
 func starts_with_failure_message(expected :String):
+	var _expected := expected.replace("\r", "")
 	var current_error := _normalize_bbcode(_current_error_message)
-	if current_error.find(expected) != 0:
+	if current_error.find(_expected) != 0:
 		_expect_fail = false
-		var diffs := GdDiffTool.string_diff(current_error, expected)
+		var diffs := GdDiffTool.string_diff(current_error, _expected)
 		var current := GdAssertMessages.colorDiff(diffs[1])
-		report_error(GdAssertMessages.error_not_same_error(current, expected))
+		report_error(GdAssertMessages.error_not_same_error(current, _expected))
 	return self
 
 func override_failure_message(message :String):
