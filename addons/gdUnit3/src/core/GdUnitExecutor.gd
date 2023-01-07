@@ -287,7 +287,7 @@ func execute_test_case_parameterized(test_suite :GdUnitTestSuite, test_case :_Te
 		_memory_pool.set_pool(test_suite, GdUnitMemoryPool.TEST_EXECUTE, true)
 		fs = test_case.execute(test_case_parameters[test_case_index])
 		if GdUnitTools.is_yielded(fs):
-			yield(_test_run_state, "completed")
+			yield(fs, "completed")
 		fs = test_after(test_suite, test_case, test_case_names[test_case_index])
 		if GdUnitTools.is_yielded(fs):
 			yield(fs, "completed")

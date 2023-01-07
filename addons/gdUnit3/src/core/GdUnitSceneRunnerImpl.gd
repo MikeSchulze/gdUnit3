@@ -2,12 +2,25 @@
 class_name GdUnitSceneRunnerImpl
 extends GdUnitSceneRunner
 
+# mapping of mouse buttons and his masks
+const MAP_MOUSE_BUTTON_MASKS := {
+	BUTTON_LEFT : BUTTON_MASK_LEFT,
+	BUTTON_RIGHT : BUTTON_MASK_RIGHT,
+	BUTTON_MIDDLE : BUTTON_MASK_MIDDLE,
+	BUTTON_WHEEL_UP : 8,
+	BUTTON_WHEEL_DOWN : 16,
+	BUTTON_XBUTTON1 : BUTTON_MASK_XBUTTON1,
+	BUTTON_XBUTTON2 : BUTTON_MASK_XBUTTON2,
+}
+
 var _test_suite :WeakRef
 var _scene_tree :SceneTree = null
 var _current_scene :Node = null
 var _verbose :bool
 var _simulate_start_time :LocalTime
-var _current_mouse_pos :Vector2
+var _last_input_event :InputEvent = null
+var _mouse_button_on_press := []
+var _key_on_press := []
 
 # time factor settings
 var _time_factor := 1.0
@@ -49,6 +62,7 @@ func _notification(what):
 	if what == NOTIFICATION_PREDELETE:
 		# reset time factor to normal
 		__deactivate_time_factor()
+		_reset_input_to_default()
 		if is_instance_valid(_current_scene):
 			_scene_tree.root.remove_child(_current_scene)
 			# don't free already memory managed instances
@@ -58,8 +72,8 @@ func _notification(what):
 		_current_scene = null
 		_test_suite = null
 		# we hide the scene/main window after runner is finished 
-		OS.window_maximized = false
-		OS.set_window_minimized(true)
+		#OS.window_maximized = false
+		#OS.set_window_minimized(true)
 
 func simulate_key_pressed(key_code :int, shift :bool = false, control := false) -> GdUnitSceneRunner:
 	simulate_key_press(key_code, shift, control)
@@ -68,58 +82,94 @@ func simulate_key_pressed(key_code :int, shift :bool = false, control := false) 
 
 func simulate_key_press(key_code :int, shift :bool = false, control := false) -> GdUnitSceneRunner:
 	__print_current_focus()
-	var action = InputEventKey.new()
-	action.pressed = true
-	action.scancode = key_code
-	action.shift = shift
-	action.control = control
-	__print("	process key event %s (%s) <- %s:%s" % [_current_scene, _scene_name(), action.as_text(), "pressing" if action.is_pressed() else "released"])
-	_scene_tree.input_event(action)
-	return self
+	var event = InputEventKey.new()
+	event.pressed = true
+	event.scancode = key_code
+	event.physical_scancode = key_code
+	event.alt = key_code == KEY_ALT
+	event.shift = shift or key_code == KEY_SHIFT
+	event.control = control or key_code == KEY_CONTROL
+	_apply_input_modifiers(event)
+	_key_on_press.append(key_code)
+	return _handle_input_event(event)
 
 func simulate_key_release(key_code :int, shift :bool = false, control := false) -> GdUnitSceneRunner:
 	__print_current_focus()
-	var action = InputEventKey.new()
-	action.pressed = false
-	action.scancode = key_code
-	action.shift = shift
-	action.control = control
-	__print("	process key event %s (%s) <- %s:%s" % [_current_scene, _scene_name(), action.as_text(), "pressing" if action.is_pressed() else "released"])
-	_scene_tree.input_event(action)
+	var event = InputEventKey.new()
+	event.pressed = false
+	event.scancode = key_code
+	event.physical_scancode = key_code
+	event.alt = key_code == KEY_ALT
+	event.shift = shift or key_code == KEY_SHIFT
+	event.control = control or key_code == KEY_CONTROL
+	_apply_input_modifiers(event)
+	_key_on_press.erase(key_code)
+	return _handle_input_event(event)
+
+func set_mouse_pos(pos :Vector2) -> GdUnitSceneRunner:
+	var event := InputEventMouseMotion.new()
+	event.position = pos
+	event.global_position = get_global_mouse_position()
+	_apply_input_modifiers(event)
+	return _handle_input_event(event)
+
+func get_mouse_position() -> Vector2:
+	if _last_input_event is InputEventMouse:
+		return _last_input_event.position
+	return _current_scene.get_viewport().get_mouse_position()
+
+func get_global_mouse_position() -> Vector2:
+	return _scene_tree.root.get_mouse_position()
+
+func simulate_mouse_move(pos :Vector2) -> GdUnitSceneRunner:
+	var event := InputEventMouseMotion.new()
+	event.position = pos
+	event.relative = pos - get_mouse_position()
+	event.global_position = get_global_mouse_position()
+	_apply_input_mouse_mask(event)
+	_apply_input_modifiers(event)
+	return _handle_input_event(event)
+
+func simulate_mouse_move_relative(relative :Vector2, speed :Vector2 = Vector2.ONE) -> GdUnitSceneRunner:
+	if _last_input_event is InputEventMouse:
+		var current_pos :Vector2 = _last_input_event.position
+		var final_pos := current_pos + relative
+		var delta_milli := speed.x * 0.1
+		var t := 0.0
+		while not current_pos.is_equal_approx(final_pos):
+			t += delta_milli * speed.x
+			simulate_mouse_move(current_pos)
+			yield(_scene_tree.create_timer(delta_milli), "timeout")
+			current_pos = current_pos.linear_interpolate(final_pos, t)
+		simulate_mouse_move(final_pos)
+		yield(_scene_tree, "idle_frame")
 	return self
 
-func simulate_mouse_move(relative :Vector2, speed :Vector2 = Vector2.ONE) -> GdUnitSceneRunner:
-	var action := InputEventMouseMotion.new()
-	action.relative = relative
-	action.speed = speed
-	__print("	process mouse motion event %s (%s) <- %s" % [_current_scene, _scene_name(), action.as_text()])
-	_scene_tree.input_event(action)
-	return self
-
-func simulate_mouse_button_pressed(buttonIndex :int) -> GdUnitSceneRunner:
-	simulate_mouse_button_press(buttonIndex)
+func simulate_mouse_button_pressed(buttonIndex :int, double_click := false) -> GdUnitSceneRunner:
+	simulate_mouse_button_press(buttonIndex, double_click)
 	simulate_mouse_button_release(buttonIndex)
 	return self
 
-func simulate_mouse_button_press(buttonIndex :int) -> GdUnitSceneRunner:
-	var action := InputEventMouseButton.new()
-	action.button_index = buttonIndex
-	action.button_mask = buttonIndex
-	action.pressed = true
-	action.position = _current_mouse_pos
-	__print("	process mouse button event %s (%s) <- %s" % [_current_scene, _scene_name(), action.as_text()])
-	_scene_tree.input_event(action)
-	return self
+func simulate_mouse_button_press(buttonIndex :int, double_click := false) -> GdUnitSceneRunner:
+	var event := InputEventMouseButton.new()
+	event.button_index = buttonIndex
+	event.pressed = true
+	event.doubleclick = double_click
+	_apply_input_mouse_position(event)
+	_apply_input_mouse_mask(event)
+	_apply_input_modifiers(event)
+	_mouse_button_on_press.append(buttonIndex)
+	return _handle_input_event(event)
 
 func simulate_mouse_button_release(buttonIndex :int) -> GdUnitSceneRunner:
-	var action := InputEventMouseButton.new()
-	action.button_index = buttonIndex
-	action.button_mask = 0
-	action.pressed = false
-	action.position = _current_mouse_pos
-	__print("	process mouse button event %s (%s) <- %s" % [_current_scene, _scene_name(), action.as_text()])
-	_scene_tree.input_event(action)
-	return self
+	var event := InputEventMouseButton.new()
+	event.button_index = buttonIndex
+	event.pressed = false
+	_apply_input_mouse_position(event)
+	_apply_input_mouse_mask(event)
+	_apply_input_modifiers(event)
+	_mouse_button_on_press.erase(buttonIndex)
+	return _handle_input_event(event)
 
 func set_time_factor(time_factor := 1.0) -> GdUnitSceneRunner:
 	_time_factor = min(9.0, time_factor)
@@ -159,11 +209,6 @@ func await_signal(signal_name :String, args := [], timeout := 2000 ):
 func await_signal_on(source :Object, signal_name :String, args := [], timeout := 2000 ):
 	yield(GdUnitAwaiter.await_signal_on(_test_suite, source, signal_name, args, timeout), "completed")
 
-func set_mouse_pos(pos :Vector2) -> GdUnitSceneRunner:
-	_current_scene.get_viewport().warp_mouse(pos)
-	_current_mouse_pos = pos
-	return self
-
 # maximizes the window to bring the scene visible
 func maximize_view() -> GdUnitSceneRunner:
 	OS.set_window_maximized(true)
@@ -201,6 +246,70 @@ func __activate_time_factor() -> void:
 func __deactivate_time_factor() -> void:
 	Engine.set_time_scale(1)
 	Engine.set_iterations_per_second(_saved_iterations_per_second)
+
+# copy over current active modifiers
+func _apply_input_modifiers(event :InputEvent) -> void:
+	if _last_input_event is InputEventWithModifiers and event is InputEventWithModifiers:
+		event.alt = event.alt or _last_input_event.alt
+		event.shift = event.shift or _last_input_event.shift
+		event.control = event.control or _last_input_event.control
+		event.meta = event.meta or _last_input_event.meta
+		event.command = event.command or _last_input_event.command
+
+# copy over current active mouse mask and combine with curren mask
+func _apply_input_mouse_mask(event :InputEvent) -> void:
+	# first apply last mask
+	if _last_input_event is InputEventMouse and event is InputEventMouse:
+		event.button_mask |= _last_input_event.button_mask
+	if event is InputEventMouseButton:
+		var button_mask = MAP_MOUSE_BUTTON_MASKS.get(event.get_button_index(), 0)
+		if event.is_pressed():
+			event.button_mask |= button_mask
+		else:
+			event.button_mask ^= button_mask
+
+# copy over last mouse position if need
+func _apply_input_mouse_position(event :InputEvent) -> void:
+	if _last_input_event is InputEventMouse and event is InputEventMouseButton:
+		event.position = _last_input_event.position
+
+
+# for handling read https://docs.godotengine.org/en/3.5/tutorials/inputs/inputevent.html
+func _handle_input_event(event :InputEvent):
+	if event is InputEventMouse:
+		Input.warp_mouse_position(event.position)
+	
+	# before v3.5 the use_accumulated_input is false but should be true
+	if Engine.get_version_info().hex < 0x030500:
+		Input.set_use_accumulated_input(true)
+	Input.parse_input_event(event)
+	# do explicit flush input events: https://github.com/godotengine/godot/issues/63969
+	#if Engine.get_version_info().hex >= 0x030500 and Input.use_accumulated_input:
+	Input.flush_buffered_events()
+	
+	if is_instance_valid(_current_scene):
+		__print("	process event %s (%s) <- %s" % [_current_scene, _scene_name(), event.as_text()])
+		if(_current_scene.has_method("_gui_input")):
+			_current_scene._gui_input(event)
+		if(_current_scene.has_method("_unhandled_input")):
+			_current_scene._unhandled_input(event)
+		_scene_tree.set_input_as_handled()
+	# save last input event needs to be merged with next InputEventMouseButton
+	_last_input_event = event
+	return self
+
+func _reset_input_to_default() -> void:
+	# reset all mouse button to inital state if need
+	for m_button in _mouse_button_on_press.duplicate():
+		if Input.is_mouse_button_pressed(m_button):
+			simulate_mouse_button_release(m_button)
+	_mouse_button_on_press.clear()
+	
+	for key_scancode in _key_on_press.duplicate():
+		if Input.is_key_pressed(key_scancode):
+			simulate_key_release(key_scancode)
+	_key_on_press.clear()
+	Input.flush_buffered_events()
 
 func __print(message :String) -> void:
 	if _verbose:

@@ -9,7 +9,6 @@ const __source = 'res://addons/gdUnit3/src/core/GdUnitSceneRunner.gd'
 func load_test_scene() -> Node:
 	return auto_free(load("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn").instance())
 
-
 func before():
 	# use a dedicated FPS because we calculate frames by time
 	Engine.set_target_fps(60)
@@ -88,7 +87,7 @@ func test_run_scene_colorcycle(timeout=2000) -> void:
 	yield(runner.await_signal("panel_color_change", [box1, Color.green]), "completed")
 	assert_object(box1.color).is_equal(Color.green)
 
-func test_simulate_key_pressed(timeout=2000) -> void:
+func test_simulate_scene_inteaction_by_press_enter(timeout=2000) -> void:
 	var runner := scene_runner(load_test_scene())
 	
 	# inital no spell is fired
@@ -110,7 +109,7 @@ func test_simulate_key_pressed(timeout=2000) -> void:
 	assert_object(runner.find_node("Spell")).is_null()
 
 # mock on a runner and spy on created spell
-func test_simulate_key_pressed_in_combination_with_spy():
+func test_simulate_scene_inteaction_in_combination_with_spy():
 	var mocked_scene :Control = mock("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
 	assert_object(mocked_scene).is_not_null()
 	# create a runner runner
@@ -123,18 +122,19 @@ func test_simulate_key_pressed_in_combination_with_spy():
 	
 	# simulate a key event to fire a spell
 	runner.simulate_key_pressed(KEY_ENTER)
+	yield(await_idle_frame(), "completed")
 	verify(mocked_scene).create_spell()
 	verify(mocked_scene).add_child(spell_spy)
 	verify(spell_spy).connect("spell_explode", mocked_scene, "_destroy_spell")
 
-func test_simulate_mouse_events():
+func test_simulate_scene_interact_with_buttons():
 	var spyed_scene = spy("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
 	var runner := scene_runner(spyed_scene)
 	
 	# test button 1 interaction
 	runner.set_mouse_pos(Vector2(60, 20))
-	yield(await_millis(1000), "completed")
 	runner.simulate_mouse_button_pressed(BUTTON_LEFT)
+	yield(await_idle_frame(), "completed")
 	verify(spyed_scene)._on_panel_color_changed(spyed_scene._box1, Color.red)
 	verify(spyed_scene)._on_panel_color_changed(spyed_scene._box1, Color.gray)
 	verify(spyed_scene, 0)._on_panel_color_changed(spyed_scene._box2, any_color())
@@ -144,6 +144,7 @@ func test_simulate_mouse_events():
 	reset(spyed_scene)
 	runner.set_mouse_pos(Vector2(160, 20))
 	runner.simulate_mouse_button_pressed(BUTTON_LEFT)
+	yield(await_idle_frame(), "completed")
 	verify(spyed_scene, 0)._on_panel_color_changed(spyed_scene._box1, any_color())
 	verify(spyed_scene)._on_panel_color_changed(spyed_scene._box2, Color.red)
 	verify(spyed_scene)._on_panel_color_changed(spyed_scene._box2, Color.gray)
@@ -153,6 +154,7 @@ func test_simulate_mouse_events():
 	reset(spyed_scene)
 	runner.set_mouse_pos(Vector2(260, 20))
 	runner.simulate_mouse_button_pressed(BUTTON_LEFT)
+	yield(await_idle_frame(), "completed")
 	verify(spyed_scene, 0)._on_panel_color_changed(spyed_scene._box1, any_color())
 	verify(spyed_scene, 0)._on_panel_color_changed(spyed_scene._box2, any_color())
 	# is changed to red
@@ -191,7 +193,7 @@ func test_await_signal_without_time_factor() -> void:
 	# should be interrupted is will never change to Color.khaki
 	GdAssertReports.expect_fail()
 	yield(runner.await_signal( "panel_color_change", [box1, Color.khaki], 300), "completed")
-	if assert_failed_at(193, "await_signal_on(panel_color_change, [%s, %s]) timed out after 300ms" % [str(box1), str(Color.khaki)]):
+	if assert_failed_at(195, "await_signal_on(panel_color_change, [%s, %s]) timed out after 300ms" % [str(box1), str(Color.khaki)]):
 		return
 	fail("test should failed after 300ms on 'await_signal'")
 
@@ -209,7 +211,7 @@ func test_await_signal_with_time_factor() -> void:
 	# should be interrupted is will never change to Color.khaki
 	GdAssertReports.expect_fail()
 	yield(runner.await_signal("panel_color_change", [box1, Color.khaki], 30), "completed")
-	if assert_failed_at(211, "await_signal_on(panel_color_change, [%s, %s]) timed out after 30ms" % [str(box1), str(Color.khaki)]):
+	if assert_failed_at(213, "await_signal_on(panel_color_change, [%s, %s]) timed out after 30ms" % [str(box1), str(Color.khaki)]):
 		return
 	fail("test should failed after 30ms on 'await_signal'")
 
@@ -285,6 +287,38 @@ func test_runner_by_scene_instance() -> void:
 	# verify runner and scene is freed
 	assert_bool(is_instance_valid(runner)).is_false()
 	assert_bool(is_instance_valid(scene)).is_false()
+
+func test_mouse_drag_and_drop() -> void:
+	var spy_scene = spy("res://addons/gdUnit3/test/core/resources/scenes/drag_and_drop/DragAndDropTestScene.tscn")
+	var runner := scene_runner(spy_scene)
+	OS.window_minimized = false
+	
+	var slot_left :TextureRect = $"/root/DragAndDropScene/left/TextureRect"
+	var slot_right :TextureRect = $"/root/DragAndDropScene/right/TextureRect"
+	
+	var save_mouse_pos := get_tree().root.get_mouse_position()
+	# set inital mouse pos over the left slot
+	var mouse_pos := slot_left.rect_global_position + Vector2(10, 10)
+	runner.set_mouse_pos(mouse_pos)
+	yield(await_idle_frame(), "completed")
+	var event := InputEventMouseMotion.new()
+	event.position = mouse_pos
+	event.global_position = save_mouse_pos
+	verify(spy_scene, 1)._gui_input(event)
+	
+	runner.simulate_mouse_button_press(BUTTON_LEFT)
+	yield(await_idle_frame(), "completed")
+	assert_bool(Input.is_mouse_button_pressed(BUTTON_LEFT)).is_true()
+	
+	# start drag&drop to left pannel
+	for i in 20:
+		runner.simulate_mouse_move(mouse_pos + Vector2(i*.5*i, 0))
+		yield(await_millis(40), "completed")
+	
+	runner.simulate_mouse_button_release(BUTTON_LEFT)
+	yield(await_idle_frame(), "completed")
+	assert_that(slot_right.texture).is_equal(slot_left.texture)
+
 
 # we override the scene runner function for test purposes to hide push_error notifications
 func scene_runner(scene, verbose := false) -> GdUnitSceneRunner:

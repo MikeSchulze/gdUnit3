@@ -5,6 +5,18 @@ const WARN_COLOR = "#EFF883"
 const ERROR_COLOR = "#CD5C5C"
 const VALUE_COLOR = "#1E90FF"
 
+# improved version of InputEvent as text
+static func input_event_as_text(event :InputEvent) -> String:
+	var text := ""
+	if event is InputEventKey:
+		text += "InputEventKey : key='%s', pressed=%s, scancode=%d, physical_scancode=%s" % [event.as_text(), event.pressed, event.scancode, event.physical_scancode]
+	else:
+		text += event.as_text()
+	if event is InputEventMouse:
+		text += ", global_position %s" % event.global_position
+	if event is InputEventWithModifiers:
+		text += ", shift=%s, alt=%s, control=%s, meta=%s, command=%s" % [event.shift, event.alt, event.control, event.meta, event.command]
+	return text
 
 static func _warning(error:String) -> String:
 	return "[color=%s]%s[/color]" % [WARN_COLOR, error]
@@ -33,7 +45,7 @@ static func _current(value, delimiter ="\n") -> String:
 			if value == null:
 				return "'[color=%s]<null>[/color]'" % [VALUE_COLOR]
 			if value is InputEvent:
-				return "[color=%s]<%s>[/color]" % [VALUE_COLOR, value.as_text()]
+				return "[color=%s]<%s>[/color]" % [VALUE_COLOR, input_event_as_text(value)]
 			#if value.has_method("_to_string"):
 			#	return "[color=%s]<%s>[/color]" % [VALUE_COLOR, value._to_string()]
 			return "[color=%s]<%s>[/color]" % [VALUE_COLOR, value.get_class()]
@@ -54,7 +66,7 @@ static func _expected(value, delimiter ="\n") -> String:
 			if value == null:
 				return "'[color=%s]<null>[/color]'" % [VALUE_COLOR]
 			if value is InputEvent:
-				return "[color=%s]<%s>[/color]" % [VALUE_COLOR, value.as_text()]
+				return "[color=%s]<%s>[/color]" % [VALUE_COLOR, input_event_as_text(value)]
 			#if value.has_method("_to_string"):
 			#	return "[color=%s]<%s>[/color]" % [VALUE_COLOR, value._to_string()]
 			return "[color=%s]<%s>[/color]" % [VALUE_COLOR, value.get_class()]
@@ -315,6 +327,8 @@ static func error_signal_emitted(signal_name :String, args :Array, elapsed :Stri
 		return "%s %s but is emitted after %s" % [_error("Expecting do not emit signal:"), _current(signal_name + "()"), elapsed]
 	return "%s %s but is emitted after %s" % [_error("Expecting do not emit signal:"), _current(signal_name + "(" + str(args) + ")"), elapsed]
 
+static func error_await_signal_on_invalid_instance(source, signal_name :String, args :Array) -> String:
+	return "%s\n await_signal_on(%s, %s, %s)" % [_error("Invalid source! Can't await on signal:"), _current(source), signal_name, args]
 
 static func result_type(type :int) -> String:
 	match type:
@@ -358,7 +372,7 @@ static func _format_arguments(args :Array, times :int) -> String:
 
 static func _format_arg(arg) -> String:
 	if arg is InputEvent:
-		return arg.as_text()
+		return input_event_as_text(arg)
 	return str(arg)
 
 static func _to_typed_args(args :Array) -> PoolStringArray:
