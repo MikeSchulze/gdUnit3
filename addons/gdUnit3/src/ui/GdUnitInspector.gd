@@ -287,7 +287,11 @@ func _gdUnit_run(debug :bool) -> void:
 		return
 
 	var arguments := Array()
+	if OS.is_stdout_verbose():
+		arguments.append("--verbose")
 	arguments.append("--no-window")
+	arguments.append("--path")
+	arguments.append(ProjectSettings.globalize_path("res://"))
 	#arguments.append("-d")
 	#arguments.append("-s")
 	arguments.append("res://addons/gdUnit3/src/core/GdUnitRunner.tscn")
