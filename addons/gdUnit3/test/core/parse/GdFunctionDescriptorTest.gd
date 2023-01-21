@@ -114,3 +114,19 @@ func test_extract_from_descriptor_is_virtual_func_full_check():
 			_count += 1
 			assert_array(expected_virtual_functions).contains([fd.name()])
 	assert_int(_count).is_equal(expected_virtual_functions.size())
+
+
+func test_extract_from_func_with_return_type_variant():
+	var method_descriptor := get_method_description("Node", "get")
+	var fd := GdFunctionDescriptor.extract_from(method_descriptor)
+	assert_str(fd.name()).is_equal("get")
+	assert_bool(fd.is_virtual()).is_false()
+	assert_bool(fd.is_static()).is_false()
+	assert_bool(fd.is_engine()).is_true()
+	assert_bool(fd.is_vararg()).is_false()
+	assert_int(fd.return_type()).is_equal(GdObjects.TYPE_VARIANT)
+	assert_array(fd.args()).contains_exactly([
+		GdFunctionArgument.new("property_", "String"),
+	])
+	# Variant get(property: String) const
+	assert_str(fd.typeless()).is_equal("func get(property_):")

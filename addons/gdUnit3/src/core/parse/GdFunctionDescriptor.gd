@@ -81,6 +81,8 @@ func typeless() -> String:
 	var func_signature := ""
 	if _return_type == TYPE_NIL:
 		func_signature = "func %s(%s):" % [name(), typeless_args()]
+	elif _return_type == GdObjects.TYPE_VARIANT:
+		func_signature = "func %s(%s):" % [name(), typeless_args()]
 	else:
 		func_signature = "func %s(%s) -> %s:" % [name(), typeless_args(), return_type_as_string()]
 	return "static " + func_signature if is_static() else func_signature
@@ -123,11 +125,18 @@ static func extract_from(method_descriptor :Dictionary) -> GdFunctionDescriptor:
 		is_virtual,
 		false,
 		true,
-		method_descriptor["return"]["type"],
+		_extract_return_type(method_descriptor["return"]),
 		method_descriptor["return"]["class_name"],
 		_extract_args(method_descriptor),
 		_build_varargs(is_vararg)
 	)
+
+static func _extract_return_type(return_info :Dictionary) -> int:
+	var type :int = return_info["type"]
+	var usage :int = return_info["usage"]
+	if type == TYPE_NIL and usage & GdObjects.PROPERTY_USAGE_NIL_IS_VARIANT:
+		return GdObjects.TYPE_VARIANT
+	return type
 
 static func _extract_args(method_descriptor :Dictionary) -> Array:
 	var args := Array()

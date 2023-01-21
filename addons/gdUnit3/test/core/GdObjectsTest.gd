@@ -531,6 +531,7 @@ func test_all_types() -> void:
 		GdObjects.TYPE_VOID,
 		GdObjects.TYPE_VARARG,
 		GdObjects.TYPE_FUNC,
+		GdObjects.TYPE_VARIANT,
 	])
 
 func test_to_camel_case() -> void:

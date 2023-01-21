@@ -5,6 +5,11 @@ extends Object
 const TYPE_VOID 	= TYPE_MAX + 1000
 const TYPE_VARARG 	= TYPE_MAX + 1001
 const TYPE_FUNC 	= TYPE_MAX + 1002
+const TYPE_VARIANT	= TYPE_MAX + 1003
+
+# define missing property usage flag
+# https://github.com/godotengine/godot/blob/3.5/core/object.h
+const PROPERTY_USAGE_NIL_IS_VARIANT :int = 1 << 19
 
 # used as default value for varargs
 const TYPE_VARARG_PLACEHOLDER_VALUE = "__null__"
@@ -39,7 +44,8 @@ const TYPE_AS_STRING_MAPPINGS := {
 	TYPE_COLOR_ARRAY: "PoolColorArray",
 	TYPE_VOID: "void",
 	TYPE_VARARG: "VarArg",
-	TYPE_FUNC: "Func"
+	TYPE_FUNC: "Func",
+	TYPE_VARIANT: "Variant"
 }
 
 # holds flipped copy of TYPE_AS_STRING_MAPPINGS initalisized by func 'string_as_typeof'
