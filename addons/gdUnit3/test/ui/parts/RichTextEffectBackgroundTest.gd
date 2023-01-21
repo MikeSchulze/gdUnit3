@@ -8,78 +8,29 @@ extends GdUnitTestSuite
 const __source = 'res://addons/gdUnit3/src/ui/parts/RichTextEffectBackground.gd'
 
 
-func assert_mapping(mapping :Dictionary, message :String, effect :RichTextEffectBackground):
-	var char_width := effect._char_size.x
-	var char_height := effect.get_line_height()
+func test_paint_with_diff() -> void:
+	var label = spy(auto_free(RichTextLabelExt.new()))
+	add_child(label)
+	var diff_color := Color.red
+	var message := "This is [bg color="  + diff_color.to_html() +"]X[/bg] Message"
+	label.set_bbcode(message)
 	
-	var char_pos := 0
-	var y := 0
-	for line in message.split("\n"):
-		for x in line.length():
-			x += effect.get_line_indent(y)
-			var expected_pos := Vector2(x*char_width, y*char_height)
-			assert_vector2(mapping.get(char_pos))\
-				.is_equal(expected_pos)
-			char_pos += 1
-		y += 1
+	# draw it
+	yield(get_tree(), "idle_frame")
+	
+	# the background color is using .3 for alpha value
+	diff_color.a = .3
+	verify(label, 1).draw_rect(Rect2(68, 4 ,8, 16), diff_color)
 
-func test_build_char_mapping_singe_line() -> void:
-	var rtl = auto_free(RichTextLabelExt.new())
-	rtl._ready()
-	var effect :RichTextEffectBackground  = rtl._effect
-	
+
+func test_paint_no_diff() -> void:
+	var label = spy(auto_free(RichTextLabelExt.new()))
+	add_child(label)
 	var message := "This is a Message"
-	var mapping := effect._build_char_mapping(message)
+	label.set_bbcode(message)
 	
-	assert_mapping(mapping, message, effect)
-
-func test_build_char_mapping_multi_line() -> void:
-	var rtl = auto_free(RichTextLabelExt.new())
-	rtl._ready()
-	var effect :RichTextEffectBackground  = rtl._effect
+	# draw it
+	yield(get_tree(), "idle_frame")
 	
-	var message := "This is a Message\nAnd an another Message\nEOF"
-	var mapping := effect._build_char_mapping(message)
-	
-	assert_mapping(mapping, message, effect)
-
-func test_get_line_indent() -> void:
-	var rtl = auto_free(RichTextLabelExt.new())
-	rtl._ready()
-	var effect :RichTextEffectBackground  = rtl._effect
-	
-	assert_int(effect.get_line_indent(1)).is_equal(0)
-	assert_int(effect.get_line_indent(2)).is_equal(0)
-	
-	# indent = 0
-	rtl.append_bbcode("This is line 1")
-	rtl.newline()
-
-	# indent = 2
-	rtl.push_indent(2)
-	rtl.append_bbcode("This is line 2")
-	rtl.newline()
-	rtl.pop_indent(2)
-	
-	# indent = 0
-	rtl.append_bbcode("This is line 3")
-	rtl.newline()
-	
-	# indent = 2
-	rtl.push_indent(2)
-	rtl.append_bbcode("This is line 4")
-	rtl.newline()
-	
-	# indent = 4
-	rtl.push_indent(2)
-	rtl.append_bbcode("This is line 5")
-	rtl.newline()
-	rtl.pop_indent(2)
-	rtl.pop_indent(2)
-	# indent = 0
-	
-	assert_int(effect.get_line_indent(1)).is_equal(0)
-	assert_int(effect.get_line_indent(2)).is_equal(2)
-	assert_int(effect.get_line_indent(3)).is_equal(0)
-	assert_int(effect.get_line_indent(4)).is_equal(2)
-	assert_int(effect.get_line_indent(5)).is_equal(4)
+	# no diff rect should be drawn
+	verify(label, 0).draw_rect(any(), any())
