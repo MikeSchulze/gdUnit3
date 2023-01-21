@@ -1,10 +1,8 @@
 extends Control
 
-onready var texture = preload("res://addons/gdUnit3/test/core/resources/scenes/drag_and_drop/icon.png")
-
 func _ready():
 	# set initial drag texture
-	$left/TextureRect.texture = texture
+	$left/TextureRect.texture = ResourceLoader.load("res://addons/gdUnit3/test/core/resources/scenes/drag_and_drop/icon.png", "", true)
 
 
 # Virtual method to be implemented by the user. Use this method to process and accept inputs on UI elements. See accept_event().
