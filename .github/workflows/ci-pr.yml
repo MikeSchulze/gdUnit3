@@ -3,6 +3,7 @@ name: ci-pr
 on:
   pull_request:
     paths-ignore:
+      - '**.yml'
       - '**.jpg'
       - '**.png'
       - '**.md'
