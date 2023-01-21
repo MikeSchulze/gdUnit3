@@ -426,21 +426,14 @@ static func colorDiff(value :String) -> String:
 	result.append_array(format_chars(additional_chars, ADD_COLOR))
 	return result.get_string_from_ascii()
 
-
 static func format_chars(characters :PoolByteArray, type :Color) -> PoolByteArray:
 	var result := PoolByteArray()
 	if characters.size() == 0:
 		return result
 	if characters.size() == 1 and characters[0] == 10:
-		if type == ADD_COLOR:
-			result.append_array(("[bg color=#%s]\n<--empty line-->[/bg]" % [type.to_html()]).to_utf8())
-		else:
-			result.append_array(("[bg color=#%s][s]\n<--empty line-->[/s][/bg]" % type.to_html()).to_utf8())
+		result.append_array(("[bg color=#%s]<NL>[/bg]" % type.to_html()).to_utf8())
 		return result
-	if type == ADD_COLOR:
-		result.append_array(("[bg color=#%s]%s[/bg]" % [type.to_html(), characters.get_string_from_ascii()]).to_utf8())
-	else:
-		result.append_array(("[bg color=#%s]%s[/bg]" % [type.to_html(), characters.get_string_from_ascii()]).to_utf8())
+	result.append_array(("[bg color=#%s]%s[/bg]" % [type.to_html(), characters.get_string_from_ascii()]).to_utf8())
 	return result
 
 static func humanized(value :String) -> String:

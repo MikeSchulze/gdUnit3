@@ -197,14 +197,14 @@ static func spy_on_scene(caller :Object, scene :Node, memory_pool, debug_write) 
 	scene.__set_caller(caller)
 	return GdUnitTools.register_auto_free(scene, memory_pool)
 
-const EXCLUDE_PROPERTIES_TO_COPY = ["script", "type"]
+const EXCLUDE_PROPERTIES_TO_COPY = ["script", "type", "get_global_transform", "rect_global_position"]
 
 static func copy_properties(source :Object, dest :Object) -> void:
 	for property in source.get_property_list():
 		var property_name = property["name"]
-		var property_value = source.get(property_name)
 		if EXCLUDE_PROPERTIES_TO_COPY.has(property_name):
 			continue
+		var property_value = source.get(property_name)
 		#if dest.get(property_name) == null:
 		#	prints("|%s|" % property_name, source.get(property_name))
 		

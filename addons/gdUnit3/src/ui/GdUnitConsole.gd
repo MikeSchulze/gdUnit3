@@ -68,10 +68,13 @@ func _on_event_test_suite(event :GdUnitEvent):
 			output.newline()
 			output.push_color(Color.lightgreen.to_html())
 			output.append_bbcode("Test Run Summary:")
+			output.pop()
 			output.push_color(_text_color.to_html())
 			output.push_indent(1)
 			output.append_bbcode("| %d total | %d error | %d failed | %d skipped | %d orphans |\n" % [_summary["total_count"], _summary["error_count"], _summary["failed_count"], _summary["skipped_count"], _summary["orphan_nodes"]])
+			output.newline()
 			output.pop_indent(1)
+			output.pop()
 		GdUnitEvent.TESTSUITE_BEFORE:
 			init_statistics(event)
 			output.append_bbcode("Run Test Suite: %s" %  event._suite_name)
@@ -80,50 +83,54 @@ func _on_event_test_suite(event :GdUnitEvent):
 			if event.is_success():
 				output.push_color(Color.lightgreen.to_html())
 				output.append_bbcode("[wave]PASSED[/wave]")
+				output.pop()
 			else:
 				output.push_color(Color.firebrick.to_html())
 				output.append_bbcode("[shake rate=5 level=10][b]FAILED[/b][/shake]")
-			output.pop_indent(1)
+				output.pop()
 			output.append_bbcode(" %+12s" % LocalTime.elapsed(event.elapsed_time()))
 			output.newline()
 			output.push_color(_text_color.to_html())
 			output.push_indent(1)
 			output.append_bbcode("| %d total | %d error | %d failed | %d skipped | %d orphans |\n" % [_statistics["total_count"], _statistics["error_count"], _statistics["failed_count"], _statistics["skipped_count"], _statistics["orphan_nodes"]])
 			output.pop_indent(1)
-			output.pop_indent(1)
+			output.pop()
 			output.newline()
 		GdUnitEvent.TESTCASE_BEFORE:
 			var spaces = "-%d" % (80 - event._suite_name.length())
 			output.push_indent(1)
 			output.append_bbcode(("[color=#" + _engine_type_color.to_html() + "]%s[/color]:[color=#" + _function_color.to_html() + "]%"+spaces+"s[/color]") % [event._suite_name, event._test_name])
-			output.pop_indent(1)
 		GdUnitEvent.TESTCASE_AFTER:
 			var reports := event.reports()
 			update_statistics(event)
-			if not output.text.ends_with("\n"):
-				if event.is_success():
-					output.push_color(Color.lightgreen.to_html())
-					output.append_bbcode("PASSED")
-					output.pop_indent(1)
-					output.append_bbcode(" %+12s" % LocalTime.elapsed(event.elapsed_time()))
-				else:
-					if event.is_skipped():
-						output.push_color(Color.goldenrod.to_html())
-						output.append_bbcode("SKIPPED")
-					if event.is_error() or event.is_failed():
-						output.push_color(Color.firebrick.to_html())
-						output.append_bbcode("FAILED")
-					output.pop_indent(1)
-					output.append_bbcode(" %+12s" % LocalTime.elapsed(event.elapsed_time()))
-					output.newline()
-					output.push_color(_text_color.to_html())
-					var report :GdUnitReport = null if reports.empty() else reports[0]
-					if report:
-						output.push_indent(2)
-						output.append_bbcode("line %d %s" % [report._line_number, report._message])
-						output.pop_indent(2)
-					output.pop_indent(1)
+			if event.is_success():
+				output.push_color(Color.lightgreen.to_html())
+				output.append_bbcode("PASSED")
+				output.pop()
+				output.append_bbcode(" %+12s" % LocalTime.elapsed(event.elapsed_time()))
 				output.newline()
+				output.pop_indent(1)
+			else:
+				if event.is_skipped():
+					output.push_color(Color.goldenrod.to_html())
+					output.append_bbcode("SKIPPED")
+					output.pop()
+				if event.is_error() or event.is_failed():
+					output.push_color(Color.firebrick.to_html())
+					output.append_bbcode("FAILED")
+					output.pop()
+				output.append_bbcode(" %+12s" % LocalTime.elapsed(event.elapsed_time()))
+				output.newline()
+				output.push_color(_text_color.to_html())
+				var report :GdUnitReport = null if reports.empty() else reports[0]
+				if report:
+					output.push_indent(1)
+					output.append_bbcode("line %d %s" % [report._line_number, report._message])
+					output.newline()
+					output.pop_indent(1)
+				output.pop_indent(1)
+				output.pop()
+
 
 func _on_client_connected(client_id :int) -> void:
 	output.clear()
