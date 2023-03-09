@@ -22,7 +22,7 @@ jobs:
   testing:
     strategy:
       matrix:
-        godot-version: [3.5.1]
+        godot-version: [3.5.2]
 
     name: "CI Godot ${{ matrix.godot-version }}"
     runs-on: ubuntu-latest
