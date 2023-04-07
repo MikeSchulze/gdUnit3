@@ -63,6 +63,8 @@ var TOKENS := [
 ]
 
 var _regex_clazz_name :RegEx
+var _regex_func_args := prepare_regex("\\b[^()]+\\((.*)\\)")
+var _regex_argumentTags := prepare_regex("([^,]+\\(.+?\\))|([^,]+)");
 
 var _base_clazz :String
 var _scanned_inner_classes := PoolStringArray()
@@ -337,103 +339,132 @@ func parse_return_token(input: String) -> Token:
 		token = next_token(input, index)
 	return token
 
+const BRACKET_OPEN := 40
+const BRACKET_CLOSE := 41
+
+func _extract_arguments(input :String) -> String:
+	var bracket_count := 0
+	var start_index := 0
+	
+	for index in input.length():
+		var character = input.ord_at(index)
+		if character == BRACKET_OPEN:
+			bracket_count += 1
+			if bracket_count == 1:
+				start_index = index + 1
+		elif character == BRACKET_CLOSE:
+			bracket_count -= 1
+			if bracket_count == 0:
+				var length = index-start_index
+				return "" if length == 0 else input.substr(start_index, length)
+	return ""
+
 # Parses the argument into a argument signature
 # e.g. func foo(arg1 :int, arg2 = 20) -> [arg1, arg2]
 func parse_arguments(input: String) -> Array:
+	var arguments := _extract_arguments(input)
+	if arguments.empty():
+		return []
+	arguments += ","
+	
 	var args := Array()
 	var current_index := 0
-	var token :Token = null
 	var bracket := 0
-	var in_function := false
-	while current_index < len(input):
-		token = next_token(input, current_index)
-		current_index += token._consumed
-		if token == TOKEN_SPACE:
-			continue
-		if token == TOKEN_BRACKET_OPEN:
-			in_function = true
-			bracket += 1
-			continue
-		if token == TOKEN_BRACKET_CLOSE:
-			bracket -= 1
-		# if function end?
-		if in_function and bracket == 0:
-			return args
-		# is function
+	var arg_name :String
+	var arg_type :String
+	var arg_value :String
+	# parse type and default value
+	while current_index < len(arguments):
+		var token :Token = next_token(arguments, current_index)
 		if token == TOKEN_FUNCTION_DECLARATION:
-			token = next_token(input, current_index)
-			current_index += token._consumed
+			token = tokenize_value(arguments, current_index, token)
+		current_index += token._consumed
+		
+		if token.is_variable():
+			arg_name = token.plain_value()
+			arg_type = ""
+			arg_value = GdFunctionArgument.UNDEFINED
 			continue
+			
 		# is fuzzer argument
 		if token is FuzzerToken:
-			var arg_value = _parse_end_function(input.substr(current_index), true)
+			arg_name = token.name()
+			arg_type = token.type()
+			arg_value = _parse_end_function(arguments.substr(current_index), true)
 			current_index += arg_value.length()
-			args.append(GdFunctionArgument.new(token.name(), token.type(), arg_value))
 			continue
-		# is value argument
-		if in_function and token.is_variable():
-			var arg_name = token.plain_value()
-			var arg_type = ""
-			var arg_value = GdFunctionArgument.UNDEFINED
-			# parse type and default value
-			while current_index < len(input):
+			
+		match token:
+			TOKEN_SPACE:
+				continue
+			
+			TOKEN_ARGUMENT_TYPE:
+				token = next_token(arguments, current_index)
+				current_index += token._consumed
+				if token == TOKEN_SPACE:
+					token = next_token(arguments, current_index)
+					current_index += token._consumed
+				arg_type = token._token
+			
+			TOKEN_ARGUMENT_TYPE_ASIGNMENT:
+				arg_value = _parse_end_function(arguments.substr(current_index), true)
+				current_index += arg_value.length()
+			
+			TOKEN_ARGUMENT_ASIGNMENT:
+				arg_value = _parse_end_function(arguments.substr(current_index), true)
+				current_index += arg_value.length()
+			
+			TOKEN_FUNCTION_DECLARATION:
 				token = next_token(input, current_index)
 				current_index += token._consumed
-				match token:
-					TOKEN_SPACE:
-						continue
-					TOKEN_ARGUMENT_TYPE:
-						token = next_token(input, current_index)
-						if token == TOKEN_SPACE:
-							current_index += token._consumed
-							token = next_token(input, current_index)
-						arg_type = token._token
-					TOKEN_ARGUMENT_TYPE_ASIGNMENT:
-						arg_value = _parse_end_function(input.substr(current_index), true)
-						current_index += arg_value.length()
-					TOKEN_ARGUMENT_ASIGNMENT:
-						arg_value = _parse_end_function(input.substr(current_index), true)
-						current_index += arg_value.length()
-					TOKEN_BRACKET_OPEN:
-						bracket += 1
-						# if value a function?
-						if bracket > 1:
-							# complete the argument value
-							var func_begin = input.substr(current_index-TOKEN_BRACKET_OPEN._consumed)
-							var func_body = _parse_end_function(func_begin)
-							arg_value += func_body
-							# fix parse index to end of value
-							current_index += func_body.length() - TOKEN_BRACKET_OPEN._consumed - TOKEN_BRACKET_CLOSE._consumed
-					TOKEN_BRACKET_CLOSE:
-						bracket -= 1
-						# end of function
-						if bracket == 0:
-							break
-					TOKEN_ARGUMENT_SEPARATOR:
-						if bracket <= 1:
-							break
-			arg_value = arg_value.lstrip(" ")
-			if arg_type.empty() and arg_value != GdFunctionArgument.UNDEFINED:
-				var value_type := TYPE_STRING
-				if arg_value.begins_with("Color."):
-					value_type = TYPE_COLOR
-				elif arg_value.begins_with("Vector2."):
-					value_type = TYPE_VECTOR2
-				elif arg_value.begins_with("Vector3."):
-					value_type = TYPE_VECTOR3
-				elif arg_value.begins_with("AABB("):
-					value_type = TYPE_AABB
-				elif arg_value.begins_with("["):
-					value_type = TYPE_ARRAY
-				elif arg_value.begins_with("{"):
-					value_type = TYPE_DICTIONARY
-				else:
-					value_type = typeof(str2var(arg_value))
-					if value_type == TYPE_STRING and arg_value.find_last(")") == arg_value.length()-1:
-						value_type = GdObjects.TYPE_FUNC
-				arg_type = GdObjects.type_as_string(value_type)
-			args.append(GdFunctionArgument.new(arg_name, arg_type, arg_value))
+			
+			TOKEN_BRACKET_OPEN:
+				bracket += 1
+				# if value a function?
+				if bracket > 1:
+					# complete the argument value
+					var func_begin = arguments.substr(current_index-TOKEN_BRACKET_OPEN._consumed)
+					var func_body = _parse_end_function(func_begin)
+					arg_value += func_body
+					# fix parse index to end of value
+					current_index += func_body.length() - TOKEN_BRACKET_OPEN._consumed - TOKEN_BRACKET_CLOSE._consumed
+			
+			TOKEN_BRACKET_CLOSE:
+				bracket -= 1
+				# end of function
+				if bracket <= 0:
+					break
+			
+			TOKEN_ARGUMENT_SEPARATOR:
+				if bracket <= 1:
+					args.append(build_argument(arg_name, arg_type, arg_value))
 	return args
+
+
+func build_argument(arg_name, arg_type, arg_value) -> GdFunctionArgument:
+	arg_value = arg_value.lstrip(" ")
+	if arg_type.empty() and arg_value != GdFunctionArgument.UNDEFINED:
+		var value_type := TYPE_STRING
+		if arg_value.begins_with("Color."):
+			value_type = TYPE_COLOR
+		elif arg_value.begins_with("Vector2."):
+			value_type = TYPE_VECTOR2
+		elif arg_value.begins_with("Vector3."):
+			value_type = TYPE_VECTOR3
+		elif arg_value.begins_with("AABB("):
+			value_type = TYPE_AABB
+		elif arg_value.begins_with("["):
+			value_type = TYPE_ARRAY
+		elif arg_value.begins_with("{"):
+			value_type = TYPE_DICTIONARY
+		else:
+			value_type = typeof(str2var(arg_value))
+			if value_type == TYPE_STRING and arg_value.find_last(")") == arg_value.length()-1:
+				value_type = GdObjects.TYPE_FUNC
+		arg_type = GdObjects.type_as_string(value_type)
+	return GdFunctionArgument.new(arg_name, arg_type, arg_value)
+
+
 
 # Parse an string for an argument with given name <argument_name> and returns the value
 # if the argument not found the <default_value> is returned

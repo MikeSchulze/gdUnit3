@@ -12,6 +12,13 @@ func test_parse_argument():
 	assert_that(_parser.parse_argument(row, "arg2", 23)).is_equal(42)
 	assert_that(_parser.parse_argument(row, "arg3", 23)).is_equal(43)
 
+
+func test_parse_argument_GD_376():
+	# parse constructor with a argument named with prefix `function`
+	var row = "func _init(function_enum = 42)"
+	assert_that(_parser.parse_argument(row, "function_enum", 42)).is_equal(42)
+
+
 func test_parse_argument_default_value():
 	# arg4 not exists expect to return the default value
 	var row = "func test_foo(arg1 = 41, arg2 := 42, arg3 : int = 43)"
@@ -323,6 +330,13 @@ func test_extract_function_signature() -> void:
 	assert_that(_parser.extract_func_signature(rows, 32))\
 		.is_equal('func a5(value : Array,expected : String,test_parameters : Array = [[ ["a"], "a" ],[ ["a", "very", "long", "argument"], "a very long argument" ],]):')
 
+
+func test_extract_function_signature_GD_376() -> void:
+	var rows = ["func _init(function_enum :int):"]
+	assert_that(_parser.extract_func_signature(rows, 0))\
+		.is_equal('func _init(function_enum :int):')
+
+
 func test_strip_leading_spaces():
 	assert_str(GdScriptParser.TokenInnerClass._strip_leading_spaces("")).is_empty()
 	assert_str(GdScriptParser.TokenInnerClass._strip_leading_spaces(" ")).is_empty()
@@ -382,6 +396,17 @@ func test_parse_func_description():
 		GdFunctionArgument.new("arg2", "bool", "false")
 	])
 	assert_str(fd.typeless()).is_equal("static func foo(arg1, arg2=false):")
+
+
+func test_parse_func_description_GD_376():
+	var fd := _parser.parse_func_description("func _init(function_enum :int):", "clazz_name", [""], 10)
+	assert_str(fd.name()).is_equal("_init")
+	assert_bool(fd.is_static()).is_false()
+	assert_int(fd.return_type()).is_equal(TYPE_NIL)
+	assert_array(fd.args()).contains_exactly([
+		GdFunctionArgument.new("function_enum", "int"),
+	])
+	assert_str(fd.typeless()).is_equal("func _init(function_enum):")
 
 func test_parse_class_inherits():
 	var clazz_path := GdObjects.extract_class_path(CustomClassExtendsCustomClass)
