@@ -26,7 +26,7 @@ class CLIRunner extends Node:
 	var _runner_config := GdUnitRunnerConfig.new()
 	var _console := CmdConsole.new()
 	var _cs_executor
-	var _rtf :RichTextLabelExt
+	var _rtf :RichTextLabel
 	var _cmd_options: = CmdOptions.new([
 			CmdOption.new("-a, --add", "-a <directory|path of testsuite>", "Adds the given test suite or directory to the execution pipeline.", TYPE_STRING),
 			CmdOption.new("-i, --ignore", "-i <testsuite_name|testsuite_name:test-name>", "Adds the given test suite or test case to the ignore list.", TYPE_STRING),
@@ -61,7 +61,7 @@ class CLIRunner extends Node:
 			push_error("Error on startup, can't connect executor for 'send_event'")
 			get_tree().quit(RETURN_ERROR)
 		add_child(_executor)
-		_rtf = RichTextLabelExt.new()
+		_rtf = RichTextLabel.new()
 		add_child(_rtf)
 	
 	func _process(_delta):
