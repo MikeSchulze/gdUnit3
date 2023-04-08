@@ -443,7 +443,7 @@ Waits for given signal is emited by the scene until a specified timeout to fail
 {% endtabs %}
 
 ### await_signal_on
-Waits for the function return value of specified source until specified timeout or fails
+Waits for given signal is emitted by the specified source until specified timeout or fails.
 {% tabs scene-runner-await_signal_on %}
 {% tab scene-runner-await_signal_on GdScript %}
 ```ruby

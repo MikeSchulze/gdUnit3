@@ -55,13 +55,13 @@ If you want to have the same fuzzer results you can configure a seed by the opti
 ```
 Here an example to use a fuzzer where produces random values in a range from -23 to 22 and iterates 100 times
 ```ruby
-    func test_fuzzer_inject_value(fuzzer := Fuzzers.random_rangei(-23, 22), fuzzer_iterations = 100):
+    func test_fuzzer_inject_value(fuzzer := Fuzzers.rangei(-23, 22), fuzzer_iterations = 100):
         assert_int(fuzzer.next_value()).is_in_range(-23, 22)
 ```
 
 ### *multiple fuzzers are allowed*
 ```ruby
-    func test_fuzzer_inject_value(fuzzer_a := Fuzzers.random_rangei(-23, 22), fuzzer_b := Fuzzers.random_rangei(0, 42), fuzzer_iterations = 100):
+    func test_fuzzer_inject_value(fuzzer_a := Fuzzers.rangei(-23, 22), fuzzer_b := Fuzzers.rangei(0, 42), fuzzer_iterations = 100):
         assert_int(fuzzer_a.next_value()).is_in_range(-23, 22)
         assert_int(fuzzer_b.next_value()).is_in_range(-23, 22)
 ```
@@ -72,7 +72,7 @@ If you want to iterate more than the default of 1000 iterations you can do this 
 
 ```ruby
     # execute this test 5000 times
-    func test_fuzzer_inject_value(fuzzer := Fuzzers.random_rangei(-100000, 100000), fuzzer_iterations=5000):
+    func test_fuzzer_inject_value(fuzzer := Fuzzers.rangei(-100000, 100000), fuzzer_iterations=5000):
 ```
 
 
@@ -82,7 +82,7 @@ If you want to have always the same test results for a random generating fuzzer 
 
 ```ruby
     # execute this test with a seed value of 123456
-    func test_fuzzer_inject_value(fuzzer := Fuzzers.random_rangei(-100000, 100000), fuzzer_seed=123456):
+    func test_fuzzer_inject_value(fuzzer := Fuzzers.rangei(-100000, 100000), fuzzer_seed=123456):
 ```
 
 
