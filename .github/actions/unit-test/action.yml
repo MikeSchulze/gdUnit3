@@ -21,5 +21,5 @@ runs:
       run: |
         Xvfb :1 -screen 0 1600x1200x24 &
         chmod +x ./addons/gdUnit3/runtest.sh
-        ./addons/gdUnit3/runtest.sh --add ${{ inputs.test-includes }} --display-driver x11 --rendering-driver opengl3 --screen 0 --continue --verbose
+        ./addons/gdUnit3/runtest.sh --add ${{ inputs.test-includes }} --continue --verbose
         killall Xvfb
