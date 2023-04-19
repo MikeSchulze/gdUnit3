@@ -13,7 +13,7 @@ env:
   GODOT_BIN: "/usr/local/bin/godot"
 
 concurrency:
-  group: ci-pr-${{ github.event.number }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -59,7 +59,7 @@ jobs:
         shell: bash
         run: |
           ${{ matrix.godot-executable_path }} --version
-          ${{ matrix.godot-executable_path }}} -e --path . -s res://addons/gdUnit3/src/core/scan_project.gd --no-window
+          ${{ matrix.godot-executable_path }} -e --path . -s res://addons/gdUnit3/src/core/scan_project.gd --no-window
 
       - name: "Run Unit Tests"
         if: ${{ !cancelled() }}
