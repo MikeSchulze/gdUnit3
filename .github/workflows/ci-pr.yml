@@ -19,26 +19,38 @@ concurrency:
 jobs:
 
   unit-test:
+    name: "Unit tests on Godot v${{ matrix.godot-version }}-${{ matrix.godot-status-version }} (${{ matrix.name }})"
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 5
+    continue-on-error: false
     strategy:
       fail-fast: false
       matrix:
-        godot-build: ['']
-        godot-version: [3.5.1] # 3.4.3, 3.5.2 is missing on barichello/godot-ci
-
-    name: "CI on Godot ${{ matrix.godot-build }}v${{ matrix.godot-version }}"
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    continue-on-error: false
-    container:
-      image: barichello/godot-ci:${{ matrix.godot-build }}${{ matrix.godot-version }}
+        os: [ubuntu-22.04]
+        godot-version: ['3.1.5']
+        godot-status-version: ['stable']
+        include:
+          - os: ubuntu-22.04
+            name: Godot 🐧 Linux Build
+            godot-bin-name: 'linux.x86_64'
+            godot-executable_path: '~/godot-linux/godot'
+            godot-cache-path: '~/godot-linux'
+            godot-mono: false
+            install-opengl: true
 
     steps:
-      - name: "Checkout Repository"
+      - name: "Checkout GdUnit Repository"
         uses: actions/checkout@v3
         with:
           lfs: true
 
-
+      - name: "Install Godot ${{ matrix.godot-version }}"
+        uses: ./.github/actions/godot-install
+        with:
+          godot-version: ${{ matrix.godot-version }}
+          godot-status-version: ${{ matrix.godot-status-version }}
+          godot-bin-name: ${{ matrix.godot-bin-name }}
+          godot-cache-path: ${{ matrix.godot-cache-path }}
 
       - name: "Update Project"
         if: ${{ !cancelled() }}
@@ -47,17 +59,13 @@ jobs:
         run: |
           ${{ env.GODOT_BIN }} -e --path . -s res://addons/gdUnit3/src/core/scan_project.gd --no-window
 
-
-
-      - name: "Run Unit Test"
+      - name: "Run Unit Tests"
         if: ${{ !cancelled() }}
-        timeout-minutes: 10
+        timeout-minutes: 5
         uses: ./.github/actions/unit-test
         with:
-          godot-bin: ${{ env.GODOT_BIN }}
+          godot-bin: ${{ matrix.godot-executable_path }}
           test-includes: "res://user-project/test"
-
-
 
       - name: "Publish Unit Test Reports"
         if: ${{ !cancelled() }}

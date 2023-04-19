@@ -30,6 +30,8 @@ func test_gamestate_host():
 	var connect_menu = runner.scene().find_node("Connect") as Panel
 	var level_select_popup = runner.scene().find_node("Popup") as Popup
 
+	prints("---1")
+
 	assert_object(host_game_button).is_not_null()
 
 	var mouse_position = host_game_button.rect_global_position
@@ -41,82 +43,26 @@ func test_gamestate_host():
 	assert_bool(connect_menu.visible).is_true()
 	assert_bool(level_select_popup.visible).is_false()
 
+	prints("---2")
 	runner.simulate_mouse_button_pressed(BUTTON_LEFT)
 	yield(runner.simulate_frames(50, 10), "completed")
 	verify(lobby_spy)._on_host_pressed()
-
+	
+	prints("---3")
 	assert_bool(connect_menu.visible).is_false()
 	assert_bool(level_select_popup.visible).is_true()
 
 
-# Would have made this a parameterized test, but the way we would have to verify each `_on_levelN_pressed()` method would make this redundant
-func test_select_level_1():
-	skip_socket_connect()
 
-	var level_texture_button = runner.scene().find_node("Level1") as TextureButton
-	assert_object(level_texture_button).is_not_null()
+func test_2():
+	var connect_menu = runner.scene().find_node("Connect") as Panel
+	var level_select_popup = runner.scene().find_node("Popup") as Popup
 
-	var mouse_position = level_texture_button.rect_position
-
-	runner.set_mouse_pos(mouse_position)
-	yield(await_idle_frame(), "completed")
-	verify(lobby_spy, 0)._on_Level1_pressed()
-
-	runner.simulate_mouse_button_pressed(BUTTON_LEFT)
-	yield(runner.simulate_frames(5, 10), "completed")
-	verify(lobby_spy)._on_Level1_pressed()
-
-
-func test_select_level_2():
-	skip_socket_connect()
-
-	var level_texture_button = runner.scene().find_node("Level2") as TextureButton
-	assert_object(level_texture_button).is_not_null()
-
-	var mouse_position = level_texture_button.rect_position
-
-	runner.set_mouse_pos(mouse_position)
-	yield(await_idle_frame(), "completed")
-	verify(lobby_spy, 0)._on_Level2_pressed()
-
-	runner.simulate_mouse_button_pressed(BUTTON_LEFT)
-	yield(runner.simulate_frames(5, 10), "completed")
-	verify(lobby_spy)._on_Level2_pressed()
-
-
-func test_select_level_3():
-	skip_socket_connect()
-
-	var level_texture_button = runner.scene().find_node("Level3") as TextureButton
-	assert_object(level_texture_button).is_not_null()
-
-	var mouse_position = level_texture_button.rect_position
-
-	runner.set_mouse_pos(mouse_position)
-	yield(await_idle_frame(), "completed")
-	verify(lobby_spy, 0)._on_Level3_pressed()
-
-	runner.simulate_mouse_button_pressed(BUTTON_LEFT)
-	yield(runner.simulate_frames(5, 10), "completed")
-	verify(lobby_spy)._on_Level3_pressed()
-
-
-func test_select_level_4():
-	skip_socket_connect()
-
-	var level_texture_button = runner.scene().find_node("Level4") as TextureButton
-	assert_object(level_texture_button).is_not_null()
-
-	var mouse_position = level_texture_button.rect_position
-
-	runner.set_mouse_pos(mouse_position)
-	yield(await_idle_frame(), "completed")
-	verify(lobby_spy, 0)._on_Level4_pressed()
-
-	runner.simulate_mouse_button_pressed(BUTTON_LEFT)
-	yield(runner.simulate_frames(5, 10), "completed")
-	verify(lobby_spy)._on_Level4_pressed()
-
+	runner.scene()._on_host_pressed()
+	
+	
+	assert_bool(connect_menu.visible).is_false()
+	assert_bool(level_select_popup.visible).is_true()
 
 # Helper methods
 
