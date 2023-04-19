@@ -55,11 +55,15 @@ jobs:
       - name: "Update Project"
         if: ${{ !cancelled() }}
         timeout-minutes: 1
+        env:
+          DISPLAY: :1
         continue-on-error: true # we still ignore the timeout, the script is not quit and we run into a timeout
         shell: bash
         run: |
+          Xvfb :1 -screen 0 1600x1200x24 &
           ${{ matrix.godot-executable_path }} --version
           ${{ matrix.godot-executable_path }} -e --path . -s res://addons/gdUnit3/src/core/scan_project.gd --no-window
+          killall Xvfb
 
       - name: "Run Unit Tests"
         if: ${{ !cancelled() }}
