@@ -32,7 +32,7 @@ jobs:
         include:
           - os: ubuntu-22.04
             name: Godot 🐧 Linux Build
-            godot-bin-name: 'linux.x86_64'
+            godot-bin-name: 'osx.universal'
             godot-executable_path: '~/godot-linux/godot'
             godot-cache-path: '~/godot-linux'
             godot-mono: false
