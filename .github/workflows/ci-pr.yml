@@ -70,7 +70,7 @@ jobs:
         uses: ./.github/actions/unit-test
         with:
           godot-bin: ${{ env.GODOT_BIN }}
-          test-includes: "res://addons/gdUnit3/test/"
+          test-includes: "res://user-project/"
 
       - name: "Run Unit Test Examples"
         if: ${{ !cancelled() }}

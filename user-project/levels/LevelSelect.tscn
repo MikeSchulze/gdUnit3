@@ -1,0 +1,56 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://user-project/sprites/level4.png" type="Texture" id=1]
+[ext_resource path="res://user-project/sprites/level3.png" type="Texture" id=2]
+[ext_resource path="res://user-project/sprites/level2.png" type="Texture" id=3]
+[ext_resource path="res://user-project/sprites/level1.png" type="Texture" id=4]
+
+[node name="LevelSelect" type="Node2D"]
+
+[node name="Popup" type="Popup" parent="."]
+visible = true
+margin_right = 40.0
+margin_bottom = 40.0
+
+[node name="Title" type="Label" parent="Popup"]
+margin_left = 360.0
+margin_top = 32.0
+margin_right = 664.0
+margin_bottom = 101.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Choose Level"
+
+[node name="Level1" type="TextureButton" parent="Popup"]
+margin_left = 88.0
+margin_top = 128.0
+margin_right = 2008.0
+margin_bottom = 1208.0
+rect_scale = Vector2( 0.2, 0.2 )
+texture_normal = ExtResource( 4 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Level2" type="TextureButton" parent="Popup"]
+margin_left = 560.0
+margin_top = 128.0
+margin_right = 8240.0
+margin_bottom = 4448.0
+rect_scale = Vector2( 0.05, 0.05 )
+texture_normal = ExtResource( 3 )
+
+[node name="Level3" type="TextureButton" parent="Popup"]
+margin_left = 105.0
+margin_top = 364.0
+margin_right = 2147.0
+margin_bottom = 1564.0
+rect_scale = Vector2( 0.175, 0.178 )
+texture_normal = ExtResource( 2 )
+
+[node name="Level4" type="TextureButton" parent="Popup"]
+margin_left = 561.0
+margin_top = 366.0
+margin_right = 2481.0
+margin_bottom = 1446.0
+rect_scale = Vector2( 0.2, 0.2 )
+texture_normal = ExtResource( 1 )
