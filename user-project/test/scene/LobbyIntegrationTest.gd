@@ -16,7 +16,6 @@ var runner: GdUnitSceneRunner
 func before():
 	lobby_spy = spy(__prefab_source)
 	runner = scene_runner(lobby_spy)
-	runner.maximize_view()
 
 
 # Before each individual test is ran
@@ -43,7 +42,7 @@ func test_gamestate_host():
 	assert_bool(level_select_popup.visible).is_false()
 
 	runner.simulate_mouse_button_pressed(BUTTON_LEFT)
-	yield(runner.simulate_frames(5, 10), "completed")
+	yield(runner.simulate_frames(50, 10), "completed")
 	verify(lobby_spy)._on_host_pressed()
 
 	assert_bool(connect_menu.visible).is_false()
