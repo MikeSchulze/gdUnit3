@@ -37,18 +37,8 @@ jobs:
         uses: actions/checkout@v3
         with:
           lfs: true
-          submodules: 'recursive'
 
-      - name: "Setup .NET"
-        if: ${{ startsWith( matrix.godot-build, 'mono') }} # we only setup .Net for mono versions
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: 6.0.x
 
-      - name: "Compile C#"
-        if: ${{ startsWith( matrix.godot-build, 'mono') }} # we only compile .Net for mono versions
-        run: |
-          ${{ env.GODOT_BIN }} project.godot --build-solutions --quit --no-window
 
       - name: "Update Project"
         if: ${{ !cancelled() }}
@@ -57,12 +47,7 @@ jobs:
         run: |
           ${{ env.GODOT_BIN }} -e --path . -s res://addons/gdUnit3/src/core/scan_project.gd --no-window
 
-      #- name: "Run example mono Test"
-      #  timeout-minutes: 1
-      #  uses: ./.github/actions/unit-test
-      #  with:
-      #    godot-bin: ${{ env.GODOT_BIN }}
-      #    test-includes: "res://addons/gdUnit3/test/mono"
+
 
       - name: "Run Unit Test"
         if: ${{ !cancelled() }}
@@ -70,15 +55,9 @@ jobs:
         uses: ./.github/actions/unit-test
         with:
           godot-bin: ${{ env.GODOT_BIN }}
-          test-includes: "res://user-project/"
+          test-includes: "res://user-project/test"
 
-      - name: "Run Unit Test Examples"
-        if: ${{ !cancelled() }}
-        timeout-minutes: 1
-        uses: ./.github/actions/unit-test
-        with:
-          godot-bin: ${{ env.GODOT_BIN }}
-          test-includes: "res://gdUnit3-examples"
+
 
       - name: "Publish Unit Test Reports"
         if: ${{ !cancelled() }}

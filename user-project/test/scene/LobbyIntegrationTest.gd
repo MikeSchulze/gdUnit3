@@ -16,6 +16,7 @@ var runner: GdUnitSceneRunner
 func before():
 	lobby_spy = spy(__prefab_source)
 	runner = scene_runner(lobby_spy)
+	runner.maximize_view()
 
 
 # Before each individual test is ran
