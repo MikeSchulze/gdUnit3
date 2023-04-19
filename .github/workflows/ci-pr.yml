@@ -56,7 +56,9 @@ jobs:
         if: ${{ !cancelled() }}
         timeout-minutes: 1
         continue-on-error: true # we still ignore the timeout, the script is not quit and we run into a timeout
+        shell: bash
         run: |
+          ${{ matrix.godot-executable_path }} --version
           ${{ matrix.godot-executable_path }}} -e --path . -s res://addons/gdUnit3/src/core/scan_project.gd --no-window
 
       - name: "Run Unit Tests"
