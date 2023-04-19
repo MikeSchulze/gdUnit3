@@ -27,7 +27,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-22.04]
-        godot-version: ['3.5.1']
+        godot-version: [3.4.1, 3.4.2, 3.4.4, 3.4.5, 3.5, 3.5.1, 3.5.2]
         godot-status-version: ['stable']
         include:
           - os: ubuntu-22.04
@@ -36,7 +36,6 @@ jobs:
             godot-executable_path: '~/godot-linux/godot'
             godot-cache-path: '~/godot-linux'
             godot-mono: false
-            install-opengl: true
 
     steps:
       - name: "Checkout GdUnit Repository"
