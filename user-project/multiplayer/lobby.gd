@@ -33,9 +33,7 @@ func _on_host_pressed():
 		set_error_text("Invalid name!")
 		return
 
-	prints("connect hide 1 %s" % $Connect.visible)
 	$Connect.hide()
-	prints("connect hide 2 %s" % $Connect.visible)
 	$LevelSelect/Popup.visible = true
 	set_error_text("")
 	$Players/FindPublicIP.text = "IP: " + $Connect/JoinBox/IPAddress.text

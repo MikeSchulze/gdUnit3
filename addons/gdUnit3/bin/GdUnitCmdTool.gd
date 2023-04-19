@@ -63,7 +63,6 @@ class CLIRunner extends Node:
 		add_child(_executor)
 		_rtf = RichTextLabel.new()
 		add_child(_rtf)
-		_rtf.hide()
 	
 	func _process(_delta):
 		match _state:
