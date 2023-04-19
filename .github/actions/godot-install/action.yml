@@ -48,7 +48,6 @@ runs:
           echo "Run linux part"
           mv ${{ inputs.godot-cache-path }}/${{ env.GODOT_BIN }} ${{ inputs.godot-cache-path }}/godot
           chmod u+x ${{ inputs.godot-cache-path }}/godot
-#      ${{ inputs.godot-cache-path }}/godot --version --no-window
           echo "${{ inputs.godot-cache-path }}/godot"
         else
           echo "Run windows part"
