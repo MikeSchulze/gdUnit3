@@ -32,7 +32,6 @@ concurrency:
 jobs:
 
   unit-test:
-    name: "Unit tests on Godot v${{ inputs.godot-version }}"
     runs-on: ${{ inputs.os }}
     timeout-minutes: 5
     continue-on-error: false
