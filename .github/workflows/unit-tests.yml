@@ -7,23 +7,21 @@ on:
     inputs:
       os:
         required: true
-        type: array
-        default: ['ubuntu-22.04']
-
+        type: string
+        default: 'ubuntu-22.04'
       godot-versions:
         required: true
-        type: array
+        type: string
       
   workflow_dispatch:
     inputs:
       os:
         required: true
-        type: array
-        default: ['ubuntu-22.04']
-
+        type: string
+        default: 'ubuntu-22.04'
       godot-versions:
         required: true
-        type: array
+        type: string
 
 
 concurrency:
@@ -35,13 +33,12 @@ jobs:
 
   unit-test:
     name: "Unit tests on Godot v${{ matrix.godot-version }}-${{ matrix.godot-status-version }} (${{ matrix.name }})"
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ inputs.os }}
     timeout-minutes: 5
     continue-on-error: false
     strategy:
       fail-fast: false
       matrix:
-        os: ${{ inputs.os }}
         godot-version: ${{ inputs.versions }}
         godot-status-version: ['stable']
         include:
