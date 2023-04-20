@@ -32,14 +32,14 @@ concurrency:
 jobs:
 
   unit-test:
-    name: "Unit tests on Godot v${{ matrix.godot-version }}-${{ matrix.godot-status-version }} (${{ matrix.name }})"
+    name: "Unit tests on Godot v${{ inputs.godot-version }}"
     runs-on: ${{ inputs.os }}
     timeout-minutes: 5
     continue-on-error: false
     strategy:
       fail-fast: false
       matrix:
-        godot-version: ${{ inputs.version }}
+        godot-version: ${{ inputs.godot-version }}
         godot-status-version: ['stable']
         include:
           - os: ubuntu-22.04
