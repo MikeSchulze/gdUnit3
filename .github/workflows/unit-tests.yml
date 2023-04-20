@@ -25,14 +25,13 @@ on:
 
 
 concurrency:
-  group: unit-tests-${{ github.head_ref || github.ref_name }}
+  group: unit-tests-${{ github.head_ref || github.ref_name }}-${{ inputs.godot-version }}
   cancel-in-progress: true
 
 
 jobs:
 
   unit-test:
-    name: "Unit tests on Godot 🐧 v${{ inputs.godot-version }}"
     runs-on: ${{ inputs.os }}
     timeout-minutes: 5
 
