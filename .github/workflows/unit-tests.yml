@@ -7,23 +7,23 @@ on:
     inputs:
       os:
         required: true
-        type: string
-        default: 'ubuntu-22.04'
+        type: array
+        default: ['ubuntu-22.04']
 
       godot-versions:
         required: true
-        type: string
+        type: array
       
   workflow_dispatch:
     inputs:
       os:
         required: true
-        type: string
-        default: 'ubuntu-22.04'
+        type: array
+        default: ['ubuntu-22.04']
 
       godot-versions:
         required: true
-        type: string
+        type: array
 
 
 concurrency:
@@ -41,7 +41,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [${{ inputs.os }}]
+        os: ${{ inputs.os }}
         godot-version: ${{ inputs.versions }}
         godot-status-version: ['stable']
         include:
