@@ -1,0 +1,98 @@
+name: unit-tests
+run-name: ${{ github.head_ref || github.ref_name }}-unit-tests
+
+
+on:
+  workflow_call:
+    inputs:
+      os:
+        required: true
+        type: string
+        default: 'ubuntu-22.04'
+
+      godot-versions:
+        required: true
+        type: string
+      
+  workflow_dispatch:
+    inputs:
+      os:
+        required: true
+        type: string
+        default: 'ubuntu-22.04'
+
+      godot-versions:
+        required: true
+        type: string
+
+
+concurrency:
+  group: unit-tests-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+
+jobs:
+
+  unit-test:
+    name: "Unit tests on Godot v${{ matrix.godot-version }}-${{ matrix.godot-status-version }} (${{ matrix.name }})"
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 5
+    continue-on-error: false
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [${{ inputs.os }}]
+        godot-version: ${{ inputs.versions }}
+        godot-status-version: ['stable']
+        include:
+          - os: ubuntu-22.04
+            name: Godot 🐧 Linux Build
+            godot-bin-name: 'x11.64'
+            godot-executable_path: '~/godot-linux/godot'
+            godot-cache-path: '~/godot-linux'
+
+    steps:
+      - name: "Checkout GdUnit Repository"
+        uses: actions/checkout@v3
+        with:
+          lfs: true
+
+      - name: "Install Godot ${{ matrix.godot-version }}"
+        uses: ./.github/actions/godot-install
+        with:
+          godot-version: ${{ matrix.godot-version }}
+          godot-status-version: ${{ matrix.godot-status-version }}
+          godot-bin-name: ${{ matrix.godot-bin-name }}
+          godot-cache-path: ${{ matrix.godot-cache-path }}
+
+      - name: "Update Project"
+        if: ${{ !cancelled() }}
+        timeout-minutes: 1
+        env:
+          DISPLAY: :1
+        continue-on-error: true # we still ignore the timeout, the script is not quit and we run into a timeout
+        shell: bash
+        run: |
+          Xvfb :1 -screen 0 1600x1200x24 &
+          ${{ matrix.godot-executable_path }} -e --path . -s res://addons/gdUnit3/src/core/scan_project.gd --no-window
+          killall Xvfb
+
+      - name: "Run Unit Tests"
+        if: ${{ !cancelled() }}
+        timeout-minutes: 5
+        uses: ./.github/actions/unit-test
+        with:
+          godot-bin: ${{ matrix.godot-executable_path }}
+          test-includes: "res://user-project/test"
+
+      - name: "Publish Unit Test Reports"
+        if: ${{ !cancelled() }}
+        uses: ./.github/actions/publish-test-report
+        with:
+          report-name: ${{ matrix.godot-build }}${{ matrix.godot-version }}
+
+      - name: "Upload Unit Test Reports"
+        if: ${{ !cancelled() }}
+        uses: ./.github/actions/upload-test-report
+        with:
+          report-name: ${{ matrix.godot-build }}${{ matrix.godot-version }}
