@@ -12,7 +12,7 @@ on:
 
 
 concurrency:
-  group: ci-pr-${{ github.workflow }}-${{ github.ref }}
+  group: ci-pr-${{ github.event.number }}
   cancel-in-progress: true
 
 
