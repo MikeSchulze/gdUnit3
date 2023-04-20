@@ -6,18 +6,20 @@ on:
   workflow_call:
     inputs:
       os:
+        required: false
         type: string
         default: 'ubuntu-22.04'
-      godot-versions:
+      godot-version:
         required: true
         type: string
       
   workflow_dispatch:
     inputs:
       os:
+        required: false
         type: string
         default: 'ubuntu-22.04'
-      godot-versions:
+      godot-version:
         required: true
         type: string
 
@@ -37,7 +39,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        godot-version: ${{ inputs.versions }}
+        godot-version: ${{ inputs.version }}
         godot-status-version: ['stable']
         include:
           - os: ubuntu-22.04
