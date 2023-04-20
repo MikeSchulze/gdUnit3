@@ -57,8 +57,9 @@ jobs:
         continue-on-error: true # we still ignore the timeout, the script is not quit and we run into a timeout
         shell: bash
         run: |
+          ls ~/godot-linux
           Xvfb :1 -screen 0 1600x1200x24 &
-          '~/godot-linux/godot' -e --path . -s res://addons/gdUnit3/src/core/scan_project.gd --no-window
+          ~/godot-linux/godot -e --path . -s res://addons/gdUnit3/src/core/scan_project.gd --no-window
           killall Xvfb
 
       - name: "Run Unit Tests"
