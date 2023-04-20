@@ -6,7 +6,6 @@ on:
   workflow_call:
     inputs:
       os:
-        required: false
         type: string
         default: 'ubuntu-22.04'
       godot-versions:
@@ -16,7 +15,6 @@ on:
   workflow_dispatch:
     inputs:
       os:
-        required: false
         type: string
         default: 'ubuntu-22.04'
       godot-versions:
