@@ -62,12 +62,13 @@ runs:
         GODOT_BIN=Godot_v${{ inputs.godot-version }}-${{ inputs.godot-status-version }}_${{ inputs.godot-bin-name }}
         if ${{inputs.godot-mono == 'true'}}; then
           GODOT_PACKAGE=Godot_v${{ inputs.godot-version }}-${{ inputs.godot-status-version }}_mono_${{ inputs.godot-bin-name }}.zip
-          GODOT_BIN=Godot_v${{ inputs.godot-version }}-${{ inputs.godot-status-version }}_mono_${{ inputs.godot-bin-name }}
+          GODOT_BIN=Godot_v${{ inputs.godot-version }}-${{ inputs.godot-status-version }}_mono_x11.64
           DOWNLOAD_URL=$DOWNLOAD_URL/mono
         fi
 
         wget $DOWNLOAD_URL/$GODOT_PACKAGE -P ${{ inputs.godot-cache-path }}
         unzip ${{ inputs.godot-cache-path }}/$GODOT_PACKAGE -d ${{ inputs.godot-cache-path }}
+
         if ${{runner.OS == 'Linux'}}; then
           echo "Run linux part"
           mv ${{ inputs.godot-cache-path }}/$GODOT_BIN ${{ inputs.godot-cache-path }}/godot
