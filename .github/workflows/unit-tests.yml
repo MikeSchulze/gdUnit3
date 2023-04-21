@@ -1,5 +1,5 @@
 name: unit-tests
-run-name: ${{ github.head_ref || github.ref_name }}-unit-tests
+run-name: ${{ github.head_ref || github.ref_name }}-unit-tests-${{ inputs.godot-mono }}
 
 
 on:
@@ -74,6 +74,7 @@ jobs:
           test-includes: "res://user-project/test"
 
       - name: Set Report Name
+        shell: bash
         run: |
           if [[ inputs.godot-mono == true ]]; then
               echo "REPORT_NAME=${{ inputs.os }}-${{ inputs.godot-version }}-mono" >> "$GITHUB_ENV"
