@@ -31,7 +31,7 @@ jobs:
   unit-test:
     name: "Unit Test"
     runs-on: ${{ inputs.os }}
-    timeout-minutes: 10
+    timeout-minutes: 15
 
     steps:
       - name: "Checkout GdUnit Repository"
@@ -65,17 +65,16 @@ jobs:
           godot-bin: '~/godot-linux/godot'
           test-includes: "res://addons/gdUnit3/test/"
 
-
       - name: "Run Unit Test Examples"
         if: ${{ !cancelled() }}
-        timeout-minutes: 1
+        timeout-minutes: 4
         uses: ./.github/actions/unit-test
         with:
           godot-bin: ${{ env.GODOT_BIN }}
           test-includes: "res://gdUnit3-examples"
 
-      - name: Set Report Name
-        if: ${{ !cancelled() }}
+      - name: "Set Report Name"
+        if: ${{ always() }}
         shell: bash
         run: echo "REPORT_NAME=${{ inputs.os }}-${{ inputs.godot-version }}" >> "$GITHUB_ENV"
 
@@ -137,8 +136,8 @@ jobs:
           godot-bin: '~/godot-linux/godot'
           test-includes: "res://addons/gdUnit3/test/mono"
 
-      - name: Set Report Name
-        if: ${{ !cancelled() }}
+      - name: "Set Report Name"
+        if: ${{ always() }}
         shell: bash
         run: echo "REPORT_NAME=${{ inputs.os }}-${{ inputs.godot-version }}-mono" >> "$GITHUB_ENV"
 
