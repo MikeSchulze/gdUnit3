@@ -33,7 +33,7 @@ runs:
             echo "CACHE_NAME=${{ runner.OS }}-Godot_v${{ inputs.godot-version }}-${{ inputs.godot-status-version }}_mono" >> "$GITHUB_ENV"
         else
             echo "CACHE_NAME=${{ runner.OS }}-Godot_v${{ inputs.godot-version }}-${{ inputs.godot-status-version }}" >> "$GITHUB_ENV"
-
+        fi
         echo 'CACHE_NAME is ${{ env.CACHE_NAME }}'
 
     - name: "Cache Godot Binary Download"
