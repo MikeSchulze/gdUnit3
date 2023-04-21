@@ -76,7 +76,7 @@ runs:
           if ${{inputs.godot-mono == 'true'}}; then
             mv ${{ inputs.godot-cache-path }}/$GODOT_BIN/* ${{ inputs.godot-cache-path }}/
             rm -rf ${{ inputs.godot-cache-path }}/$GODOT_BIN*
-            mv ${{ inputs.godot-cache-path }}/* ${{ inputs.godot-cache-path }}/godot
+            
           else
             mv ${{ inputs.godot-cache-path }}/$GODOT_BIN ${{ inputs.godot-cache-path }}/godot
           fi
