@@ -69,7 +69,9 @@ runs:
         wget $DOWNLOAD_URL/$GODOT_PACKAGE -P ${{ inputs.godot-cache-path }}
         unzip ${{ inputs.godot-cache-path }}/$GODOT_PACKAGE -d ${{ inputs.godot-cache-path }}
 
-        ls -lsR ${{ inputs.godot-cache-path }}
+        ls -ls ${{ inputs.godot-cache-path }}
+        echo "$GODOT_BIN"
+        echo "${{ inputs.godot-cache-path }}/$GODOT_BIN"
 
         if ${{runner.OS == 'Linux'}}; then
           echo "Run linux part"
