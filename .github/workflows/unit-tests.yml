@@ -73,14 +73,22 @@ jobs:
           godot-bin: '~/godot-linux/godot'
           test-includes: "res://user-project/test"
 
+      - name: Set Report Name
+        run: |
+          if [[ inputs.godot-mono == true ]]; then
+              echo "REPORT_NAME=${{ inputs.os }}-${{ inputs.godot-version }}-mono" >> "$GITHUB_ENV"
+          else
+              echo "REPORT_NAME=${{ inputs.os }}-${{ inputs.godot-version }}" >> "$GITHUB_ENV"
+          fi
+
       - name: "Publish Unit Test Reports"
         if: ${{ !cancelled() }}
         uses: ./.github/actions/publish-test-report
         with:
-          report-name: ${{ inputs.os }}-${{ inputs.godot-version }}${{ (inputs.godot-mono == true ? 'mono' : '') }}
+          report-name: ${{ env.REPORT_NAME }}
 
       - name: "Upload Unit Test Reports"
         if: ${{ !cancelled() }}
         uses: ./.github/actions/upload-test-report
         with:
-          report-name: ${{ inputs.os }}-${{ inputs.godot-version }}${{ (inputs.godot-mono == true ? 'mono' : '') }}
+          report-name: ${{ env.REPORT_NAME }}
