@@ -103,6 +103,15 @@ jobs:
           godot-bin-name: 'x11_64'
           godot-cache-path: '~/godot-linux'
 
+      - name: "Setup .NET"
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 6.0.x
+
+      - name: "Compile C#"
+        run: |
+          ~/godot-linux/godot project.godot --build-solutions --quit --no-window
+
       - name: "Update Project"
         if: ${{ !cancelled() }}
         timeout-minutes: 1
