@@ -28,3 +28,10 @@ jobs:
     uses: ./.github/workflows/unit-tests.yml
     with: 
       godot-version: ${{ matrix.godot-version }}
+      godot-mono: false
+
+    name: "Unit tests on Godot 🐧 Mono v${{ matrix.godot-version }}"
+    uses: ./.github/workflows/unit-tests.yml
+    with:
+      godot-version: ${{ matrix.godot-version }}
+      godot-mono: true
