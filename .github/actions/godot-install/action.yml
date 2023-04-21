@@ -26,25 +26,22 @@ runs:
   using: composite
   steps:
 
+
+    - name: Set Cache Name
+      run: |
+        if [[ inputs.godot-mono == true ]]; then
+            echo "CACHE_NAME=${{ runner.OS }}-Godot_v${{ inputs.godot-version }}-${{ inputs.godot-status-version }}_mono" >> "$GITHUB_ENV"
+        else
+            echo "CACHE_NAME=${{ runner.OS }}-Godot_v${{ inputs.godot-version }}-${{ inputs.godot-status-version }}" >> "$GITHUB_ENV"
+
     - name: "Cache Godot Binary Download"
       if: ${{ inputs.godot-mono == true }}
       uses: actions/cache@v3
       id: godot-cache-binary
       with:
         path: ${{ inputs.godot-cache-path }}
-        key: ${{ runner.OS }}-Godot_v${{ inputs.godot-version }}-${{ inputs.godot-status-version }}_mono
-        restore-keys: |
-          ${{ runner.OS }}-Godot_v${{ inputs.godot-version }}-${{ inputs.godot-status-version }}_mono
-
-    - name: "Cache Godot Binary Download"
-      if: ${{ inputs.godot-mono == false }}
-      uses: actions/cache@v3
-      id: godot-cache-binary
-      with:
-        path: ${{ inputs.godot-cache-path }}
-        key: ${{ runner.OS }}-Godot_v${{ inputs.godot-version }}-${{ inputs.godot-status-version }}
-        restore-keys: |
-          ${{ runner.OS }}-Godot_v${{ inputs.godot-version }}-${{ inputs.godot-status-version }}
+        key: ${{ env.CACHE_NAME }}
+        restore-keys: ${{ env.CACHE_NAME }}
 
     - name: "Install Linux Godot ${{ inputs.godot-version }}"
       if: steps.godot-cache-binary.outputs.cache-hit != 'true'
