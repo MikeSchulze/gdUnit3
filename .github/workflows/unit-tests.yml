@@ -52,8 +52,6 @@ jobs:
       - name: "Update Project"
         if: ${{ !cancelled() }}
         timeout-minutes: 1
-        env:
-          DISPLAY: :1
         continue-on-error: true # we still ignore the timeout, the script is not quit and we run into a timeout
         shell: bash
         run: |
