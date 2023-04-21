@@ -110,7 +110,7 @@ jobs:
 
       - name: "Compile C#"
         run: |
-          ~/godot-linux/godot project.godot --build-solutions --quit --no-window
+          xvfb-run --auto-servernum ~/godot-linux/godot project.godot --build-solutions --quit --no-window
 
       - name: "Update Project"
         if: ${{ !cancelled() }}
