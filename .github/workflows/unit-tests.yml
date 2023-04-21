@@ -1,7 +1,6 @@
 name: unit-tests
 run-name: ${{ github.head_ref || github.ref_name }}-unit-tests
 
-
 on:
   workflow_call:
     inputs:
@@ -27,13 +26,12 @@ concurrency:
   group: unit-tests-${{ github.head_ref || github.ref_name }}-${{ inputs.godot-version }}
   cancel-in-progress: true
 
-
 jobs:
 
   unit-test:
     name: "Unit Test"
     runs-on: ${{ inputs.os }}
-    timeout-minutes: 5
+    timeout-minutes: 10
 
     steps:
       - name: "Checkout GdUnit Repository"
@@ -60,11 +58,20 @@ jobs:
 
       - name: "Run Unit Tests"
         if: ${{ !cancelled() }}
-        timeout-minutes: 5
+        timeout-minutes: 8
         uses: ./.github/actions/unit-test
         with:
           godot-bin: '~/godot-linux/godot'
-          test-includes: "res://user-project/test"
+          test-includes: "res://addons/gdUnit3/test/"
+
+
+      - name: "Run Unit Test Examples"
+        if: ${{ !cancelled() }}
+        timeout-minutes: 1
+        uses: ./.github/actions/unit-test
+        with:
+          godot-bin: ${{ env.GODOT_BIN }}
+          test-includes: "res://gdUnit3-examples"
 
       - name: Set Report Name
         shell: bash
@@ -120,13 +127,13 @@ jobs:
         run: |
           xvfb-run --auto-servernum ~/godot-linux/godot -e --path . -s res://addons/gdUnit3/src/core/scan_project.gd --no-window
 
-      - name: "Run Unit Tests"
+      - name: "Run Mono Unit Tests"
         if: ${{ !cancelled() }}
         timeout-minutes: 5
         uses: ./.github/actions/unit-test
         with:
           godot-bin: '~/godot-linux/godot'
-          test-includes: "res://user-project/test"
+          test-includes: "res://addons/gdUnit3/test/mono"
 
       - name: Set Report Name
         shell: bash
