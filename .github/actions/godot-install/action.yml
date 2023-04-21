@@ -58,14 +58,13 @@ runs:
         fi
 
         DOWNLOAD_URL=https://downloads.tuxfamily.org/godotengine/${{ inputs.godot-version }}
-        GODOT_PACKAGE=Godot_v${{ inputs.godot-version }}-${{ inputs.godot-status-version }}_${{ inputs.godot-bin-name }}.zip
         GODOT_BIN=Godot_v${{ inputs.godot-version }}-${{ inputs.godot-status-version }}_${{ inputs.godot-bin-name }}
         if ${{inputs.godot-mono == 'true'}}; then
-          GODOT_PACKAGE=Godot_v${{ inputs.godot-version }}-${{ inputs.godot-status-version }}_mono_${{ inputs.godot-bin-name }}.zip
-          GODOT_BIN=Godot_v${{ inputs.godot-version }}-${{ inputs.godot-status-version }}_${{ inputs.godot-bin-name }}
+          GODOT_BIN=Godot_v${{ inputs.godot-version }}-${{ inputs.godot-status-version }}_mono_${{ inputs.godot-bin-name }}
           DOWNLOAD_URL=$DOWNLOAD_URL/mono
         fi
 
+        GODOT_PACKAGE=$GODOT_BIN.zip
         wget $DOWNLOAD_URL/$GODOT_PACKAGE -P ${{ inputs.godot-cache-path }}
         unzip ${{ inputs.godot-cache-path }}/$GODOT_PACKAGE -d ${{ inputs.godot-cache-path }}
 
