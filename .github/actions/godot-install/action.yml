@@ -62,7 +62,7 @@ runs:
         GODOT_BIN=Godot_v${{ inputs.godot-version }}-${{ inputs.godot-status-version }}_${{ inputs.godot-bin-name }}
         if ${{inputs.godot-mono == 'true'}}; then
           GODOT_PACKAGE=Godot_v${{ inputs.godot-version }}-${{ inputs.godot-status-version }}_mono_${{ inputs.godot-bin-name }}.zip
-          GODOT_BIN=Godot_v${{ inputs.godot-version }}-${{ inputs.godot-status-version }}_mono_x11.64
+          GODOT_BIN=Godot_v${{ inputs.godot-version }}-${{ inputs.godot-status-version }}_${{ inputs.godot-bin-name }}
           DOWNLOAD_URL=$DOWNLOAD_URL/mono
         fi
 
