@@ -76,10 +76,8 @@ runs:
           if ${{inputs.godot-mono == 'true'}}; then
             mv ${{ inputs.godot-cache-path }}/$GODOT_BIN/* ${{ inputs.godot-cache-path }}/
             rm -rf ${{ inputs.godot-cache-path }}/$GODOT_BIN*
-            
-          else
-            mv ${{ inputs.godot-cache-path }}/$GODOT_BIN ${{ inputs.godot-cache-path }}/godot
           fi
+          mv ${{ inputs.godot-cache-path }}/Godot_v${{ inputs.godot-version }}* ${{ inputs.godot-cache-path }}/godot
           ls -lsa ${{ inputs.godot-cache-path }}
           chmod u+x ${{ inputs.godot-cache-path }}/godot
           echo "${{ inputs.godot-cache-path }}/godot"
