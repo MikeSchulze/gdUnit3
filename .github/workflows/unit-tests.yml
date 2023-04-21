@@ -1,5 +1,5 @@
 name: unit-tests
-run-name: ${{ github.head_ref || github.ref_name }}-unit-tests-${{ inputs.godot-mono }}
+run-name: ${{ github.head_ref || github.ref_name }}-unit-tests
 
 
 on:
@@ -39,6 +39,7 @@ concurrency:
 jobs:
 
   unit-test:
+    name: "Unit Test-${{ inputs.godot-mono }}"
     runs-on: ${{ inputs.os }}
     timeout-minutes: 5
 
