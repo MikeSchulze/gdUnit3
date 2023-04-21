@@ -29,12 +29,12 @@ runs:
     - name: Set Cache Name
       shell: bash
       run: |
-        if [[ inputs.godot-mono == true ]]; then
+        if [[ inputs.godot-mono == 'true' ]]; then
             echo "CACHE_NAME=${{ runner.OS }}-Godot_v${{ inputs.godot-version }}-${{ inputs.godot-status-version }}_mono" >> "$GITHUB_ENV"
         else
             echo "CACHE_NAME=${{ runner.OS }}-Godot_v${{ inputs.godot-version }}-${{ inputs.godot-status-version }}" >> "$GITHUB_ENV"
         fi
-        echo 'CACHE_NAME is ${{ env.CACHE_NAME }}'
+        echo 'CACHE_NAME is $CACHE_NAME'
 
     - name: "Cache Godot Binary Download"
       uses: actions/cache@v3
@@ -59,7 +59,7 @@ runs:
 
         GODOT_PACKAGE=Godot_v${{ inputs.godot-version }}-${{ inputs.godot-status-version }}_${{ inputs.godot-bin-name }}.zip
         GODOT_BIN=Godot_v${{ inputs.godot-version }}-${{ inputs.godot-status-version }}_${{ inputs.godot-bin-name }}
-        if ${{inputs.godot-mono == true}}; then
+        if ${{inputs.godot-mono == 'true'}}; then
           GODOT_PACKAGE=mono/Godot_v${{ inputs.godot-version }}-${{ inputs.godot-status-version }}_mono_${{ inputs.godot-bin-name }}.zip
           GODOT_BIN=mono/Godot_v${{ inputs.godot-version }}-${{ inputs.godot-status-version }}_mono_${{ inputs.godot-bin-name }}
         fi
