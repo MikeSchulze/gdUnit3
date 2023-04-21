@@ -29,7 +29,7 @@ runs:
     - name: Set Cache Name
       shell: bash
       run: |
-        if [[ inputs.godot-mono == 'true' ]]; then
+        if ${{inputs.godot-mono == 'true'}}; then
             echo "CACHE_NAME=${{ runner.OS }}-Godot_v${{ inputs.godot-version }}-${{ inputs.godot-status-version }}_mono" >> "$GITHUB_ENV"
         else
             echo "CACHE_NAME=${{ runner.OS }}-Godot_v${{ inputs.godot-version }}-${{ inputs.godot-status-version }}" >> "$GITHUB_ENV"
