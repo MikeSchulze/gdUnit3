@@ -38,6 +38,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           lfs: true
+          submodules: 'recursive'
 
       - name: "Install Godot ${{ inputs.godot-version }}"
         uses: ./.github/actions/godot-install
@@ -74,6 +75,7 @@ jobs:
           test-includes: "res://gdUnit3-examples"
 
       - name: Set Report Name
+        if: ${{ !cancelled() }}
         shell: bash
         run: echo "REPORT_NAME=${{ inputs.os }}-${{ inputs.godot-version }}" >> "$GITHUB_ENV"
 
@@ -136,6 +138,7 @@ jobs:
           test-includes: "res://addons/gdUnit3/test/mono"
 
       - name: Set Report Name
+        if: ${{ !cancelled() }}
         shell: bash
         run: echo "REPORT_NAME=${{ inputs.os }}-${{ inputs.godot-version }}-mono" >> "$GITHUB_ENV"
 
