@@ -74,7 +74,7 @@ runs:
         else
           echo "Run windows part"
           pwd
-          mv ${{ inputs.godot-cache-path }}/${{ GODOT_BIN }} ${{ inputs.godot-cache-path }}/godot.exe
+          mv ${{ inputs.godot-cache-path }}/$GODOT_BIN ${{ inputs.godot-cache-path }}/godot.exe
           chmod u+x ${{ inputs.godot-cache-path }}/godot.exe
           ${{ inputs.godot-cache-path }}/godot.exe --version
           echo "${{ inputs.godot-cache-path }}/godot.exe"
