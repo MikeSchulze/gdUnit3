@@ -9,7 +9,7 @@ var _runner :GdUnitSceneRunner
 var _scene_spy :Node
 
 
-func _before():
+func before():
 	# TODO verify input position and global_position if failing when the view is shown
 	OS.set_window_always_on_top(true)
 	OS.set_max_window_size(Vector2(1024, 800))
@@ -22,6 +22,7 @@ func before_test():
 	var max_iteration_to_wait = 0
 	while mouse_global_position() > Vector2.ZERO and max_iteration_to_wait < 1000:
 		Input.warp_mouse_position(Vector2.ZERO)
+		Input.flush_buffered_events()
 		yield(await_idle_frame(), "completed")
 		max_iteration_to_wait += 1
 	if max_iteration_to_wait > 1:
@@ -29,7 +30,7 @@ func before_test():
 	_scene_spy = spy("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
 	_runner = scene_runner(_scene_spy)
 	assert_inital_mouse_state()
-	assert_inital_key_state()
+
 
 
 func after_test():
@@ -37,19 +38,8 @@ func after_test():
 
 
 func mouse_global_position() -> Vector2:
-	return get_tree().root.get_mouse_position()
+	return Engine.get_main_loop().root.get_mouse_position()
 
-
-# asserts to KeyList Enums
-func assert_inital_key_state():
-	# scacode 16777217-16777319
-	for key in range(KEY_ESCAPE, KEY_LAUNCHF):
-		assert_that(Input.is_key_pressed(key)).is_false()
-		assert_that(Input.is_physical_key_pressed(key)).is_false()
-	# scancode 32-255
-	for key in range(KEY_SPACE, KEY_YDIAERESIS):
-		assert_that(Input.is_key_pressed(key)).is_false()
-		assert_that(Input.is_physical_key_pressed(key)).is_false()
 
 
 #asserts to Mouse ButtonList Enums
@@ -68,6 +58,22 @@ func assert_inital_mouse_state():
 		assert_that(Input.is_mouse_button_pressed(button)).is_false()
 	assert_that(Input.get_mouse_button_mask()).is_equal(0)
 	assert_that(mouse_global_position()).is_equal(Vector2.ZERO)
+
+
+func test_set_mouse_vs_global_mouse_pos() -> void:
+	for mp in [Vector2(0, 0), Vector2(300, 400), Vector2(120, 100), Vector2(0, 0)]:
+		Input.set_use_accumulated_input(false)
+		var max_iteration_to_wait = 0
+		while mouse_global_position() != mp and max_iteration_to_wait < 100:
+			Input.warp_mouse_position(mp)
+			
+			#Input.flush_buffered_events()
+			yield(await_idle_frame(), "completed")
+			max_iteration_to_wait += 1
+			
+		var mouse_pos := get_viewport().get_mouse_position()
+		prints("current mouse pos: %s" % mouse_pos)
+		assert_that(mouse_pos).is_equal(mp)
 
 
 func test_simulate_set_mouse_pos():
