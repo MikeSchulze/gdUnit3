@@ -24,10 +24,11 @@ func before_test():
 		Input.warp_mouse_position(Vector2.ZERO)
 		yield(await_idle_frame(), "completed")
 		max_iteration_to_wait += 1
-	assert_inital_mouse_state()
-	assert_inital_key_state()
+	prints("Set inital global mouse pos after %d iterations" % max_iteration_to_wait)
 	_scene_spy = spy("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
 	_runner = scene_runner(_scene_spy)
+	assert_inital_mouse_state()
+	assert_inital_key_state()
 
 
 func after_test():
@@ -65,6 +66,7 @@ func assert_inital_mouse_state():
 		]:
 		assert_that(Input.is_mouse_button_pressed(button)).is_false()
 	assert_that(Input.get_mouse_button_mask()).is_equal(0)
+	assert_that(mouse_global_position()).is_equal(Vector2.ZERO)
 
 
 func test_reset_to_inital_state_on_release():

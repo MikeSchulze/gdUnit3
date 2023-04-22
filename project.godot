@@ -1455,10 +1455,6 @@ config/icon="res://icon.png"
 
 default_bus_layout=""
 
-[autoload]
-
-gamestate="*res://user-project/multiplayer/gamestate.gd"
-
 [debug]
 
 gdscript/warnings/unused_signal=false
