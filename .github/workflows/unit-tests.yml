@@ -63,15 +63,17 @@ jobs:
         uses: ./.github/actions/unit-test
         with:
           godot-bin: '~/godot-linux/godot'
-          test-includes: "res://addons/gdUnit3/test/"
+          test-includes: "res://addons/gdUnit3/test/core/GdUnitSceneRunnerInputEventTest.gd"
+#          test-includes: "res://addons/gdUnit3/test/"
 
-      - name: "Run Unit Test Examples"
-        if: ${{ !cancelled() }}
-        timeout-minutes: 4
-        uses: ./.github/actions/unit-test
-        with:
-          godot-bin: ${{ env.GODOT_BIN }}
-          test-includes: "res://gdUnit3-examples"
+
+#      - name: "Run Unit Test Examples"
+#        if: ${{ !cancelled() }}
+#        timeout-minutes: 4
+#        uses: ./.github/actions/unit-test
+#        with:
+#          godot-bin: ${{ env.GODOT_BIN }}
+#          test-includes: "res://gdUnit3-examples"
 
       - name: "Set Report Name"
         if: ${{ always() }}

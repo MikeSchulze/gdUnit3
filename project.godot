@@ -1009,16 +1009,6 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/gdUnit3/test/report/JUnitXmlReportTest.gd"
 }, {
-"base": "Control",
-"class": "Lobby",
-"language": "GDScript",
-"path": "res://user-project/multiplayer/lobby.gd"
-}, {
-"base": "GdUnitTestSuite",
-"class": "LobbyIntegrationTest",
-"language": "GDScript",
-"path": "res://user-project/test/scene/LobbyIntegrationTest.gd"
-}, {
 "base": "Resource",
 "class": "LocalTime",
 "language": "GDScript",
@@ -1415,8 +1405,6 @@ _global_script_class_icons={
 "IntFuzzer": "",
 "JUnitXmlReport": "",
 "JUnitXmlReportTest": "",
-"Lobby": "",
-"LobbyIntegrationTest": "",
 "LocalTime": "",
 "LocalTimeTest": "",
 "Munderwood_Pathing_World": "",
