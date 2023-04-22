@@ -1468,7 +1468,7 @@ enabled=PoolStringArray( "res://addons/gdUnit3/plugin.cfg" )
 
 report/assert/verbose_errors=false
 report/assert/verbose_warnings=false
-report/assert/strict_object_compare=true
+report/assert/strict_object_compare=false
 
 [network]
 
