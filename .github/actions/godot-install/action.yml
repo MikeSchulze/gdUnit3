@@ -77,7 +77,6 @@ runs:
             mv ${{ inputs.godot-cache-path }}/$GODOT_BIN ${{ inputs.godot-cache-path }}/godot
           fi
 
-          ls -lsa ${{ inputs.godot-cache-path }}
           chmod u+x ${{ inputs.godot-cache-path }}/godot
           echo "${{ inputs.godot-cache-path }}/godot"
         else
