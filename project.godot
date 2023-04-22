@@ -1464,6 +1464,7 @@ gdscript/warnings/return_value_discarded=false
 
 report/assert/verbose_errors=false
 report/assert/verbose_warnings=false
+report/assert/strict_object_compare=false
 
 [network]
 

@@ -9,33 +9,37 @@ var _runner :GdUnitSceneRunner
 var _scene_spy :Node
 
 
-func _before():
+func before():
 	# TODO verify input position and global_position if failing when the view is shown
 	OS.set_window_always_on_top(true)
 	OS.set_max_window_size(Vector2(1024, 800))
 	OS.set_window_maximized(true)
 	OS.center_window()
 
+func after():
+	OS.set_window_maximized(false)
+	
 
 func before_test():
 	# reset global mouse position back to inital state
 	var max_iteration_to_wait = 0
-	while mouse_global_position() > Vector2.ZERO and max_iteration_to_wait < 1000:
-		Input.warp_mouse_position(Vector2.ZERO)
+	Input.warp_mouse_position(Vector2.ZERO)
+	while yield(mouse_global_position(), "completed") != Vector2.ZERO and max_iteration_to_wait < 10:
 		yield(await_idle_frame(), "completed")
 		max_iteration_to_wait += 1
-	assert_inital_mouse_state()
-	assert_inital_key_state()
+	if max_iteration_to_wait > 1:
+		push_warning("Set inital global mouse pos after %d iterations" % max_iteration_to_wait)
 	_scene_spy = spy("res://addons/gdUnit3/test/mocker/resources/scenes/TestScene.tscn")
 	_runner = scene_runner(_scene_spy)
-
-
-func after_test():
-	OS.window_minimized = true
+	assert_inital_mouse_state()
+	assert_inital_key_state()
 
 
 func mouse_global_position() -> Vector2:
-	return get_tree().root.get_mouse_position()
+	# we do this hack to await the global mouse pos is set
+	for n in range(0, 4):
+		yield(await_idle_frame(), "completed")
+	return get_viewport().get_mouse_position()
 
 
 # asserts to KeyList Enums
@@ -65,6 +69,7 @@ func assert_inital_mouse_state():
 		]:
 		assert_that(Input.is_mouse_button_pressed(button)).is_false()
 	assert_that(Input.get_mouse_button_mask()).is_equal(0)
+	assert_that(get_viewport().get_mouse_position()).is_equal(Vector2.ZERO)
 
 
 func test_reset_to_inital_state_on_release():
@@ -163,28 +168,28 @@ func test_simulate_many_keys_press() -> void:
 
 func test_simulate_set_mouse_pos():
 	# set mouse to pos 100, 100
+	var expected_event := InputEventMouseMotion.new()
+	expected_event.position = Vector2(100, 100)
+	expected_event.global_position = yield(mouse_global_position(), "completed")
 	_runner.set_mouse_pos(Vector2(100, 100))
 	yield(await_idle_frame(), "completed")
-	var event := InputEventMouseMotion.new()
-	event.position = Vector2(100, 100)
-	event.global_position = mouse_global_position()
-	verify(_scene_spy, 1)._input(event)
+	verify(_scene_spy, 1)._input(expected_event)
 	
 	# set mouse to pos 800, 400
+	expected_event = InputEventMouseMotion.new()
+	expected_event.position = Vector2(800, 400)
+	expected_event.global_position = yield(mouse_global_position(), "completed")
 	_runner.set_mouse_pos(Vector2(800, 400))
 	yield(await_idle_frame(), "completed")
-	event = InputEventMouseMotion.new()
-	event.position = Vector2(800, 400)
-	event.global_position = mouse_global_position()
-	verify(_scene_spy, 1)._input(event)
+	verify(_scene_spy, 1)._input(expected_event)
 	
 	# and again back to 100,100
+	expected_event = InputEventMouseMotion.new()
+	expected_event.position = Vector2(100, 100)
+	expected_event.global_position = yield(mouse_global_position(), "completed")
 	_runner.set_mouse_pos(Vector2(100, 100))
 	yield(await_idle_frame(), "completed")
-	event = InputEventMouseMotion.new()
-	event.position = Vector2(100, 100)
-	event.global_position = mouse_global_position()
-	verify(_scene_spy, 2)._input(event)
+	verify(_scene_spy, 1)._input(expected_event)
 
 
 func test_simulate_set_mouse_pos_with_modifiers():
@@ -201,19 +206,23 @@ func test_simulate_set_mouse_pos_with_modifiers():
 			# simulate press shift, set mouse pos and final press mouse button
 			_runner.simulate_key_press(modifier)
 			_runner.set_mouse_pos(Vector2(10, 10))
-			_runner.simulate_mouse_button_press(mouse_button)
 			yield(await_idle_frame(), "completed")
 			
-			var event := InputEventMouseButton.new()
-			event.position = Vector2(10, 10)
-			event.global_position = mouse_global_position()
-			event.alt = is_alt
-			event.control = is_control
-			event.shift = is_shift
-			event.pressed = true
-			event.button_index = mouse_button
-			event.button_mask = GdUnitSceneRunnerImpl.MAP_MOUSE_BUTTON_MASKS.get(mouse_button)
-			verify(_scene_spy, 1)._input(event)
+			reset(_scene_spy)
+			var expected_event := InputEventMouseButton.new()
+			expected_event.position = Vector2(10, 10)
+			expected_event.global_position = yield(mouse_global_position(), "completed")
+			expected_event.alt = is_alt
+			expected_event.control = is_control
+			expected_event.shift = is_shift
+			expected_event.pressed = true
+			expected_event.button_index = mouse_button
+			expected_event.button_mask = GdUnitSceneRunnerImpl.MAP_MOUSE_BUTTON_MASKS.get(mouse_button)
+			_runner.simulate_mouse_button_press(mouse_button)
+			yield(await_idle_frame(), "completed")
+			verify(_scene_spy, 1)._input(expected_event)
+			if is_failure():
+				return
 			assert_that(Input.is_mouse_button_pressed(mouse_button)).is_true()
 			# finally release it
 			_runner.simulate_mouse_button_pressed(mouse_button)
@@ -221,25 +230,23 @@ func test_simulate_set_mouse_pos_with_modifiers():
 
 
 func test_simulate_mouse_move():
+	var expected_event = InputEventMouseMotion.new()
+	expected_event.position = Vector2(400, 100)
+	expected_event.global_position = yield(mouse_global_position(), "completed")
+	expected_event.relative = Vector2(400, 100) - Vector2(10, 10)
 	_runner.set_mouse_pos(Vector2(10, 10))
 	_runner.simulate_mouse_move(Vector2(400, 100))
 	yield(await_idle_frame(), "completed")
-	
-	var event = InputEventMouseMotion.new()
-	event.position = Vector2(400, 100)
-	event.global_position = mouse_global_position()
-	event.relative = Vector2(400, 100) - Vector2(10, 10)
-	verify(_scene_spy, 1)._input(event)
+	verify(_scene_spy, 1)._input(expected_event)
 	
 	# move mouse to next pos
+	expected_event = InputEventMouseMotion.new()
+	expected_event.position = Vector2(55, 42)
+	expected_event.global_position = yield(mouse_global_position(), "completed")
+	expected_event.relative = Vector2(55, 42) - Vector2(400, 100)
 	_runner.simulate_mouse_move(Vector2(55, 42))
 	yield(await_idle_frame(), "completed")
-	
-	event = InputEventMouseMotion.new()
-	event.position = Vector2(55, 42)
-	event.global_position = mouse_global_position()
-	event.relative = Vector2(55, 42) - Vector2(400, 100)
-	verify(_scene_spy, 1)._input(event)
+	verify(_scene_spy, 1)._input(expected_event)
 
 
 func test_simulate_mouse_move_relative():
@@ -252,134 +259,137 @@ func test_simulate_mouse_move_relative():
 	yield(await_idle_frame(), "completed")
 	assert_that(_runner.get_mouse_position()).is_equal(Vector2(910, 410))
 
+
 func test_simulate_mouse_button_press_left():
+	var expected_event := InputEventMouseButton.new()
+	expected_event.position = Vector2.ZERO
+	expected_event.global_position = yield(mouse_global_position(), "completed")
+	expected_event.pressed = true
+	expected_event.button_index = BUTTON_LEFT
+	expected_event.button_mask = GdUnitSceneRunnerImpl.MAP_MOUSE_BUTTON_MASKS.get(BUTTON_LEFT)
 	# simulate mouse button press and hold
 	_runner.simulate_mouse_button_press(BUTTON_LEFT)
 	yield(await_idle_frame(), "completed")
 	
-	var event := InputEventMouseButton.new()
-	event.position = Vector2.ZERO
-	event.global_position = mouse_global_position()
-	event.pressed = true
-	event.button_index = BUTTON_LEFT
-	event.button_mask = GdUnitSceneRunnerImpl.MAP_MOUSE_BUTTON_MASKS.get(BUTTON_LEFT)
-	verify(_scene_spy, 1)._input(event)
+	verify(_scene_spy, 1)._input(expected_event)
 	assert_that(Input.is_mouse_button_pressed(BUTTON_LEFT)).is_true()
 
 
 func test_simulate_mouse_button_press_left_doubleclick():
+	var expected_event := InputEventMouseButton.new()
+	expected_event.position = Vector2.ZERO
+	expected_event.global_position = yield(mouse_global_position(), "completed")
+	expected_event.pressed = true
+	expected_event.doubleclick = true
+	expected_event.button_index = BUTTON_LEFT
+	expected_event.button_mask = GdUnitSceneRunnerImpl.MAP_MOUSE_BUTTON_MASKS.get(BUTTON_LEFT)
 	# simulate mouse button press doubleclick
 	_runner.simulate_mouse_button_press(BUTTON_LEFT, true)
 	yield(await_idle_frame(), "completed")
 	
-	var event := InputEventMouseButton.new()
-	event.position = Vector2.ZERO
-	event.global_position = mouse_global_position()
-	event.pressed = true
-	event.doubleclick = true
-	event.button_index = BUTTON_LEFT
-	event.button_mask = GdUnitSceneRunnerImpl.MAP_MOUSE_BUTTON_MASKS.get(BUTTON_LEFT)
-	verify(_scene_spy, 1)._input(event)
+	verify(_scene_spy, 1)._input(expected_event)
 	assert_that(Input.is_mouse_button_pressed(BUTTON_LEFT)).is_true()
 
 
 func test_simulate_mouse_button_press_right():
+	var expected_event := InputEventMouseButton.new()
+	expected_event.position = Vector2.ZERO
+	expected_event.global_position = yield(mouse_global_position(), "completed")
+	expected_event.pressed = true
+	expected_event.button_index = BUTTON_RIGHT
+	expected_event.button_mask = GdUnitSceneRunnerImpl.MAP_MOUSE_BUTTON_MASKS.get(BUTTON_RIGHT)
 	# simulate mouse button press and hold
 	_runner.simulate_mouse_button_press(BUTTON_RIGHT)
 	yield(await_idle_frame(), "completed")
 	
-	var event := InputEventMouseButton.new()
-	event.position = Vector2.ZERO
-	event.global_position = mouse_global_position()
-	event.pressed = true
-	event.button_index = BUTTON_RIGHT
-	event.button_mask = GdUnitSceneRunnerImpl.MAP_MOUSE_BUTTON_MASKS.get(BUTTON_RIGHT)
-	verify(_scene_spy, 1)._input(event)
+	verify(_scene_spy, 1)._input(expected_event)
 	assert_that(Input.is_mouse_button_pressed(BUTTON_RIGHT)).is_true()
 
 
 func test_simulate_mouse_button_press_left_and_right():
+	# results in two events, first is left mouse button
+	var expected_event1 := InputEventMouseButton.new()
+	expected_event1.position = Vector2.ZERO
+	expected_event1.global_position = yield(mouse_global_position(), "completed")
+	expected_event1.pressed = true
+	expected_event1.button_index = BUTTON_LEFT
+	expected_event1.button_mask = BUTTON_MASK_LEFT
+	# second is left+right and combined mask
+	var expected_event2 = InputEventMouseButton.new()
+	expected_event2.position = Vector2.ZERO
+	expected_event2.global_position = yield(mouse_global_position(), "completed")
+	expected_event2.pressed = true
+	expected_event2.button_index = BUTTON_RIGHT
+	expected_event2.button_mask = BUTTON_MASK_LEFT|BUTTON_MASK_RIGHT
+	
 	# simulate mouse button press left+right
 	_runner.simulate_mouse_button_press(BUTTON_LEFT)
 	_runner.simulate_mouse_button_press(BUTTON_RIGHT)
 	yield(await_idle_frame(), "completed")
 	
-	# results in two events, first is left mouse button
-	var event := InputEventMouseButton.new()
-	event.position = Vector2.ZERO
-	event.global_position = mouse_global_position()
-	event.pressed = true
-	event.button_index = BUTTON_LEFT
-	event.button_mask = BUTTON_MASK_LEFT
-	verify(_scene_spy, 1)._input(event)
-	
-	# second is left+right and combined mask
-	event = InputEventMouseButton.new()
-	event.position = Vector2.ZERO
-	event.global_position = mouse_global_position()
-	event.pressed = true
-	event.button_index = BUTTON_RIGHT
-	event.button_mask = BUTTON_MASK_LEFT|BUTTON_MASK_RIGHT
-	verify(_scene_spy, 1)._input(event)
+	verify(_scene_spy, 1)._input(expected_event1)
+	verify(_scene_spy, 1)._input(expected_event2)
 	assert_that(Input.is_mouse_button_pressed(BUTTON_LEFT)).is_true()
 	assert_that(Input.is_mouse_button_pressed(BUTTON_RIGHT)).is_true()
 	assert_that(Input.get_mouse_button_mask()).is_equal(BUTTON_MASK_LEFT|BUTTON_MASK_RIGHT)
 
 
 func test_simulate_mouse_button_press_left_and_right_and_release():
+	# will results into two events
+	# first for left mouse button
+	var expected_event1 := InputEventMouseButton.new()
+	expected_event1.position = Vector2.ZERO
+	expected_event1.global_position = yield(mouse_global_position(), "completed")
+	expected_event1.pressed = true
+	expected_event1.button_index = BUTTON_LEFT
+	expected_event1.button_mask = BUTTON_MASK_LEFT
+	# second is left+right and combined mask
+	var expected_event2 = InputEventMouseButton.new()
+	expected_event2.position = Vector2.ZERO
+	expected_event2.global_position = yield(mouse_global_position(), "completed")
+	expected_event2.pressed = true
+	expected_event2.button_index = BUTTON_RIGHT
+	expected_event2.button_mask = BUTTON_MASK_LEFT|BUTTON_MASK_RIGHT
+	
 	# simulate mouse button press left+right
 	_runner.simulate_mouse_button_press(BUTTON_LEFT)
 	_runner.simulate_mouse_button_press(BUTTON_RIGHT)
 	yield(await_idle_frame(), "completed")
 	
-	# will results into two events
-	# first for left mouse button
-	var event := InputEventMouseButton.new()
-	event.position = Vector2.ZERO
-	event.global_position = mouse_global_position()
-	event.pressed = true
-	event.button_index = BUTTON_LEFT
-	event.button_mask = BUTTON_MASK_LEFT
-	verify(_scene_spy, 1)._input(event)
-	
-	# second is left+right and combined mask
-	event = InputEventMouseButton.new()
-	event.position = Vector2.ZERO
-	event.global_position = mouse_global_position()
-	event.pressed = true
-	event.button_index = BUTTON_RIGHT
-	event.button_mask = BUTTON_MASK_LEFT|BUTTON_MASK_RIGHT
-	verify(_scene_spy, 1)._input(event)
+	verify(_scene_spy, 1)._input(expected_event1)
+	verify(_scene_spy, 1)._input(expected_event2)
 	assert_that(Input.is_mouse_button_pressed(BUTTON_LEFT)).is_true()
 	assert_that(Input.is_mouse_button_pressed(BUTTON_RIGHT)).is_true()
 	assert_that(Input.get_mouse_button_mask()).is_equal(BUTTON_MASK_LEFT|BUTTON_MASK_RIGHT)
 	
 	# now release the right button
+	var expected_event = InputEventMouseButton.new()
+	expected_event.position = Vector2.ZERO
+	expected_event.global_position = yield(mouse_global_position(), "completed")
+	expected_event.pressed = false
+	expected_event.button_index = BUTTON_RIGHT
+	expected_event.button_mask = BUTTON_MASK_LEFT
 	_runner.simulate_mouse_button_pressed(BUTTON_RIGHT)
 	yield(await_idle_frame(), "completed")
 	# will result in right button press false but stay with mask for left pressed
-	event = InputEventMouseButton.new()
-	event.position = Vector2.ZERO
-	event.global_position = mouse_global_position()
-	event.pressed = false
-	event.button_index = BUTTON_RIGHT
-	event.button_mask = BUTTON_MASK_LEFT
-	verify(_scene_spy, 1)._input(event)
+
+	verify(_scene_spy, 1)._input(expected_event)
 	assert_that(Input.is_mouse_button_pressed(BUTTON_LEFT)).is_true()
 	assert_that(Input.is_mouse_button_pressed(BUTTON_RIGHT)).is_false()
 	assert_that(Input.get_mouse_button_mask()).is_equal(BUTTON_MASK_LEFT)
 	
 	# finally relase left button
+	# will result in right button press false but stay with mask for left pressed
+	expected_event = InputEventMouseButton.new()
+	expected_event.position = Vector2.ZERO
+	expected_event.global_position = yield(mouse_global_position(), "completed")
+	expected_event.pressed = false
+	expected_event.button_index = BUTTON_LEFT
+	expected_event.button_mask = 0
 	_runner.simulate_mouse_button_pressed(BUTTON_LEFT)
 	yield(await_idle_frame(), "completed")
-	# will result in right button press false but stay with mask for left pressed
-	event = InputEventMouseButton.new()
-	event.position = Vector2.ZERO
-	event.global_position = mouse_global_position()
-	event.pressed = false
-	event.button_index = BUTTON_LEFT
-	event.button_mask = 0
-	verify(_scene_spy, 1)._input(event)
+
+	verify(_scene_spy, 1)._input(expected_event)
 	assert_that(Input.is_mouse_button_pressed(BUTTON_LEFT)).is_false()
 	assert_that(Input.is_mouse_button_pressed(BUTTON_RIGHT)).is_false()
 	assert_that(Input.get_mouse_button_mask()).is_equal(0)
@@ -388,81 +398,83 @@ func test_simulate_mouse_button_press_left_and_right_and_release():
 func test_simulate_mouse_button_pressed():
 	for mouse_button in [BUTTON_LEFT, BUTTON_MIDDLE, BUTTON_RIGHT]:
 		# simulate mouse button press and release
+		# it genrates two events, first for press and second as released
+		var expected_event1 := InputEventMouseButton.new()
+		expected_event1.position = Vector2.ZERO
+		expected_event1.global_position = yield(mouse_global_position(), "completed")
+		expected_event1.pressed = true
+		expected_event1.button_index = mouse_button
+		expected_event1.button_mask = GdUnitSceneRunnerImpl.MAP_MOUSE_BUTTON_MASKS.get(mouse_button)
+		
+		var expected_event2 = InputEventMouseButton.new()
+		expected_event2.position = Vector2.ZERO
+		expected_event2.global_position = yield(mouse_global_position(), "completed")
+		expected_event2.pressed = false
+		expected_event2.button_index = mouse_button
+		expected_event2.button_mask = 0
+		
 		_runner.simulate_mouse_button_pressed(mouse_button)
 		yield(await_idle_frame(), "completed")
 		
-		# it genrates two events, first for press and second as released
-		var event := InputEventMouseButton.new()
-		event.position = Vector2.ZERO
-		event.global_position = mouse_global_position()
-		event.pressed = true
-		event.button_index = mouse_button
-		event.button_mask = GdUnitSceneRunnerImpl.MAP_MOUSE_BUTTON_MASKS.get(mouse_button)
-		verify(_scene_spy, 1)._input(event)
-		
-		event = InputEventMouseButton.new()
-		event.position = Vector2.ZERO
-		event.global_position = mouse_global_position()
-		event.pressed = false
-		event.button_index = mouse_button
-		event.button_mask = 0
-		verify(_scene_spy, 1)._input(event)
+		verify(_scene_spy, 1)._input(expected_event1)
+		verify(_scene_spy, 1)._input(expected_event2)
 		assert_that(Input.is_mouse_button_pressed(mouse_button)).is_false()
 		verify(_scene_spy, 2)._input(any_class(InputEventMouseButton))
 		reset(_scene_spy)
+
 
 func test_simulate_mouse_button_pressed_doubleclick():
 	for mouse_button in [BUTTON_LEFT, BUTTON_MIDDLE, BUTTON_RIGHT]:
 		# simulate mouse button press and release by doubleclick
+		# it genrates two events, first for press and second as released
+		var expected_event1 := InputEventMouseButton.new()
+		expected_event1.position = Vector2.ZERO
+		expected_event1.global_position = yield(mouse_global_position(), "completed")
+		expected_event1.pressed = true
+		expected_event1.doubleclick = true
+		expected_event1.button_index = mouse_button
+		expected_event1.button_mask = GdUnitSceneRunnerImpl.MAP_MOUSE_BUTTON_MASKS.get(mouse_button)
+		var expected_event2 = InputEventMouseButton.new()
+		expected_event2.position = Vector2.ZERO
+		expected_event2.global_position = yield(mouse_global_position(), "completed")
+		expected_event2.pressed = false
+		expected_event2.doubleclick = false
+		expected_event2.button_index = mouse_button
+		expected_event2.button_mask = 0
 		_runner.simulate_mouse_button_pressed(mouse_button, true)
 		yield(await_idle_frame(), "completed")
 		
-		# it genrates two events, first for press and second as released
-		var event := InputEventMouseButton.new()
-		event.position = Vector2.ZERO
-		event.global_position = mouse_global_position()
-		event.pressed = true
-		event.doubleclick = true
-		event.button_index = mouse_button
-		event.button_mask = GdUnitSceneRunnerImpl.MAP_MOUSE_BUTTON_MASKS.get(mouse_button)
-		verify(_scene_spy, 1)._input(event)
-		
-		event = InputEventMouseButton.new()
-		event.position = Vector2.ZERO
-		event.global_position = mouse_global_position()
-		event.pressed = false
-		event.doubleclick = false
-		event.button_index = mouse_button
-		event.button_mask = 0
-		verify(_scene_spy, 1)._input(event)
+		verify(_scene_spy, 1)._input(expected_event1)
+		verify(_scene_spy, 1)._input(expected_event2)
 		assert_that(Input.is_mouse_button_pressed(mouse_button)).is_false()
 		verify(_scene_spy, 2)._input(any_class(InputEventMouseButton))
 		reset(_scene_spy)
 
+
 func test_simulate_mouse_button_press_and_release():
 	for mouse_button in [BUTTON_LEFT, BUTTON_MIDDLE, BUTTON_RIGHT]:
 		# simulate mouse button press and release
+		var expected_event := InputEventMouseButton.new()
+		expected_event.position = Vector2.ZERO
+		expected_event.global_position = yield(mouse_global_position(), "completed")
+		expected_event.pressed = true
+		expected_event.button_index = mouse_button
+		expected_event.button_mask = GdUnitSceneRunnerImpl.MAP_MOUSE_BUTTON_MASKS.get(mouse_button)
 		_runner.simulate_mouse_button_press(mouse_button)
 		yield(await_idle_frame(), "completed")
 		
-		var event := InputEventMouseButton.new()
-		event.position = Vector2.ZERO
-		event.global_position = mouse_global_position()
-		event.pressed = true
-		event.button_index = mouse_button
-		event.button_mask = GdUnitSceneRunnerImpl.MAP_MOUSE_BUTTON_MASKS.get(mouse_button)
-		verify(_scene_spy, 1)._input(event)
+		verify(_scene_spy, 1)._input(expected_event)
 		assert_that(Input.is_mouse_button_pressed(mouse_button)).is_true()
 		
 		# now simulate mouse button release
+		expected_event = InputEventMouseButton.new()
+		expected_event.position = Vector2.ZERO
+		expected_event.global_position = yield(mouse_global_position(), "completed")
+		expected_event.pressed = false
+		expected_event.button_index = mouse_button
+		expected_event.button_mask = 0
 		_runner.simulate_mouse_button_release(mouse_button)
 		yield(await_idle_frame(), "completed")
 		
-		event = InputEventMouseButton.new()
-		event.position = Vector2.ZERO
-		event.global_position = mouse_global_position()
-		event.pressed = false
-		event.button_index = mouse_button
-		event.button_mask = 0
-		verify(_scene_spy, 1)._input(event)
+		verify(_scene_spy, 1)._input(expected_event)
 		assert_that(Input.is_mouse_button_pressed(mouse_button)).is_false()
