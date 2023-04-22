@@ -29,7 +29,7 @@ concurrency:
 jobs:
 
   unit-test:
-    name: "Unit Test"
+    name: "Unit Tests"
     runs-on: ${{ inputs.os }}
     timeout-minutes: 15
 
@@ -92,7 +92,7 @@ jobs:
 
 
   unit-test-mono:
-    name: "Unit Test Mono"
+    name: "Unit Tests Mono"
     runs-on: ${{ inputs.os }}
     timeout-minutes: 5
 
@@ -102,7 +102,7 @@ jobs:
         with:
           lfs: true
 
-      - name: "Install Godot ${{ inputs.godot-version }}"
+      - name: "Install Godot Mono ${{ inputs.godot-version }}"
         uses: ./.github/actions/godot-install
         with:
           godot-version: ${{ inputs.godot-version }}
@@ -128,7 +128,7 @@ jobs:
         run: |
           xvfb-run --auto-servernum ~/godot-linux/godot -e --path . -s res://addons/gdUnit3/src/core/scan_project.gd --no-window
 
-      - name: "Run Mono Unit Tests"
+      - name: "Run Unit Tests"
         if: ${{ !cancelled() }}
         timeout-minutes: 5
         uses: ./.github/actions/unit-test

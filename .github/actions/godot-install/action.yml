@@ -35,7 +35,7 @@ runs:
             echo "CACHE_NAME=${{ runner.OS }}-Godot_v${{ inputs.godot-version }}-${{ inputs.godot-status-version }}" >> "$GITHUB_ENV"
         fi
 
-    - name: "Cache Godot Binary Download"
+    - name: "Build Cache"
       uses: actions/cache@v3
       id: godot-cache-binary
       with:
@@ -43,7 +43,7 @@ runs:
         key: ${{ env.CACHE_NAME }}
         restore-keys: ${{ env.CACHE_NAME }}
 
-    - name: "Install Linux Godot ${{ inputs.godot-version }}"
+    - name: "Download and Install Godot ${{ inputs.godot-version }}"
       if: steps.godot-cache-binary.outputs.cache-hit != 'true'
       continue-on-error: false
       shell: bash
