@@ -272,6 +272,7 @@ func _apply_input_mouse_mask(event :InputEvent) -> void:
 func _apply_input_mouse_position(event :InputEvent) -> void:
 	if _last_input_event is InputEventMouse and event is InputEventMouseButton:
 		event.position = _last_input_event.position
+		event.global_position = get_global_mouse_position()
 
 
 # for handling read https://docs.godotengine.org/en/3.5/tutorials/inputs/inputevent.html
