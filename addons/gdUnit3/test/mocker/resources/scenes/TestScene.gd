@@ -81,11 +81,11 @@ func _destroy_spell(spell :Spell) -> void:
 	spell.queue_free()
 
 func _input(event):
-	#if event is InputEventMouse:
-	#	prints("main view", get_viewport_rect())
-	#	prints(GdAssertMessages.input_event_as_text(event), event.global_position)
-	#	print_stack()
-	#	prints()
+	if event is InputEventMouse:
+		prints("main view", get_viewport_rect())
+		prints(GdAssertMessages.input_event_as_text(event), event.global_position)
+		print_stack()
+		prints()
 	if event.is_action_released("ui_accept"):
 		add_child(create_spell())
 

@@ -373,7 +373,6 @@ func test_simulate_mouse_button_press_left_and_right_and_release():
 	assert_that(Input.is_mouse_button_pressed(BUTTON_RIGHT)).is_false()
 	assert_that(Input.get_mouse_button_mask()).is_equal(BUTTON_MASK_LEFT)
 	
-	
 	# finally relase left button
 	# will result in right button press false but stay with mask for left pressed
 	expected_event = InputEventMouseButton.new()
@@ -445,6 +444,7 @@ func test_simulate_mouse_button_pressed_doubleclick():
 		assert_that(Input.is_mouse_button_pressed(mouse_button)).is_false()
 		verify(_scene_spy, 2)._input(any_class(InputEventMouseButton))
 		reset(_scene_spy)
+
 
 func test_simulate_mouse_button_press_and_release():
 	for mouse_button in [BUTTON_LEFT, BUTTON_MIDDLE, BUTTON_RIGHT]:
