@@ -55,7 +55,7 @@ jobs:
         continue-on-error: true # we still ignore the timeout, the script is not quit and we run into a timeout
         shell: bash
         run: |
-          xvfb-run --auto-servernum ~/godot-linux/godot -e --path . -s res://addons/gdUnit3/src/core/scan_project.gd --no-window
+          xvfb-run --auto-servernum ~/godot-linux/godot -e --path . -s res://addons/gdUnit3/src/core/scan_project.gd --audio-driver Dummy --no-window
 
       - name: "Run Unit Tests"
         if: ${{ !cancelled() }}
@@ -118,7 +118,7 @@ jobs:
 
       - name: "Compile C#"
         run: |
-          xvfb-run --auto-servernum ~/godot-linux/godot project.godot --build-solutions --quit --no-window
+          xvfb-run --auto-servernum ~/godot-linux/godot project.godot --build-solutions --quit --audio-driver Dummy --no-window
 
       - name: "Update Project"
         if: ${{ !cancelled() }}
@@ -126,7 +126,7 @@ jobs:
         continue-on-error: true # we still ignore the timeout, the script is not quit and we run into a timeout
         shell: bash
         run: |
-          xvfb-run --auto-servernum ~/godot-linux/godot -e --path . -s res://addons/gdUnit3/src/core/scan_project.gd --no-window
+          xvfb-run --auto-servernum ~/godot-linux/godot -e --path . -s res://addons/gdUnit3/src/core/scan_project.gd --audio-driver Dummy --no-window
 
       - name: "Run Unit Tests"
         if: ${{ !cancelled() }}

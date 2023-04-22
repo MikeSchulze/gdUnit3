@@ -19,4 +19,4 @@ runs:
       shell: bash
       run: |
         chmod +x ./addons/gdUnit3/runtest.sh
-        xvfb-run --auto-servernum ./addons/gdUnit3/runtest.sh --add ${{ inputs.test-includes }} --continue --verbose
+        xvfb-run --auto-servernum ./addons/gdUnit3/runtest.sh --add ${{ inputs.test-includes }} --continue --audio-driver Dummy --verbose
