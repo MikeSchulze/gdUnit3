@@ -20,7 +20,7 @@ func before():
 func before_test():
 	# reset global mouse position back to inital state
 	var max_iteration_to_wait = 0
-	while mouse_global_position() > Vector2.ZERO and max_iteration_to_wait < 1000:
+	while yield(mouse_global_position(), "completed") > Vector2.ZERO and max_iteration_to_wait < 1000:
 		Input.warp_mouse_position(Vector2.ZERO)
 		Input.flush_buffered_events()
 		yield(await_idle_frame(), "completed")
@@ -32,13 +32,10 @@ func before_test():
 	assert_inital_mouse_state()
 
 
-
-func after_test():
-	OS.window_minimized = true
-
-
 func mouse_global_position() -> Vector2:
-	return Engine.get_main_loop().root.get_mouse_position()
+	for n in range(0, 4):
+		yield(await_idle_frame(), "completed")
+	return get_viewport().get_mouse_position()
 
 
 
@@ -57,49 +54,42 @@ func assert_inital_mouse_state():
 		]:
 		assert_that(Input.is_mouse_button_pressed(button)).is_false()
 	assert_that(Input.get_mouse_button_mask()).is_equal(0)
-	assert_that(mouse_global_position()).is_equal(Vector2.ZERO)
+	assert_that(Engine.get_main_loop().root.get_mouse_position()).is_equal(Vector2.ZERO)
 
 
 func test_set_mouse_vs_global_mouse_pos() -> void:
 	for mp in [Vector2(0, 0), Vector2(300, 400), Vector2(120, 100), Vector2(0, 0)]:
-		Input.set_use_accumulated_input(false)
 		var max_iteration_to_wait = 0
-		while mouse_global_position() != mp and max_iteration_to_wait < 100:
-			Input.warp_mouse_position(mp)
-			
-			#Input.flush_buffered_events()
-			yield(await_idle_frame(), "completed")
-			max_iteration_to_wait += 1
-			
-		var mouse_pos := get_viewport().get_mouse_position()
-		prints("current mouse pos: %s" % mouse_pos)
+		_runner.set_mouse_pos(mp)
+		var mouse_pos :Vector2 = yield(mouse_global_position(), "completed")
+		prints("current mouse pos: %s " % [mouse_pos])
 		assert_that(mouse_pos).is_equal(mp)
 
 
 func test_simulate_set_mouse_pos():
 	# set mouse to pos 100, 100
-	prints("set mouse to pos 100, 100: global: %s" % mouse_global_position())
 	var expected_event := InputEventMouseMotion.new()
 	expected_event.position = Vector2(100, 100)
-	expected_event.global_position = mouse_global_position()
+	expected_event.global_position = yield(mouse_global_position(), "completed")
+	prints("set mouse to pos 100, 100: global: %s" % expected_event.global_position)
 	_runner.set_mouse_pos(Vector2(100, 100))
 	yield(await_idle_frame(), "completed")
 	verify(_scene_spy, 1)._input(expected_event)
 	
 	# set mouse to pos 800, 400
-	prints("set mouse to pos 800, 400: global: %s" % mouse_global_position())
 	expected_event = InputEventMouseMotion.new()
 	expected_event.position = Vector2(800, 400)
-	expected_event.global_position = mouse_global_position()
+	expected_event.global_position = yield(mouse_global_position(), "completed")
+	prints("set mouse to pos 800, 400: global: %s" % expected_event.global_position)
 	_runner.set_mouse_pos(Vector2(800, 400))
 	yield(await_idle_frame(), "completed")
 	verify(_scene_spy, 1)._input(expected_event)
 	
 	# and again back to 100,100
-	prints("set mouse to pos 100,100: global: %s" % mouse_global_position())
 	expected_event = InputEventMouseMotion.new()
 	expected_event.position = Vector2(100, 100)
-	expected_event.global_position = mouse_global_position()
+	expected_event.global_position = yield(mouse_global_position(), "completed")
+	prints("set mouse to pos 100,100: global: %s" % expected_event.global_position)
 	_runner.set_mouse_pos(Vector2(100, 100))
 	yield(await_idle_frame(), "completed")
-	verify(_scene_spy, 2)._input(expected_event)
+	verify(_scene_spy, 1)._input(expected_event)
