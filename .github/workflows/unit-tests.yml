@@ -63,7 +63,7 @@ jobs:
         uses: ./.github/actions/unit-test
         with:
           godot-bin: '~/godot-linux/godot'
-          test-includes: "res://addons/gdUnit3/test/core/GdUnitSceneRunnerInputEventTest_fix.gd"
+          test-includes: "res://addons/gdUnit3/test/core/GdUnitSceneRunnerInputEventTest.gd"
 #          test-includes: "res://addons/gdUnit3/test/"
 
 
