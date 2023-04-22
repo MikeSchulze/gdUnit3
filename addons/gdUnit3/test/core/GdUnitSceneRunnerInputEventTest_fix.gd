@@ -72,6 +72,7 @@ func assert_inital_mouse_state():
 
 func test_simulate_set_mouse_pos():
 	# set mouse to pos 100, 100
+	prints("set mouse to pos 100, 100: global: %s" % mouse_global_position())
 	var expected_event := InputEventMouseMotion.new()
 	expected_event.position = Vector2(100, 100)
 	expected_event.global_position = mouse_global_position()
@@ -80,6 +81,7 @@ func test_simulate_set_mouse_pos():
 	verify(_scene_spy, 1)._input(expected_event)
 	
 	# set mouse to pos 800, 400
+	prints("set mouse to pos 800, 400: global: %s" % mouse_global_position())
 	expected_event = InputEventMouseMotion.new()
 	expected_event.position = Vector2(800, 400)
 	expected_event.global_position = mouse_global_position()
@@ -88,6 +90,7 @@ func test_simulate_set_mouse_pos():
 	verify(_scene_spy, 1)._input(expected_event)
 	
 	# and again back to 100,100
+	prints("set mouse to pos 100,100: global: %s" % mouse_global_position())
 	expected_event = InputEventMouseMotion.new()
 	expected_event.position = Vector2(100, 100)
 	expected_event.global_position = mouse_global_position()

@@ -37,7 +37,7 @@ func after_test():
 
 
 func mouse_global_position() -> Vector2:
-	return get_tree().root.get_mouse_position()
+	return Engine.get_main_loop().root.get_mouse_position()
 
 
 # asserts to KeyList Enums
