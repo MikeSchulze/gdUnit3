@@ -7,13 +7,15 @@ var _eof :int
 var _report_enabled := false
 
 func _init().("GodotGdErrorMonitor"):
-	_godot_log_file = GdUnitSettings.get_log_path().get_base_dir() + "/godot.log"
+	_godot_log_file = GdUnitSettings.get_log_path()
 	_report_enabled = is_reporting_enabled()
 
 func start():
 	if _report_enabled:
 		_file = File.new()
-		_file.open(_godot_log_file, File.READ)
+		if _file.open(_godot_log_file, File.READ) != OK:
+			push_error("Can't access Godot logfile '%s', error reporting will be disabled." % _godot_log_file)
+			_report_enabled = false
 		_file.seek_end(0)
 		_eof = _file.get_len()
 		_file.close()
