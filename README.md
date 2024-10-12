@@ -27,9 +27,9 @@ GdUnit3 is a framework for testing Gd-Scrips/C# and Scenes within the Godot edit
 
 > __Note__
 ```diff
-- GdUnit3 is Now in Maintenance Mode!
+- GdUnit3 is Now in out of Maintenance!
 ```
->  Meaning that no new features will be added and only bug fixes will be made.<br> 
+>  Meaning that NO new features will be added and NO bug fixes will be made.<br> 
 >  The development of GdUnit continues with <a href="https://github.com/MikeSchulze/gdUnit4">GdUnit4</a>, which is designed for use with Godot4.
 
  
